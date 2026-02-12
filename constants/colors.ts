@@ -1,12 +1,41 @@
-// template
-const tintColorLight = "#2f95dc";
-
-export default {
+const Colors = {
   light: {
-    text: "#000",
-    background: "#fff",
-    tint: tintColorLight,
-    tabIconDefault: "#ccc",
-    tabIconSelected: tintColorLight,
+    text: "#1B2838",
+    textSecondary: "#64748B",
+    background: "#F0F4F8",
+    surface: "#FFFFFF",
+    tint: "#1B4F72",
+    primary: "#1B4F72",
+    primaryLight: "#2980B9",
+    accent: "#E67E22",
+    accentLight: "#F39C12",
+    success: "#27AE60",
+    successLight: "#2ECC71",
+    danger: "#E74C3C",
+    dangerLight: "#FF6B6B",
+    border: "#E2E8F0",
+    cardShadow: "rgba(0,0,0,0.06)",
+    tabIconDefault: "#94A3B8",
+    tabIconSelected: "#1B4F72",
+    chartColors: [
+      "#1B4F72",
+      "#E67E22",
+      "#27AE60",
+      "#E74C3C",
+      "#8E44AD",
+      "#2980B9",
+      "#D4AC0D",
+      "#16A085",
+      "#C0392B",
+      "#7F8C8D",
+    ],
+    receiptColor: "#27AE60",
+    expenditureColor: "#E74C3C",
+    deficitColor: "#E67E22",
+    budgetColor: "#1B4F72",
+    revisedColor: "#8E44AD",
+    actualColor: "#27AE60",
   },
 };
+
+export default Colors;

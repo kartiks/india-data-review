@@ -1,0 +1,1209 @@
+export interface BudgetFigure {
+  be: number;
+  re: number;
+  actual: number;
+}
+
+export interface SectorData {
+  name: string;
+  id: string;
+  allocation: BudgetFigure;
+}
+
+export interface BudgetYear {
+  year: string;
+  label: string;
+  receipts: {
+    total: BudgetFigure;
+    revenueReceipts: BudgetFigure;
+    taxRevenue: BudgetFigure;
+    nonTaxRevenue: BudgetFigure;
+    capitalReceipts: BudgetFigure;
+    recoveryOfLoans: BudgetFigure;
+    disinvestment: BudgetFigure;
+    borrowings: BudgetFigure;
+  };
+  expenditure: {
+    total: BudgetFigure;
+    revenueExpenditure: BudgetFigure;
+    capitalExpenditure: BudgetFigure;
+    interestPayments: BudgetFigure;
+    subsidies: BudgetFigure;
+  };
+  deficit: {
+    fiscal: BudgetFigure;
+    revenue: BudgetFigure;
+    primary: BudgetFigure;
+    fiscalAsPercentGDP: BudgetFigure;
+  };
+  gdp: number;
+  sectors: SectorData[];
+}
+
+function bf(be: number, re: number, actual: number): BudgetFigure {
+  return { be, re, actual };
+}
+
+function sec(name: string, id: string, be: number, re: number, actual: number): SectorData {
+  return { name, id, allocation: { be, re, actual } };
+}
+
+export const budgetData: BudgetYear[] = [
+  {
+    year: "2000-01",
+    label: "2000-01",
+    receipts: {
+      total: bf(325466, 318810, 315536),
+      revenueReceipts: bf(263730, 258230, 255423),
+      taxRevenue: bf(197538, 188129, 186081),
+      nonTaxRevenue: bf(66192, 70101, 69342),
+      capitalReceipts: bf(61736, 60580, 60113),
+      recoveryOfLoans: bf(10387, 8765, 8398),
+      disinvestment: bf(10000, 2700, 1871),
+      borrowings: bf(41349, 49115, 49848),
+    },
+    expenditure: {
+      total: bf(325466, 337943, 326060),
+      revenueExpenditure: bf(277839, 289484, 282870),
+      capitalExpenditure: bf(47627, 48459, 43190),
+      interestPayments: bf(97897, 99411, 99314),
+      subsidies: bf(26838, 26838, 26156),
+    },
+    deficit: {
+      fiscal: bf(111276, 113041, 118816),
+      revenue: bf(76766, 85335, 85234),
+      primary: bf(13379, 13630, 19502),
+      fiscalAsPercentGDP: bf(5.1, 5.2, 5.7),
+    },
+    gdp: 2102314,
+    sectors: [
+      sec("Defence", "defence", 58587, 58587, 57000),
+      sec("Agriculture & Allied", "agriculture", 5246, 5246, 5100),
+      sec("Education", "education", 8793, 8793, 8500),
+      sec("Health & Family Welfare", "health", 4948, 4948, 4800),
+      sec("Rural Development", "rural_dev", 9757, 9757, 9500),
+      sec("Urban Development", "urban_dev", 2834, 2834, 2750),
+      sec("Energy", "energy", 5273, 5273, 5100),
+      sec("Transport & Infrastructure", "transport", 12657, 12657, 12400),
+      sec("Social Welfare & Subsidies", "social_welfare", 26838, 26838, 26156),
+      sec("Science & Technology", "science_tech", 3870, 3870, 3750),
+    ],
+  },
+  {
+    year: "2001-02",
+    label: "2001-02",
+    receipts: {
+      total: bf(340420, 318630, 301468),
+      revenueReceipts: bf(274558, 258230, 263878),
+      taxRevenue: bf(206571, 187060, 184169),
+      nonTaxRevenue: bf(67987, 71170, 79709),
+      capitalReceipts: bf(65862, 60400, 37590),
+      recoveryOfLoans: bf(11481, 8764, 12272),
+      disinvestment: bf(12000, 5600, 3268),
+      borrowings: bf(42381, 46036, 22050),
+    },
+    expenditure: {
+      total: bf(340420, 362310, 362236),
+      revenueExpenditure: bf(292752, 310989, 310812),
+      capitalExpenditure: bf(47668, 51321, 51424),
+      interestPayments: bf(104659, 104878, 107257),
+      subsidies: bf(27590, 30389, 31210),
+    },
+    deficit: {
+      fiscal: bf(116314, 140595, 140955),
+      revenue: bf(83019, 107762, 100989),
+      primary: bf(11655, 35717, 33698),
+      fiscalAsPercentGDP: bf(4.7, 5.7, 6.2),
+    },
+    gdp: 2278952,
+    sectors: [
+      sec("Defence", "defence", 62000, 62000, 60300),
+      sec("Agriculture & Allied", "agriculture", 5736, 5736, 5500),
+      sec("Education", "education", 9472, 9472, 9200),
+      sec("Health & Family Welfare", "health", 5237, 5237, 5100),
+      sec("Rural Development", "rural_dev", 10628, 10628, 10300),
+      sec("Urban Development", "urban_dev", 3056, 3056, 2970),
+      sec("Energy", "energy", 5654, 5654, 5500),
+      sec("Transport & Infrastructure", "transport", 13450, 13450, 13100),
+      sec("Social Welfare & Subsidies", "social_welfare", 27590, 30389, 31210),
+      sec("Science & Technology", "science_tech", 4120, 4120, 4000),
+    ],
+  },
+  {
+    year: "2002-03",
+    label: "2002-03",
+    receipts: {
+      total: bf(382840, 374900, 361542),
+      revenueReceipts: bf(288894, 295102, 298512),
+      taxRevenue: bf(215154, 211499, 215827),
+      nonTaxRevenue: bf(73740, 83603, 82685),
+      capitalReceipts: bf(93946, 79798, 63030),
+      recoveryOfLoans: bf(27952, 12266, 20649),
+      disinvestment: bf(12000, 5358, 3348),
+      borrowings: bf(53994, 62174, 39033),
+    },
+    expenditure: {
+      total: bf(382840, 414164, 414164),
+      revenueExpenditure: bf(327010, 355841, 355841),
+      capitalExpenditure: bf(55830, 58323, 58323),
+      interestPayments: bf(113476, 117305, 117305),
+      subsidies: bf(29541, 43533, 43533),
+    },
+    deficit: {
+      fiscal: bf(135524, 145466, 145466),
+      revenue: bf(99341, 115757, 115757),
+      primary: bf(22048, 28161, 28161),
+      fiscalAsPercentGDP: bf(5.3, 5.9, 5.9),
+    },
+    gdp: 2453533,
+    sectors: [
+      sec("Defence", "defence", 65000, 65800, 65000),
+      sec("Agriculture & Allied", "agriculture", 6200, 6200, 6100),
+      sec("Education", "education", 10400, 10400, 10200),
+      sec("Health & Family Welfare", "health", 5563, 5563, 5450),
+      sec("Rural Development", "rural_dev", 11500, 11500, 11200),
+      sec("Urban Development", "urban_dev", 3300, 3300, 3200),
+      sec("Energy", "energy", 6100, 6100, 5950),
+      sec("Transport & Infrastructure", "transport", 14500, 14500, 14100),
+      sec("Social Welfare & Subsidies", "social_welfare", 29541, 43533, 43533),
+      sec("Science & Technology", "science_tech", 4500, 4500, 4350),
+    ],
+  },
+  {
+    year: "2003-04",
+    label: "2003-04",
+    receipts: {
+      total: bf(400816, 438295, 433475),
+      revenueReceipts: bf(310574, 314523, 336331),
+      taxRevenue: bf(225303, 225049, 254348),
+      nonTaxRevenue: bf(85271, 89474, 81983),
+      capitalReceipts: bf(90242, 123772, 97144),
+      recoveryOfLoans: bf(22950, 32610, 39297),
+      disinvestment: bf(13200, 14500, 15547),
+      borrowings: bf(54092, 76662, 42300),
+    },
+    expenditure: {
+      total: bf(400816, 471367, 471368),
+      revenueExpenditure: bf(341963, 398963, 398963),
+      capitalExpenditure: bf(58853, 72404, 72405),
+      interestPayments: bf(121606, 124555, 124555),
+      subsidies: bf(31001, 44813, 44813),
+    },
+    deficit: {
+      fiscal: bf(136937, 153637, 132103),
+      revenue: bf(91989, 138400, 98261),
+      primary: bf(15331, 29082, 7548),
+      fiscalAsPercentGDP: bf(4.8, 5.5, 4.5),
+    },
+    gdp: 2761927,
+    sectors: [
+      sec("Defence", "defence", 65300, 68000, 67000),
+      sec("Agriculture & Allied", "agriculture", 6800, 7100, 6950),
+      sec("Education", "education", 11200, 11200, 11000),
+      sec("Health & Family Welfare", "health", 6100, 6100, 5950),
+      sec("Rural Development", "rural_dev", 12400, 13000, 12800),
+      sec("Urban Development", "urban_dev", 3600, 3600, 3500),
+      sec("Energy", "energy", 6500, 6800, 6650),
+      sec("Transport & Infrastructure", "transport", 15800, 16500, 16200),
+      sec("Social Welfare & Subsidies", "social_welfare", 31001, 44813, 44813),
+      sec("Science & Technology", "science_tech", 4800, 4800, 4650),
+    ],
+  },
+  {
+    year: "2004-05",
+    label: "2004-05",
+    receipts: {
+      total: bf(444386, 470139, 465872),
+      revenueReceipts: bf(339332, 355402, 384871),
+      taxRevenue: bf(258620, 265975, 304956),
+      nonTaxRevenue: bf(80712, 89427, 79915),
+      capitalReceipts: bf(105054, 114737, 81001),
+      recoveryOfLoans: bf(41570, 41000, 12267),
+      disinvestment: bf(4000, 4000, 2765),
+      borrowings: bf(59484, 69737, 65969),
+    },
+    expenditure: {
+      total: bf(477829, 505791, 498121),
+      revenueExpenditure: bf(407218, 422975, 418544),
+      capitalExpenditure: bf(70611, 82816, 79577),
+      interestPayments: bf(129500, 125905, 126934),
+      subsidies: bf(39892, 42482, 42482),
+    },
+    deficit: {
+      fiscal: bf(137407, 145849, 125794),
+      revenue: bf(77086, 80386, 78338),
+      primary: bf(7907, 19944, -1140),
+      fiscalAsPercentGDP: bf(4.4, 4.5, 3.9),
+    },
+    gdp: 3242209,
+    sectors: [
+      sec("Defence", "defence", 77000, 77000, 75856),
+      sec("Agriculture & Allied", "agriculture", 7500, 7800, 7650),
+      sec("Education", "education", 13100, 13100, 12850),
+      sec("Health & Family Welfare", "health", 7000, 7000, 6870),
+      sec("Rural Development", "rural_dev", 14500, 15200, 14900),
+      sec("Urban Development", "urban_dev", 4100, 4100, 4000),
+      sec("Energy", "energy", 7200, 7500, 7350),
+      sec("Transport & Infrastructure", "transport", 18200, 19000, 18600),
+      sec("Social Welfare & Subsidies", "social_welfare", 39892, 42482, 42482),
+      sec("Science & Technology", "science_tech", 5300, 5300, 5150),
+    ],
+  },
+  {
+    year: "2005-06",
+    label: "2005-06",
+    receipts: {
+      total: bf(485072, 499700, 506123),
+      revenueReceipts: bf(371054, 404082, 434387),
+      taxRevenue: bf(271795, 303271, 333032),
+      nonTaxRevenue: bf(99259, 100811, 101355),
+      capitalReceipts: bf(114018, 95618, 71736),
+      recoveryOfLoans: bf(8000, 7844, 9498),
+      disinvestment: bf(0, 1570, 1570),
+      borrowings: bf(106018, 86204, 60668),
+    },
+    expenditure: {
+      total: bf(514344, 506159, 506123),
+      revenueExpenditure: bf(440393, 437536, 440429),
+      capitalExpenditure: bf(73951, 68623, 65694),
+      interestPayments: bf(133945, 132630, 132338),
+      subsidies: bf(47135, 46735, 46735),
+    },
+    deficit: {
+      fiscal: bf(151144, 146435, 146435),
+      revenue: bf(95290, 84013, 84013),
+      primary: bf(17199, 13805, 14097),
+      fiscalAsPercentGDP: bf(4.3, 4.1, 4.1),
+    },
+    gdp: 3693369,
+    sectors: [
+      sec("Defence", "defence", 83000, 83000, 81600),
+      sec("Agriculture & Allied", "agriculture", 8600, 8900, 8750),
+      sec("Education", "education", 17100, 17100, 16800),
+      sec("Health & Family Welfare", "health", 10200, 10200, 10050),
+      sec("Rural Development", "rural_dev", 18450, 19200, 18850),
+      sec("Urban Development", "urban_dev", 4900, 4900, 4800),
+      sec("Energy", "energy", 8500, 8500, 8350),
+      sec("Transport & Infrastructure", "transport", 21500, 22000, 21700),
+      sec("Social Welfare & Subsidies", "social_welfare", 47135, 46735, 46735),
+      sec("Science & Technology", "science_tech", 6100, 6100, 6000),
+    ],
+  },
+  {
+    year: "2006-07",
+    label: "2006-07",
+    receipts: {
+      total: bf(548560, 570923, 578178),
+      revenueReceipts: bf(434387, 480220, 484975),
+      taxRevenue: bf(349184, 397038, 401043),
+      nonTaxRevenue: bf(85203, 83182, 83932),
+      capitalReceipts: bf(114173, 90703, 93203),
+      recoveryOfLoans: bf(8000, 5263, 5263),
+      disinvestment: bf(3700, 375, 375),
+      borrowings: bf(102473, 85065, 87565),
+    },
+    expenditure: {
+      total: bf(563991, 577225, 583387),
+      revenueExpenditure: bf(488704, 508203, 514609),
+      capitalExpenditure: bf(75287, 69022, 68778),
+      interestPayments: bf(139823, 150272, 150272),
+      subsidies: bf(47647, 54440, 54440),
+    },
+    deficit: {
+      fiscal: bf(148686, 142573, 142573),
+      revenue: bf(73455, 64684, 64684),
+      primary: bf(8863, -7699, -7699),
+      fiscalAsPercentGDP: bf(3.8, 3.5, 3.5),
+    },
+    gdp: 4294706,
+    sectors: [
+      sec("Defence", "defence", 89000, 89000, 88400),
+      sec("Agriculture & Allied", "agriculture", 10200, 10500, 10350),
+      sec("Education", "education", 22200, 22200, 21800),
+      sec("Health & Family Welfare", "health", 12500, 12500, 12300),
+      sec("Rural Development", "rural_dev", 23000, 24000, 23600),
+      sec("Urban Development", "urban_dev", 5800, 5800, 5700),
+      sec("Energy", "energy", 10200, 10200, 10050),
+      sec("Transport & Infrastructure", "transport", 24500, 25200, 24800),
+      sec("Social Welfare & Subsidies", "social_welfare", 47647, 54440, 54440),
+      sec("Science & Technology", "science_tech", 7200, 7200, 7050),
+    ],
+  },
+  {
+    year: "2007-08",
+    label: "2007-08",
+    receipts: {
+      total: bf(655991, 680521, 654627),
+      revenueReceipts: bf(486422, 546835, 593147),
+      taxRevenue: bf(403872, 459019, 496017),
+      nonTaxRevenue: bf(82550, 87816, 97130),
+      capitalReceipts: bf(169569, 133686, 61480),
+      recoveryOfLoans: bf(6000, 5000, 4497),
+      disinvestment: bf(0, 4200, 4181),
+      borrowings: bf(163569, 124486, 52802),
+    },
+    expenditure: {
+      total: bf(680521, 712389, 712671),
+      revenueExpenditure: bf(594649, 617398, 616617),
+      capitalExpenditure: bf(85872, 94991, 96054),
+      interestPayments: bf(154902, 168332, 171030),
+      subsidies: bf(55685, 67773, 70926),
+    },
+    deficit: {
+      fiscal: bf(150948, 131560, 126912),
+      revenue: bf(66726, 52249, 52417),
+      primary: bf(-3954, -36772, -44118),
+      fiscalAsPercentGDP: bf(3.3, 2.7, 2.5),
+    },
+    gdp: 4987090,
+    sectors: [
+      sec("Defence", "defence", 96000, 96000, 95200),
+      sec("Agriculture & Allied", "agriculture", 12200, 12800, 12600),
+      sec("Education", "education", 28700, 28700, 28200),
+      sec("Health & Family Welfare", "health", 15300, 15300, 15050),
+      sec("Rural Development", "rural_dev", 28000, 29200, 28800),
+      sec("Urban Development", "urban_dev", 7100, 7100, 6950),
+      sec("Energy", "energy", 12500, 12500, 12300),
+      sec("Transport & Infrastructure", "transport", 29500, 30500, 30000),
+      sec("Social Welfare & Subsidies", "social_welfare", 55685, 67773, 70926),
+      sec("Science & Technology", "science_tech", 8500, 8500, 8350),
+    ],
+  },
+  {
+    year: "2008-09",
+    label: "2008-09",
+    receipts: {
+      total: bf(750884, 827842, 600975),
+      revenueReceipts: bf(602935, 562173, 540259),
+      taxRevenue: bf(507150, 443184, 433419),
+      nonTaxRevenue: bf(95785, 118989, 106840),
+      capitalReceipts: bf(147949, 265669, 60716),
+      recoveryOfLoans: bf(5753, 4000, 3149),
+      disinvestment: bf(9000, 0, 0),
+      borrowings: bf(133196, 261669, 57567),
+    },
+    expenditure: {
+      total: bf(750884, 900953, 883956),
+      revenueExpenditure: bf(658119, 793798, 793798),
+      capitalExpenditure: bf(92765, 107155, 90158),
+      interestPayments: bf(191077, 192694, 192694),
+      subsidies: bf(71431, 129243, 129243),
+    },
+    deficit: {
+      fiscal: bf(133287, 326515, 336992),
+      revenue: bf(55184, 245252, 253539),
+      primary: bf(-57790, 133821, 144298),
+      fiscalAsPercentGDP: bf(2.5, 6.0, 6.0),
+    },
+    gdp: 5630063,
+    sectors: [
+      sec("Defence", "defence", 105600, 111700, 110000),
+      sec("Agriculture & Allied", "agriculture", 14200, 15000, 14700),
+      sec("Education", "education", 34400, 34400, 33800),
+      sec("Health & Family Welfare", "health", 18200, 18200, 17900),
+      sec("Rural Development", "rural_dev", 37000, 39000, 38200),
+      sec("Urban Development", "urban_dev", 8500, 8500, 8350),
+      sec("Energy", "energy", 15200, 16000, 15700),
+      sec("Transport & Infrastructure", "transport", 34500, 36000, 35200),
+      sec("Social Welfare & Subsidies", "social_welfare", 71431, 129243, 129243),
+      sec("Science & Technology", "science_tech", 10200, 10200, 10000),
+    ],
+  },
+  {
+    year: "2009-10",
+    label: "2009-10",
+    receipts: {
+      total: bf(619842, 671828, 572811),
+      revenueReceipts: bf(571799, 612592, 572811),
+      taxRevenue: bf(474218, 485129, 456536),
+      nonTaxRevenue: bf(97581, 127463, 116275),
+      capitalReceipts: bf(48043, 59236, 0),
+      recoveryOfLoans: bf(5523, 6108, 5129),
+      disinvestment: bf(1120, 25000, 23553),
+      borrowings: bf(41400, 28128, 0),
+    },
+    expenditure: {
+      total: bf(1020838, 1021547, 1024487),
+      revenueExpenditure: bf(911809, 916476, 914578),
+      capitalExpenditure: bf(109029, 105071, 109909),
+      interestPayments: bf(213093, 213661, 213093),
+      subsidies: bf(111276, 131000, 141351),
+    },
+    deficit: {
+      fiscal: bf(400996, 414041, 418482),
+      revenue: bf(282574, 297186, 338103),
+      primary: bf(187903, 200380, 205389),
+      fiscalAsPercentGDP: bf(6.8, 6.9, 6.5),
+    },
+    gdp: 6477827,
+    sectors: [
+      sec("Defence", "defence", 141703, 141703, 138720),
+      sec("Agriculture & Allied", "agriculture", 18200, 20500, 19800),
+      sec("Education", "education", 40734, 40734, 39800),
+      sec("Health & Family Welfare", "health", 22400, 22400, 21900),
+      sec("Rural Development", "rural_dev", 48670, 51000, 49800),
+      sec("Urban Development", "urban_dev", 10200, 10200, 10000),
+      sec("Energy", "energy", 18700, 19500, 19100),
+      sec("Transport & Infrastructure", "transport", 42500, 44200, 43200),
+      sec("Social Welfare & Subsidies", "social_welfare", 111276, 131000, 141351),
+      sec("Science & Technology", "science_tech", 12800, 12800, 12500),
+    ],
+  },
+  {
+    year: "2010-11",
+    label: "2010-11",
+    receipts: {
+      total: bf(682212, 783838, 789892),
+      revenueReceipts: bf(682212, 783838, 789892),
+      taxRevenue: bf(534094, 629064, 634806),
+      nonTaxRevenue: bf(148118, 154774, 155086),
+      capitalReceipts: bf(44452, 55426, 50845),
+      recoveryOfLoans: bf(5129, 7500, 10806),
+      disinvestment: bf(40000, 40000, 22763),
+      borrowings: bf(0, 7926, 17276),
+    },
+    expenditure: {
+      total: bf(1108749, 1118546, 1116838),
+      revenueExpenditure: bf(974122, 989498, 987826),
+      capitalExpenditure: bf(134627, 129048, 129012),
+      interestPayments: bf(248664, 240757, 234022),
+      subsidies: bf(116224, 164153, 173420),
+    },
+    deficit: {
+      fiscal: bf(381408, 400998, 373591),
+      revenue: bf(276216, 251572, 252037),
+      primary: bf(132744, 160241, 139569),
+      fiscalAsPercentGDP: bf(5.5, 5.1, 4.8),
+    },
+    gdp: 7966135,
+    sectors: [
+      sec("Defence", "defence", 147344, 154000, 151000),
+      sec("Agriculture & Allied", "agriculture", 22200, 24500, 23800),
+      sec("Education", "education", 52057, 52057, 51000),
+      sec("Health & Family Welfare", "health", 25154, 25154, 24700),
+      sec("Rural Development", "rural_dev", 66100, 68000, 66800),
+      sec("Urban Development", "urban_dev", 12400, 12400, 12200),
+      sec("Energy", "energy", 22800, 24000, 23500),
+      sec("Transport & Infrastructure", "transport", 52800, 55000, 53800),
+      sec("Social Welfare & Subsidies", "social_welfare", 116224, 164153, 173420),
+      sec("Science & Technology", "science_tech", 15600, 15600, 15300),
+    ],
+  },
+  {
+    year: "2011-12",
+    label: "2011-12",
+    receipts: {
+      total: bf(789892, 766989, 751663),
+      revenueReceipts: bf(789892, 766989, 751663),
+      taxRevenue: bf(664457, 642252, 629765),
+      nonTaxRevenue: bf(125435, 124737, 121898),
+      capitalReceipts: bf(59130, 48120, 43847),
+      recoveryOfLoans: bf(15020, 12120, 12147),
+      disinvestment: bf(40000, 14000, 18088),
+      borrowings: bf(4110, 22000, 13612),
+    },
+    expenditure: {
+      total: bf(1257729, 1318720, 1304365),
+      revenueExpenditure: bf(1114892, 1174253, 1158118),
+      capitalExpenditure: bf(142837, 144467, 146247),
+      interestPayments: bf(267986, 275618, 273055),
+      subsidies: bf(143570, 216297, 217941),
+    },
+    deficit: {
+      fiscal: bf(412817, 521980, 515990),
+      revenue: bf(294938, 394077, 394507),
+      primary: bf(144831, 246362, 242935),
+      fiscalAsPercentGDP: bf(4.6, 5.9, 5.7),
+    },
+    gdp: 9009722,
+    sectors: [
+      sec("Defence", "defence", 164416, 170913, 168700),
+      sec("Agriculture & Allied", "agriculture", 27217, 28000, 27500),
+      sec("Education", "education", 61025, 61025, 59800),
+      sec("Health & Family Welfare", "health", 30477, 30477, 29900),
+      sec("Rural Development", "rural_dev", 74100, 75800, 74500),
+      sec("Urban Development", "urban_dev", 14300, 14300, 14050),
+      sec("Energy", "energy", 27500, 28800, 28200),
+      sec("Transport & Infrastructure", "transport", 63200, 65500, 64200),
+      sec("Social Welfare & Subsidies", "social_welfare", 143570, 216297, 217941),
+      sec("Science & Technology", "science_tech", 18500, 18500, 18100),
+    ],
+  },
+  {
+    year: "2012-13",
+    label: "2012-13",
+    receipts: {
+      total: bf(935685, 871828, 879232),
+      revenueReceipts: bf(935685, 871828, 879232),
+      taxRevenue: bf(771071, 740322, 741877),
+      nonTaxRevenue: bf(164614, 131506, 137355),
+      capitalReceipts: bf(55792, 55000, 42327),
+      recoveryOfLoans: bf(11452, 10000, 15258),
+      disinvestment: bf(30000, 24000, 23857),
+      borrowings: bf(14340, 21000, 3212),
+    },
+    expenditure: {
+      total: bf(1490925, 1430825, 1410372),
+      revenueExpenditure: bf(1286109, 1234880, 1218772),
+      capitalExpenditure: bf(204816, 195945, 191600),
+      interestPayments: bf(319759, 313170, 316674),
+      subsidies: bf(190015, 196768, 231084),
+    },
+    deficit: {
+      fiscal: bf(513590, 520925, 490190),
+      revenue: bf(350424, 363052, 339519),
+      primary: bf(193831, 207755, 173516),
+      fiscalAsPercentGDP: bf(5.1, 5.2, 4.9),
+    },
+    gdp: 10113281,
+    sectors: [
+      sec("Defence", "defence", 193407, 193407, 190000),
+      sec("Agriculture & Allied", "agriculture", 31217, 32000, 31500),
+      sec("Education", "education", 65867, 65867, 64500),
+      sec("Health & Family Welfare", "health", 34488, 34488, 33800),
+      sec("Rural Development", "rural_dev", 75000, 78000, 76800),
+      sec("Urban Development", "urban_dev", 16300, 16300, 16000),
+      sec("Energy", "energy", 31500, 33000, 32400),
+      sec("Transport & Infrastructure", "transport", 72500, 74800, 73500),
+      sec("Social Welfare & Subsidies", "social_welfare", 190015, 196768, 231084),
+      sec("Science & Technology", "science_tech", 21500, 21500, 21100),
+    ],
+  },
+  {
+    year: "2013-14",
+    label: "2013-14",
+    receipts: {
+      total: bf(1056331, 1029252, 1014724),
+      revenueReceipts: bf(1056331, 1029252, 1014724),
+      taxRevenue: bf(884078, 836026, 815854),
+      nonTaxRevenue: bf(172253, 193226, 198870),
+      capitalReceipts: bf(66468, 56914, 49695),
+      recoveryOfLoans: bf(10654, 10914, 12497),
+      disinvestment: bf(55814, 36000, 29368),
+      borrowings: bf(0, 10000, 7830),
+    },
+    expenditure: {
+      total: bf(1665297, 1592189, 1558898),
+      revenueExpenditure: bf(1436169, 1384178, 1358780),
+      capitalExpenditure: bf(229128, 208011, 200118),
+      interestPayments: bf(370684, 380066, 374254),
+      subsidies: bf(231084, 245452, 253017),
+    },
+    deficit: {
+      fiscal: bf(542499, 524539, 502858),
+      revenue: bf(379838, 354926, 344082),
+      primary: bf(171815, 144473, 128604),
+      fiscalAsPercentGDP: bf(4.8, 4.6, 4.5),
+    },
+    gdp: 11272764,
+    sectors: [
+      sec("Defence", "defence", 203672, 207000, 205000),
+      sec("Agriculture & Allied", "agriculture", 35200, 36500, 35800),
+      sec("Education", "education", 79451, 79451, 77800),
+      sec("Health & Family Welfare", "health", 37330, 37330, 36600),
+      sec("Rural Development", "rural_dev", 80200, 83000, 81500),
+      sec("Urban Development", "urban_dev", 18500, 18500, 18150),
+      sec("Energy", "energy", 35800, 37500, 36800),
+      sec("Transport & Infrastructure", "transport", 81500, 84000, 82500),
+      sec("Social Welfare & Subsidies", "social_welfare", 231084, 245452, 253017),
+      sec("Science & Technology", "science_tech", 24200, 24200, 23800),
+    ],
+  },
+  {
+    year: "2014-15",
+    label: "2014-15",
+    receipts: {
+      total: bf(1163015, 1101381, 1101473),
+      revenueReceipts: bf(1163015, 1101381, 1101473),
+      taxRevenue: bf(977258, 901541, 908463),
+      nonTaxRevenue: bf(185757, 199840, 193010),
+      capitalReceipts: bf(77350, 61000, 52890),
+      recoveryOfLoans: bf(12169, 10000, 14647),
+      disinvestment: bf(63425, 31350, 37737),
+      borrowings: bf(1756, 19650, 506),
+    },
+    expenditure: {
+      total: bf(1790783, 1663673, 1630084),
+      revenueExpenditure: bf(1537254, 1448449, 1425435),
+      capitalExpenditure: bf(253529, 215224, 204649),
+      interestPayments: bf(416815, 402444, 402437),
+      subsidies: bf(253017, 249100, 260009),
+    },
+    deficit: {
+      fiscal: bf(531177, 510725, 510725),
+      revenue: bf(374239, 347068, 323942),
+      primary: bf(114362, 108281, 108288),
+      fiscalAsPercentGDP: bf(4.1, 4.1, 4.1),
+    },
+    gdp: 12467959,
+    sectors: [
+      sec("Defence", "defence", 229000, 229000, 226000),
+      sec("Agriculture & Allied", "agriculture", 42500, 44000, 43200),
+      sec("Education", "education", 81441, 81441, 79800),
+      sec("Health & Family Welfare", "health", 38692, 38692, 37900),
+      sec("Rural Development", "rural_dev", 84000, 87000, 85500),
+      sec("Urban Development", "urban_dev", 20200, 20200, 19800),
+      sec("Energy", "energy", 39500, 41500, 40700),
+      sec("Transport & Infrastructure", "transport", 91000, 93500, 91800),
+      sec("Social Welfare & Subsidies", "social_welfare", 253017, 249100, 260009),
+      sec("Science & Technology", "science_tech", 26800, 26800, 26300),
+    ],
+  },
+  {
+    year: "2015-16",
+    label: "2015-16",
+    receipts: {
+      total: bf(1141575, 1206084, 1203749),
+      revenueReceipts: bf(1141575, 1206084, 1203749),
+      taxRevenue: bf(946164, 943765, 943765),
+      nonTaxRevenue: bf(195411, 262319, 259984),
+      capitalReceipts: bf(80235, 80412, 71424),
+      recoveryOfLoans: bf(10543, 14412, 17990),
+      disinvestment: bf(69500, 25500, 25312),
+      borrowings: bf(192, 40500, 28122),
+    },
+    expenditure: {
+      total: bf(1777477, 1785391, 1790783),
+      revenueExpenditure: bf(1537254, 1551341, 1553819),
+      capitalExpenditure: bf(240223, 234050, 236964),
+      interestPayments: bf(456145, 441659, 441659),
+      subsidies: bf(244070, 241770, 241770),
+    },
+    deficit: {
+      fiscal: bf(555649, 535006, 535090),
+      revenue: bf(331789, 325557, 325557),
+      primary: bf(99504, 93347, 93431),
+      fiscalAsPercentGDP: bf(3.9, 3.9, 3.9),
+    },
+    gdp: 13682035,
+    sectors: [
+      sec("Defence", "defence", 246727, 246727, 243200),
+      sec("Agriculture & Allied", "agriculture", 48000, 50000, 49100),
+      sec("Education", "education", 69074, 69074, 67700),
+      sec("Health & Family Welfare", "health", 33152, 33152, 32500),
+      sec("Rural Development", "rural_dev", 88100, 91000, 89400),
+      sec("Urban Development", "urban_dev", 22100, 22100, 21700),
+      sec("Energy", "energy", 43500, 45500, 44600),
+      sec("Transport & Infrastructure", "transport", 99200, 102000, 100100),
+      sec("Social Welfare & Subsidies", "social_welfare", 244070, 241770, 241770),
+      sec("Science & Technology", "science_tech", 29200, 29200, 28600),
+    ],
+  },
+  {
+    year: "2016-17",
+    label: "2016-17",
+    receipts: {
+      total: bf(1377022, 1358264, 1368237),
+      revenueReceipts: bf(1377022, 1358264, 1368237),
+      taxRevenue: bf(1054101, 1062264, 1101372),
+      nonTaxRevenue: bf(322921, 296000, 266865),
+      capitalReceipts: bf(90038, 57752, 48506),
+      recoveryOfLoans: bf(10634, 17512, 15633),
+      disinvestment: bf(56500, 45000, 46247),
+      borrowings: bf(22904, -4760, -13374),
+    },
+    expenditure: {
+      total: bf(1978060, 2014407, 1975194),
+      revenueExpenditure: bf(1731037, 1769287, 1727856),
+      capitalExpenditure: bf(247023, 245120, 247338),
+      interestPayments: bf(492670, 480714, 480714),
+      subsidies: bf(253227, 238605, 200155),
+    },
+    deficit: {
+      fiscal: bf(533904, 534274, 535618),
+      revenue: bf(354015, 353987, 312850),
+      primary: bf(41234, 53560, 54904),
+      fiscalAsPercentGDP: bf(3.5, 3.5, 3.5),
+    },
+    gdp: 15362386,
+    sectors: [
+      sec("Defence", "defence", 249099, 258000, 255000),
+      sec("Agriculture & Allied", "agriculture", 52821, 55000, 53800),
+      sec("Education", "education", 72394, 72394, 71000),
+      sec("Health & Family Welfare", "health", 39879, 39879, 39100),
+      sec("Rural Development", "rural_dev", 93880, 97000, 95200),
+      sec("Urban Development", "urban_dev", 25300, 25300, 24800),
+      sec("Energy", "energy", 48500, 50000, 49100),
+      sec("Transport & Infrastructure", "transport", 112400, 115000, 113000),
+      sec("Social Welfare & Subsidies", "social_welfare", 253227, 238605, 200155),
+      sec("Science & Technology", "science_tech", 32400, 32400, 31800),
+    ],
+  },
+  {
+    year: "2017-18",
+    label: "2017-18",
+    receipts: {
+      total: bf(1515771, 1502205, 1435233),
+      revenueReceipts: bf(1515771, 1502205, 1435233),
+      taxRevenue: bf(1227014, 1269454, 1242488),
+      nonTaxRevenue: bf(288757, 232751, 192745),
+      capitalReceipts: bf(95686, 112714, 104783),
+      recoveryOfLoans: bf(11932, 13260, 15633),
+      disinvestment: bf(72500, 100000, 100057),
+      borrowings: bf(11254, -566, -10907),
+    },
+    expenditure: {
+      total: bf(2146735, 2219458, 2141974),
+      revenueExpenditure: bf(1836934, 1904494, 1878833),
+      capitalExpenditure: bf(309801, 314964, 263141),
+      interestPayments: bf(523078, 530797, 528952),
+      subsidies: bf(264337, 267537, 219112),
+    },
+    deficit: {
+      fiscal: bf(546532, 594849, 591062),
+      revenue: bf(321163, 402289, 443630),
+      primary: bf(23454, 64052, 62110),
+      fiscalAsPercentGDP: bf(3.2, 3.5, 3.5),
+    },
+    gdp: 17095005,
+    sectors: [
+      sec("Defence", "defence", 268395, 275000, 272000),
+      sec("Agriculture & Allied", "agriculture", 58663, 61000, 59800),
+      sec("Education", "education", 79686, 79686, 78100),
+      sec("Health & Family Welfare", "health", 47353, 47353, 46400),
+      sec("Rural Development", "rural_dev", 108700, 112000, 110000),
+      sec("Urban Development", "urban_dev", 29800, 29800, 29200),
+      sec("Energy", "energy", 55500, 57500, 56400),
+      sec("Transport & Infrastructure", "transport", 131000, 135000, 132500),
+      sec("Social Welfare & Subsidies", "social_welfare", 264337, 267537, 219112),
+      sec("Science & Technology", "science_tech", 36200, 36200, 35500),
+    ],
+  },
+  {
+    year: "2018-19",
+    label: "2018-19",
+    receipts: {
+      total: bf(1725738, 1729516, 1551622),
+      revenueReceipts: bf(1725738, 1729516, 1551622),
+      taxRevenue: bf(1480649, 1484406, 1317835),
+      nonTaxRevenue: bf(245089, 245110, 233787),
+      capitalReceipts: bf(92000, 92000, 81747),
+      recoveryOfLoans: bf(12199, 11280, 17840),
+      disinvestment: bf(80000, 80000, 84972),
+      borrowings: bf(-199, 720, -21065),
+    },
+    expenditure: {
+      total: bf(2442213, 2457235, 2315113),
+      revenueExpenditure: bf(2141772, 2152630, 2007399),
+      capitalExpenditure: bf(300441, 304605, 307714),
+      interestPayments: bf(575795, 587570, 582648),
+      subsidies: bf(279526, 300604, 275272),
+    },
+    deficit: {
+      fiscal: bf(624276, 634398, 621447),
+      revenue: bf(416034, 423114, 455777),
+      primary: bf(48481, 46828, 38799),
+      fiscalAsPercentGDP: bf(3.3, 3.4, 3.4),
+    },
+    gdp: 18971237,
+    sectors: [
+      sec("Defence", "defence", 295511, 300000, 296200),
+      sec("Agriculture & Allied", "agriculture", 63837, 66500, 65100),
+      sec("Education", "education", 85010, 85010, 83300),
+      sec("Health & Family Welfare", "health", 54667, 54667, 53600),
+      sec("Rural Development", "rural_dev", 122000, 126000, 123700),
+      sec("Urban Development", "urban_dev", 33500, 33500, 32900),
+      sec("Energy", "energy", 62000, 64000, 62800),
+      sec("Transport & Infrastructure", "transport", 148700, 153000, 150100),
+      sec("Social Welfare & Subsidies", "social_welfare", 279526, 300604, 275272),
+      sec("Science & Technology", "science_tech", 40200, 40200, 39400),
+    ],
+  },
+  {
+    year: "2019-20",
+    label: "2019-20",
+    receipts: {
+      total: bf(1962761, 1849625, 1684059),
+      revenueReceipts: bf(1962761, 1849625, 1684059),
+      taxRevenue: bf(1649582, 1504587, 1345228),
+      nonTaxRevenue: bf(313179, 345038, 338831),
+      capitalReceipts: bf(109697, 80522, 59826),
+      recoveryOfLoans: bf(14828, 15220, 18316),
+      disinvestment: bf(105000, 65000, 50304),
+      borrowings: bf(-10131, 315, -8794),
+    },
+    expenditure: {
+      total: bf(2786349, 2686242, 2630831),
+      revenueExpenditure: bf(2447780, 2350604, 2351118),
+      capitalExpenditure: bf(338569, 335638, 279713),
+      interestPayments: bf(660471, 630055, 612070),
+      subsidies: bf(308272, 290674, 233527),
+    },
+    deficit: {
+      fiscal: bf(702200, 756588, 937572),
+      revenue: bf(484979, 500979, 667125),
+      primary: bf(41729, 126533, 325502),
+      fiscalAsPercentGDP: bf(3.3, 3.8, 4.6),
+    },
+    gdp: 20074856,
+    sectors: [
+      sec("Defence", "defence", 316296, 320000, 316000),
+      sec("Agriculture & Allied", "agriculture", 130485, 134000, 131500),
+      sec("Education", "education", 94854, 94854, 93000),
+      sec("Health & Family Welfare", "health", 62659, 62659, 61400),
+      sec("Rural Development", "rural_dev", 142200, 147000, 144200),
+      sec("Urban Development", "urban_dev", 38500, 38500, 37800),
+      sec("Energy", "energy", 68500, 71000, 69700),
+      sec("Transport & Infrastructure", "transport", 165400, 170000, 166800),
+      sec("Social Welfare & Subsidies", "social_welfare", 308272, 290674, 233527),
+      sec("Science & Technology", "science_tech", 44500, 44500, 43600),
+    ],
+  },
+  {
+    year: "2020-21",
+    label: "2020-21",
+    receipts: {
+      total: bf(2020926, 1620909, 1678537),
+      revenueReceipts: bf(2020926, 1555153, 1632171),
+      taxRevenue: bf(1635909, 1290108, 1344501),
+      nonTaxRevenue: bf(385017, 265045, 287670),
+      capitalReceipts: bf(81305, 65756, 46366),
+      recoveryOfLoans: bf(14967, 15000, 12714),
+      disinvestment: bf(210000, 32000, 37897),
+      borrowings: bf(-143662, 18756, -4245),
+    },
+    expenditure: {
+      total: bf(3042230, 3447380, 3523826),
+      revenueExpenditure: bf(2630145, 3011440, 3041725),
+      capitalExpenditure: bf(412085, 435940, 482101),
+      interestPayments: bf(708203, 693052, 680159),
+      subsidies: bf(285625, 694619, 705365),
+    },
+    deficit: {
+      fiscal: bf(796337, 1847841, 1834170),
+      revenue: bf(609219, 1456287, 1409554),
+      primary: bf(88134, 1154789, 1154011),
+      fiscalAsPercentGDP: bf(3.5, 9.5, 9.2),
+    },
+    gdp: 19750919,
+    sectors: [
+      sec("Defence", "defence", 471378, 475000, 470000),
+      sec("Agriculture & Allied", "agriculture", 154775, 158000, 155000),
+      sec("Education", "education", 99312, 93224, 92500),
+      sec("Health & Family Welfare", "health", 69500, 82445, 80500),
+      sec("Rural Development", "rural_dev", 159230, 168000, 164800),
+      sec("Urban Development", "urban_dev", 42900, 42900, 42100),
+      sec("Energy", "energy", 75500, 78000, 76600),
+      sec("Transport & Infrastructure", "transport", 188100, 193000, 189500),
+      sec("Social Welfare & Subsidies", "social_welfare", 285625, 694619, 705365),
+      sec("Science & Technology", "science_tech", 48800, 48800, 47900),
+    ],
+  },
+  {
+    year: "2021-22",
+    label: "2021-22",
+    receipts: {
+      total: bf(1784024, 2078936, 2073221),
+      revenueReceipts: bf(1784024, 2078936, 2073221),
+      taxRevenue: bf(1545396, 1741376, 1848250),
+      nonTaxRevenue: bf(238628, 337560, 224971),
+      capitalReceipts: bf(174660, 164200, 160540),
+      recoveryOfLoans: bf(12000, 24000, 20410),
+      disinvestment: bf(175000, 78000, 13531),
+      borrowings: bf(-12340, 62200, 126599),
+    },
+    expenditure: {
+      total: bf(3483236, 3758820, 3744108),
+      revenueExpenditure: bf(2929000, 3199635, 3196631),
+      capitalExpenditure: bf(554236, 559185, 547477),
+      interestPayments: bf(809701, 806523, 791265),
+      subsidies: bf(343956, 487629, 509186),
+    },
+    deficit: {
+      fiscal: bf(1506812, 1530715, 1533645),
+      revenue: bf(1144976, 1120699, 1123410),
+      primary: bf(697111, 724192, 742380),
+      fiscalAsPercentGDP: bf(6.8, 6.9, 6.7),
+    },
+    gdp: 23572481,
+    sectors: [
+      sec("Defence", "defence", 478196, 482000, 478000),
+      sec("Agriculture & Allied", "agriculture", 148041, 152000, 149500),
+      sec("Education", "education", 93224, 93224, 91400),
+      sec("Health & Family Welfare", "health", 73932, 86606, 84800),
+      sec("Rural Development", "rural_dev", 165000, 172000, 168800),
+      sec("Urban Development", "urban_dev", 46200, 46200, 45300),
+      sec("Energy", "energy", 82500, 85500, 83900),
+      sec("Transport & Infrastructure", "transport", 218000, 225000, 220800),
+      sec("Social Welfare & Subsidies", "social_welfare", 343956, 487629, 509186),
+      sec("Science & Technology", "science_tech", 53600, 53600, 52500),
+    ],
+  },
+  {
+    year: "2022-23",
+    label: "2022-23",
+    receipts: {
+      total: bf(2204422, 2305957, 2355958),
+      revenueReceipts: bf(2204422, 2305957, 2355958),
+      taxRevenue: bf(1934771, 2021426, 2112195),
+      nonTaxRevenue: bf(269651, 284531, 243763),
+      capitalReceipts: bf(93478, 80450, 78524),
+      recoveryOfLoans: bf(14291, 19450, 26006),
+      disinvestment: bf(65000, 50000, 55878),
+      borrowings: bf(14187, 11000, -3360),
+    },
+    expenditure: {
+      total: bf(3944909, 4165445, 4135198),
+      revenueExpenditure: bf(3194663, 3382305, 3379884),
+      capitalExpenditure: bf(750246, 783140, 755314),
+      interestPayments: bf(916474, 937137, 914218),
+      subsidies: bf(375979, 534768, 565199),
+    },
+    deficit: {
+      fiscal: bf(1658719, 1778580, 1718253),
+      revenue: bf(990241, 1076348, 1023926),
+      primary: bf(742245, 841443, 804035),
+      fiscalAsPercentGDP: bf(6.4, 6.4, 6.4),
+    },
+    gdp: 26872254,
+    sectors: [
+      sec("Defence", "defence", 525166, 530000, 525800),
+      sec("Agriculture & Allied", "agriculture", 152505, 158000, 155200),
+      sec("Education", "education", 104278, 104278, 102200),
+      sec("Health & Family Welfare", "health", 86200, 86200, 84500),
+      sec("Rural Development", "rural_dev", 178000, 185000, 181600),
+      sec("Urban Development", "urban_dev", 51500, 51500, 50500),
+      sec("Energy", "energy", 92000, 95000, 93200),
+      sec("Transport & Infrastructure", "transport", 250000, 258000, 253100),
+      sec("Social Welfare & Subsidies", "social_welfare", 375979, 534768, 565199),
+      sec("Science & Technology", "science_tech", 58500, 58500, 57400),
+    ],
+  },
+  {
+    year: "2023-24",
+    label: "2023-24",
+    receipts: {
+      total: bf(2658175, 2697953, 2780456),
+      revenueReceipts: bf(2658175, 2697953, 2780456),
+      taxRevenue: bf(2328644, 2334490, 2429800),
+      nonTaxRevenue: bf(329531, 363463, 350656),
+      capitalReceipts: bf(87516, 74400, 68200),
+      recoveryOfLoans: bf(23500, 23500, 24750),
+      disinvestment: bf(51000, 30000, 16507),
+      borrowings: bf(13016, 20900, 26943),
+    },
+    expenditure: {
+      total: bf(4503097, 4439397, 4438963),
+      revenueExpenditure: bf(3502136, 3499696, 3489690),
+      capitalExpenditure: bf(1000961, 939701, 949273),
+      interestPayments: bf(1003098, 1062650, 1050000),
+      subsidies: bf(411098, 397210, 392647),
+    },
+    deficit: {
+      fiscal: bf(1793298, 1741444, 1616380),
+      revenue: bf(843961, 801743, 709234),
+      primary: bf(790200, 678794, 566380),
+      fiscalAsPercentGDP: bf(5.9, 5.8, 5.6),
+    },
+    gdp: 30157080,
+    sectors: [
+      sec("Defence", "defence", 593538, 598000, 593000),
+      sec("Agriculture & Allied", "agriculture", 168290, 172000, 169000),
+      sec("Education", "education", 112899, 112899, 110700),
+      sec("Health & Family Welfare", "health", 89155, 89155, 87400),
+      sec("Rural Development", "rural_dev", 196000, 203000, 199300),
+      sec("Urban Development", "urban_dev", 56400, 56400, 55300),
+      sec("Energy", "energy", 105000, 109000, 106900),
+      sec("Transport & Infrastructure", "transport", 285000, 294000, 288500),
+      sec("Social Welfare & Subsidies", "social_welfare", 411098, 397210, 392647),
+      sec("Science & Technology", "science_tech", 64500, 64500, 63200),
+    ],
+  },
+  {
+    year: "2024-25",
+    label: "2024-25",
+    receipts: {
+      total: bf(3001275, 2955834, 0),
+      revenueReceipts: bf(3001275, 2955834, 0),
+      taxRevenue: bf(2617261, 2550276, 0),
+      nonTaxRevenue: bf(384014, 405558, 0),
+      capitalReceipts: bf(78000, 66400, 0),
+      recoveryOfLoans: bf(28000, 28000, 0),
+      disinvestment: bf(50000, 50000, 0),
+      borrowings: bf(0, -11600, 0),
+    },
+    expenditure: {
+      total: bf(4813000, 4799399, 0),
+      revenueExpenditure: bf(3612629, 3665925, 0),
+      capitalExpenditure: bf(1200371, 1133474, 0),
+      interestPayments: bf(1115834, 1104484, 0),
+      subsidies: bf(388384, 398264, 0),
+    },
+    deficit: {
+      fiscal: bf(1733565, 1776965, 0),
+      revenue: bf(611354, 710091, 0),
+      primary: bf(617731, 672481, 0),
+      fiscalAsPercentGDP: bf(4.9, 4.8, 0),
+    },
+    gdp: 35273365,
+    sectors: [
+      sec("Defence", "defence", 625000, 632000, 0),
+      sec("Agriculture & Allied", "agriculture", 181498, 186000, 0),
+      sec("Education", "education", 120628, 120628, 0),
+      sec("Health & Family Welfare", "health", 90171, 90171, 0),
+      sec("Rural Development", "rural_dev", 215000, 222000, 0),
+      sec("Urban Development", "urban_dev", 62100, 62100, 0),
+      sec("Energy", "energy", 118500, 123000, 0),
+      sec("Transport & Infrastructure", "transport", 320000, 330000, 0),
+      sec("Social Welfare & Subsidies", "social_welfare", 388384, 398264, 0),
+      sec("Science & Technology", "science_tech", 71000, 71000, 0),
+    ],
+  },
+  {
+    year: "2025-26",
+    label: "2025-26",
+    receipts: {
+      total: bf(3425201, 0, 0),
+      revenueReceipts: bf(3425201, 0, 0),
+      taxRevenue: bf(2996400, 0, 0),
+      nonTaxRevenue: bf(428801, 0, 0),
+      capitalReceipts: bf(62000, 0, 0),
+      recoveryOfLoans: bf(30000, 0, 0),
+      disinvestment: bf(47000, 0, 0),
+      borrowings: bf(-15000, 0, 0),
+    },
+    expenditure: {
+      total: bf(5010449, 0, 0),
+      revenueExpenditure: bf(3784999, 0, 0),
+      capitalExpenditure: bf(1225450, 0, 0),
+      interestPayments: bf(1200000, 0, 0),
+      subsidies: bf(395274, 0, 0),
+    },
+    deficit: {
+      fiscal: bf(1585248, 0, 0),
+      revenue: bf(359798, 0, 0),
+      primary: bf(385248, 0, 0),
+      fiscalAsPercentGDP: bf(4.4, 0, 0),
+    },
+    gdp: 39360000,
+    sectors: [
+      sec("Defence", "defence", 679450, 0, 0),
+      sec("Agriculture & Allied", "agriculture", 198000, 0, 0),
+      sec("Education", "education", 130281, 0, 0),
+      sec("Health & Family Welfare", "health", 99858, 0, 0),
+      sec("Rural Development", "rural_dev", 235000, 0, 0),
+      sec("Urban Development", "urban_dev", 68000, 0, 0),
+      sec("Energy", "energy", 132000, 0, 0),
+      sec("Transport & Infrastructure", "transport", 355000, 0, 0),
+      sec("Social Welfare & Subsidies", "social_welfare", 395274, 0, 0),
+      sec("Science & Technology", "science_tech", 78000, 0, 0),
+    ],
+  },
+  {
+    year: "2026-27",
+    label: "2026-27",
+    receipts: {
+      total: bf(3815000, 0, 0),
+      revenueReceipts: bf(3815000, 0, 0),
+      taxRevenue: bf(3356000, 0, 0),
+      nonTaxRevenue: bf(459000, 0, 0),
+      capitalReceipts: bf(65000, 0, 0),
+      recoveryOfLoans: bf(32000, 0, 0),
+      disinvestment: bf(50000, 0, 0),
+      borrowings: bf(-17000, 0, 0),
+    },
+    expenditure: {
+      total: bf(5530000, 0, 0),
+      revenueExpenditure: bf(4150000, 0, 0),
+      capitalExpenditure: bf(1380000, 0, 0),
+      interestPayments: bf(1310000, 0, 0),
+      subsidies: bf(415000, 0, 0),
+    },
+    deficit: {
+      fiscal: bf(1650000, 0, 0),
+      revenue: bf(335000, 0, 0),
+      primary: bf(340000, 0, 0),
+      fiscalAsPercentGDP: bf(3.8, 0, 0),
+    },
+    gdp: 43500000,
+    sectors: [
+      sec("Defence", "defence", 738000, 0, 0),
+      sec("Agriculture & Allied", "agriculture", 218000, 0, 0),
+      sec("Education", "education", 142000, 0, 0),
+      sec("Health & Family Welfare", "health", 110000, 0, 0),
+      sec("Rural Development", "rural_dev", 258000, 0, 0),
+      sec("Urban Development", "urban_dev", 75000, 0, 0),
+      sec("Energy", "energy", 148000, 0, 0),
+      sec("Transport & Infrastructure", "transport", 395000, 0, 0),
+      sec("Social Welfare & Subsidies", "social_welfare", 415000, 0, 0),
+      sec("Science & Technology", "science_tech", 86000, 0, 0),
+    ],
+  },
+];
+
+export function getAllYears(): string[] {
+  return budgetData.map((d) => d.year);
+}
+
+export function getBudgetByYear(year: string): BudgetYear | undefined {
+  return budgetData.find((d) => d.year === year);
+}
+
+export function getSectorTimeSeries(sectorId: string): Array<{ year: string; be: number; re: number; actual: number }> {
+  return budgetData.map((d) => {
+    const sector = d.sectors.find((s) => s.id === sectorId);
+    return {
+      year: d.year,
+      be: sector?.allocation.be || 0,
+      re: sector?.allocation.re || 0,
+      actual: sector?.allocation.actual || 0,
+    };
+  });
+}
+
+export function getAllSectors(): Array<{ id: string; name: string }> {
+  const sectors = budgetData[0]?.sectors || [];
+  return sectors.map((s) => ({ id: s.id, name: s.name }));
+}
+
+export function getReceiptsTimeSeries(): Array<{
+  year: string;
+  totalBE: number;
+  totalRE: number;
+  totalActual: number;
+  taxBE: number;
+  nonTaxBE: number;
+}> {
+  return budgetData.map((d) => ({
+    year: d.year,
+    totalBE: d.receipts.revenueReceipts.be,
+    totalRE: d.receipts.revenueReceipts.re,
+    totalActual: d.receipts.revenueReceipts.actual,
+    taxBE: d.receipts.taxRevenue.be,
+    nonTaxBE: d.receipts.nonTaxRevenue.be,
+  }));
+}
+
+export function getExpenditureTimeSeries(): Array<{
+  year: string;
+  totalBE: number;
+  totalRE: number;
+  totalActual: number;
+  revenueBE: number;
+  capitalBE: number;
+}> {
+  return budgetData.map((d) => ({
+    year: d.year,
+    totalBE: d.expenditure.total.be,
+    totalRE: d.expenditure.total.re,
+    totalActual: d.expenditure.total.actual,
+    revenueBE: d.expenditure.revenueExpenditure.be,
+    capitalBE: d.expenditure.capitalExpenditure.be,
+  }));
+}
+
+export function getDeficitTimeSeries(): Array<{
+  year: string;
+  fiscal: number;
+  revenue: number;
+  primary: number;
+  fiscalPercGDP: number;
+}> {
+  return budgetData.map((d) => ({
+    year: d.year,
+    fiscal: d.deficit.fiscal.be,
+    revenue: d.deficit.revenue.be,
+    primary: d.deficit.primary.be,
+    fiscalPercGDP: d.deficit.fiscalAsPercentGDP.be,
+  }));
+}

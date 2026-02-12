@@ -8,7 +8,6 @@ import Svg, {
   Defs,
   LinearGradient,
   Stop,
-  Rect,
   G,
 } from "react-native-svg";
 import Colors from "@/constants/colors";
@@ -26,22 +25,34 @@ interface LineChartProps {
   showArea?: boolean;
   formatValue?: (v: number) => string;
   title?: string;
+  yAxisLabel?: string;
+}
+
+function defaultFormat(v: number): string {
+  if (Math.abs(v) >= 100000) return `${(v / 100000).toFixed(1)}L`;
+  if (Math.abs(v) >= 1000) return `${(v / 1000).toFixed(0)}K`;
+  if (Math.abs(v) < 10) return v.toFixed(1);
+  return v.toFixed(0);
 }
 
 export default function LineChart({
   labels,
   datasets,
-  height = 200,
+  height = 220,
   showArea = false,
-  formatValue,
+  formatValue = defaultFormat,
   title,
+  yAxisLabel,
 }: LineChartProps) {
-  const chartH = height - 50;
+  const yAxisWidth = 42;
+  const chartTop = 12;
+  const chartBottom = 24;
+  const chartH = height - chartTop - chartBottom;
   const padding = 10;
   const screenWidth = Dimensions.get("window").width - 48;
-  const pointSpacing = Math.max(40, screenWidth / Math.max(labels.length - 1, 1));
+  const pointSpacing = Math.max(40, (screenWidth - yAxisWidth) / Math.max(labels.length - 1, 1));
   const svgWidth = Math.max(
-    padding * 2 + (labels.length - 1) * pointSpacing,
+    yAxisWidth + padding * 2 + (labels.length - 1) * pointSpacing,
     screenWidth
   );
 
@@ -49,15 +60,24 @@ export default function LineChart({
   const maxVal = Math.max(...allValues, 1);
   const minVal = Math.min(...allValues, 0);
   const range = maxVal - minVal || 1;
+  const paddedMin = minVal - range * 0.05;
+  const paddedMax = maxVal + range * 0.05;
+  const paddedRange = paddedMax - paddedMin || 1;
 
   const getY = (val: number) => {
-    return chartH - ((val - minVal) / range) * (chartH - 20) + 10;
+    return chartTop + ((paddedMax - val) / paddedRange) * chartH;
   };
-  const getX = (i: number) => padding + i * pointSpacing;
+  const getX = (i: number) => yAxisWidth + padding + i * pointSpacing;
+
+  const tickCount = 5;
+  const yTicks = Array.from({ length: tickCount }, (_, i) =>
+    paddedMin + (paddedRange * i) / (tickCount - 1)
+  ).reverse();
 
   return (
     <View style={styles.container}>
       {title && <Text style={styles.title}>{title}</Text>}
+      {yAxisLabel && <Text style={styles.yAxisLabel}>{yAxisLabel}</Text>}
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <Svg width={svgWidth} height={height}>
           <Defs>
@@ -70,33 +90,43 @@ export default function LineChart({
                 x2="0"
                 y2="1"
               >
-                <Stop offset="0%" stopColor={ds.color} stopOpacity={0.3} />
+                <Stop offset="0%" stopColor={ds.color} stopOpacity={0.25} />
                 <Stop offset="100%" stopColor={ds.color} stopOpacity={0.02} />
               </LinearGradient>
             ))}
           </Defs>
 
-          {[0.25, 0.5, 0.75].map((frac) => {
-            const y = getY(minVal + range * frac);
+          {yTicks.map((tick, i) => {
+            const y = getY(tick);
             return (
-              <Line
-                key={frac}
-                x1={0}
-                y1={y}
-                x2={svgWidth}
-                y2={y}
-                stroke={Colors.light.border}
-                strokeWidth={0.5}
-                strokeDasharray="4,4"
-              />
+              <G key={`ytick-${i}`}>
+                <Line
+                  x1={yAxisWidth}
+                  y1={y}
+                  x2={svgWidth}
+                  y2={y}
+                  stroke={Colors.light.border}
+                  strokeWidth={0.5}
+                  strokeDasharray="4,4"
+                />
+                <SvgText
+                  x={yAxisWidth - 4}
+                  y={y + 3}
+                  fontSize={8}
+                  fill={Colors.light.textSecondary}
+                  textAnchor="end"
+                >
+                  {formatValue(tick)}
+                </SvgText>
+              </G>
             );
           })}
 
           <Line
-            x1={0}
-            y1={chartH + 10}
+            x1={yAxisWidth}
+            y1={chartTop + chartH}
             x2={svgWidth}
-            y2={chartH + 10}
+            y2={chartTop + chartH}
             stroke={Colors.light.border}
             strokeWidth={1}
           />
@@ -115,7 +145,7 @@ export default function LineChart({
 
             const areaPath =
               linePath +
-              ` L${getX(validPoints[validPoints.length - 1].i)},${chartH + 10} L${getX(validPoints[0].i)},${chartH + 10} Z`;
+              ` L${getX(validPoints[validPoints.length - 1].i)},${chartTop + chartH} L${getX(validPoints[0].i)},${chartTop + chartH} Z`;
 
             return (
               <G key={di}>
@@ -143,7 +173,7 @@ export default function LineChart({
           })}
 
           {labels.map((label, i) => {
-            const showLabel = labels.length <= 10 || i % Math.ceil(labels.length / 10) === 0;
+            const showLabel = labels.length <= 12 || i % Math.ceil(labels.length / 10) === 0;
             if (!showLabel) return null;
             return (
               <SvgText
@@ -183,6 +213,12 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_600SemiBold",
     color: Colors.light.text,
     marginBottom: 8,
+  },
+  yAxisLabel: {
+    fontSize: 10,
+    fontFamily: "Inter_400Regular",
+    color: Colors.light.textSecondary,
+    marginBottom: 4,
   },
   legend: {
     flexDirection: "row",

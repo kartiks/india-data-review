@@ -9,6 +9,12 @@ import {
   getReceiptsTimeSeries,
   getExpenditureTimeSeries,
   getDeficitTimeSeries,
+  getMacroTimeSeries,
+  getTaxBreakdownTimeSeries,
+  getDevolutionTimeSeries,
+  getCSSTimeSeries,
+  getSchemesBySection,
+  getSchemeTimeSeries,
 } from "./data/budget-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -37,6 +43,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(data);
   });
 
+  app.get("/api/budget/sector/:id/schemes", (req, res) => {
+    const data = getSchemesBySection(req.params.id);
+    res.json(data);
+  });
+
+  app.get("/api/budget/scheme/:id", (req, res) => {
+    const data = getSchemeTimeSeries(req.params.id);
+    res.json(data);
+  });
+
   app.get("/api/budget/receipts", (_req, res) => {
     res.json(getReceiptsTimeSeries());
   });
@@ -49,6 +65,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(getDeficitTimeSeries());
   });
 
+  app.get("/api/budget/macro", (_req, res) => {
+    res.json(getMacroTimeSeries());
+  });
+
+  app.get("/api/budget/tax-breakdown", (_req, res) => {
+    res.json(getTaxBreakdownTimeSeries());
+  });
+
+  app.get("/api/budget/devolution", (_req, res) => {
+    res.json(getDevolutionTimeSeries());
+  });
+
+  app.get("/api/budget/css", (_req, res) => {
+    res.json(getCSSTimeSeries());
+  });
+
   app.get("/api/budget/overview", (_req, res) => {
     const overview = budgetData.map((d) => ({
       year: d.year,
@@ -57,6 +89,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       fiscalDeficit: d.deficit.fiscal.be,
       fiscalDeficitPercGDP: d.deficit.fiscalAsPercentGDP.be,
       gdp: d.gdp,
+      gdpGrowthRate: d.macroeconomic.gdpGrowthRate,
+      gdpPerCapita: d.macroeconomic.gdpPerCapita,
+      inflationCPI: d.macroeconomic.inflationCPI,
     }));
     res.json(overview);
   });

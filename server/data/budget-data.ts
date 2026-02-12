@@ -1654,7 +1654,7 @@ export const budgetData: BudgetYear[] = [
     sectors: [
       sec("Defence", "defence", 625000, 632000, 0),
       sec("Agriculture & Allied", "agriculture", 181498, 186000, 0),
-      sec("Education", "education", 120628, 120628, 113000),
+      sec("Education", "education", 120628, 120628, 118200),
       sec("Health & Family Welfare", "health", 90171, 90171, 0),
       sec("Rural Development", "rural_dev", 215000, 222000, 0),
       sec("Urban Development", "urban_dev", 62100, 62100, 0),

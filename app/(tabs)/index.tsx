@@ -18,7 +18,7 @@ import BudgetCard from "@/components/BudgetCard";
 import SectionHeader from "@/components/SectionHeader";
 import LineChart from "@/components/charts/LineChart";
 import DonutChart from "@/components/charts/DonutChart";
-import { formatCrore, formatCroreShort, shortYear, getGrowthPercent } from "@/lib/format";
+import { formatCrore, formatCroreShort, formatPercent, shortYear, getGrowthPercent } from "@/lib/format";
 
 interface OverviewItem {
   year: string;
@@ -27,6 +27,9 @@ interface OverviewItem {
   fiscalDeficit: number;
   fiscalDeficitPercGDP: number;
   gdp: number;
+  gdpGrowthRate: number;
+  gdpPerCapita: number;
+  inflationCPI: number;
 }
 
 interface BudgetYearData {
@@ -164,6 +167,41 @@ export default function OverviewScreen() {
         </View>
       </View>
 
+      <SectionHeader title="Macro Indicators" subtitle={`FY ${latestYear?.year || ""}`} />
+      <View style={styles.cardsRow}>
+        <View style={styles.cardHalf}>
+          <BudgetCard
+            title="GDP Growth Rate"
+            value={formatPercent(latestYear?.gdpGrowthRate || 0)}
+            icon="trending-up"
+            iconColor={Colors.light.success}
+            growth={latestYear && prevYear ? latestYear.gdpGrowthRate - prevYear.gdpGrowthRate : undefined}
+            subtitle={`FY ${latestYear?.year || ""}`}
+          />
+        </View>
+        <View style={styles.cardHalf}>
+          <BudgetCard
+            title="GDP Per Capita"
+            value={`\u20B9${((latestYear?.gdpPerCapita || 0)).toLocaleString("en-IN")}`}
+            icon="person"
+            iconColor={Colors.light.primaryLight}
+            subtitle={`FY ${latestYear?.year || ""}`}
+          />
+        </View>
+      </View>
+      <View style={styles.cardsRow}>
+        <View style={styles.cardHalf}>
+          <BudgetCard
+            title="Inflation (CPI)"
+            value={formatPercent(latestYear?.inflationCPI || 0)}
+            icon={latestYear && prevYear && latestYear.inflationCPI > prevYear.inflationCPI ? "arrow-up" : "arrow-down"}
+            iconColor={latestYear && prevYear && latestYear.inflationCPI > prevYear.inflationCPI ? Colors.light.danger : Colors.light.success}
+            growth={latestYear && prevYear ? latestYear.inflationCPI - prevYear.inflationCPI : undefined}
+            subtitle={`FY ${latestYear?.year || ""}`}
+          />
+        </View>
+      </View>
+
       <SectionHeader title="Receipts vs Expenditure" subtitle="Budget Estimates (last 10 years)" />
       <View style={styles.chartCard}>
         <LineChart
@@ -182,6 +220,8 @@ export default function OverviewScreen() {
           ]}
           height={220}
           showArea
+          formatValue={formatCroreShort}
+          yAxisLabel="₹ Crore"
         />
       </View>
 
@@ -255,6 +295,8 @@ export default function OverviewScreen() {
           ]}
           height={200}
           showArea
+          formatValue={(v) => `${v.toFixed(1)}%`}
+          yAxisLabel="% of GDP"
         />
       </View>
     </ScrollView>

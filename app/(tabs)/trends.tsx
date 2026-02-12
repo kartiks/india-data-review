@@ -151,6 +151,9 @@ export default function TrendsScreen() {
               key={tab.key}
               onPress={() => setActiveTab(tab.key)}
               style={[styles.tab, activeTab === tab.key && styles.tabActive]}
+              testID={`tab-${tab.key}`}
+              accessibilityRole="button"
+              accessibilityLabel={tab.label}
             >
               <Text style={[styles.tabText, activeTab === tab.key && styles.tabTextActive]}>
                 {tab.label}

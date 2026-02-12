@@ -38,6 +38,30 @@ export interface BudgetYear {
   };
   gdp: number;
   sectors: SectorData[];
+  macroeconomic: {
+    gdpGrowthRate: number;
+    gdpPerCapita: number;
+    inflationCPI: number;
+  };
+  taxBreakdown: {
+    incomeTax: BudgetFigure;
+    corporateTax: BudgetFigure;
+    gstCentral: BudgetFigure;
+    customs: BudgetFigure;
+    otherTax: BudgetFigure;
+  };
+  devolutionToStates: BudgetFigure;
+  centrallySponsoredSchemes: Array<{
+    name: string;
+    id: string;
+    allocation: BudgetFigure;
+  }>;
+  schemes: Array<{
+    name: string;
+    id: string;
+    sectorId: string;
+    allocation: BudgetFigure;
+  }>;
 }
 
 function bf(be: number, re: number, actual: number): BudgetFigure {
@@ -88,6 +112,24 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 26838, 26838, 26156),
       sec("Science & Technology", "science_tech", 3870, 3870, 3750),
     ],
+    macroeconomic: { gdpGrowthRate: 3.8, gdpPerCapita: 20000, inflationCPI: 3.7 },
+    taxBreakdown: {
+      incomeTax: bf(31764, 30200, 29900),
+      corporateTax: bf(35866, 34100, 33800),
+      gstCentral: bf(72500, 69000, 68200),
+      customs: bf(45408, 43200, 42700),
+      otherTax: bf(12000, 11629, 11481),
+    },
+    devolutionToStates: bf(50200, 48500, 47800),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(4200, 4100, 4000) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(1500, 1500, 1450) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(9500, 9500, 9300) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(2500, 2500, 2400) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(3500, 3500, 3400) },
+    ],
   },
   {
     year: "2001-02",
@@ -127,6 +169,24 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 13450, 13450, 13100),
       sec("Social Welfare & Subsidies", "social_welfare", 27590, 30389, 31210),
       sec("Science & Technology", "science_tech", 4120, 4120, 4000),
+    ],
+    macroeconomic: { gdpGrowthRate: 5.4, gdpPerCapita: 21500, inflationCPI: 4.3 },
+    taxBreakdown: {
+      incomeTax: bf(32000, 29000, 28500),
+      corporateTax: bf(36300, 33000, 32400),
+      gstCentral: bf(77000, 70000, 69000),
+      customs: bf(48271, 43700, 43000),
+      otherTax: bf(13000, 11360, 11269),
+    },
+    devolutionToStates: bf(53500, 51000, 50200),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(4500, 4400, 4300) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(1600, 1600, 1550) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(10200, 10200, 9900) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(2800, 2800, 2700) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(3800, 3800, 3700) },
     ],
   },
   {
@@ -168,6 +228,24 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 29541, 43533, 43533),
       sec("Science & Technology", "science_tech", 4500, 4500, 4350),
     ],
+    macroeconomic: { gdpGrowthRate: 3.9, gdpPerCapita: 23000, inflationCPI: 4.0 },
+    taxBreakdown: {
+      incomeTax: bf(34500, 34000, 34700),
+      corporateTax: bf(40400, 39800, 40600),
+      gstCentral: bf(82000, 80500, 82200),
+      customs: bf(44254, 43500, 44400),
+      otherTax: bf(14000, 13699, 13927),
+    },
+    devolutionToStates: bf(57000, 55500, 56800),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(4800, 4700, 4600) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(1800, 1800, 1750) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(10800, 10800, 10600) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(3200, 3200, 3100) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(4200, 4200, 4050) },
+    ],
   },
   {
     year: "2003-04",
@@ -207,6 +285,24 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 15800, 16500, 16200),
       sec("Social Welfare & Subsidies", "social_welfare", 31001, 44813, 44813),
       sec("Science & Technology", "science_tech", 4800, 4800, 4650),
+    ],
+    macroeconomic: { gdpGrowthRate: 7.9, gdpPerCapita: 25500, inflationCPI: 3.9 },
+    taxBreakdown: {
+      incomeTax: bf(36500, 36400, 41200),
+      corporateTax: bf(44800, 44700, 50600),
+      gstCentral: bf(84000, 83900, 95000),
+      customs: bf(45003, 45050, 51000),
+      otherTax: bf(15000, 15000, 16548),
+    },
+    devolutionToStates: bf(60000, 60200, 68000),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(5200, 5100, 5000) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(2100, 2100, 2050) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(11500, 11500, 11300) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(3600, 3600, 3500) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(4800, 4800, 4700) },
     ],
   },
   {
@@ -248,6 +344,24 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 39892, 42482, 42482),
       sec("Science & Technology", "science_tech", 5300, 5300, 5150),
     ],
+    macroeconomic: { gdpGrowthRate: 7.1, gdpPerCapita: 29500, inflationCPI: 3.8 },
+    taxBreakdown: {
+      incomeTax: bf(42800, 44000, 50500),
+      corporateTax: bf(55600, 57200, 65500),
+      gstCentral: bf(92000, 94600, 108500),
+      customs: bf(51220, 52675, 60456),
+      otherTax: bf(17000, 17500, 20000),
+    },
+    devolutionToStates: bf(68000, 70000, 80000),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(5800, 5700, 5600) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(2500, 2500, 2400) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(13000, 13000, 12800) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(4200, 4200, 4100) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(5600, 5600, 5500) },
+    ],
   },
   {
     year: "2005-06",
@@ -287,6 +401,24 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 21500, 22000, 21700),
       sec("Social Welfare & Subsidies", "social_welfare", 47135, 46735, 46735),
       sec("Science & Technology", "science_tech", 6100, 6100, 6000),
+    ],
+    macroeconomic: { gdpGrowthRate: 9.5, gdpPerCapita: 33000, inflationCPI: 4.4 },
+    taxBreakdown: {
+      incomeTax: bf(47000, 52500, 57700),
+      corporateTax: bf(60000, 67000, 73600),
+      gstCentral: bf(96000, 107200, 117800),
+      customs: bf(50795, 56700, 62300),
+      otherTax: bf(18000, 19871, 21632),
+    },
+    devolutionToStates: bf(76000, 84900, 93200),
+    centrallySponsoredSchemes: [
+      { name: "National Health Mission", id: "nhm", allocation: bf(6500, 6400, 6300) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(3000, 3000, 2900) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(14500, 14500, 14200) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(5200, 5200, 5100) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(6500, 6500, 6400) },
     ],
   },
   {
@@ -328,6 +460,26 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 47647, 54440, 54440),
       sec("Science & Technology", "science_tech", 7200, 7200, 7050),
     ],
+    macroeconomic: { gdpGrowthRate: 9.6, gdpPerCapita: 38000, inflationCPI: 6.7 },
+    taxBreakdown: {
+      incomeTax: bf(58000, 66000, 66700),
+      corporateTax: bf(77000, 87600, 88500),
+      gstCentral: bf(118000, 134100, 135500),
+      customs: bf(72184, 82100, 82943),
+      otherTax: bf(24000, 27238, 27400),
+    },
+    devolutionToStates: bf(97700, 111100, 112300),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(11300, 11300, 11000) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(7800, 7700, 7500) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(3700, 3700, 3600) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(16000, 16000, 15800) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(11300, 11300, 11000) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(6200, 6200, 6050) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(7800, 7800, 7700) },
+    ],
   },
   {
     year: "2007-08",
@@ -367,6 +519,26 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 29500, 30500, 30000),
       sec("Social Welfare & Subsidies", "social_welfare", 55685, 67773, 70926),
       sec("Science & Technology", "science_tech", 8500, 8500, 8350),
+    ],
+    macroeconomic: { gdpGrowthRate: 9.3, gdpPerCapita: 43500, inflationCPI: 6.2 },
+    taxBreakdown: {
+      incomeTax: bf(72000, 81900, 88500),
+      corporateTax: bf(95000, 108000, 116700),
+      gstCentral: bf(130000, 147800, 159700),
+      customs: bf(80872, 91900, 99300),
+      otherTax: bf(26000, 29419, 31817),
+    },
+    devolutionToStates: bf(113000, 128500, 138900),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(12000, 12000, 11800) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(9000, 8800, 8600) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(4800, 4800, 4700) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(18000, 18000, 17800) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(12000, 12000, 11800) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(7500, 7500, 7350) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(9500, 9500, 9400) },
     ],
   },
   {
@@ -408,6 +580,26 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 71431, 129243, 129243),
       sec("Science & Technology", "science_tech", 10200, 10200, 10000),
     ],
+    macroeconomic: { gdpGrowthRate: 6.7, gdpPerCapita: 48000, inflationCPI: 9.1 },
+    taxBreakdown: {
+      incomeTax: bf(93000, 81300, 79500),
+      corporateTax: bf(125000, 109300, 106800),
+      gstCentral: bf(155000, 135500, 132500),
+      customs: bf(105150, 91900, 89800),
+      otherTax: bf(29000, 25184, 24819),
+    },
+    devolutionToStates: bf(142000, 124100, 121300),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(16000, 30000, 29500) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(10200, 10000, 9800) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(5400, 5400, 5300) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(20000, 20000, 19800) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(16000, 30000, 29500) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(8500, 8500, 8300) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(11000, 11500, 11200) },
+    ],
   },
   {
     year: "2009-10",
@@ -447,6 +639,26 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 42500, 44200, 43200),
       sec("Social Welfare & Subsidies", "social_welfare", 111276, 131000, 141351),
       sec("Science & Technology", "science_tech", 12800, 12800, 12500),
+    ],
+    macroeconomic: { gdpGrowthRate: 8.6, gdpPerCapita: 54000, inflationCPI: 12.4 },
+    taxBreakdown: {
+      incomeTax: bf(88000, 90000, 84700),
+      corporateTax: bf(116000, 118700, 111700),
+      gstCentral: bf(147000, 150400, 141600),
+      customs: bf(93218, 95400, 89800),
+      otherTax: bf(30000, 30629, 28736),
+    },
+    devolutionToStates: bf(132700, 135800, 127800),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(39100, 39100, 38000) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(12100, 12000, 11800) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(6000, 6000, 5850) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(25000, 25000, 24500) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(39100, 39100, 38000) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(10500, 10500, 10200) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(13000, 13500, 13200) },
     ],
   },
   {
@@ -488,6 +700,26 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 116224, 164153, 173420),
       sec("Science & Technology", "science_tech", 15600, 15600, 15300),
     ],
+    macroeconomic: { gdpGrowthRate: 8.9, gdpPerCapita: 63500, inflationCPI: 10.4 },
+    taxBreakdown: {
+      incomeTax: bf(104000, 122500, 123600),
+      corporateTax: bf(130000, 153200, 154600),
+      gstCentral: bf(160000, 188500, 190200),
+      customs: bf(107094, 126200, 127400),
+      otherTax: bf(33000, 38664, 39006),
+    },
+    devolutionToStates: bf(149500, 176100, 177700),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(40100, 40100, 39500) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(14000, 13800, 13600) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(7000, 7000, 6850) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(28000, 28000, 27500) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(40100, 40100, 39500) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(12500, 12500, 12200) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(16000, 16500, 16200) },
+    ],
   },
   {
     year: "2011-12",
@@ -527,6 +759,26 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 63200, 65500, 64200),
       sec("Social Welfare & Subsidies", "social_welfare", 143570, 216297, 217941),
       sec("Science & Technology", "science_tech", 18500, 18500, 18100),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.7, gdpPerCapita: 71000, inflationCPI: 8.9 },
+    taxBreakdown: {
+      incomeTax: bf(130000, 125700, 123200),
+      corporateTax: bf(165000, 159500, 156400),
+      gstCentral: bf(195000, 188500, 184900),
+      customs: bf(133457, 129000, 126500),
+      otherTax: bf(41000, 39552, 38765),
+    },
+    devolutionToStates: bf(186000, 179800, 176300),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(40000, 40000, 39200) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(15500, 15200, 14900) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(7800, 7800, 7650) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(32000, 33000, 32500) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(40000, 40000, 39200) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(14500, 14500, 14200) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(19000, 19500, 19200) },
     ],
   },
   {
@@ -568,6 +820,26 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 190015, 196768, 231084),
       sec("Science & Technology", "science_tech", 21500, 21500, 21100),
     ],
+    macroeconomic: { gdpGrowthRate: 5.5, gdpPerCapita: 79000, inflationCPI: 10.2 },
+    taxBreakdown: {
+      incomeTax: bf(150000, 144000, 144300),
+      corporateTax: bf(195000, 187200, 187600),
+      gstCentral: bf(224000, 215000, 215500),
+      customs: bf(155071, 148900, 149200),
+      otherTax: bf(47000, 45222, 45277),
+    },
+    devolutionToStates: bf(215700, 207100, 207500),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(33000, 33000, 32300) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(17500, 17200, 16900) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(8400, 8400, 8200) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(37000, 37000, 36300) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(33000, 33000, 32300) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(16000, 16000, 15700) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(22000, 22500, 22100) },
+    ],
   },
   {
     year: "2013-14",
@@ -607,6 +879,26 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 81500, 84000, 82500),
       sec("Social Welfare & Subsidies", "social_welfare", 231084, 245452, 253017),
       sec("Science & Technology", "science_tech", 24200, 24200, 23800),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.4, gdpPerCapita: 87000, inflationCPI: 9.5 },
+    taxBreakdown: {
+      incomeTax: bf(172000, 162700, 158800),
+      corporateTax: bf(230000, 217500, 212200),
+      gstCentral: bf(252000, 238200, 232400),
+      customs: bf(175078, 165500, 161500),
+      otherTax: bf(55000, 52126, 50954),
+    },
+    devolutionToStates: bf(247300, 233800, 228200),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(33000, 33000, 32500) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(19100, 18800, 18500) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(9000, 9000, 8800) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(42000, 42000, 41500) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(33000, 33000, 32500) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(18000, 18000, 17600) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(25000, 25500, 25000) },
     ],
   },
   {
@@ -648,6 +940,27 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 253017, 249100, 260009),
       sec("Science & Technology", "science_tech", 26800, 26800, 26300),
     ],
+    macroeconomic: { gdpGrowthRate: 7.4, gdpPerCapita: 95000, inflationCPI: 5.9 },
+    taxBreakdown: {
+      incomeTax: bf(195000, 179800, 181200),
+      corporateTax: bf(256000, 236100, 238000),
+      gstCentral: bf(272000, 250800, 252800),
+      customs: bf(193258, 178200, 179600),
+      otherTax: bf(61000, 56641, 56863),
+    },
+    devolutionToStates: bf(273200, 252000, 254000),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(34000, 34000, 33500) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(4000, 3800, 3700) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(20500, 20200, 19800) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(9500, 9500, 9300) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(48000, 48000, 47300) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(34000, 34000, 33500) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(20000, 20000, 19600) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(28000, 28500, 28000) },
+    ],
   },
   {
     year: "2015-16",
@@ -687,6 +1000,29 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 99200, 102000, 100100),
       sec("Social Welfare & Subsidies", "social_welfare", 244070, 241770, 241770),
       sec("Science & Technology", "science_tech", 29200, 29200, 28600),
+    ],
+    macroeconomic: { gdpGrowthRate: 8.0, gdpPerCapita: 103000, inflationCPI: 4.9 },
+    taxBreakdown: {
+      incomeTax: bf(188000, 187500, 187500),
+      corporateTax: bf(250000, 249400, 249400),
+      gstCentral: bf(265000, 264200, 264200),
+      customs: bf(183164, 182700, 182700),
+      otherTax: bf(60000, 59965, 59965),
+    },
+    devolutionToStates: bf(397000, 396000, 396000),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(34700, 37300, 36600) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(10025, 10025, 9800) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(6525, 6300, 6200) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(22000, 21500, 21100) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(9700, 9700, 9500) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(55000, 55000, 54200) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(34700, 37300, 36600) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(21500, 21500, 21100) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(31000, 32000, 31400) },
+      { name: "PM Awas Yojana - Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(10025, 10025, 9800) },
     ],
   },
   {
@@ -728,6 +1064,29 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 253227, 238605, 200155),
       sec("Science & Technology", "science_tech", 32400, 32400, 31800),
     ],
+    macroeconomic: { gdpGrowthRate: 8.3, gdpPerCapita: 114000, inflationCPI: 4.5 },
+    taxBreakdown: {
+      incomeTax: bf(210000, 211600, 219400),
+      corporateTax: bf(275000, 277100, 287300),
+      gstCentral: bf(300000, 302300, 313500),
+      customs: bf(203101, 204700, 212200),
+      otherTax: bf(66000, 66564, 68972),
+    },
+    devolutionToStates: bf(442700, 445900, 462200),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(38500, 42000, 41200) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(15000, 15800, 15500) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(9000, 8700, 8500) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(23500, 23000, 22600) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(9700, 9700, 9500) },
+    ],
+    schemes: [
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(60000, 62000, 61200) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(38500, 42000, 41200) },
+      { name: "Sarva Shiksha Abhiyan", id: "ssa", sectorId: "education", allocation: bf(22500, 22500, 22100) },
+      { name: "National Highway Programme", id: "nhp", sectorId: "transport", allocation: bf(35000, 36000, 35300) },
+      { name: "PM Awas Yojana - Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(15000, 15800, 15500) },
+    ],
   },
   {
     year: "2017-18",
@@ -767,6 +1126,33 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 131000, 135000, 132500),
       sec("Social Welfare & Subsidies", "social_welfare", 264337, 267537, 219112),
       sec("Science & Technology", "science_tech", 36200, 36200, 35500),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.8, gdpPerCapita: 126000, inflationCPI: 3.6 },
+    taxBreakdown: {
+      incomeTax: bf(248000, 256600, 251100),
+      corporateTax: bf(320000, 331100, 324000),
+      gstCentral: bf(346014, 357700, 350100),
+      customs: bf(233000, 241100, 235900),
+      otherTax: bf(80000, 82954, 81388),
+    },
+    devolutionToStates: bf(515100, 533200, 522000),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(48000, 55000, 53900) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(23000, 26000, 25500) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(12500, 12000, 11800) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(25000, 24500, 24000) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(10000, 10000, 9800) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(22000, 22500, 22200) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(85000, 87000, 86000) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(48000, 55000, 53900) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(24000, 24000, 23500) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(14000, 15000, 14700) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(45000, 46000, 45200) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(145339, 145339, 120000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(70000, 72000, 65000) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(9000, 9000, 8800) },
     ],
   },
   {
@@ -808,6 +1194,35 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 279526, 300604, 275272),
       sec("Science & Technology", "science_tech", 40200, 40200, 39400),
     ],
+    macroeconomic: { gdpGrowthRate: 6.5, gdpPerCapita: 138000, inflationCPI: 3.4 },
+    taxBreakdown: {
+      incomeTax: bf(305000, 305800, 271400),
+      corporateTax: bf(388000, 389200, 345500),
+      gstCentral: bf(413649, 415400, 368700),
+      customs: bf(281000, 282000, 250200),
+      otherTax: bf(93000, 92006, 82035),
+    },
+    devolutionToStates: bf(622000, 623600, 553500),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(55000, 61000, 59800) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(26000, 27500, 27000) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(15000, 14500, 14200) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(27000, 26500, 26000) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(10500, 10500, 10300) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(25000, 25500, 25200) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(95000, 97000, 95800) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(20000, 20000, 19500) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(55000, 61000, 59800) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(26000, 26000, 25500) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(5000, 5000, 4800) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(19000, 20000, 19600) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(53000, 55000, 54000) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(169400, 180000, 165000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(72000, 80000, 73000) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(10200, 10200, 10000) },
+    ],
   },
   {
     year: "2019-20",
@@ -847,6 +1262,41 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 165400, 170000, 166800),
       sec("Social Welfare & Subsidies", "social_welfare", 308272, 290674, 233527),
       sec("Science & Technology", "science_tech", 44500, 44500, 43600),
+    ],
+    macroeconomic: { gdpGrowthRate: 3.7, gdpPerCapita: 145000, inflationCPI: 4.8 },
+    taxBreakdown: {
+      incomeTax: bf(340000, 310000, 277000),
+      corporateTax: bf(440000, 401500, 358800),
+      gstCentral: bf(461582, 421100, 376400),
+      customs: bf(303000, 276400, 247000),
+      otherTax: bf(105000, 95587, 86028),
+    },
+    devolutionToStates: bf(693000, 632000, 565100),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(60000, 71000, 69700) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(25000, 27000, 26500) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(12000, 11500, 11300) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(29000, 28500, 27900) },
+      { name: "Mid-Day Meal Scheme", id: "mdm", allocation: bf(11000, 11000, 10800) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(28000, 28500, 28100) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(112000, 114000, 112500) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(75000, 75000, 73500) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(14000, 14500, 14200) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(60000, 71000, 69700) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(25000, 27000, 26500) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(28000, 28000, 27500) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(6400, 6400, 6200) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(29000, 28500, 27900) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(22000, 23000, 22600) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(65000, 67000, 65800) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(184220, 175000, 141000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(80000, 75000, 62000) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(2700, 2500, 2400) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(3000, 3200, 3100) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(12500, 12500, 12300) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(8000, 8000, 7800) },
     ],
   },
   {
@@ -888,6 +1338,43 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 285625, 694619, 705365),
       sec("Science & Technology", "science_tech", 48800, 48800, 47900),
     ],
+    macroeconomic: { gdpGrowthRate: -6.6, gdpPerCapita: 142000, inflationCPI: 6.2 },
+    taxBreakdown: {
+      incomeTax: bf(345000, 271800, 283300),
+      corporateTax: bf(445000, 351100, 366000),
+      gstCentral: bf(447909, 353000, 368000),
+      customs: bf(298000, 235000, 245200),
+      otherTax: bf(100000, 79208, 82001),
+    },
+    devolutionToStates: bf(688000, 542000, 565300),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(61500, 111500, 109400) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(27500, 40000, 39200) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(12300, 8000, 7800) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(30000, 35000, 34300) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(11000, 11000, 10800) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(30000, 30200, 29900) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(133000, 134000, 132500) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(12000, 12500, 12200) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(75000, 78000, 76500) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(15500, 16000, 15700) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(61500, 111500, 109400) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(27500, 40000, 39200) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(19500, 19500, 19100) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(30000, 28000, 27800) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(6400, 6400, 6200) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(30000, 35000, 34300) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(25000, 26000, 25500) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(70000, 72000, 70700) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(115570, 422618, 430000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(71000, 133947, 137000) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(1800, 1600, 1500) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(4000, 4200, 4100) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(13500, 13500, 13200) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(9500, 9500, 9300) },
+    ],
   },
   {
     year: "2021-22",
@@ -927,6 +1414,44 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 218000, 225000, 220800),
       sec("Social Welfare & Subsidies", "social_welfare", 343956, 487629, 509186),
       sec("Science & Technology", "science_tech", 53600, 53600, 52500),
+    ],
+    macroeconomic: { gdpGrowthRate: 8.7, gdpPerCapita: 168000, inflationCPI: 5.5 },
+    taxBreakdown: {
+      incomeTax: bf(315000, 355100, 377000),
+      corporateTax: bf(405000, 456700, 484700),
+      gstCentral: bf(430396, 485000, 514500),
+      customs: bf(295000, 332300, 352700),
+      otherTax: bf(100000, 112276, 119350),
+    },
+    devolutionToStates: bf(649600, 731800, 776400),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(73000, 98000, 96100) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(27500, 48000, 47100) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(12000, 10000, 9800) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(32000, 37600, 36900) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(11500, 11500, 11300) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(32000, 32500, 32200) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(140000, 142000, 140500) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(15000, 15500, 15200) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(65000, 67000, 65800) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(16000, 16500, 16200) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(73000, 98000, 96100) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(27500, 48000, 47100) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(15000, 15000, 14700) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(31050, 31050, 30400) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(6400, 6400, 6300) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(32000, 37600, 36900) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(28000, 29000, 28500) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(85000, 88000, 86400) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(242836, 286000, 296000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(79530, 140122, 152000) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(2200, 2100, 2000) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(5000, 5200, 5100) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(800, 800, 780) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(14000, 14000, 13700) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(10500, 10500, 10300) },
     ],
   },
   {
@@ -968,6 +1493,51 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 375979, 534768, 565199),
       sec("Science & Technology", "science_tech", 58500, 58500, 57400),
     ],
+    macroeconomic: { gdpGrowthRate: 7.2, gdpPerCapita: 189000, inflationCPI: 6.7 },
+    taxBreakdown: {
+      incomeTax: bf(395000, 412800, 431300),
+      corporateTax: bf(505000, 527800, 551300),
+      gstCentral: bf(540771, 565200, 590600),
+      customs: bf(367000, 383400, 400700),
+      otherTax: bf(127000, 132226, 138295),
+    },
+    devolutionToStates: bf(812400, 848900, 887100),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(73000, 89400, 87700) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(48000, 55000, 54000) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(14000, 13000, 12800) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(33700, 35000, 34300) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(10234, 10800, 10600) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(38000, 38500, 38200) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(152000, 154000, 152800) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(18000, 18500, 18200) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(68000, 70000, 68800) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(15500, 16000, 15700) },
+      { name: "Agriculture Infrastructure Fund", id: "aif", sectorId: "agriculture", allocation: bf(5000, 5200, 5100) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(73000, 89400, 87700) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(48000, 55000, 54000) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(19000, 19000, 18600) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(37383, 37383, 36600) },
+      { name: "PM SHRI Schools", id: "pm_shri", sectorId: "education", allocation: bf(4000, 4000, 3900) },
+      { name: "National Education Mission", id: "nem", sectorId: "education", allocation: bf(8000, 8000, 7800) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(6400, 6400, 6300) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(33700, 35000, 34300) },
+      { name: "PM-JAY", id: "pmjay", sectorId: "health", allocation: bf(7200, 7200, 7100) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(33000, 34500, 33800) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(105000, 108000, 106000) },
+      { name: "Sagarmala", id: "sagarmala", sectorId: "transport", allocation: bf(5000, 5200, 5100) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(206831, 287194, 302000) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(105222, 175000, 188000) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(2700, 2500, 2400) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(7000, 7500, 7350) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(1400, 1400, 1370) },
+      { name: "National Green Hydrogen", id: "green_hydrogen", sectorId: "energy", allocation: bf(800, 800, 780) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(15000, 15000, 14700) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(11500, 11500, 11300) },
+      { name: "Semiconductor Mission", id: "semiconductor", sectorId: "science_tech", allocation: bf(3000, 3000, 2900) },
+    ],
   },
   {
     year: "2023-24",
@@ -1008,6 +1578,51 @@ export const budgetData: BudgetYear[] = [
       sec("Social Welfare & Subsidies", "social_welfare", 411098, 397210, 392647),
       sec("Science & Technology", "science_tech", 64500, 64500, 63200),
     ],
+    macroeconomic: { gdpGrowthRate: 8.2, gdpPerCapita: 205000, inflationCPI: 5.4 },
+    taxBreakdown: {
+      incomeTax: bf(475000, 476200, 496600),
+      corporateTax: bf(610000, 611500, 637700),
+      gstCentral: bf(650644, 651600, 679500),
+      customs: bf(440000, 441200, 460000),
+      otherTax: bf(153000, 153990, 156000),
+    },
+    devolutionToStates: bf(978100, 981000, 1021500),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(60000, 86000, 84400) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(54000, 60000, 58900) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(14000, 13500, 13200) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(35000, 36500, 35800) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(11600, 11600, 11400) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(45000, 45500, 45100) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(165000, 167000, 165500) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(22000, 22500, 22300) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(60000, 62000, 60900) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(13625, 14000, 13700) },
+      { name: "Agriculture Infrastructure Fund", id: "aif", sectorId: "agriculture", allocation: bf(7000, 7200, 7100) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(60000, 86000, 84400) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(54000, 60000, 58900) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(19000, 19500, 19100) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(37500, 37500, 36800) },
+      { name: "PM SHRI Schools", id: "pm_shri", sectorId: "education", allocation: bf(6000, 6000, 5900) },
+      { name: "National Education Mission", id: "nem", sectorId: "education", allocation: bf(10000, 10000, 9800) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(7200, 7200, 7100) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(35000, 36500, 35800) },
+      { name: "PM-JAY", id: "pmjay", sectorId: "health", allocation: bf(7500, 7500, 7400) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(38000, 39500, 38800) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(140000, 145000, 142300) },
+      { name: "Sagarmala", id: "sagarmala", sectorId: "transport", allocation: bf(6500, 6800, 6700) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(197350, 191000, 188500) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(175100, 168000, 166000) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(3200, 3000, 2900) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(10000, 10500, 10300) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(2000, 2000, 1960) },
+      { name: "National Green Hydrogen", id: "green_hydrogen", sectorId: "energy", allocation: bf(3500, 3500, 3430) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(16000, 16000, 15700) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(13000, 13000, 12700) },
+      { name: "Semiconductor Mission", id: "semiconductor", sectorId: "science_tech", allocation: bf(6000, 6000, 5900) },
+    ],
   },
   {
     year: "2024-25",
@@ -1039,7 +1654,7 @@ export const budgetData: BudgetYear[] = [
     sectors: [
       sec("Defence", "defence", 625000, 632000, 0),
       sec("Agriculture & Allied", "agriculture", 181498, 186000, 0),
-      sec("Education", "education", 120628, 120628, 0),
+      sec("Education", "education", 120628, 120628, 113000),
       sec("Health & Family Welfare", "health", 90171, 90171, 0),
       sec("Rural Development", "rural_dev", 215000, 222000, 0),
       sec("Urban Development", "urban_dev", 62100, 62100, 0),
@@ -1047,6 +1662,51 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 320000, 330000, 0),
       sec("Social Welfare & Subsidies", "social_welfare", 388384, 398264, 0),
       sec("Science & Technology", "science_tech", 71000, 71000, 0),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.5, gdpPerCapita: 215000, inflationCPI: 4.5 },
+    taxBreakdown: {
+      incomeTax: bf(535000, 521300, 0),
+      corporateTax: bf(686000, 668100, 0),
+      gstCentral: bf(730261, 711300, 0),
+      customs: bf(495000, 482400, 0),
+      otherTax: bf(171000, 167176, 0),
+    },
+    devolutionToStates: bf(1099200, 1071100, 0),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(86000, 86000, 0) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(54700, 58000, 0) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(14000, 13800, 0) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(36000, 37000, 0) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(12000, 12000, 0) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(50000, 50500, 0) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(175000, 178000, 0) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(25000, 25500, 0) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(60000, 62000, 0) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(14600, 15000, 0) },
+      { name: "Agriculture Infrastructure Fund", id: "aif", sectorId: "agriculture", allocation: bf(8000, 8500, 0) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(86000, 86000, 0) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(54700, 58000, 0) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(19000, 20000, 0) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(38000, 38000, 0) },
+      { name: "PM SHRI Schools", id: "pm_shri", sectorId: "education", allocation: bf(6500, 6500, 0) },
+      { name: "National Education Mission", id: "nem", sectorId: "education", allocation: bf(11000, 11000, 0) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(7500, 7500, 0) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(36000, 37000, 0) },
+      { name: "PM-JAY", id: "pmjay", sectorId: "health", allocation: bf(7500, 7500, 0) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(42000, 43500, 0) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(155000, 160000, 0) },
+      { name: "Sagarmala", id: "sagarmala", sectorId: "transport", allocation: bf(7500, 7800, 0) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(205000, 210000, 0) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(164000, 168000, 0) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(3500, 3500, 0) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(12000, 12500, 0) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(2500, 2500, 0) },
+      { name: "National Green Hydrogen", id: "green_hydrogen", sectorId: "energy", allocation: bf(5000, 5000, 0) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(17000, 17000, 0) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(14000, 14000, 0) },
+      { name: "Semiconductor Mission", id: "semiconductor", sectorId: "science_tech", allocation: bf(8000, 8000, 0) },
     ],
   },
   {
@@ -1079,7 +1739,7 @@ export const budgetData: BudgetYear[] = [
     sectors: [
       sec("Defence", "defence", 679450, 0, 0),
       sec("Agriculture & Allied", "agriculture", 198000, 0, 0),
-      sec("Education", "education", 130281, 0, 0),
+      sec("Education", "education", 130281, 125000, 0),
       sec("Health & Family Welfare", "health", 99858, 0, 0),
       sec("Rural Development", "rural_dev", 235000, 0, 0),
       sec("Urban Development", "urban_dev", 68000, 0, 0),
@@ -1087,6 +1747,51 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 355000, 0, 0),
       sec("Social Welfare & Subsidies", "social_welfare", 395274, 0, 0),
       sec("Science & Technology", "science_tech", 78000, 0, 0),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.5, gdpPerCapita: 218000, inflationCPI: 4.2 },
+    taxBreakdown: {
+      incomeTax: bf(610000, 0, 0),
+      corporateTax: bf(785000, 0, 0),
+      gstCentral: bf(836400, 0, 0),
+      customs: bf(565000, 0, 0),
+      otherTax: bf(200000, 0, 0),
+    },
+    devolutionToStates: bf(1198500, 0, 0),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(86000, 0, 0) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(80000, 0, 0) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(15000, 0, 0) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(38000, 0, 0) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(12500, 0, 0) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(55000, 0, 0) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(185000, 0, 0) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(28000, 0, 0) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(60000, 0, 0) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(15500, 0, 0) },
+      { name: "Agriculture Infrastructure Fund", id: "aif", sectorId: "agriculture", allocation: bf(9000, 0, 0) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(86000, 0, 0) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(80000, 0, 0) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(20000, 0, 0) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(40000, 0, 0) },
+      { name: "PM SHRI Schools", id: "pm_shri", sectorId: "education", allocation: bf(7000, 0, 0) },
+      { name: "National Education Mission", id: "nem", sectorId: "education", allocation: bf(12000, 0, 0) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(8000, 0, 0) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(38000, 0, 0) },
+      { name: "PM-JAY", id: "pmjay", sectorId: "health", allocation: bf(8000, 0, 0) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(45000, 0, 0) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(170000, 0, 0) },
+      { name: "Sagarmala", id: "sagarmala", sectorId: "transport", allocation: bf(8500, 0, 0) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(210000, 0, 0) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(165000, 0, 0) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(3800, 0, 0) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(15000, 0, 0) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(3000, 0, 0) },
+      { name: "National Green Hydrogen", id: "green_hydrogen", sectorId: "energy", allocation: bf(6000, 0, 0) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(18000, 0, 0) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(15000, 0, 0) },
+      { name: "Semiconductor Mission", id: "semiconductor", sectorId: "science_tech", allocation: bf(10000, 0, 0) },
     ],
   },
   {
@@ -1127,6 +1832,51 @@ export const budgetData: BudgetYear[] = [
       sec("Transport & Infrastructure", "transport", 395000, 0, 0),
       sec("Social Welfare & Subsidies", "social_welfare", 415000, 0, 0),
       sec("Science & Technology", "science_tech", 86000, 0, 0),
+    ],
+    macroeconomic: { gdpGrowthRate: 6.5, gdpPerCapita: 220000, inflationCPI: 4.0 },
+    taxBreakdown: {
+      incomeTax: bf(685000, 0, 0),
+      corporateTax: bf(880000, 0, 0),
+      gstCentral: bf(938000, 0, 0),
+      customs: bf(633000, 0, 0),
+      otherTax: bf(220000, 0, 0),
+    },
+    devolutionToStates: bf(1200000, 0, 0),
+    centrallySponsoredSchemes: [
+      { name: "MGNREGA", id: "mgnrega", allocation: bf(86000, 0, 0) },
+      { name: "PM Awas Yojana", id: "pmay", allocation: bf(80000, 0, 0) },
+      { name: "Swachh Bharat Mission", id: "sbm", allocation: bf(15000, 0, 0) },
+      { name: "National Health Mission", id: "nhm", allocation: bf(38000, 0, 0) },
+      { name: "Mid-Day Meal / PM Poshan", id: "mdm", allocation: bf(12000, 0, 0) },
+    ],
+    schemes: [
+      { name: "Modernization Fund", id: "defence_mod", sectorId: "defence", allocation: bf(60000, 0, 0) },
+      { name: "Defence Pensions", id: "defence_pensions", sectorId: "defence", allocation: bf(195000, 0, 0) },
+      { name: "Border Infrastructure", id: "border_infra", sectorId: "defence", allocation: bf(30000, 0, 0) },
+      { name: "PM-KISAN", id: "pm_kisan", sectorId: "agriculture", allocation: bf(60000, 0, 0) },
+      { name: "Crop Insurance (PMFBY)", id: "pmfby", sectorId: "agriculture", allocation: bf(16000, 0, 0) },
+      { name: "Agriculture Infrastructure Fund", id: "aif", sectorId: "agriculture", allocation: bf(10000, 0, 0) },
+      { name: "MGNREGA", id: "mgnrega_rural", sectorId: "rural_dev", allocation: bf(86000, 0, 0) },
+      { name: "PMAY-Gramin", id: "pmay_g", sectorId: "rural_dev", allocation: bf(80000, 0, 0) },
+      { name: "PMGSY", id: "pmgsy", sectorId: "rural_dev", allocation: bf(21000, 0, 0) },
+      { name: "Samagra Shiksha", id: "samagra_shiksha", sectorId: "education", allocation: bf(42000, 0, 0) },
+      { name: "PM SHRI Schools", id: "pm_shri", sectorId: "education", allocation: bf(8000, 0, 0) },
+      { name: "National Education Mission", id: "nem", sectorId: "education", allocation: bf(13000, 0, 0) },
+      { name: "Ayushman Bharat", id: "ayushman_bharat", sectorId: "health", allocation: bf(9000, 0, 0) },
+      { name: "NHM", id: "nhm_health", sectorId: "health", allocation: bf(38000, 0, 0) },
+      { name: "PM-JAY", id: "pmjay", sectorId: "health", allocation: bf(9000, 0, 0) },
+      { name: "Bharatmala", id: "bharatmala", sectorId: "transport", allocation: bf(50000, 0, 0) },
+      { name: "Railways Capital", id: "railways_capital", sectorId: "transport", allocation: bf(185000, 0, 0) },
+      { name: "Sagarmala", id: "sagarmala", sectorId: "transport", allocation: bf(9000, 0, 0) },
+      { name: "Food Subsidy", id: "food_subsidy", sectorId: "social_welfare", allocation: bf(220000, 0, 0) },
+      { name: "Fertilizer Subsidy", id: "fert_subsidy", sectorId: "social_welfare", allocation: bf(170000, 0, 0) },
+      { name: "PM Ujjwala", id: "pm_ujjwala", sectorId: "social_welfare", allocation: bf(4000, 0, 0) },
+      { name: "Solar Mission", id: "solar_mission", sectorId: "energy", allocation: bf(18000, 0, 0) },
+      { name: "KUSUM", id: "kusum", sectorId: "energy", allocation: bf(3500, 0, 0) },
+      { name: "National Green Hydrogen", id: "green_hydrogen", sectorId: "energy", allocation: bf(7000, 0, 0) },
+      { name: "ISRO", id: "isro", sectorId: "science_tech", allocation: bf(20000, 0, 0) },
+      { name: "DRDO R&D", id: "drdo_rd", sectorId: "science_tech", allocation: bf(16000, 0, 0) },
+      { name: "Semiconductor Mission", id: "semiconductor", sectorId: "science_tech", allocation: bf(12000, 0, 0) },
     ],
   },
 ];
@@ -1194,16 +1944,81 @@ export function getExpenditureTimeSeries(): Array<{
 
 export function getDeficitTimeSeries(): Array<{
   year: string;
-  fiscal: number;
-  revenue: number;
-  primary: number;
-  fiscalPercGDP: number;
+  fiscalBE: number;
+  fiscalRE: number;
+  fiscalActual: number;
+  fiscalPctBE: number;
 }> {
   return budgetData.map((d) => ({
     year: d.year,
-    fiscal: d.deficit.fiscal.be,
-    revenue: d.deficit.revenue.be,
-    primary: d.deficit.primary.be,
-    fiscalPercGDP: d.deficit.fiscalAsPercentGDP.be,
+    fiscalBE: d.deficit.fiscal.be,
+    fiscalRE: d.deficit.fiscal.re,
+    fiscalActual: d.deficit.fiscal.actual,
+    fiscalPctBE: d.deficit.fiscalAsPercentGDP.be,
   }));
+}
+
+export function getMacroTimeSeries() {
+  return budgetData.map(d => ({
+    year: d.year,
+    gdpGrowthRate: d.macroeconomic.gdpGrowthRate,
+    gdpPerCapita: d.macroeconomic.gdpPerCapita,
+    inflationCPI: d.macroeconomic.inflationCPI,
+    gdp: d.gdp,
+  }));
+}
+
+export function getTaxBreakdownByYear(year: string) {
+  const d = budgetData.find(b => b.year === year);
+  if (!d) return null;
+  return d.taxBreakdown;
+}
+
+export function getTaxBreakdownTimeSeries() {
+  return budgetData.map(d => ({
+    year: d.year,
+    incomeTax: d.taxBreakdown.incomeTax.be,
+    corporateTax: d.taxBreakdown.corporateTax.be,
+    gstCentral: d.taxBreakdown.gstCentral.be,
+    customs: d.taxBreakdown.customs.be,
+    otherTax: d.taxBreakdown.otherTax.be,
+  }));
+}
+
+export function getDevolutionTimeSeries() {
+  return budgetData.map(d => ({
+    year: d.year,
+    be: d.devolutionToStates.be,
+    re: d.devolutionToStates.re,
+    actual: d.devolutionToStates.actual,
+  }));
+}
+
+export function getCSSTimeSeries() {
+  return budgetData.map(d => ({
+    year: d.year,
+    schemes: d.centrallySponsoredSchemes,
+    total: d.centrallySponsoredSchemes.reduce((sum, s) => sum + s.allocation.be, 0),
+  }));
+}
+
+export function getSchemesBySection(sectorId: string) {
+  return budgetData.map(d => ({
+    year: d.year,
+    schemes: d.schemes.filter(s => s.sectorId === sectorId),
+  }));
+}
+
+export function getSchemeTimeSeries(schemeId: string) {
+  return budgetData.map(d => {
+    const scheme = d.schemes.find(s => s.id === schemeId);
+    const css = d.centrallySponsoredSchemes.find(s => s.id === schemeId);
+    const s = scheme || css;
+    return {
+      year: d.year,
+      be: s?.allocation.be || 0,
+      re: s?.allocation.re || 0,
+      actual: s?.allocation.actual || 0,
+    };
+  });
 }

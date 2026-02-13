@@ -32,6 +32,15 @@ interface OverviewItem {
   inflationCPI: number;
 }
 
+interface Insight {
+  category: string;
+  title: string;
+  detail: string;
+  value: string;
+  trend: "up" | "down" | "neutral";
+  icon: string;
+}
+
 interface BudgetYearData {
   year: string;
   receipts: {
@@ -68,6 +77,10 @@ export default function OverviewScreen() {
   const { data: latestDetail } = useQuery<BudgetYearData>({
     queryKey: ["/api/budget/year", latestYear?.year || "2026-27"],
     enabled: !!latestYear,
+  });
+
+  const { data: insights } = useQuery<Insight[]>({
+    queryKey: ["/api/budget/insights"],
   });
 
   if (isLoading) {
@@ -299,6 +312,36 @@ export default function OverviewScreen() {
           yAxisLabel="% of GDP"
         />
       </View>
+
+      {insights && insights.length > 0 && (
+        <>
+          <SectionHeader title="Key Insights" subtitle="Notable trends and observations" />
+          <View style={styles.insightsList}>
+            {insights.map((insight, i) => {
+              const trendIcon = insight.trend === "up" ? "arrow-up" : insight.trend === "down" ? "arrow-down" : "remove";
+              const trendColor = insight.trend === "up" ? Colors.light.success : insight.trend === "down" ? Colors.light.danger : Colors.light.textSecondary;
+              return (
+                <View key={i} style={styles.insightItem}>
+                  <View style={[styles.insightIcon, { backgroundColor: trendColor + "15" }]}>
+                    <Ionicons name={insight.icon as any} size={18} color={trendColor} />
+                  </View>
+                  <View style={styles.insightContent}>
+                    <View style={styles.insightHeader}>
+                      <Text style={styles.insightCategory}>{insight.category}</Text>
+                      <View style={[styles.insightBadge, { backgroundColor: trendColor + "15" }]}>
+                        <Ionicons name={trendIcon} size={10} color={trendColor} />
+                        <Text style={[styles.insightValue, { color: trendColor }]}>{insight.value}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.insightTitle}>{insight.title}</Text>
+                    <Text style={styles.insightDetail}>{insight.detail}</Text>
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -431,5 +474,71 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     color: Colors.light.textSecondary,
     marginTop: 2,
+  },
+  insightsList: {
+    marginHorizontal: 16,
+    backgroundColor: Colors.light.surface,
+    borderRadius: 16,
+    overflow: "hidden",
+    ...Platform.select({
+      ios: { shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8 },
+      android: { elevation: 2 },
+      web: { boxShadow: "0 2px 8px rgba(0,0,0,0.06)" },
+    }),
+  },
+  insightItem: {
+    flexDirection: "row",
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.border,
+    gap: 12,
+  },
+  insightIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 2,
+  },
+  insightContent: {
+    flex: 1,
+    gap: 3,
+  },
+  insightHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  insightCategory: {
+    fontSize: 10,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.light.primary,
+    textTransform: "uppercase" as const,
+    letterSpacing: 0.5,
+  },
+  insightBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  insightValue: {
+    fontSize: 11,
+    fontFamily: "Inter_700Bold",
+  },
+  insightTitle: {
+    fontSize: 13,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.light.text,
+  },
+  insightDetail: {
+    fontSize: 11,
+    fontFamily: "Inter_400Regular",
+    color: Colors.light.textSecondary,
+    lineHeight: 16,
   },
 });

@@ -15,6 +15,8 @@ import {
   getCSSTimeSeries,
   getSchemesBySection,
   getSchemeTimeSeries,
+  getAllSchemeDirectory,
+  getBudgetInsights,
 } from "./data/budget-data";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -79,6 +81,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/budget/css", (_req, res) => {
     res.json(getCSSTimeSeries());
+  });
+
+  app.get("/api/budget/schemes/directory", (_req, res) => {
+    res.json(getAllSchemeDirectory());
+  });
+
+  app.get("/api/budget/insights", (_req, res) => {
+    res.json(getBudgetInsights());
   });
 
   app.get("/api/budget/overview", (_req, res) => {

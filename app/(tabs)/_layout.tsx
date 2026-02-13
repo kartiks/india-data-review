@@ -23,6 +23,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "arrow.up.circle", selected: "arrow.up.circle.fill" }} md="arrow_upward" />
         <Label>Spending</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="schemes">
+        <Icon sf={{ default: "list.bullet.rectangle", selected: "list.bullet.rectangle.fill" }} md="list" />
+        <Label>Schemes</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="trends">
         <Icon sf={{ default: "chart.line.uptrend.xyaxis", selected: "chart.line.uptrend.xyaxis" }} md="trending_up" />
         <Label>Trends</Label>
@@ -92,6 +96,15 @@ function ClassicTabLayout() {
           title: "Spending",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="arrow-up-circle" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="schemes"
+        options={{
+          title: "Schemes",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
           ),
         }}
       />

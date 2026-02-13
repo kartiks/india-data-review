@@ -2153,3 +2153,237 @@ export function getSchemeTimeSeries(schemeId: string) {
     };
   });
 }
+
+export function getAllSchemeDirectory() {
+  const schemeMap = new Map<string, {
+    id: string;
+    name: string;
+    sectorId: string;
+    sectorName: string;
+    type: "sector" | "css";
+    firstYear: string;
+    lastYear: string;
+    latestBE: number;
+    latestYear: string;
+    isActive: boolean;
+    peakBE: number;
+    peakYear: string;
+  }>();
+
+  for (const yearData of budgetData) {
+    for (const scheme of yearData.schemes) {
+      const existing = schemeMap.get(scheme.id);
+      const sector = yearData.sectors.find(s => s.id === scheme.sectorId);
+      if (!existing) {
+        schemeMap.set(scheme.id, {
+          id: scheme.id,
+          name: scheme.name,
+          sectorId: scheme.sectorId,
+          sectorName: sector?.name || scheme.sectorId,
+          type: "sector",
+          firstYear: yearData.year,
+          lastYear: yearData.year,
+          latestBE: scheme.allocation.be,
+          latestYear: yearData.year,
+          isActive: true,
+          peakBE: scheme.allocation.be,
+          peakYear: yearData.year,
+        });
+      } else {
+        existing.lastYear = yearData.year;
+        if (scheme.allocation.be > 0) {
+          existing.latestBE = scheme.allocation.be;
+          existing.latestYear = yearData.year;
+        }
+        if (scheme.allocation.be > existing.peakBE) {
+          existing.peakBE = scheme.allocation.be;
+          existing.peakYear = yearData.year;
+        }
+      }
+    }
+
+    for (const css of yearData.centrallySponsoredSchemes) {
+      const existing = schemeMap.get(css.id);
+      if (!existing) {
+        schemeMap.set(css.id, {
+          id: css.id,
+          name: css.name,
+          sectorId: "css",
+          sectorName: "Centrally Sponsored",
+          type: "css",
+          firstYear: yearData.year,
+          lastYear: yearData.year,
+          latestBE: css.allocation.be,
+          latestYear: yearData.year,
+          isActive: true,
+          peakBE: css.allocation.be,
+          peakYear: yearData.year,
+        });
+      } else {
+        existing.lastYear = yearData.year;
+        if (css.allocation.be > 0) {
+          existing.latestBE = css.allocation.be;
+          existing.latestYear = yearData.year;
+        }
+        if (css.allocation.be > existing.peakBE) {
+          existing.peakBE = css.allocation.be;
+          existing.peakYear = yearData.year;
+        }
+      }
+    }
+  }
+
+  const latestYear = budgetData[budgetData.length - 1].year;
+  const schemes = Array.from(schemeMap.values()).map(s => ({
+    ...s,
+    isActive: s.lastYear === latestYear && s.latestBE > 0,
+  }));
+
+  return schemes.sort((a, b) => b.latestBE - a.latestBE);
+}
+
+export function getBudgetInsights() {
+  const latest = budgetData[budgetData.length - 1];
+  const prev = budgetData[budgetData.length - 2];
+  const fiveYearsAgo = budgetData[budgetData.length - 6];
+  const tenYearsAgo = budgetData[budgetData.length - 11];
+
+  const insights: Array<{
+    category: string;
+    title: string;
+    detail: string;
+    value: string;
+    trend: "up" | "down" | "neutral";
+    icon: string;
+  }> = [];
+
+  const expGrowth = prev ? ((latest.expenditure.total.be - prev.expenditure.total.be) / prev.expenditure.total.be * 100) : 0;
+  insights.push({
+    category: "Budget Size",
+    title: "Total Expenditure Growth",
+    detail: `Total Union Budget expenditure grew ${expGrowth.toFixed(1)}% from FY ${prev?.year} to FY ${latest.year}`,
+    value: `${expGrowth.toFixed(1)}%`,
+    trend: expGrowth > 0 ? "up" : "down",
+    icon: "cash",
+  });
+
+  const capPct = (latest.expenditure.capitalExpenditure.be / latest.expenditure.total.be * 100);
+  const capPctPrev = prev ? (prev.expenditure.capitalExpenditure.be / prev.expenditure.total.be * 100) : 0;
+  insights.push({
+    category: "Capital Spending",
+    title: "Capital Expenditure Share",
+    detail: `Capital expenditure is ${capPct.toFixed(1)}% of total spending in FY ${latest.year}${capPctPrev > 0 ? ` (was ${capPctPrev.toFixed(1)}% in FY ${prev?.year})` : ""}`,
+    value: `${capPct.toFixed(1)}%`,
+    trend: capPct > capPctPrev ? "up" : "down",
+    icon: "construct",
+  });
+
+  const deficitPct = latest.deficit.fiscalAsPercentGDP.be;
+  const deficitPctPrev = prev ? prev.deficit.fiscalAsPercentGDP.be : 0;
+  insights.push({
+    category: "Fiscal Discipline",
+    title: "Fiscal Deficit to GDP",
+    detail: `Fiscal deficit target is ${deficitPct}% of GDP for FY ${latest.year}, ${deficitPct < deficitPctPrev ? "lower" : "higher"} than ${deficitPctPrev}% in previous year`,
+    value: `${deficitPct}%`,
+    trend: deficitPct < deficitPctPrev ? "down" : "up",
+    icon: "trending-down",
+  });
+
+  const taxShare = (latest.receipts.taxRevenue.be / latest.receipts.revenueReceipts.be * 100);
+  insights.push({
+    category: "Revenue Composition",
+    title: "Tax Revenue Dominance",
+    detail: `Tax revenue constitutes ${taxShare.toFixed(1)}% of total revenue receipts in FY ${latest.year}`,
+    value: `${taxShare.toFixed(1)}%`,
+    trend: "neutral",
+    icon: "receipt",
+  });
+
+  const devPct = latest.devolutionToStates.be / latest.expenditure.total.be * 100;
+  insights.push({
+    category: "Federal Transfer",
+    title: "States' Share of Budget",
+    detail: `${devPct.toFixed(1)}% of total expenditure is devolved to states in FY ${latest.year}`,
+    value: `${devPct.toFixed(1)}%`,
+    trend: "neutral",
+    icon: "git-branch",
+  });
+
+  const subsidyPct = latest.expenditure.subsidies.be / latest.expenditure.total.be * 100;
+  const subsidyPctPrev = prev ? (prev.expenditure.subsidies.be / prev.expenditure.total.be * 100) : 0;
+  insights.push({
+    category: "Subsidies",
+    title: "Subsidy Burden",
+    detail: `Subsidies account for ${subsidyPct.toFixed(1)}% of total spending (${subsidyPctPrev > 0 ? `was ${subsidyPctPrev.toFixed(1)}% last year` : ""})`,
+    value: `${subsidyPct.toFixed(1)}%`,
+    trend: subsidyPct < subsidyPctPrev ? "down" : "up",
+    icon: "gift",
+  });
+
+  const interestPct = latest.expenditure.interestPayments.be / latest.receipts.revenueReceipts.be * 100;
+  insights.push({
+    category: "Debt Servicing",
+    title: "Interest to Revenue Ratio",
+    detail: `Interest payments consume ${interestPct.toFixed(1)}% of all revenue receipts — indicating significant debt servicing`,
+    value: `${interestPct.toFixed(1)}%`,
+    trend: interestPct > 30 ? "up" : "neutral",
+    icon: "warning",
+  });
+
+  if (fiveYearsAgo) {
+    const fiveYearCAGR = Math.pow(latest.expenditure.total.be / fiveYearsAgo.expenditure.total.be, 1 / 5) * 100 - 100;
+    insights.push({
+      category: "Long-term Growth",
+      title: "5-Year Budget CAGR",
+      detail: `Budget has grown at ${fiveYearCAGR.toFixed(1)}% compound annual rate over the last 5 years (FY ${fiveYearsAgo.year} to ${latest.year})`,
+      value: `${fiveYearCAGR.toFixed(1)}%`,
+      trend: "up",
+      icon: "stats-chart",
+    });
+  }
+
+  const fastestSector = latest.sectors.reduce((best, s) => {
+    const prevSec = prev?.sectors.find(ps => ps.id === s.id);
+    if (!prevSec || prevSec.allocation.be === 0) return best;
+    const growth = ((s.allocation.be - prevSec.allocation.be) / prevSec.allocation.be) * 100;
+    if (!best || growth > best.growth) return { ...s, growth };
+    return best;
+  }, null as any);
+
+  if (fastestSector) {
+    insights.push({
+      category: "Sector Focus",
+      title: `Fastest Growing: ${fastestSector.name}`,
+      detail: `${fastestSector.name} allocation grew ${fastestSector.growth.toFixed(1)}% year-over-year, indicating government priority`,
+      value: `+${fastestSector.growth.toFixed(1)}%`,
+      trend: "up",
+      icon: "rocket",
+    });
+  }
+
+  if (tenYearsAgo) {
+    const gdpMultiplier = latest.gdp / tenYearsAgo.gdp;
+    insights.push({
+      category: "Economy",
+      title: "GDP Growth (10 years)",
+      detail: `India's GDP has grown ${gdpMultiplier.toFixed(1)}x over the last decade, from Rs. ${(tenYearsAgo.gdp / 100000).toFixed(0)} lakh Cr to Rs. ${(latest.gdp / 100000).toFixed(0)} lakh Cr`,
+      value: `${gdpMultiplier.toFixed(1)}x`,
+      trend: "up",
+      icon: "globe",
+    });
+  }
+
+  if (latest.taxBreakdown.gstCentral.be > 0 && tenYearsAgo) {
+    const gstShare = (latest.taxBreakdown.gstCentral.be / latest.receipts.taxRevenue.be * 100);
+    insights.push({
+      category: "Tax Reform",
+      title: "GST Revenue Share",
+      detail: `GST (Central) now contributes ${gstShare.toFixed(1)}% of total tax revenue, becoming the largest single tax component`,
+      value: `${gstShare.toFixed(1)}%`,
+      trend: "up",
+      icon: "card",
+    });
+  }
+
+  return insights;
+}

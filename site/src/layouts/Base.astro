@@ -1,4 +1,5 @@
 ---
+import { link } from "../lib/url";
 import "../styles/global.css";
 import { LATEST_YEAR } from "../lib/data";
 
@@ -24,7 +25,7 @@ const nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title === "India Budget Review" ? title : `${title} · India Budget Review`}</title>
     <meta name="description" content={description} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href={link("/favicon.svg")} type="image/svg+xml" />
     <script is:inline>
       try {
         const t = localStorage.getItem("theme");
@@ -35,13 +36,13 @@ const nav = [
   <body>
     <header class="site-header">
       <div class="wrap bar">
-        <a class="brand" href="/">India Budget Review</a>
+        <a class="brand" href={link("/")}>India Budget Review</a>
         <button class="theme" type="button" aria-label="Switch light or dark theme" title="Light / dark">◐</button>
       </div>
       <nav class="wrap" aria-label="Main">
         <ul>
           {nav.map((n) => (
-            <li><a href={n.href} aria-current={section === n.id ? "page" : undefined}>{n.label}</a></li>
+            <li><a href={link(n.href)} aria-current={section === n.id ? "page" : undefined}>{n.label}</a></li>
           ))}
         </ul>
       </nav>
@@ -54,7 +55,7 @@ const nav = [
         <p>
           Every figure comes from the Government of India's budget documents (indiabudget.gov.in), from Budget 2000-01
           to Budget {LATEST_YEAR}, and is checked automatically: accounting rules, agreement between documents and
-          with RBI and PRS figures. <a href="/about/">How the data is checked</a>.
+          with RBI and PRS figures. <a href={link("/about/")}>How the data is checked</a>.
         </p>
         <p class="muted">₹1 lakh crore = ₹1,00,000 crore ≈ ₹1 trillion. BE = Budget Estimate, RE = Revised Estimate.</p>
       </div>

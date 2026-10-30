@@ -1,4 +1,5 @@
 ---
+import { link } from "../lib/url";
 // "Announced vs what happened": % difference of the later figure from the Budget Estimate, as diverging bars.
 // Blue = came in above the budget, red = below. Not good or bad by itself: the label says what it means.
 import { money, signedPct } from "../lib/format";
@@ -22,7 +23,7 @@ const span = limit ?? Math.max(10, ...data.map((d) => Math.abs(d.gap)));
     return (
       <li>
         <div class="line">
-          {d.href ? <a href={d.href}>{d.label}</a> : <span>{d.label}</span>}
+          {d.href ? <a href={link(d.href)}>{d.label}</a> : <span>{d.label}</span>}
           <strong>{signedPct(d.gap)}</strong>
         </div>
         <div class="axis" aria-hidden="true">

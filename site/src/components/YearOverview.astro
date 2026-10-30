@@ -1,4 +1,5 @@
 ---
+import { link } from "../lib/url";
 import Money from "./Money.astro";
 import BarList from "./BarList.astro";
 import PromiseGap from "./PromiseGap.astro";
@@ -45,7 +46,7 @@ const schemes = topSchemes(year, kind, 8);
 <section class="head">
   <div class="title-row">
     <h1>Union Budget {year}</h1>
-    <form class="year-pick" action="/years/" method="get">
+    <form class="year-pick" action={link("/years/")} method="get">
       <label class="sr-only" for="year-select">Budget year</label>
       <select id="year-select" name="y" data-year-select>
         {[...YEARS].reverse().map((y) => <option value={y} selected={y === year}>{y}</option>)}
@@ -54,8 +55,8 @@ const schemes = topSchemes(year, kind, 8);
   </div>
   <p class="muted"><span class="chip">{KIND_LABEL[kind]}</span> {status[kind]}</p>
   <nav class="prevnext small" aria-label="Other years">
-    {prevYear && <a href={`/years/${prevYear}/`}>← {prevYear}</a>}
-    {nextY && <a href={nextY === LATEST_YEAR ? "/" : `/years/${nextY}/`}>{nextY} →</a>}
+    {prevYear && <a href={link(`/years/${prevYear}/`)}>← {prevYear}</a>}
+    {nextY && <a href={link(nextY === LATEST_YEAR ? "/" : `/years/${nextY}/`)}>{nextY} →</a>}
   </nav>
 </section>
 
@@ -129,7 +130,7 @@ const schemes = topSchemes(year, kind, 8);
   <section class="card">
     <h2>Announced vs what happened</h2>
     <p class="muted">These are this year's announced figures. The Revised Estimates arrive with Budget {nextYear(year)}.</p>
-    {prevYear && <p><a href={`/years/${prevYear}/`}>See how {prevYear}'s budget turned out →</a></p>}
+    {prevYear && <p><a href={link(`/years/${prevYear}/`)}>See how {prevYear}'s budget turned out →</a></p>}
   </section>
 )}
 
@@ -138,7 +139,7 @@ const schemes = topSchemes(year, kind, 8);
     <h2>Largest schemes</h2>
     <p class="muted small">Centrally Sponsored and Central Sector schemes, {KIND_LABEL[kind].toLowerCase()}s for {year}.</p>
     <BarList rows={schemes.map(({ s, v }) => ({ label: s.name, value: v.value, display: money(v.value), href: `/schemes/${s.slug}/`, note: s.department }))} tone={1} label="Largest schemes" />
-    <p class="small"><a href="/schemes/">Search all schemes →</a></p>
+    <p class="small"><a href={link("/schemes/")}>Search all schemes →</a></p>
   </section>
 )}
 
@@ -146,7 +147,8 @@ const schemes = topSchemes(year, kind, 8);
   document.querySelector<HTMLSelectElement>("[data-year-select]")?.addEventListener("change", (e) => {
     const y = (e.target as HTMLSelectElement).value;
     const latest = (e.target as HTMLSelectElement).options[0].value;
-    location.href = y === latest ? "/" : `/years/${y}/`;
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    location.href = base + (y === latest ? "/" : `/years/${y}/`);
   });
 </script>
 

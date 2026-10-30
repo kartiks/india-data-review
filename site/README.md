@@ -33,3 +33,11 @@ one-off debt transactions) are shown next to them.
 
 Charts use the validated categorical palette (light and dark), thin marks,
 legends for 2+ series, hollow markers for estimates, and a table view.
+
+## Deployment
+
+Hosted on Vercel (project Root Directory: `site`). `vercel.json` sets the
+build; the build reads `../data`, so Vercel's "Include files outside the root
+directory" setting must stay on (the default). Every push to `main` deploys;
+other branches get preview URLs. For a host that serves under a sub-path (e.g.
+GitHub Pages), set `SITE_BASE=/<repo>` and `SITE_URL` when building.

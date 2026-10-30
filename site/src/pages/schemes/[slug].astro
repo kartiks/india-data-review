@@ -1,4 +1,5 @@
 ---
+import { link } from "../../lib/url";
 import Money from "../../components/Money.astro";
 import Base from "../../layouts/Base.astro";
 import LineChart from "../../components/LineChart.astro";
@@ -33,11 +34,11 @@ const firstBudget = names[0]?.budget;
 const listedLate = firstBudget && firstBudget > SCHEME_YEARS_FIRST_BUDGET;
 ---
 <Base title={s.name} section="schemes" description={`${s.name}: budget allocations and spending since 2017-18, from India's Expenditure Profile.`}>
-  <p class="small"><a href="/schemes/">← All schemes</a></p>
+  <p class="small"><a href={link("/schemes/")}>← All schemes</a></p>
   <h1>{s.name}</h1>
   <p class="muted">
     <span class="chip">{SCHEME_TYPE_LABEL[s.type]}</span>
-    {ministry ? <a href={`/ministries/${ministry.id}/`}>{ministry.name}</a> : s.department}
+    {ministry ? <a href={link(`/ministries/${ministry.id}/`)}>{ministry.name}</a> : s.department}
   </p>
 
   <div class="tiles">

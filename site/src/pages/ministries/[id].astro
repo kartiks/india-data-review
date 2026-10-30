@@ -1,4 +1,5 @@
 ---
+import { link } from "../../lib/url";
 import Money from "../../components/Money.astro";
 import Base from "../../layouts/Base.astro";
 import LineChart from "../../components/LineChart.astro";
@@ -37,7 +38,7 @@ const isFinance = m.id === "finance";
 const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"));
 ---
 <Base title={m.name} section="ministries" description={`${m.name}: spending in every Union Budget since 2000-01, from official documents.`}>
-  <p class="small"><a href="/ministries/">← All ministries</a></p>
+  <p class="small"><a href={link("/ministries/")}>← All ministries</a></p>
   <h1>{m.name}</h1>
 
   <div class="tiles">
@@ -100,7 +101,7 @@ const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"))
       <h2>Schemes, {schemeYear}</h2>
       <p class="muted small">Budget Estimates for each scheme run by this ministry.</p>
       <BarList label="Schemes" rows={schemes.slice(0, 25).map(({ s, v }) => ({ label: s.name, value: v!.value, display: money(v!.value), href: `/schemes/${s.slug}/` }))} />
-      {schemes.length > 25 && <p class="small muted">And {schemes.length - 25} smaller schemes. <a href="/schemes/">Search all schemes</a>.</p>}
+      {schemes.length > 25 && <p class="small muted">And {schemes.length - 25} smaller schemes. <a href={link("/schemes/")}>Search all schemes</a>.</p>}
     </section>
   )}
 </Base>

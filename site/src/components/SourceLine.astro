@@ -1,4 +1,5 @@
 ---
+import { link } from "../lib/url";
 // "Source: ..." line linking to the official document the figures were read from.
 import { type Kind, KIND_LABEL, nextYear, headline } from "../lib/data";
 
@@ -10,5 +11,5 @@ const url = headline(year, "total_expenditure", kind)?.source.url;
 <p class="source">
   Source: {docs.join("; ")}, Budget {budget} ({KIND_LABEL[kind]}s for {year}).{" "}
   {url && <><a href={url} rel="external noopener">Official PDF</a>{" · "}</>}
-  <a href="/about/">How it's checked</a>
+  <a href={link("/about/")}>How it's checked</a>
 </p>

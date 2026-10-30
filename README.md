@@ -1,6 +1,6 @@
 # India Budget Review
 
-**Live site: https://india-budget-review.vercel.app**
+**Live site: https://india-budget-review.k4tech.in**
 
 A website on India's Union Budget, 2000-01 to today, built only from official
 budget documents and checked automatically. This repository holds the data

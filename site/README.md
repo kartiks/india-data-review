@@ -1,6 +1,6 @@
 # India Budget Review — website
 
-Live: https://india-budget-review.vercel.app
+Live: https://india-budget-review.k4tech.in
 
 A static, mobile-first website built from the verified datasets in `../data`
 (produced by `../pipeline`). Every page is pre-rendered; charts are SVG drawn

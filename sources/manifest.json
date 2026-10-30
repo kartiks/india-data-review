@@ -1,0 +1,1675 @@
+{
+  "2000-01": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2000-01/bag/bag1.htm",
+          "file": "sources/raw/2000-01/summary.htm",
+          "sha256": "a97e34600516694b77134b5c630889d0f200f80d1bce8d827a36a9b48a3bcd1f",
+          "bytes": 13083,
+          "fetched_at": "2026-10-30T04:43:10+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2000-01/bag/bag2.htm",
+          "file": "sources/raw/2000-01/receipts.htm",
+          "sha256": "390a4db6faf3b9d2f21ccff93dcbaadc056db099a7bef1e8cb2a84c71bea9ef4",
+          "bytes": 18111,
+          "fetched_at": "2026-10-30T05:14:59+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2000-01/eb/stat02.pdf",
+          "file": "sources/raw/2000-01/ministries.pdf",
+          "sha256": "92509aaaac28f0fd2cc4edeac626bd5d88fe2bc8d6316cb19082154999324ffe",
+          "bytes": 32932,
+          "fetched_at": "2026-10-30T05:15:00+00:00"
+        }
+      }
+    }
+  },
+  "2001-02": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2001-02/bag/bag1.htm",
+          "file": "sources/raw/2001-02/summary.htm",
+          "sha256": "a88ea0711ba7559bda4fd34e0701e50e643303891b5624b32348a4fc4003b42e",
+          "bytes": 13263,
+          "fetched_at": "2026-10-30T04:43:13+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2001-02/bag/bag2.htm",
+          "file": "sources/raw/2001-02/receipts.htm",
+          "sha256": "71172a6e77634c7d5a6e70670c7717ffcfd13d62310a209e38adc68d08cd6024",
+          "bytes": 14215,
+          "fetched_at": "2026-10-30T05:15:04+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2001-02/eb/stat02.pdf",
+          "file": "sources/raw/2001-02/ministries.pdf",
+          "sha256": "347c90bde18f593f050a6e1b52e02bc2312c259a3d83bd7ba0d7d87b9aaa5c30",
+          "bytes": 36807,
+          "fetched_at": "2026-10-30T05:15:05+00:00"
+        }
+      }
+    }
+  },
+  "2002-03": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2002-03/bag/bag1.htm",
+          "file": "sources/raw/2002-03/summary.htm",
+          "sha256": "882945693cd574c83f0456ef03b1448cf234756cf4e17b53ac2a59e8cbada074",
+          "bytes": 12616,
+          "fetched_at": "2026-10-30T04:43:17+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2002-03/bag/bag2.htm",
+          "file": "sources/raw/2002-03/receipts.htm",
+          "sha256": "678429b54fa90457ce946b4fc5098f7bc81c1e409e12e1547fe14fda72338daa",
+          "bytes": 13895,
+          "fetched_at": "2026-10-30T05:15:09+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2002-03/eb/stat02.pdf",
+          "file": "sources/raw/2002-03/ministries.pdf",
+          "sha256": "43f1b5183cb6697b8c07a33dfb4bf59f17bbbad0c28e895e42e6891704b29db3",
+          "bytes": 33240,
+          "fetched_at": "2026-10-30T05:15:10+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2002-03/rec/annex7.pdf",
+          "file": "sources/raw/2002-03/receipt_budget.pdf",
+          "sha256": "e28b170564129c68c2ad176c4d1ae7c87fa86af3777e31fcd00563977039162d",
+          "bytes": 15114,
+          "fetched_at": "2026-10-30T05:40:19+00:00"
+        }
+      }
+    }
+  },
+  "2003-04": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2003-04/bag/bag1.htm",
+          "file": "sources/raw/2003-04/summary.htm",
+          "sha256": "73748f2fa15903cd7608d9c60ecf4030dbe901253a91b8c7c3cb882c52b6457a",
+          "bytes": 27445,
+          "fetched_at": "2026-10-30T04:43:20+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2003-04/bag/bag2.htm",
+          "file": "sources/raw/2003-04/receipts.htm",
+          "sha256": "4f007272c34f0184d589362c580af2b3cfc389b391aaf2082ffe205b5eb23eee",
+          "bytes": 32463,
+          "fetched_at": "2026-10-30T05:15:14+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2003-04/eb/stat02.pdf",
+          "file": "sources/raw/2003-04/ministries.pdf",
+          "sha256": "188ac2f1be349df33d6376157440171e63c946f15707940c3bc4b49572efe9fa",
+          "bytes": 49788,
+          "fetched_at": "2026-10-30T05:15:15+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2003-04/rec/annex7.pdf",
+          "file": "sources/raw/2003-04/receipt_budget.pdf",
+          "sha256": "b9cd8932e99783dec9ec603616d02c8c5d3cfff984ac6e36c3ffbd17714f552f",
+          "bytes": 18105,
+          "fetched_at": "2026-10-30T05:40:21+00:00"
+        }
+      }
+    }
+  },
+  "2004-05": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/bag/bag1.pdf",
+          "file": "sources/raw/2004-05/summary.pdf",
+          "sha256": "95fdeba3ef0132ecfcc0e11baa1a241aea1c4af5938fea7cc39949eb65ca1374",
+          "bytes": 86921,
+          "fetched_at": "2026-10-30T04:43:21+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/bag/bag1.htm",
+          "file": "sources/raw/2004-05/summary.htm",
+          "sha256": "4980678b9d73451e9d65a5a5dd76a91588cf4c93b9ca3c151bf5f373ddfcbd97",
+          "bytes": 28452,
+          "fetched_at": "2026-10-30T04:43:23+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/bag/bag2.pdf",
+          "file": "sources/raw/2004-05/receipts.pdf",
+          "sha256": "5929496e9fcde0d1309f5c5364a0832dbe95861155dba7f15412b5e54f043bfa",
+          "bytes": 92345,
+          "fetched_at": "2026-10-30T05:15:17+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/bag/bag2.htm",
+          "file": "sources/raw/2004-05/receipts.htm",
+          "sha256": "33257a0db0f8299408e9c6dbbf97f784c0cb6b82cf20ac5c1f0de9727fe4c5a5",
+          "bytes": 32658,
+          "fetched_at": "2026-10-30T05:15:19+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/eb/stat02.pdf",
+          "file": "sources/raw/2004-05/ministries.pdf",
+          "sha256": "711747adf2c342e9b9086ffef6cbd5d4fc527b7d658e84bc083750de9710448d",
+          "bytes": 40909,
+          "fetched_at": "2026-10-30T05:15:19+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2004-05/rec/annex7.pdf",
+          "file": "sources/raw/2004-05/receipt_budget.pdf",
+          "sha256": "88b0c42dfe89a993f4aedbedb82beac257ea444846922d6e2d34fe0676b7a33d",
+          "bytes": 18069,
+          "fetched_at": "2026-10-30T05:40:23+00:00"
+        }
+      }
+    }
+  },
+  "2005-06": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag1.pdf",
+          "file": "sources/raw/2005-06/summary.pdf",
+          "sha256": "b5b5460a9994e7ec5691eb5b20863050bb1b6b608a8b775937a4e9c4e3135649",
+          "bytes": 86740,
+          "fetched_at": "2026-10-30T04:43:24+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag1.htm",
+          "file": "sources/raw/2005-06/summary.htm",
+          "sha256": "c7aa52d525ea35419e8a207c5d13f3d0f330b5570deb2c54e8fe228b990c89a9",
+          "bytes": 27367,
+          "fetched_at": "2026-10-30T04:43:26+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag2.pdf",
+          "file": "sources/raw/2005-06/receipts.pdf",
+          "sha256": "cd0e98843ba8913ac851e0b4472360c1f5f49efaf05b43e5e3b46a93bcdc5eed",
+          "bytes": 92568,
+          "fetched_at": "2026-10-30T05:15:22+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag2.htm",
+          "file": "sources/raw/2005-06/receipts.htm",
+          "sha256": "643b5d5446e33e47ae89f3d9776e67ba85f8622ee56e3756a0370f80b775d3e5",
+          "bytes": 32401,
+          "fetched_at": "2026-10-30T05:15:23+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/eb/stat02.pdf",
+          "file": "sources/raw/2005-06/ministries.pdf",
+          "sha256": "720eb919326a0e19c642bd32198cf43bd699c47d62aafaa3bca55a65600e6525",
+          "bytes": 55301,
+          "fetched_at": "2026-10-30T05:15:24+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2005-06/rec/annex7.pdf",
+          "file": "sources/raw/2005-06/receipt_budget.pdf",
+          "sha256": "f58093628bdd577376ebf2b3b21bfa508b8bf074ddcc9e8d4d4d0dc7379182bf",
+          "bytes": 18056,
+          "fetched_at": "2026-10-30T05:40:25+00:00"
+        }
+      }
+    }
+  },
+  "2006-07": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/bag/bag1.pdf",
+          "file": "sources/raw/2006-07/summary.pdf",
+          "sha256": "83f4ee2d0560832947ef3deb3d81a70d46b8af04bf14c01a6463155955da3189",
+          "bytes": 13021,
+          "fetched_at": "2026-10-30T04:43:27+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/bag/bag1.htm",
+          "file": "sources/raw/2006-07/summary.htm",
+          "sha256": "6b626ddd67c0f3acf11d9e6208c65d27fe034194b74de46a41c0eb7a575fc372",
+          "bytes": 26937,
+          "fetched_at": "2026-10-30T04:43:30+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/bag/bag2.pdf",
+          "file": "sources/raw/2006-07/receipts.pdf",
+          "sha256": "d0aec195443c5c4d0ffba92cbbb24b65aeae782553d2ddc1113c19e28d99c9ac",
+          "bytes": 12520,
+          "fetched_at": "2026-10-30T05:15:26+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/bag/bag2.htm",
+          "file": "sources/raw/2006-07/receipts.htm",
+          "sha256": "cbe5c94fb24f50a5fdc3a677a6bacdc213a8318a7081c81975d62df2600894ca",
+          "bytes": 32256,
+          "fetched_at": "2026-10-30T05:15:28+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/eb/stat02.pdf",
+          "file": "sources/raw/2006-07/ministries.pdf",
+          "sha256": "bd02c08425b507915016df1cade6b991de8e26cf2184191fedccfa1428412332",
+          "bytes": 31850,
+          "fetched_at": "2026-10-30T05:15:28+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2006-07/rec/annex7.pdf",
+          "file": "sources/raw/2006-07/receipt_budget.pdf",
+          "sha256": "ad653d17ee740e67ae6257f2b3352166e4d80f7e0781838ea10c198abe2f1c67",
+          "bytes": 14324,
+          "fetched_at": "2026-10-30T05:40:26+00:00"
+        }
+      }
+    }
+  },
+  "2007-08": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/bag/bag1.pdf",
+          "file": "sources/raw/2007-08/summary.pdf",
+          "sha256": "347f7dd8c815449e46016fc92643bdb9aa4041d95168b427e4616b0d9f103299",
+          "bytes": 12726,
+          "fetched_at": "2026-10-30T04:43:31+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/bag/bag1.htm",
+          "file": "sources/raw/2007-08/summary.htm",
+          "sha256": "71aba61c01ae9b4f8a54151657e10332782bf487d457cdc80f9536a3338c7148",
+          "bytes": 26912,
+          "fetched_at": "2026-10-30T04:43:33+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/bag/bag2.pdf",
+          "file": "sources/raw/2007-08/receipts.pdf",
+          "sha256": "a54e7999ee9cc1ed74a3a3f8d7dfaed7585beea0e96077d33644acd4c9924f65",
+          "bytes": 12527,
+          "fetched_at": "2026-10-30T05:15:31+00:00"
+        },
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/bag/bag2.htm",
+          "file": "sources/raw/2007-08/receipts.htm",
+          "sha256": "8a547fe3f864471dbb6270e4596208a04d684a900a719808eb41bb76466511c0",
+          "bytes": 32210,
+          "fetched_at": "2026-10-30T05:15:32+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/eb/stat02.pdf",
+          "file": "sources/raw/2007-08/ministries.pdf",
+          "sha256": "12ee6d60b8ebea54da9b82b7131256b7abd8227752582ab63017a86a3c964d34",
+          "bytes": 29872,
+          "fetched_at": "2026-10-30T05:15:33+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2007-08/rec/annex7.pdf",
+          "file": "sources/raw/2007-08/receipt_budget.pdf",
+          "sha256": "69bccfccbf5ae839ab503c0f43cb9f399f83e5848931a733ba4bc8c4a08ea1b1",
+          "bytes": 8268,
+          "fetched_at": "2026-10-30T05:40:29+00:00"
+        }
+      }
+    }
+  },
+  "2008-09": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2008-09/bag/bag1.htm",
+          "file": "sources/raw/2008-09/summary.htm",
+          "sha256": "8c5f65012a8daacafcd264d3a08b87b406056985c0f85fdc49f95332af18d9b1",
+          "bytes": 27749,
+          "fetched_at": "2026-10-30T04:43:36+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2008-09/bag/bag2.htm",
+          "file": "sources/raw/2008-09/receipts.htm",
+          "sha256": "7dc69f475d1a6e40707c3e48c0aa2428eb2237fc377eb87bb2982ca122bc1480",
+          "bytes": 33524,
+          "fetched_at": "2026-10-30T05:15:37+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2008-09/eb/stat02.pdf",
+          "file": "sources/raw/2008-09/ministries.pdf",
+          "sha256": "d51dca56fa40953b817f7e32ce8ce112cc17baa319b551738d5f2e656a396cc5",
+          "bytes": 41026,
+          "fetched_at": "2026-10-30T05:15:38+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2008-09/rec/annex7.pdf",
+          "file": "sources/raw/2008-09/receipt_budget.pdf",
+          "sha256": "ca80b9ac8c1df379839e97e14366e4a1388e76376d5dbb12cf0c3f0ae352e692",
+          "bytes": 20003,
+          "fetched_at": "2026-10-30T05:40:31+00:00"
+        }
+      }
+    }
+  },
+  "2009-10": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2009-10/bag/bag1.htm",
+          "file": "sources/raw/2009-10/summary.htm",
+          "sha256": "12683c612125b524207354b0b195fec93a9e88c179126d8d3f71904e00974ebb",
+          "bytes": 29618,
+          "fetched_at": "2026-10-30T04:43:39+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2009-10/bag/bag2.htm",
+          "file": "sources/raw/2009-10/receipts.htm",
+          "sha256": "a12f00251c3e1c318a091970a47c9a8d3ed8ef51720644cf8915cd49080090b0",
+          "bytes": 34456,
+          "fetched_at": "2026-10-30T05:15:42+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2009-10/eb/stat02.pdf",
+          "file": "sources/raw/2009-10/ministries.pdf",
+          "sha256": "413fc0e68f23bbd19de7dda0033acff58a9d1b7006191586fb76a59192c4283b",
+          "bytes": 57351,
+          "fetched_at": "2026-10-30T05:15:43+00:00"
+        }
+      }
+    },
+    "receipt_budget": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2009-10/rec/annex7.pdf",
+          "file": "sources/raw/2009-10/receipt_budget.pdf",
+          "sha256": "462d46ce127853f4a0d5419db0c867d51bfa0e8a507a229858cedf48ce2bd8eb",
+          "bytes": 15912,
+          "fetched_at": "2026-10-30T05:40:34+00:00"
+        }
+      }
+    }
+  },
+  "2010-11": {
+    "summary": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2010-11/bag/bag1.htm",
+          "file": "sources/raw/2010-11/summary.htm",
+          "sha256": "d5889e9aa614be7919a07aa2079717a997ecefe8064c44efcc8496ff9bd5dfeb",
+          "bytes": 28916,
+          "fetched_at": "2026-10-30T04:43:43+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "htm": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2010-11/bag/bag2.htm",
+          "file": "sources/raw/2010-11/receipts.htm",
+          "sha256": "90778a17c230870ba51db5de4e2a7f959c65fe195842799027279eee12122bc6",
+          "bytes": 41438,
+          "fetched_at": "2026-10-30T05:15:47+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget_archive/ub2010-11/eb/stat02.pdf",
+          "file": "sources/raw/2010-11/ministries.pdf",
+          "sha256": "cf7b6a24bce474d9be067bde00da0dcf6f7a2e7e6baf5fd02e03aa883617a51c",
+          "bytes": 35659,
+          "fetched_at": "2026-10-30T05:15:48+00:00"
+        }
+      }
+    }
+  },
+  "2011-12": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/bag/bag1.pdf",
+          "file": "sources/raw/2011-12/summary.pdf",
+          "sha256": "33b364f77269a75635ed14d179178ca99dd0972ad1e893cec7dd9aa3741fa65b",
+          "bytes": 441815,
+          "fetched_at": "2026-10-30T04:43:44+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/bag/bag1.xls",
+          "file": "sources/raw/2011-12/summary.xls",
+          "sha256": "042290449545bc06d988fd1978ca220081209c6e4534259f0edfd66e58d7679c",
+          "bytes": 27648,
+          "fetched_at": "2026-10-30T04:43:45+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/bag/bag2.pdf",
+          "file": "sources/raw/2011-12/receipts.pdf",
+          "sha256": "d716b705ef7dcdea39b5b4c34f8f9149dc1089791b8594a18a04694650c9493e",
+          "bytes": 441207,
+          "fetched_at": "2026-10-30T05:15:50+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/bag/bag2.xls",
+          "file": "sources/raw/2011-12/receipts.xls",
+          "sha256": "5274d8fb5a755ad95d96ca44655e1aa105966999d9f37e43ddd182db6bf3b017",
+          "bytes": 21504,
+          "fetched_at": "2026-10-30T05:15:51+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/eb/stat02.pdf",
+          "file": "sources/raw/2011-12/ministries.pdf",
+          "sha256": "5e1c0e43e98e0e1172d1583ce4b7c8cfb43ac0fea7b56335c10db7c961dcb134",
+          "bytes": 82564,
+          "fetched_at": "2026-10-30T05:15:53+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/eb/stat02.xls",
+          "file": "sources/raw/2011-12/ministries.xls",
+          "sha256": "18f5124e42aa653acaeae968ee1449735dc304c6b26314aa644d4d1ec8043805",
+          "bytes": 73216,
+          "fetched_at": "2026-10-30T05:15:53+00:00"
+        }
+      }
+    }
+  },
+  "2012-13": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag1.pdf",
+          "file": "sources/raw/2012-13/summary.pdf",
+          "sha256": "fabf5ecfbcb1927329bfbf8553c43ffcc2b1debaead363186877de0d6a00b00b",
+          "bytes": 107396,
+          "fetched_at": "2026-10-30T04:43:47+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag1.xls",
+          "file": "sources/raw/2012-13/summary.xls",
+          "sha256": "b62bbce6726fe6cc7f5d3f9c535d3bc300392db2134850e445890725cde86290",
+          "bytes": 37376,
+          "fetched_at": "2026-10-30T04:43:48+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag2.pdf",
+          "file": "sources/raw/2012-13/receipts.pdf",
+          "sha256": "6e5cefef228f8da9a8cf0267367d4829a4057ab55a652b36539b85f54dfe204b",
+          "bytes": 109227,
+          "fetched_at": "2026-10-30T05:15:55+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag2.xls",
+          "file": "sources/raw/2012-13/receipts.xls",
+          "sha256": "c575c8c95384dc1001ad63a092ae6718b93a4182b93518779c74507f1ccf7b99",
+          "bytes": 35328,
+          "fetched_at": "2026-10-30T05:15:56+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.pdf",
+          "file": "sources/raw/2012-13/ministries.pdf",
+          "sha256": "a95717c30caafc6d7be9d6ebf8b91b732265d26fb9b6b24b5db32dd9a82e2b2d",
+          "bytes": 59378,
+          "fetched_at": "2026-10-30T05:15:57+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.xls",
+          "file": "sources/raw/2012-13/ministries.xls",
+          "sha256": "ec845985baa1b0ec7e2b4aae99c7385d8689cd4c2db49ab8d95ecfb7e792c560",
+          "bytes": 96256,
+          "fetched_at": "2026-10-30T05:15:58+00:00"
+        }
+      }
+    }
+  },
+  "2013-14": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/bag/bag1.pdf",
+          "file": "sources/raw/2013-14/summary.pdf",
+          "sha256": "83a8f93c10790f06f8a484c108a7c86ad8bc115c4ef2106a92728db4f8d408b2",
+          "bytes": 62158,
+          "fetched_at": "2026-10-30T04:43:50+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/bag/bag1.xls",
+          "file": "sources/raw/2013-14/summary.xls",
+          "sha256": "5ae233dce4747545184a7f81cf13874f0ac01a54a600d1012b0b6adacf6ebdcc",
+          "bytes": 23552,
+          "fetched_at": "2026-10-30T04:43:51+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/bag/bag2.pdf",
+          "file": "sources/raw/2013-14/receipts.pdf",
+          "sha256": "5524dd534f641399cf8f1ab96f6f4b5f77d489a5436ea377dd484b29edc93e39",
+          "bytes": 57823,
+          "fetched_at": "2026-10-30T05:16:00+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/bag/bag2.xls",
+          "file": "sources/raw/2013-14/receipts.xls",
+          "sha256": "ed0dac145c72f5532824e74e904d5341c8216372e7c7c6021dc1ea8b56592a28",
+          "bytes": 22016,
+          "fetched_at": "2026-10-30T05:16:00+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/eb/stat02.pdf",
+          "file": "sources/raw/2013-14/ministries.pdf",
+          "sha256": "3c9e67055b9a51abe3551b77d617c74c0ec9c64299f9d257a3a1c7cd5a7ddd77",
+          "bytes": 42510,
+          "fetched_at": "2026-10-30T05:16:02+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/eb/stat02.xls",
+          "file": "sources/raw/2013-14/ministries.xls",
+          "sha256": "4ac292e7f610f88190cb87fa3d9d62f20260a082466883680edf4a8acb79eb96",
+          "bytes": 96256,
+          "fetched_at": "2026-10-30T05:16:03+00:00"
+        }
+      }
+    }
+  },
+  "2014-15": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/bag/bag1.pdf",
+          "file": "sources/raw/2014-15/summary.pdf",
+          "sha256": "1bf97f0fc365041c34e2b3206e4815960ee5c645be22c02ac7fad92c0c0b68df",
+          "bytes": 73611,
+          "fetched_at": "2026-10-30T04:43:53+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/bag/bag1.xls",
+          "file": "sources/raw/2014-15/summary.xls",
+          "sha256": "7120a3f737e4a690003d0a0d7fcb2703b49edec4670da6411147934ddbff5a67",
+          "bytes": 42496,
+          "fetched_at": "2026-10-30T04:43:55+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/bag/bag2.pdf",
+          "file": "sources/raw/2014-15/receipts.pdf",
+          "sha256": "eaa38491a68205e619b302ce4148c0cf3cee76cf23b6b762edecb2784a1aaa90",
+          "bytes": 69417,
+          "fetched_at": "2026-10-30T05:16:04+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/bag/bag2.xls",
+          "file": "sources/raw/2014-15/receipts.xls",
+          "sha256": "9e304fca45ae071571905882dd49a1b7e20f25d05a7cc5ece967391cec4ea883",
+          "bytes": 41984,
+          "fetched_at": "2026-10-30T05:16:05+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/eb/stat02.pdf",
+          "file": "sources/raw/2014-15/ministries.pdf",
+          "sha256": "242af80b54d4d8c693aa1f631e24326f10635bde7bf73dbf0a2bd8ad9ea5f166",
+          "bytes": 158621,
+          "fetched_at": "2026-10-30T05:16:07+00:00"
+        }
+      }
+    }
+  },
+  "2015-16": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/bag/bag1.pdf",
+          "file": "sources/raw/2015-16/summary.pdf",
+          "sha256": "aad004d519d555599cbafe3da18af08538f31a8a1e01362b2bb98965f5d88912",
+          "bytes": 99820,
+          "fetched_at": "2026-10-30T04:43:57+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/bag/bag1.xls",
+          "file": "sources/raw/2015-16/summary.xls",
+          "sha256": "ba8eac5ee688a62a428a5d7fcad2c2353fffc7ce3d5c4508b2f7b18d3cca39e0",
+          "bytes": 41472,
+          "fetched_at": "2026-10-30T04:43:58+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/bag/bag2.pdf",
+          "file": "sources/raw/2015-16/receipts.pdf",
+          "sha256": "60feb4611377cb8034864e988bcef82b9141545bfda432d8a2f28b3e36281c8e",
+          "bytes": 69502,
+          "fetched_at": "2026-10-30T05:16:09+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/bag/bag2.xls",
+          "file": "sources/raw/2015-16/receipts.xls",
+          "sha256": "6c172bed5fa2627d2551eb0eb4c67a2caa4bf720ad958c98c4d16e8492c57b3a",
+          "bytes": 34816,
+          "fetched_at": "2026-10-30T05:16:10+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf",
+          "file": "sources/raw/2015-16/ministries.pdf",
+          "sha256": "4a49dbb2fba976890d92ffc7d4e8ac420b6df546567d6395586b3811c6356cce",
+          "bytes": 61956,
+          "fetched_at": "2026-10-30T05:16:12+00:00"
+        }
+      }
+    }
+  },
+  "2016-17": {
+    "summary": {
+      "files": {
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag1.xls",
+          "file": "sources/raw/2016-17/summary.xls",
+          "sha256": "1452d513b37147cf33f9c11a33cedc14b7d1f4d0e747621377dfeb05ccfc3c7b",
+          "bytes": 33792,
+          "fetched_at": "2026-10-30T04:44:01+00:00"
+        },
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag11.pdf",
+          "file": "sources/raw/2016-17/summary.pdf",
+          "sha256": "85f2e904fc2d6280cee31d457606d3bf421673600af527f8c8b62662f90041f1",
+          "bytes": 245591,
+          "fetched_at": "2026-10-30T04:48:08+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag2.pdf",
+          "file": "sources/raw/2016-17/receipts.pdf",
+          "sha256": "1b0a9b81695c00059d4f7b18a0b28801f329f55f6c008e846ee576edc650a8c1",
+          "bytes": 54187,
+          "fetched_at": "2026-10-30T05:16:15+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag2.xls",
+          "file": "sources/raw/2016-17/receipts.xls",
+          "sha256": "f1ef0485864d1d80a7076c350875030032421b1886ae0c6394b84e5a3e18f817",
+          "bytes": 29184,
+          "fetched_at": "2026-10-30T05:16:15+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/eb/stat02.pdf",
+          "file": "sources/raw/2016-17/ministries.pdf",
+          "sha256": "182303588e56cb5146372f6824a2ebc419aa03c4c37fa88f29a235a8839a3c2d",
+          "bytes": 523132,
+          "fetched_at": "2026-10-30T05:16:18+00:00"
+        }
+      }
+    }
+  },
+  "2017-18": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/bag/bag1.pdf",
+          "file": "sources/raw/2017-18/summary.pdf",
+          "sha256": "c217dc71043865d2f78d080cc5e875f3569687e23c0008d71ea1df45ee524e67",
+          "bytes": 595496,
+          "fetched_at": "2026-10-30T04:44:03+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/bag/bag1.xlsx",
+          "file": "sources/raw/2017-18/summary.xlsx",
+          "sha256": "90ea9c1e82d15d47483c7ab8261a0f0a9b04a054a599683ea086f551fe233954",
+          "bytes": 11240,
+          "fetched_at": "2026-10-30T04:44:06+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/bag/bag5.pdf",
+          "file": "sources/raw/2017-18/receipts.pdf",
+          "sha256": "edde99cfff3bdff046788c1b57c5fd2637d13231f91f2d381fea112683a99576",
+          "bytes": 413656,
+          "fetched_at": "2026-10-30T05:24:45+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/bag/bag5.xlsx",
+          "file": "sources/raw/2017-18/receipts.xlsx",
+          "sha256": "4f0586ba16ea9a7327bd64b6213d1b1f6ebc0fc437f4d08f4d0423b004bb97f1",
+          "bytes": 10800,
+          "fetched_at": "2026-10-30T05:24:46+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/eb/stat3a.pdf",
+          "file": "sources/raw/2017-18/ministries.pdf",
+          "sha256": "f6245b447b0c9617b6729bd5c09928d3a9028027a5aff39e0d38a138d2c5b708",
+          "bytes": 1696386,
+          "fetched_at": "2026-10-30T05:16:24+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/eb/stat3a.xlsx",
+          "file": "sources/raw/2017-18/ministries.xlsx",
+          "sha256": "15bc82570e3cefa647826106629756590c388c13a1f0e124c226fd800fdf5645",
+          "bytes": 79228,
+          "fetched_at": "2026-10-30T05:16:25+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/eb/stat4a.pdf",
+          "file": "sources/raw/2017-18/css.pdf",
+          "sha256": "a6f1384afaa5af5354e028c692a59bc5383a47edcc94f785249380b11b94d04c",
+          "bytes": 58669,
+          "fetched_at": "2026-10-30T05:16:27+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/eb/stat4b.pdf",
+          "file": "sources/raw/2017-18/central_sector.pdf",
+          "sha256": "196441798c642fa9bab5436bce83c1bdb227680306369887cd5732d76f4d344a",
+          "bytes": 4692474,
+          "fetched_at": "2026-10-30T05:16:33+00:00"
+        }
+      }
+    }
+  },
+  "2018-19": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/bag/bag1.pdf",
+          "file": "sources/raw/2018-19/summary.pdf",
+          "sha256": "0d3b2c1904cf2c9af52956eb42556a23c1cfce4a8e813cb42839e58397249a91",
+          "bytes": 445256,
+          "fetched_at": "2026-10-30T04:44:07+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/bag/bag1.xlsx",
+          "file": "sources/raw/2018-19/summary.xlsx",
+          "sha256": "32865964ae98c52f4e7264a02617bffbb27449f05569ac2863eac2284957ecc2",
+          "bytes": 12082,
+          "fetched_at": "2026-10-30T04:44:09+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/bag/bag5.pdf",
+          "file": "sources/raw/2018-19/receipts.pdf",
+          "sha256": "d07dfc4ab2983f5752362153811f89a5e2a10d85470e3290e37513684afe83d8",
+          "bytes": 354049,
+          "fetched_at": "2026-10-30T05:24:46+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf",
+          "file": "sources/raw/2018-19/ministries.pdf",
+          "sha256": "3e0c232060416faec1cbfe9ac11d4b7643822905b6a1ab221569ff62dccc37ad",
+          "bytes": 1007101,
+          "fetched_at": "2026-10-30T05:16:40+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat4a.pdf",
+          "file": "sources/raw/2018-19/css.pdf",
+          "sha256": "33e7a813b1a2b62030c3fd05daa397c240bdf227433ca5e858a0fb305a803da1",
+          "bytes": 351054,
+          "fetched_at": "2026-10-30T05:16:43+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat4b.pdf",
+          "file": "sources/raw/2018-19/central_sector.pdf",
+          "sha256": "51b806140286ffb365668b8e3e93ddf732e2652eae609fe604cb1a87143b15d9",
+          "bytes": 1952131,
+          "fetched_at": "2026-10-30T05:16:50+00:00"
+        }
+      }
+    }
+  },
+  "2019-20": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2019-20/summary.pdf",
+          "sha256": "81e8ab5b98e7b497b2b30c7e592c70c35bb33e04f2c21cecbc10b212d9273dcf",
+          "bytes": 544031,
+          "fetched_at": "2026-10-30T04:44:10+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag1.xlsx",
+          "file": "sources/raw/2019-20/summary.xlsx",
+          "sha256": "1dd369c61b568abb7c1842f85fd268c90442c5b84241d6b7fbb449d5d9efa140",
+          "bytes": 12497,
+          "fetched_at": "2026-10-30T04:44:11+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2019-20/receipts.pdf",
+          "sha256": "6b978a42c1d23fb9988fad48b1f85762c5c83326edc39f4354e9bfe1002d1825",
+          "bytes": 337633,
+          "fetched_at": "2026-10-30T05:16:53+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.xlsx",
+          "file": "sources/raw/2019-20/receipts.xlsx",
+          "sha256": "a10e98e2dc956d2533998759d6f9ff7c3069b9bc36d29726d8fc2fac4c512139",
+          "bytes": 12177,
+          "fetched_at": "2026-10-30T05:16:53+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2019-20/ministries.pdf",
+          "sha256": "4003639a61f1fc6be32b30fdc4001649d3d48250246a366c3b65496dc7f40479",
+          "bytes": 1327884,
+          "fetched_at": "2026-10-30T05:16:58+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat3a.xlsx",
+          "file": "sources/raw/2019-20/ministries.xlsx",
+          "sha256": "e2279a95994eab62924746b092489235702592a53838055fc0328fe2daae7f0d",
+          "bytes": 82501,
+          "fetched_at": "2026-10-30T05:16:59+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2019-20/css.pdf",
+          "sha256": "4cbcfed7feaececdf11b3da00be1d2f05e81a5b01bd099e334a2edaa387fcec0",
+          "bytes": 588328,
+          "fetched_at": "2026-10-30T05:17:01+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat4a.xlsx",
+          "file": "sources/raw/2019-20/css.xlsx",
+          "sha256": "1182fa529fdee880d056563331fe9f583a8ebbf306143cbdbc0ad2076f7391ca",
+          "bytes": 18026,
+          "fetched_at": "2026-10-30T05:17:02+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2019-20/central_sector.pdf",
+          "sha256": "e37dfefb361e9ef6ccb4cb83d38480f5a7af8c93cc57181f46c5173f04e650a6",
+          "bytes": 906663,
+          "fetched_at": "2026-10-30T05:17:08+00:00"
+        }
+      }
+    }
+  },
+  "2020-21": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2020-21/summary.pdf",
+          "sha256": "1f2eba79d60e40e928abc4068b4d3b4929940efadfa0b3bfa62f6c0acb8c3dff",
+          "bytes": 539471,
+          "fetched_at": "2026-10-30T04:44:13+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/Budget_at_Glance/bag1.xlsx",
+          "file": "sources/raw/2020-21/summary.xlsx",
+          "sha256": "813736f99a53f70ed1673ea63aaecaa5635acd5fe518563adbd8fe25b32aa75a",
+          "bytes": 12398,
+          "fetched_at": "2026-10-30T04:44:14+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2020-21/receipts.pdf",
+          "sha256": "c84bbe6b9ce1d0ec5e36a4efcefe9e5795a22753439aa01b0946c94e4b351f59",
+          "bytes": 333436,
+          "fetched_at": "2026-10-30T05:17:10+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/Budget_at_Glance/bag5.xlsx",
+          "file": "sources/raw/2020-21/receipts.xlsx",
+          "sha256": "f2c864d31b2305c3962d3afb659ce1d340e9a5e9889d87ce106e4c94b2a1d2fc",
+          "bytes": 12257,
+          "fetched_at": "2026-10-30T05:17:11+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2020-21/ministries.pdf",
+          "sha256": "de4bd268bc983529a8254d24992c602fe094667017cd8d744c032bcf5c7aa77d",
+          "bytes": 1270228,
+          "fetched_at": "2026-10-30T05:17:15+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/eb/stat3a.xlsx",
+          "file": "sources/raw/2020-21/ministries.xlsx",
+          "sha256": "a7ac43dbf8f9290a8209466c0d629de8fbf03952d6ba665d893ec4a46c23f11d",
+          "bytes": 83485,
+          "fetched_at": "2026-10-30T05:17:15+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2020-21/css.pdf",
+          "sha256": "2a111c322d392ff60eaac20438431a1836361270d32fe8131eb81491b1c4f224",
+          "bytes": 264506,
+          "fetched_at": "2026-10-30T05:17:17+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2020-21/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2020-21/central_sector.pdf",
+          "sha256": "bb2807a3d1bf11d6323c7a2554486f7a8150edd4e00861676a9cb5b25ca3d047",
+          "bytes": 1787129,
+          "fetched_at": "2026-10-30T05:17:23+00:00"
+        }
+      }
+    }
+  },
+  "2021-22": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2021-22/summary.pdf",
+          "sha256": "89bb053ce6c312e025bbbd25cf9ffff82cf5a014642bac3132fc79b3968153ae",
+          "bytes": 732970,
+          "fetched_at": "2026-10-30T04:44:17+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/Budget_at_Glance/bag1.xls",
+          "file": "sources/raw/2021-22/summary.xls",
+          "sha256": "ddaf082a2699179b871a57328e185b2d59ada06e2b2020e3f6f5bab0931c9404",
+          "bytes": 30720,
+          "fetched_at": "2026-10-30T04:44:19+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2021-22/receipts.pdf",
+          "sha256": "344432e07470b5cf2781eff3a898fd665bea2354b49f62a37dae2e95d3493337",
+          "bytes": 452612,
+          "fetched_at": "2026-10-30T05:17:26+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/Budget_at_Glance/bag5.xls",
+          "file": "sources/raw/2021-22/receipts.xls",
+          "sha256": "740442e3cc476d03b014ad1b813fbdd507f750cad409b4eeebc871429650b64e",
+          "bytes": 32256,
+          "fetched_at": "2026-10-30T05:17:27+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2021-22/ministries.pdf",
+          "sha256": "d2e24633c3858254c18f86193c04cb2cd73129db68088cb55e751b3a9f5423d4",
+          "bytes": 2003574,
+          "fetched_at": "2026-10-30T05:17:30+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat3a.xls",
+          "file": "sources/raw/2021-22/ministries.xls",
+          "sha256": "42f94fd10212b9ff2961e1ca0bd4dddc2ab5cd5a4ae13c3485a53520eda8ecfe",
+          "bytes": 98176,
+          "fetched_at": "2026-10-30T05:17:32+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2021-22/css.pdf",
+          "sha256": "32670f6701c1f9b53ed917e28336d98c6eca14b40442a71ee23b0f49fb00f798",
+          "bytes": 473443,
+          "fetched_at": "2026-10-30T05:17:33+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat4a.xlsx",
+          "file": "sources/raw/2021-22/css.xlsx",
+          "sha256": "ac741a20052cfc2df308c4a4e21027b971db35622febc539be8521513672065d",
+          "bytes": 16102,
+          "fetched_at": "2026-10-30T05:17:34+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2021-22/central_sector.pdf",
+          "sha256": "8b219fbcd422657c6b2499c7166b63ae47d869cbdc4cddee3df4de3dcb18159d",
+          "bytes": 2012901,
+          "fetched_at": "2026-10-30T05:17:42+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat4b.xls",
+          "file": "sources/raw/2021-22/central_sector.xls",
+          "sha256": "7435a07750149b0b432abf929675c882068bb27b0ee81bbc58f86d606ab62438",
+          "bytes": 188288,
+          "fetched_at": "2026-10-30T05:17:43+00:00"
+        }
+      }
+    }
+  },
+  "2022-23": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2022-23/summary.pdf",
+          "sha256": "9ad916187020c7e3a6d7e03da439ca6720b662bc1ac6261323b97091d954078e",
+          "bytes": 1295214,
+          "fetched_at": "2026-10-30T04:44:20+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/Budget_at_Glance/bag1.xls",
+          "file": "sources/raw/2022-23/summary.xls",
+          "sha256": "a59d2466469433e6eb7044cd6a24014357906f2d98dff32e4ae231527e130edd",
+          "bytes": 30720,
+          "fetched_at": "2026-10-30T04:44:22+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2022-23/receipts.pdf",
+          "sha256": "10a8fff87b8ed2529a061761c876e478e7e33d9feda5881ba277847981a44aae",
+          "bytes": 366401,
+          "fetched_at": "2026-10-30T05:17:44+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/Budget_at_Glance/bag5.xls",
+          "file": "sources/raw/2022-23/receipts.xls",
+          "sha256": "32c74bdabbdef2ef736cdb16f5ff59869c643933559302388859dad60ad84720",
+          "bytes": 31232,
+          "fetched_at": "2026-10-30T05:17:45+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2022-23/ministries.pdf",
+          "sha256": "d4d879fe59907cceaac89a730d9aae3b5e284ae8edbaa566782d066c25e67db5",
+          "bytes": 1723019,
+          "fetched_at": "2026-10-30T05:17:50+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat3a.xls",
+          "file": "sources/raw/2022-23/ministries.xls",
+          "sha256": "62182be3c904598e96aab8d29cf4beaf777d05e6a190b3c567de95f7d589f821",
+          "bytes": 89984,
+          "fetched_at": "2026-10-30T05:17:52+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2022-23/css.pdf",
+          "sha256": "3a82cb1b85cb2320d708c7b7b47ea4fabd8b23cb35d81da9757242cd710ffbb9",
+          "bytes": 187203,
+          "fetched_at": "2026-10-30T05:17:53+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat4a.xls",
+          "file": "sources/raw/2022-23/css.xls",
+          "sha256": "2a6623697b531c99af6f23bfd2074db5c84ef6ea188d24efefd03583183b4088",
+          "bytes": 36864,
+          "fetched_at": "2026-10-30T05:17:54+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2022-23/central_sector.pdf",
+          "sha256": "7b77a96e46311cbacf2fafc8f4aaa8e1b9e6e56047211c029672f1f3c2dc44a8",
+          "bytes": 2217200,
+          "fetched_at": "2026-10-30T05:18:14+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2022-23/doc/eb/stat4b.xls",
+          "file": "sources/raw/2022-23/central_sector.xls",
+          "sha256": "9f705d64d3ec2bbfa3cb2b80f59a7a1198fdc6fa23ed500d9a1d92fc716ba885",
+          "bytes": 218624,
+          "fetched_at": "2026-10-30T05:18:15+00:00"
+        }
+      }
+    }
+  },
+  "2023-24": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2023-24/summary.pdf",
+          "sha256": "a388738767dfd6582bc46e5d3324094e2fc995e883a90b151af5c9c0e204e052",
+          "bytes": 2303566,
+          "fetched_at": "2026-10-30T04:44:24+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag1.xls",
+          "file": "sources/raw/2023-24/summary.xls",
+          "sha256": "0ea5f6584d70f737f217f56827a231a4ce9d4841e2d6108728bca444935aa989",
+          "bytes": 30720,
+          "fetched_at": "2026-10-30T04:44:26+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2023-24/receipts.pdf",
+          "sha256": "d1b15d31771f6995aa53d468991a08d298c585bc5e00f74de4fd5e35fa4f93af",
+          "bytes": 1093914,
+          "fetched_at": "2026-10-30T05:18:21+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag5.xls",
+          "file": "sources/raw/2023-24/receipts.xls",
+          "sha256": "1315b3700043a52a0142e0c89fb7ed5bb6024e7094856b3a19928559d4829271",
+          "bytes": 32256,
+          "fetched_at": "2026-10-30T05:18:25+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2023-24/ministries.pdf",
+          "sha256": "019cebf6e969c112a589e10e971f0f8ac80cb1db9156ae4f9b40950b4904d6ff",
+          "bytes": 708067,
+          "fetched_at": "2026-10-30T05:18:40+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat3.xls",
+          "file": "sources/raw/2023-24/ministries.xls",
+          "sha256": "c8b34719297f1fa42d1742ec01668b1ebe89cee74ff9697d6096584b7d1658bf",
+          "bytes": 89984,
+          "fetched_at": "2026-10-30T05:18:43+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2023-24/css.pdf",
+          "sha256": "2bb42652fad159e78e748e4e6b13be9d91ac4f09c1604522691c971959f70057",
+          "bytes": 178456,
+          "fetched_at": "2026-10-30T05:18:44+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat4a.xls",
+          "file": "sources/raw/2023-24/css.xls",
+          "sha256": "fe8ade75dedab4366a454cf7651a8719466c623e11d89ad83e419dca162acb4b",
+          "bytes": 35840,
+          "fetched_at": "2026-10-30T05:18:45+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2023-24/central_sector.pdf",
+          "sha256": "ab32863ae133d887d2f972d4ab3e08ada7eb43f12e9119760a588615bdd1d893",
+          "bytes": 665543,
+          "fetched_at": "2026-10-30T05:18:59+00:00"
+        },
+        "xls": {
+          "url": "https://www.indiabudget.gov.in/budget2023-24/doc/eb/stat4b.xls",
+          "file": "sources/raw/2023-24/central_sector.xls",
+          "sha256": "cfa2e71bde8ccb15eedc406b3dffe2fb900ef67ba100c3b8330ccccef4a56552",
+          "bytes": 188288,
+          "fetched_at": "2026-10-30T05:19:00+00:00"
+        }
+      }
+    }
+  },
+  "2024-25": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2024-25/summary.pdf",
+          "sha256": "356fb4c90cc919ff578373c6dfc56e3115be2e6f49cc22a42f62094aae0b772d",
+          "bytes": 1147809,
+          "fetched_at": "2026-10-30T04:44:27+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2024-25/receipts.pdf",
+          "sha256": "fd59cd22a24a623e248f7254103609354eb55d5cebcfdba3ca0f9dc9a967b118",
+          "bytes": 939827,
+          "fetched_at": "2026-10-30T05:19:04+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2024-25/ministries.pdf",
+          "sha256": "3d9f2fe71485a7499fa2353b50c31aa46f511f7fde96dabdb5edd3d09223816f",
+          "bytes": 422300,
+          "fetched_at": "2026-10-30T05:19:10+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat3.xlsx",
+          "file": "sources/raw/2024-25/ministries.xlsx",
+          "sha256": "574fd0e4179d5fab14a4d4437e9da8aec68bdbee9ef44dbbe513132fbc5f0909",
+          "bytes": 59026,
+          "fetched_at": "2026-10-30T05:19:12+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2024-25/css.pdf",
+          "sha256": "21bcc96d9205e6d53cfe5628dba98dc285bb339ede118216578d33f8fbb4d433",
+          "bytes": 650349,
+          "fetched_at": "2026-10-30T05:19:13+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat4a.xlsx",
+          "file": "sources/raw/2024-25/css.xlsx",
+          "sha256": "a131eae43d3cb4821d07c4ae4cd33542e6c3e73fef94a8aefe57bb7f28341686",
+          "bytes": 19281,
+          "fetched_at": "2026-10-30T05:19:14+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2024-25/central_sector.pdf",
+          "sha256": "e4e94a03bf073d94f4bd73120c91635ad6433121156f15e3bbefe4072ec80982",
+          "bytes": 2907170,
+          "fetched_at": "2026-10-30T05:19:21+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2024-25/doc/eb/stat4b.xlsx",
+          "file": "sources/raw/2024-25/central_sector.xlsx",
+          "sha256": "febefc4bddd5f6dca51ab41cf23f3fe52c983b8c8dc830df27cc366e070a0f80",
+          "bytes": 128027,
+          "fetched_at": "2026-10-30T05:19:21+00:00"
+        }
+      }
+    }
+  },
+  "2025-26": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2025-26/summary.pdf",
+          "sha256": "eb49127d4b774a1c6cfa6076f56f0dc64cbff308c29ef1e598f3f042c6ceab0e",
+          "bytes": 1341701,
+          "fetched_at": "2026-10-30T04:44:31+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag1.xlsx",
+          "file": "sources/raw/2025-26/summary.xlsx",
+          "sha256": "87c3b59ffae1b8812cd2d35e016c1b9e0f1bd012b3f18746eb37ed06d3b6be68",
+          "bytes": 10209,
+          "fetched_at": "2026-10-30T04:44:32+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2025-26/receipts.pdf",
+          "sha256": "d0c27d6456c0209c97c53ae7401939eb1fb3b18d2370204d0040153812f71e5e",
+          "bytes": 594533,
+          "fetched_at": "2026-10-30T05:19:24+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag5.xlsx",
+          "file": "sources/raw/2025-26/receipts.xlsx",
+          "sha256": "abc5559e7b9c25d63c5da0bd2f8471724741e1d7f1800d4421f5abae461c49f7",
+          "bytes": 9667,
+          "fetched_at": "2026-10-30T05:19:25+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2025-26/ministries.pdf",
+          "sha256": "b59057f574f3d09a5a091cc5d09dd6d5ffcb35bc90fc1a960a819faed81adaa9",
+          "bytes": 588215,
+          "fetched_at": "2026-10-30T05:19:30+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat3.xlsx",
+          "file": "sources/raw/2025-26/ministries.xlsx",
+          "sha256": "03e8dadd75f1b3945e68d0770d27fccd1ba7c0757c397888916332877174c25c",
+          "bytes": 60532,
+          "fetched_at": "2026-10-30T05:19:31+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2025-26/css.pdf",
+          "sha256": "7addc18485fd3d16eea4fd33e722169f3fee7fc451574caac9a4ae5586a4f1bb",
+          "bytes": 89189,
+          "fetched_at": "2026-10-30T05:19:33+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat4a.xlsx",
+          "file": "sources/raw/2025-26/css.xlsx",
+          "sha256": "19a81fe4a754d47897ac3184c1ed63b88def6652d3a5fc70119dce0b77bc4408",
+          "bytes": 66426,
+          "fetched_at": "2026-10-30T05:19:34+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2025-26/central_sector.pdf",
+          "sha256": "f90496d448eaa45e657d5cf9cc4b9c18dfa9120c60d8e6c2165d02545d9f8200",
+          "bytes": 411490,
+          "fetched_at": "2026-10-30T05:19:39+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/budget2025-26/doc/eb/stat4b.xlsx",
+          "file": "sources/raw/2025-26/central_sector.xlsx",
+          "sha256": "c252a5a629d9ecad577399f3d142da92bcf48d886f914ff62dce2d2f7d0c17f8",
+          "bytes": 144776,
+          "fetched_at": "2026-10-30T05:19:40+00:00"
+        }
+      }
+    }
+  },
+  "2026-27": {
+    "summary": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/doc/Budget_at_Glance/bag1.pdf",
+          "file": "sources/raw/2026-27/summary.pdf",
+          "sha256": "9b6e8f27d7f8b980e029e15bb43b93b80e89b88f825cd662e4d2b32ee2803d53",
+          "bytes": 679795,
+          "fetched_at": "2026-10-30T04:44:34+00:00"
+        }
+      }
+    },
+    "receipts": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/doc/Budget_at_Glance/bag5.pdf",
+          "file": "sources/raw/2026-27/receipts.pdf",
+          "sha256": "b43b43b3275af2d064168451a7fe67b1535afae4c6dcd9c9772e8782f7ae858c",
+          "bytes": 446733,
+          "fetched_at": "2026-10-30T05:19:42+00:00"
+        }
+      }
+    },
+    "ministries": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat3a.pdf",
+          "file": "sources/raw/2026-27/ministries.pdf",
+          "sha256": "3810c160a4b1f8970a1ff2939126ff39bfa26d9b38f87af5d522433be8f1f0e9",
+          "bytes": 948446,
+          "fetched_at": "2026-10-30T05:19:46+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat3a.xlsx",
+          "file": "sources/raw/2026-27/ministries.xlsx",
+          "sha256": "911a4e421d3ab5626725e92f2ccce03adefa1cb3c1751ba49d0bb14ab2b46902",
+          "bytes": 59847,
+          "fetched_at": "2026-10-30T05:19:47+00:00"
+        }
+      }
+    },
+    "css": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat4a.pdf",
+          "file": "sources/raw/2026-27/css.pdf",
+          "sha256": "91d15229abd84b884c83d3d6261033fe2cd1b6c3d5e428ad53de622a7cbe96e3",
+          "bytes": 859154,
+          "fetched_at": "2026-10-30T05:19:49+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat4a.xlsx",
+          "file": "sources/raw/2026-27/css.xlsx",
+          "sha256": "36b2e4a78efa2b69662f209360a5f8e63a6f544bae6e4a7d9fb4952d510e3b89",
+          "bytes": 25726,
+          "fetched_at": "2026-10-30T05:19:50+00:00"
+        }
+      }
+    },
+    "central_sector": {
+      "files": {
+        "pdf": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat4b.pdf",
+          "file": "sources/raw/2026-27/central_sector.pdf",
+          "sha256": "2143f3bee1b93a532a8f5a87a180bc65332baf996e078e3e0cbce6ed87e2136d",
+          "bytes": 1263473,
+          "fetched_at": "2026-10-30T05:19:55+00:00"
+        },
+        "xlsx": {
+          "url": "https://www.indiabudget.gov.in/doc/eb/stat4b.xlsx",
+          "file": "sources/raw/2026-27/central_sector.xlsx",
+          "sha256": "55f7ab88879cb01d6bbd183f00531fd4a4c7e981b6bde7cca7de866dda842fb8",
+          "bytes": 117039,
+          "fetched_at": "2026-10-30T05:19:55+00:00"
+        }
+      }
+    }
+  }
+}

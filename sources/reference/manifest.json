@@ -1,0 +1,29 @@
+{
+  "table86_key_deficit_indicators": {
+    "title": "Table 86: Key Deficit Indicators of the Central Government",
+    "publisher": "Reserve Bank of India, Handbook of Statistics on Indian Economy",
+    "index_page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy",
+    "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/86T_HBIE31072026203A23E1F5D24AD7B7E5DF7D7F5E4EBF.XLSX",
+    "file": "sources/reference/rbi/table86_key_deficit_indicators.xlsx",
+    "sha256": "ff92600a4ed579dc348ff79d01359c9c8f2112219b8c2f3e4d0b99935f23ace9",
+    "fetched_at": "2026-10-30T04:51:21+00:00"
+  },
+  "table87_receipts": {
+    "title": "Table 87: Central Government Receipts - Major Components",
+    "publisher": "Reserve Bank of India, Handbook of Statistics on Indian Economy",
+    "index_page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy",
+    "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/87T_HBIE3107202679618CE76D754BE68DEF2DB893347E32.XLSX",
+    "file": "sources/reference/rbi/table87_receipts.xlsx",
+    "sha256": "527321f1a59ad735f6562700e50063efe111c9d3e69cba9ef46d4e2c712c480c",
+    "fetched_at": "2026-10-30T04:51:21+00:00"
+  },
+  "table89_expenditure": {
+    "title": "Table 89: Major Heads of Expenditure of the Central Government",
+    "publisher": "Reserve Bank of India, Handbook of Statistics on Indian Economy",
+    "index_page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy",
+    "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/89T_HBIE31072026AA3C6C3FD76B4236955058A14C0078EC.XLSX",
+    "file": "sources/reference/rbi/table89_expenditure.xlsx",
+    "sha256": "f2d578505a51fd2574639ef6fdd9a257bf5729d92fc348fefbe962848ff2b9c7",
+    "fetched_at": "2026-10-30T04:51:21+00:00"
+  }
+}

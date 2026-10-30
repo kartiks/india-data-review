@@ -1,0 +1,1164 @@
+[
+ {
+  "budget": "2000-01",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2001-02",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2002-03",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2003-04",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2004-05",
+  "primary": "pdf",
+  "others": {
+   "htm": {
+    "compared": 60,
+    "differences": [
+     {
+      "item": [
+       "borrowings",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 145072.0,
+      "htm": 131306.0
+     },
+     {
+      "item": [
+       "borrowings",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 137407.0,
+      "htm": 136452.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 74535.0,
+      "htm": 60769.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 92336.0,
+      "htm": 76692.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 182414.0,
+      "htm": 168648.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 168507.0,
+      "htm": 166552.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 145072.0,
+      "htm": 131306.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 137407.0,
+      "htm": 136452.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 75416.0,
+      "htm": 70750.0
+     },
+     {
+      "item": [
+       "other_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 4000.0,
+      "htm": 16000.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 27268.0,
+      "htm": 13502.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 7907.0,
+      "htm": 6952.0
+     },
+     {
+      "item": [
+       "recoveries_of_loans",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 27100.0,
+      "htm": 14100.0
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 76171.0,
+      "htm": 89860.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 385493.0,
+      "htm": 380742.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 309322.0,
+      "htm": 290882.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 233906.0,
+      "htm": 220132.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 414162.0,
+      "htm": 400396.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 477829.0,
+      "htm": 457434.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2002-03",
+       "Actual"
+      ],
+      "pdf": 414162.0,
+      "htm": 400396.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 477829.0,
+      "htm": 457434.0
+     }
+    ]
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2005-06",
+  "primary": "pdf",
+  "others": {
+   "htm": {
+    "compared": 60,
+    "differences": [
+     {
+      "item": [
+       "borrowings",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 123272.0,
+      "htm": 140955.0
+     },
+     {
+      "item": [
+       "borrowings",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 137407.0,
+      "htm": 135524.0
+     },
+     {
+      "item": [
+       "borrowings",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 139231.0,
+      "htm": 145466.0
+     },
+     {
+      "item": [
+       "borrowings",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 151144.0,
+      "htm": 153637.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 109228.0,
+      "htm": 60842.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 92336.0,
+      "htm": 69827.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 119722.0,
+      "htm": 62365.0
+     },
+     {
+      "item": [
+       "capital_expenditure",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 67832.0,
+      "htm": 72568.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 207490.0,
+      "htm": 161004.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 168507.0,
+      "htm": 165204.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 204887.0,
+      "htm": 167077.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 163144.0,
+      "htm": 184860.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 123272.0,
+      "htm": 140955.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 137407.0,
+      "htm": 135524.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 139231.0,
+      "htm": 145466.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 151144.0,
+      "htm": 153637.0
+     },
+     {
+      "item": [
+       "interest_payments",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 124088.0,
+      "htm": 107460.0
+     },
+     {
+      "item": [
+       "interest_payments",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 129500.0,
+      "htm": 117390.0
+     },
+     {
+      "item": [
+       "interest_payments",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 125905.0,
+      "htm": 115663.0
+     },
+     {
+      "item": [
+       "interest_payments",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 133945.0,
+      "htm": 123223.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 76896.0,
+      "htm": 67787.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 75416.0,
+      "htm": 72140.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 75100.0,
+      "htm": 72759.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 77734.0,
+      "htm": 69766.0
+     },
+     {
+      "item": [
+       "other_receipts",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 16953.0,
+      "htm": 3646.0
+     },
+     {
+      "item": [
+       "other_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 4000.0,
+      "htm": 12000.0
+     },
+     {
+      "item": [
+       "other_receipts",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 4091.0,
+      "htm": 3360.0
+     },
+     {
+      "item": [
+       "other_receipts",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": null,
+      "htm": 13200.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": -816.0,
+      "htm": 33495.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 7907.0,
+      "htm": 18134.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 13326.0,
+      "htm": 29803.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 17199.0,
+      "htm": 30414.0
+     },
+     {
+      "item": [
+       "recoveries_of_loans",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 67265.0,
+      "htm": 16403.0
+     },
+     {
+      "item": [
+       "recoveries_of_loans",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 27100.0,
+      "htm": 17680.0
+     },
+     {
+      "item": [
+       "recoveries_of_loans",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 61565.0,
+      "htm": 18251.0
+     },
+     {
+      "item": [
+       "recoveries_of_loans",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 12000.0,
+      "htm": 18023.0
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 98262.0,
+      "htm": 100162.0
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 76171.0,
+      "htm": 95377.0
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 85165.0,
+      "htm": 104712.0
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 95312.0,
+      "htm": 112292.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 362140.0,
+      "htm": 301611.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 385493.0,
+      "htm": 340482.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 386069.0,
+      "htm": 341648.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 446512.0,
+      "htm": 366227.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 263878.0,
+      "htm": 201449.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 309322.0,
+      "htm": 245105.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 300904.0,
+      "htm": 236936.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 351200.0,
+      "htm": 253935.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 186982.0,
+      "htm": 133662.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 233906.0,
+      "htm": 172965.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 225804.0,
+      "htm": 164177.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 273466.0,
+      "htm": 184169.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 471368.0,
+      "htm": 362453.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 477829.0,
+      "htm": 410309.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 505791.0,
+      "htm": 404013.0
+     },
+     {
+      "item": [
+       "total_expenditure",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 514344.0,
+      "htm": 438795.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2003-04",
+       "Actual"
+      ],
+      "pdf": 471368.0,
+      "htm": 362453.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2004-05",
+       "BE"
+      ],
+      "pdf": 477829.0,
+      "htm": 410309.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2004-05",
+       "RE"
+      ],
+      "pdf": 505791.0,
+      "htm": 404013.0
+     },
+     {
+      "item": [
+       "total_receipts",
+       "2005-06",
+       "BE"
+      ],
+      "pdf": 514344.0,
+      "htm": 438795.0
+     }
+    ]
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2006-07",
+  "primary": "pdf",
+  "others": {},
+  "unparseable": {
+   "htm": "2006-07: could not find the 'Revenue Receipts' row"
+  }
+ },
+ {
+  "budget": "2007-08",
+  "primary": "pdf",
+  "others": {},
+  "unparseable": {
+   "htm": "2007-08: could not find the 'Revenue Receipts' row"
+  }
+ },
+ {
+  "budget": "2008-09",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2009-10",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2010-11",
+  "primary": "htm",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2011-12",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2012-13",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2013-14",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2014-15",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2015-16",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2016-17",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2017-18",
+  "primary": "pdf",
+  "others": {
+   "xlsx": {
+    "compared": 68,
+    "differences": [
+     {
+      "item": [
+       "capital_receipts",
+       "2015-16",
+       "Actual"
+      ],
+      "pdf": 595748.0,
+      "xlsx": 595758.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2016-17",
+       "RE",
+       "% of GDP"
+      ],
+      "pdf": 3.5,
+      "xlsx": 3.2
+     }
+    ]
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2018-19",
+  "primary": "pdf",
+  "others": {
+   "xlsx": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2019-20",
+  "primary": "pdf",
+  "others": {
+   "xlsx": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2020-21",
+  "primary": "pdf",
+  "others": {
+   "xlsx": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2021-22",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 68,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2022-23",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 72,
+    "differences": []
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2023-24",
+  "primary": "pdf",
+  "others": {
+   "xls": {
+    "compared": 72,
+    "differences": [
+     {
+      "item": [
+       "borrowings",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 1755319.0,
+      "xls": 1759319.0
+     },
+     {
+      "item": [
+       "borrowings",
+       "2023-24",
+       "BE"
+      ],
+      "pdf": 1786816.0,
+      "xls": 1790616.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 1838819.0,
+      "xls": 1842819.0
+     },
+     {
+      "item": [
+       "capital_receipts",
+       "2023-24",
+       "BE"
+      ],
+      "pdf": 1870816.0,
+      "xls": 1874616.0
+     },
+     {
+      "item": [
+       "effective_revenue_deficit",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 784958.0,
+      "xls": 788958.0
+     },
+     {
+      "item": [
+       "fiscal_deficit",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 1755319.0,
+      "xls": 1759319.0
+     },
+     {
+      "item": [
+       "non_tax_revenue",
+       "2021-22",
+       "Actual"
+      ],
+      "pdf": 365112.0,
+      "xls": 3651132.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2021-22",
+       "Actual"
+      ],
+      "pdf": 779022.0,
+      "xls": 779027.0
+     },
+     {
+      "item": [
+       "primary_deficit",
+       "2023-24",
+       "BE",
+       "% of GDP"
+      ],
+      "pdf": 2.3,
+      "xls": 2.4
+     },
+     {
+      "item": [
+       "revenue_deficit",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 1110546.0,
+      "xls": 1114546.0
+     },
+     {
+      "item": [
+       "revenue_expenditure",
+       "2023-24",
+       "BE"
+      ],
+      "pdf": 3502136.0,
+      "xls": 3500136.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 2348413.0,
+      "xls": 2344413.0
+     },
+     {
+      "item": [
+       "revenue_receipts",
+       "2023-24",
+       "BE"
+      ],
+      "pdf": 2632281.0,
+      "xls": 2628481.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2022-23",
+       "RE"
+      ],
+      "pdf": 2086662.0,
+      "xls": 2082662.0
+     },
+     {
+      "item": [
+       "tax_revenue_net",
+       "2023-24",
+       "BE"
+      ],
+      "pdf": 2330631.0,
+      "xls": 2326831.0
+     }
+    ]
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2024-25",
+  "primary": "pdf",
+  "others": {},
+  "unparseable": {}
+ },
+ {
+  "budget": "2025-26",
+  "primary": "pdf",
+  "others": {
+   "xlsx": {
+    "compared": 72,
+    "differences": [
+     {
+      "item": [
+       "effective_capital_expenditure",
+       "2025-26",
+       "BE"
+      ],
+      "pdf": 1548282.0,
+      "xlsx": 1546321.33
+     },
+     {
+      "item": [
+       "effective_revenue_deficit",
+       "2025-26",
+       "BE"
+      ],
+      "pdf": 96654.0,
+      "xlsx": 98615.0
+     },
+     {
+      "item": [
+       "grants_capital_assets",
+       "2025-26",
+       "BE"
+      ],
+      "pdf": 427192.0,
+      "xlsx": 425231.56
+     }
+    ]
+   }
+  },
+  "unparseable": {}
+ },
+ {
+  "budget": "2026-27",
+  "primary": "pdf",
+  "others": {},
+  "unparseable": {}
+ }
+]

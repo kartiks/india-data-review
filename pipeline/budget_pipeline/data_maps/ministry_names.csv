@@ -1,0 +1,251 @@
+printed_name,budget_from,budget_to,department_id,department_name,ministry_id,ministry_name,note
+Agricultural Research and Education,,,agricultural_research_education,Department of Agricultural Research and Education,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,
+Agriculture Research and Education,,,agricultural_research_education,Department of Agricultural Research and Education,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,
+Department of Agricultural Research and Education,,,agricultural_research_education,Department of Agricultural Research and Education,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,
+Agriculture & Cooperation,,,agriculture,Department of Agriculture and Farmers Welfare,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,Renamed 2015 (Farmers Welfare added) and 2021 (cooperation moved to the new Ministry of Cooperation).
+Agriculture and Cooperation,,,agriculture,Department of Agriculture and Farmers Welfare,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,Renamed 2015 (Farmers Welfare added) and 2021 (cooperation moved to the new Ministry of Cooperation).
+"Agriculture, Cooperation and Farmers Welfare",,,agriculture,Department of Agriculture and Farmers Welfare,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,Renamed 2015 (Farmers Welfare added) and 2021 (cooperation moved to the new Ministry of Cooperation).
+Department of Agriculture and Farmers Welfare,,,agriculture,Department of Agriculture and Farmers Welfare,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,Renamed 2015 (Farmers Welfare added) and 2021 (cooperation moved to the new Ministry of Cooperation).
+"Department of Agriculture, Cooperation and Farmers' Welfare",,,agriculture,Department of Agriculture and Farmers Welfare,agriculture_farmers_welfare,Ministry of Agriculture and Farmers Welfare,Renamed 2015 (Farmers Welfare added) and 2021 (cooperation moved to the new Ministry of Cooperation).
+Atomic Energy,,,atomic_energy,Department of Atomic Energy,atomic_energy,Department of Atomic Energy,
+"Ayurveda, Yoga & Naturopathy, Unani, Siddha and Homoeopathy (AYUSH)",,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+"Ayurveda, Yoga & Naturopathy, Unani, Siddha and Homoeopathy(AYUSH)",,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+"Ayurveda, Yoga & Naturopathy,Unani, Siddha and Homoeopathy ( AYUSH)",,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+Indian Systems of Medicine and Homoeopathy,,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+"Ministry of Ayurveda, Yoga and Naturopathy, Unani, Siddha and Homoeopathy (AYUSH)",,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+Ministry of Ayush,,,ayush,Ministry of Ayush,ayush,Ministry of Ayush,Department of ISM&H renamed AYUSH in 2003; became a ministry in 2014.
+Chemicals and Petro-Chemicals,,,chemicals_petrochemicals,Department of Chemicals and Petrochemicals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Chemicals and Petro-chemicals,,,chemicals_petrochemicals,Department of Chemicals and Petrochemicals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Chemicals and Petrochemicals,,,chemicals_petrochemicals,Department of Chemicals and Petrochemicals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Department of Chemicals and Petrochemicals,,,chemicals_petrochemicals,Department of Chemicals and Petrochemicals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Department of Fertilisers,,,fertilisers,Department of Fertilisers,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Fertilisers,,,fertilisers,Department of Fertilisers,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Fertilizers,,,fertilisers,Department of Fertilisers,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,
+Department of Pharmaceuticals,,,pharmaceuticals,Department of Pharmaceuticals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,Created 2008.
+Pharmaceuticals,,,pharmaceuticals,Department of Pharmaceuticals,chemicals_fertilizers,Ministry of Chemicals and Fertilizers,Created 2008.
+Civil Aviation,,,civil_aviation,Ministry of Civil Aviation,civil_aviation,Ministry of Civil Aviation,
+Ministry of Civil Aviation,,,civil_aviation,Ministry of Civil Aviation,civil_aviation,Ministry of Civil Aviation,
+Coal,,,coal,Ministry of Coal,coal,Ministry of Coal,
+Ministry of Coal,,,coal,Ministry of Coal,coal,Ministry of Coal,
+Commerce,,,commerce,Department of Commerce,commerce_industry,Ministry of Commerce and Industry,
+Department of Commerce,,,commerce,Department of Commerce,commerce_industry,Ministry of Commerce and Industry,
+Department for Promotion of Industry and Internal Trade,,,dpiit,Department for Promotion of Industry and Internal Trade,commerce_industry,Ministry of Commerce and Industry,Renamed DIPP (2000) and DPIIT (2019).
+Department of Industrial Policy and Promotion,,,dpiit,Department for Promotion of Industry and Internal Trade,commerce_industry,Ministry of Commerce and Industry,Renamed DIPP (2000) and DPIIT (2019).
+Industrial Development and Industrial Policy and Promotion,,,dpiit,Department for Promotion of Industry and Internal Trade,commerce_industry,Ministry of Commerce and Industry,Renamed DIPP (2000) and DPIIT (2019).
+Industrial Policy and Promotion,,,dpiit,Department for Promotion of Industry and Internal Trade,commerce_industry,Ministry of Commerce and Industry,Renamed DIPP (2000) and DPIIT (2019).
+Supply,,,supply,Department of Supply,commerce_industry,Ministry of Commerce and Industry,Listed only in Budget 2000-01; later merged into Commerce.
+Department of Posts,,,posts,Department of Posts,communications,Ministry of Communications,
+Posts,,,posts,Department of Posts,communications,Ministry of Communications,
+Telecom Services,,,telecom_services,Department of Telecom Services,communications,Ministry of Communications,Listed only in Budget 2000-01 (services corporatised as BSNL).
+Department of Telecommunications,,,telecommunications,Department of Telecommunications,communications,Ministry of Communications,
+Telecommunications,,,telecommunications,Department of Telecommunications,communications,Ministry of Communications,
+Lok Sabha,,,lok_sabha,Lok Sabha,constitutional_bodies,"President, Parliament, UPSC and Vice-President",Separate demand from 2017-18.
+"The President, Parliament, Union Public Service Commission and the Secretariat of the Vice President",,,president_parliament_upsc_vp,"The President, Parliament, UPSC and the Secretariat of the Vice-President",constitutional_bodies,"President, Parliament, UPSC and Vice-President","Until 2016-17 one line; from 2017-18 split into Lok Sabha, Rajya Sabha, UPSC, the President's staff and the Vice-President's secretariat."
+"The President, Parliament, Union Public Service Commission and the Secretariat of the Vice- President",,,president_parliament_upsc_vp,"The President, Parliament, UPSC and the Secretariat of the Vice-President",constitutional_bodies,"President, Parliament, UPSC and Vice-President","Until 2016-17 one line; from 2017-18 split into Lok Sabha, Rajya Sabha, UPSC, the President's staff and the Vice-President's secretariat."
+"The President, Parliament, Union Public Service Commission and the Secretariat of the Vice-President",,,president_parliament_upsc_vp,"The President, Parliament, UPSC and the Secretariat of the Vice-President",constitutional_bodies,"President, Parliament, UPSC and Vice-President","Until 2016-17 one line; from 2017-18 split into Lok Sabha, Rajya Sabha, UPSC, the President's staff and the Vice-President's secretariat."
+"Staff, Household and Allowances of the President",,,president_staff,"Staff, Household and Allowances of the President",constitutional_bodies,"President, Parliament, UPSC and Vice-President",Separate demand from 2017-18.
+Rajya Sabha,,,rajya_sabha,Rajya Sabha,constitutional_bodies,"President, Parliament, UPSC and Vice-President",Separate demand from 2017-18.
+Union Public Service Commission,,,upsc,Union Public Service Commission,constitutional_bodies,"President, Parliament, UPSC and Vice-President",Separate demand from 2017-18.
+Secretariat of the Vice-President,,,vice_president_secretariat,Secretariat of the Vice-President,constitutional_bodies,"President, Parliament, UPSC and Vice-President",Separate demand from 2017-18.
+Consumer Affairs,,,consumer_affairs,Department of Consumer Affairs,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",
+Department of Consumer Affairs,,,consumer_affairs,Department of Consumer Affairs,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",
+Department of Food and Public Distribution,,,food_public_distribution,Department of Food and Public Distribution,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",Formed 2002 from Public Distribution and Sugar and Edible Oils (kept as separate ids).
+Food and Public Distribution,,,food_public_distribution,Department of Food and Public Distribution,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",Formed 2002 from Public Distribution and Sugar and Edible Oils (kept as separate ids).
+Public Distribution,,,public_distribution,Department of Public Distribution,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",Merged into Food and Public Distribution in 2002.
+Sugar and Edible Oils,,,sugar_edible_oils,Department of Sugar and Edible Oils,consumer_affairs_food_pd,"Ministry of Consumer Affairs, Food and Public Distribution",Merged into Food and Public Distribution in 2002.
+Ministry of Cooperation,,,cooperation,Ministry of Cooperation,cooperation,Ministry of Cooperation,Created 2021.
+Company Affairs,,,corporate_affairs,Ministry of Corporate Affairs,corporate_affairs,Ministry of Corporate Affairs,Department of Company Affairs renamed 2007.
+Corporate Affairs,,,corporate_affairs,Ministry of Corporate Affairs,corporate_affairs,Ministry of Corporate Affairs,Department of Company Affairs renamed 2007.
+Ministry of Corporate Affairs,,,corporate_affairs,Ministry of Corporate Affairs,corporate_affairs,Ministry of Corporate Affairs,Department of Company Affairs renamed 2007.
+Culture,,,culture,Ministry of Culture,culture,Ministry of Culture,
+Ministry of Culture,,,culture,Ministry of Culture,culture,Ministry of Culture,
+Capital Outlay on Defence Services,,,defence_capital_outlay,Capital Outlay on Defence Services,defence,Ministry of Defence,From 2017-18; earlier part of Defence Services.
+Defence (Civil estimates),,,defence_civil,Ministry of Defence (Civil),defence,Ministry of Defence,Until 2016-17 this demand also carried defence pensions; from 2017-18 pensions are a separate demand.
+Defence(Civil Estimates),,,defence_civil,Ministry of Defence (Civil),defence,Ministry of Defence,Until 2016-17 this demand also carried defence pensions; from 2017-18 pensions are a separate demand.
+Defence(Misc.),,,defence_civil,Ministry of Defence (Civil),defence,Ministry of Defence,Until 2016-17 this demand also carried defence pensions; from 2017-18 pensions are a separate demand.
+Ministry of Defence (Civil),,,defence_civil,Ministry of Defence (Civil),defence,Ministry of Defence,Until 2016-17 this demand also carried defence pensions; from 2017-18 pensions are a separate demand.
+Ministry of Defence (Misc.),,,defence_civil,Ministry of Defence (Civil),defence,Ministry of Defence,Until 2016-17 this demand also carried defence pensions; from 2017-18 pensions are a separate demand.
+Defence Pensions,,,defence_pensions,Defence Pensions,defence,Ministry of Defence,From 2017-18; earlier inside Defence (Civil estimates).
+Defence Services,,,defence_services,Defence Services (revenue and capital),defence,Ministry of Defence,Until 2016-17 one line; from 2017-18 split into Defence Services (Revenue) and Capital Outlay on Defence Services.
+Defence Services (Revenue),,,defence_services_revenue,Defence Services (Revenue),defence,Ministry of Defence,From 2017-18; earlier part of Defence Services.
+Special Package for Bodoland Territorial Council,,,bodoland_package,Special Package for Bodoland Territorial Council,doner,Ministry of Development of North Eastern Region,State Plans section only.
+Central Pool of Resources for NE and Sikkim,,,central_pool_ne_sikkim,Central Pool of Resources for North Eastern Region and Sikkim,doner,Ministry of Development of North Eastern Region,State Plans section only.
+Central Pool of Resources for NER and Sikkim,,,central_pool_ne_sikkim,Central Pool of Resources for North Eastern Region and Sikkim,doner,Ministry of Development of North Eastern Region,State Plans section only.
+Grants from Central Pool of Resources for North Eastern Region and Sikkim,,,central_pool_ne_sikkim,Central Pool of Resources for North Eastern Region and Sikkim,doner,Ministry of Development of North Eastern Region,State Plans section only.
+Development of North Eastern Region,,,doner,Ministry of Development of North Eastern Region,doner,Ministry of Development of North Eastern Region,
+Ministry of Development of North Eastern Region,,,doner,Ministry of Development of North Eastern Region,doner,Ministry of Development of North Eastern Region,
+North Eastern Region,,,north_eastern_region,North Eastern Region (state plan assistance),doner,Ministry of Development of North Eastern Region,State Plans section only (NEC/DoNER).
+Earth Sciences,,,earth_sciences,Ministry of Earth Sciences,earth_sciences,Ministry of Earth Sciences,"Created 2006, absorbing Ocean Development (kept as a separate id)."
+Ministry of Earth Sciences,,,earth_sciences,Ministry of Earth Sciences,earth_sciences,Ministry of Earth Sciences,"Created 2006, absorbing Ocean Development (kept as a separate id)."
+Ocean Development,,,ocean_development,Department of Ocean Development,earth_sciences,Ministry of Earth Sciences,Absorbed into the Ministry of Earth Sciences in 2006.
+Department of Higher Education,,,higher_education,Department of Higher Education,education,Ministry of Education,Renamed 2006 (secondary education moved to School Education).
+Higher Education,,,higher_education,Department of Higher Education,education,Ministry of Education,Renamed 2006 (secondary education moved to School Education).
+Secondary Education and Higher Education,,,higher_education,Department of Higher Education,education,Ministry of Education,Renamed 2006 (secondary education moved to School Education).
+Department of School Education and Literacy,,,school_education,Department of School Education and Literacy,education,Ministry of Education,Renamed 2006.
+Elementary Education and Literacy,,,school_education,Department of School Education and Literacy,education,Ministry of Education,Renamed 2006.
+School Education and Literacy,,,school_education,Department of School Education and Literacy,education,Ministry of Education,Renamed 2006.
+Environment and Forests,,,environment,"Ministry of Environment, Forest and Climate Change",environment,"Ministry of Environment, Forest and Climate Change",Renamed 2014.
+"Environment, Forests and Climate Change",,,environment,"Ministry of Environment, Forest and Climate Change",environment,"Ministry of Environment, Forest and Climate Change",Renamed 2014.
+"Ministry of Environment, Forests and Climate Change",,,environment,"Ministry of Environment, Forest and Climate Change",environment,"Ministry of Environment, Forest and Climate Change",Renamed 2014.
+External Affairs,,,external_affairs,Ministry of External Affairs,external_affairs,Ministry of External Affairs,
+Ministry of External Affairs,,,external_affairs,Ministry of External Affairs,external_affairs,Ministry of External Affairs,
+Non Resident Indians Affairs,,,overseas_indian_affairs,Ministry of Overseas Indian Affairs,external_affairs,Ministry of External Affairs,2004-2015; merged into External Affairs in 2016.
+Overseas Indian Affairs,,,overseas_indian_affairs,Ministry of Overseas Indian Affairs,external_affairs,Ministry of External Affairs,2004-2015; merged into External Affairs in 2016.
+Department of Investment and Public Asset Management (DIPAM),,,dipam,Department of Investment and Public Asset Management,finance,Ministry of Finance,Department of Disinvestment renamed DIPAM in 2016.
+Disinvestment,,,dipam,Department of Investment and Public Asset Management,finance,Ministry of Finance,Department of Disinvestment renamed DIPAM in 2016.
+Direct Taxes,,,direct_taxes,Direct Taxes,finance,Ministry of Finance,Separate demand from 2017-18; earlier inside Revenue.
+Department of Economic Affairs,,,economic_affairs,Department of Economic Affairs,finance,Ministry of Finance,
+Economic Affairs,,,economic_affairs,Department of Economic Affairs,finance,Ministry of Finance,
+Economic Affairs (Centralised Provisions),,,economic_affairs_centralised,Economic Affairs (centralised provisions),finance,Ministry of Finance,"Pre-2017 demand for transfers to states and other centralised items; from 2017-18 these appear mainly under Transfers to States. Not comparable. In the State Plans section the same provision is printed 'Finance' (to 2010-11; 'Finance and Company Affairs' in 2003-04) and 'Economic Affairs (Centralised Provisions)' from 2011-12: Budget 2011-12 restates BE 2010-11 under the new name with the same 70,156.25 crore."
+Economic Affairs (centralised provisions),,,economic_affairs_centralised,Economic Affairs (centralised provisions),finance,Ministry of Finance,"Pre-2017 demand for transfers to states and other centralised items; from 2017-18 these appear mainly under Transfers to States. Not comparable. In the State Plans section the same provision is printed 'Finance' (to 2010-11; 'Finance and Company Affairs' in 2003-04) and 'Economic Affairs (Centralised Provisions)' from 2011-12: Budget 2011-12 restates BE 2010-11 under the new name with the same 70,156.25 crore."
+Finance,,,economic_affairs_centralised,Economic Affairs (centralised provisions),finance,Ministry of Finance,"Pre-2017 demand for transfers to states and other centralised items; from 2017-18 these appear mainly under Transfers to States. Not comparable. In the State Plans section the same provision is printed 'Finance' (to 2010-11; 'Finance and Company Affairs' in 2003-04) and 'Economic Affairs (Centralised Provisions)' from 2011-12: Budget 2011-12 restates BE 2010-11 under the new name with the same 70,156.25 crore."
+Finance and Company Affairs,,,economic_affairs_centralised,Economic Affairs (centralised provisions),finance,Ministry of Finance,"Pre-2017 demand for transfers to states and other centralised items; from 2017-18 these appear mainly under Transfers to States. Not comparable. In the State Plans section the same provision is printed 'Finance' (to 2010-11; 'Finance and Company Affairs' in 2003-04) and 'Economic Affairs (Centralised Provisions)' from 2011-12: Budget 2011-12 restates BE 2010-11 under the new name with the same 70,156.25 crore."
+Department of Expenditure,,,expenditure,Department of Expenditure,finance,Ministry of Finance,
+Expenditure,,,expenditure,Department of Expenditure,finance,Ministry of Finance,
+Department of Financial Services,,,financial_services,Department of Financial Services,finance,Ministry of Finance,Created 2007.
+Financial Services,,,financial_services,Department of Financial Services,finance,Ministry of Finance,Created 2007.
+Indian Audit and Accounts Department,,,indian_audit_accounts,Indian Audit and Accounts Department,finance,Ministry of Finance,Separate demand from 2017-18.
+Indirect Taxes,,,indirect_taxes,Indirect Taxes,finance,Ministry of Finance,Separate demand from 2017-18; earlier inside Revenue.
+Interest Payments,,,interest_payments,Interest Payments,finance,Ministry of Finance,Separate demand from 2017-18; earlier inside Economic Affairs (centralised provisions).
+Pensions,,,pensions,Pensions,finance,Ministry of Finance,Separate demand from 2017-18.
+Department of Public Enterprises,,,public_enterprises,Department of Public Enterprises,finance,Ministry of Finance,Moved from Heavy Industries to Finance in 2021.
+Public Enterprises,,,public_enterprises,Department of Public Enterprises,finance,Ministry of Finance,Moved from Heavy Industries to Finance in 2021.
+Repayment of Debt,,,repayment_of_debt,Repayment of Debt,finance,Ministry of Finance,Listed from 2017-18 with no amounts (debt repayment is not part of total expenditure).
+Department of Revenue,,,revenue,Department of Revenue,finance,Ministry of Finance,"Until 2016-17 included tax collection (Direct Taxes, Indirect Taxes are separate demands from 2017-18)."
+Revenue,,,revenue,Department of Revenue,finance,Ministry of Finance,"Until 2016-17 included tax collection (Direct Taxes, Indirect Taxes are separate demands from 2017-18)."
+Transfers to States,,,transfers_to_states,Transfers to States,finance,Ministry of Finance,From 2017-18; compare with Economic Affairs (centralised provisions) and State Plans before that.
+Animal Husbandry and Dairying,,,animal_husbandry_dairying,Department of Animal Husbandry and Dairying,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying",Included fisheries until 2018-19; the Department of Fisheries is separate from Budget 2019-20.
+"Animal Husbandry, Dairying and Fisharies",,,animal_husbandry_dairying,Department of Animal Husbandry and Dairying,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying",Included fisheries until 2018-19; the Department of Fisheries is separate from Budget 2019-20.
+"Animal Husbandry, Dairying and Fisheries",,,animal_husbandry_dairying,Department of Animal Husbandry and Dairying,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying",Included fisheries until 2018-19; the Department of Fisheries is separate from Budget 2019-20.
+Department of Animal Husbandry and Dairying,,,animal_husbandry_dairying,Department of Animal Husbandry and Dairying,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying",Included fisheries until 2018-19; the Department of Fisheries is separate from Budget 2019-20.
+"Department of Animal Husbandry, Dairying and Fisheries",,,animal_husbandry_dairying,Department of Animal Husbandry and Dairying,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying",Included fisheries until 2018-19; the Department of Fisheries is separate from Budget 2019-20.
+Department of Fisheries,,,fisheries,Department of Fisheries,fisheries_animal_husbandry_dairying,"Ministry of Fisheries, Animal Husbandry and Dairying","Split from Animal Husbandry, Dairying and Fisheries in 2019."
+Food Processing Industries,,,food_processing,Ministry of Food Processing Industries,food_processing,Ministry of Food Processing Industries,
+Ministry of Food Processing Industries,,,food_processing,Ministry of Food Processing Industries,food_processing,Ministry of Food Processing Industries,
+AIDS Control,,,aids_control,Department of AIDS Control,health_family_welfare,Ministry of Health and Family Welfare,Separate department 2011-12 to 2015-16; merged back into Health and Family Welfare.
+Family Welfare,,,family_welfare,Department of Family Welfare,health_family_welfare,Ministry of Health and Family Welfare,Listed separately up to Budget 2005-06.
+Health,2000-01,2005-06,health,Department of Health,health_family_welfare,Ministry of Health and Family Welfare,Listed separately from Family Welfare up to Budget 2005-06.
+Department of Health and Family Welfare,,,health_family_welfare,Department of Health and Family Welfare,health_family_welfare,Ministry of Health and Family Welfare,Health and Family Welfare merged; Budget 2006-07 prints the merged department as 'Health' (Family Welfare is no longer listed and the amounts cover both). Earlier years: separate ids health and family_welfare.
+Health,2006-07,2006-07,health_family_welfare,Department of Health and Family Welfare,health_family_welfare,Ministry of Health and Family Welfare,Health and Family Welfare merged; Budget 2006-07 prints the merged department as 'Health' (Family Welfare is no longer listed and the amounts cover both). Earlier years: separate ids health and family_welfare.
+Health & Family Welfare,,,health_family_welfare,Department of Health and Family Welfare,health_family_welfare,Ministry of Health and Family Welfare,Health and Family Welfare merged; Budget 2006-07 prints the merged department as 'Health' (Family Welfare is no longer listed and the amounts cover both). Earlier years: separate ids health and family_welfare.
+Health and Family Welfare,,,health_family_welfare,Department of Health and Family Welfare,health_family_welfare,Ministry of Health and Family Welfare,Health and Family Welfare merged; Budget 2006-07 prints the merged department as 'Health' (Family Welfare is no longer listed and the amounts cover both). Earlier years: separate ids health and family_welfare.
+Department of Health Research,,,health_research,Department of Health Research,health_family_welfare,Ministry of Health and Family Welfare,Created 2007.
+Health Research,,,health_research,Department of Health Research,health_family_welfare,Ministry of Health and Family Welfare,Created 2007.
+Department of Heavy Industry,,,heavy_industries,Ministry of Heavy Industries,heavy_industries,Ministry of Heavy Industries,
+Heavy Industry,,,heavy_industries,Ministry of Heavy Industries,heavy_industries,Ministry of Heavy Industries,
+Ministry of Heavy Industries,,,heavy_industries,Ministry of Heavy Industries,heavy_industries,Ministry of Heavy Industries,
+Cabinet,,,cabinet,Cabinet,home_affairs,Ministry of Home Affairs,Separate demand from 2017-18.
+Home Affairs,,,home_affairs,Ministry of Home Affairs,home_affairs,Ministry of Home Affairs,"From 2017-18 Police, Cabinet and some UT items are separate demands; before that they were inside Home Affairs."
+Ministry of Home Affairs,,,home_affairs,Ministry of Home Affairs,home_affairs,Ministry of Home Affairs,"From 2017-18 Police, Cabinet and some UT items are separate demands; before that they were inside Home Affairs."
+Police,,,police,Police,home_affairs,Ministry of Home Affairs,Separate demand from 2017-18; earlier inside Home Affairs.
+Ministry of Housing and Urban Affairs,,,housing_urban_affairs,Ministry of Housing and Urban Affairs,housing_urban_affairs,Ministry of Housing and Urban Affairs,Formed 2017 by merging Urban Development and Housing and Urban Poverty Alleviation (kept as separate ids).
+Housing and Urban Poverty Alleviation,,,hupa,Ministry of Housing and Urban Poverty Alleviation,housing_urban_affairs,Ministry of Housing and Urban Affairs,Renamed 2004 (Housing added); merged into Housing and Urban Affairs in 2017.
+Ministry of Housing and Urban Poverty Alleviation,,,hupa,Ministry of Housing and Urban Poverty Alleviation,housing_urban_affairs,Ministry of Housing and Urban Affairs,Renamed 2004 (Housing added); merged into Housing and Urban Affairs in 2017.
+Urban Employment and Poverty Alleviation,,,hupa,Ministry of Housing and Urban Poverty Alleviation,housing_urban_affairs,Ministry of Housing and Urban Affairs,Renamed 2004 (Housing added); merged into Housing and Urban Affairs in 2017.
+Urban Employment and Povery Alleviation,,,hupa,Ministry of Housing and Urban Poverty Alleviation,housing_urban_affairs,Ministry of Housing and Urban Affairs,Renamed 2004 (Housing added); merged into Housing and Urban Affairs in 2017.
+Ministry of Urban Development,,,urban_development,Ministry of Urban Development,housing_urban_affairs,Ministry of Housing and Urban Affairs,Merged into Housing and Urban Affairs in 2017.
+Urban Development,,,urban_development,Ministry of Urban Development,housing_urban_affairs,Ministry of Housing and Urban Affairs,Merged into Housing and Urban Affairs in 2017.
+Information and Broadcasting,,,information_broadcasting,Ministry of Information and Broadcasting,information_broadcasting,Ministry of Information and Broadcasting,
+Ministry of Information and Broadcasting,,,information_broadcasting,Ministry of Information and Broadcasting,information_broadcasting,Ministry of Information and Broadcasting,
+Department of Drinking Water and Sanitation,,,drinking_water_sanitation,Department of Drinking Water and Sanitation,jal_shakti,Ministry of Jal Shakti,Renamed 2010 (sanitation added); a ministry 2011-2019; part of Jal Shakti from 2019.
+Drinking Water Supply,,,drinking_water_sanitation,Department of Drinking Water and Sanitation,jal_shakti,Ministry of Jal Shakti,Renamed 2010 (sanitation added); a ministry 2011-2019; part of Jal Shakti from 2019.
+Drinking Water and Sanitation,,,drinking_water_sanitation,Department of Drinking Water and Sanitation,jal_shakti,Ministry of Jal Shakti,Renamed 2010 (sanitation added); a ministry 2011-2019; part of Jal Shakti from 2019.
+Ministry of Drinking Water and Sanitation,,,drinking_water_sanitation,Department of Drinking Water and Sanitation,jal_shakti,Ministry of Jal Shakti,Renamed 2010 (sanitation added); a ministry 2011-2019; part of Jal Shakti from 2019.
+"Department of Water Resources, River Development and Ganga Rejuvenation",,,water_resources,"Department of Water Resources, River Development and Ganga Rejuvenation",jal_shakti,Ministry of Jal Shakti,Renamed 2014; part of Jal Shakti from 2019.
+"Ministry of Water Resources, River Development and Ganga Rejuvenation",,,water_resources,"Department of Water Resources, River Development and Ganga Rejuvenation",jal_shakti,Ministry of Jal Shakti,Renamed 2014; part of Jal Shakti from 2019.
+Water Resources,,,water_resources,"Department of Water Resources, River Development and Ganga Rejuvenation",jal_shakti,Ministry of Jal Shakti,Renamed 2014; part of Jal Shakti from 2019.
+"Water Resources, River Development and Ganga Rejuvenation",,,water_resources,"Department of Water Resources, River Development and Ganga Rejuvenation",jal_shakti,Ministry of Jal Shakti,Renamed 2014; part of Jal Shakti from 2019.
+Labour,,,labour_employment,Ministry of Labour and Employment,labour_employment,Ministry of Labour and Employment,Renamed 2004.
+Labour and Employment,,,labour_employment,Ministry of Labour and Employment,labour_employment,Ministry of Labour and Employment,Renamed 2004.
+Ministry of Labour and Employment,,,labour_employment,Ministry of Labour and Employment,labour_employment,Ministry of Labour and Employment,Renamed 2004.
+Election Commission,,,election_commission,Election Commission,law_justice,Ministry of Law and Justice,
+Law and Justice,,,law_justice,Ministry of Law and Justice,law_justice,Ministry of Law and Justice,
+Supreme Court of India,,,supreme_court,Supreme Court of India,law_justice,Ministry of Law and Justice,
+Electronics and Information Technology,,,meity,Ministry of Electronics and Information Technology,meity,Ministry of Electronics and Information Technology,Department of IT renamed DeitY 2012; a ministry from 2016.
+Information Technology,,,meity,Ministry of Electronics and Information Technology,meity,Ministry of Electronics and Information Technology,Department of IT renamed DeitY 2012; a ministry from 2016.
+Ministry of Electronics and Information Technology,,,meity,Ministry of Electronics and Information Technology,meity,Ministry of Electronics and Information Technology,Department of IT renamed DeitY 2012; a ministry from 2016.
+Mines,,,mines,Ministry of Mines,mines,Ministry of Mines,
+Ministry of Mines,,,mines,Ministry of Mines,mines,Ministry of Mines,
+Ministry of Minority Affairs,,,minority_affairs,Ministry of Minority Affairs,minority_affairs,Ministry of Minority Affairs,Created 2006.
+Minority Affairs,,,minority_affairs,Ministry of Minority Affairs,minority_affairs,Ministry of Minority Affairs,Created 2006.
+Agro and Rural Industries,,,agro_rural_industries,Ministry of Agro and Rural Industries,msme,"Ministry of Micro, Small and Medium Enterprises",2001-2007; merged into MSME.
+"Micro, Small and Medium Enterprises",,,msme,"Ministry of Micro, Small and Medium Enterprises",msme,"Ministry of Micro, Small and Medium Enterprises",Formed 2007 by merging Small Scale Industries and Agro and Rural Industries (kept as separate ids).
+"Ministry of Micro, Small and Medium Enterprises",,,msme,"Ministry of Micro, Small and Medium Enterprises",msme,"Ministry of Micro, Small and Medium Enterprises",Formed 2007 by merging Small Scale Industries and Agro and Rural Industries (kept as separate ids).
+Small Scale Industries,,,small_scale_industries,Ministry of Small Scale Industries,msme,"Ministry of Micro, Small and Medium Enterprises",2001-2007; merged into MSME.
+Small Scale Industries and Agro and Rural Industries,,,ssi_ari,Ministry of Small Scale Industries and Agro and Rural Industries,msme,"Ministry of Micro, Small and Medium Enterprises",Split into two ministries in 2001.
+Ministry of New and Renewable Energy,,,new_renewable_energy,Ministry of New and Renewable Energy,new_renewable_energy,Ministry of New and Renewable Energy,Renamed 2006.
+New and Renewable Energy,,,new_renewable_energy,Ministry of New and Renewable Energy,new_renewable_energy,Ministry of New and Renewable Energy,Renamed 2006.
+Non-Conventional Energy Sources,,,new_renewable_energy,Ministry of New and Renewable Energy,new_renewable_energy,Ministry of New and Renewable Energy,Renamed 2006.
+Ministry of Panchayati Raj,,,panchayati_raj,Ministry of Panchayati Raj,panchayati_raj,Ministry of Panchayati Raj,Created 2004.
+Panchayati Raj,,,panchayati_raj,Ministry of Panchayati Raj,panchayati_raj,Ministry of Panchayati Raj,Created 2004.
+Ministry of Parliamentary Affairs,,,parliamentary_affairs,Ministry of Parliamentary Affairs,parliamentary_affairs,Ministry of Parliamentary Affairs,
+Parliamentary Affairs,,,parliamentary_affairs,Ministry of Parliamentary Affairs,parliamentary_affairs,Ministry of Parliamentary Affairs,
+Central Vigilance Commission,,,central_vigilance_commission,Central Vigilance Commission,personnel,"Ministry of Personnel, Public Grievances and Pensions",Separate demand from 2017-18.
+"Ministry of Personnel, Public Grievances and Pensions",,,personnel,"Ministry of Personnel, Public Grievances and Pensions",personnel,"Ministry of Personnel, Public Grievances and Pensions",
+"Personnel, Public Grievances and Pensions",,,personnel,"Ministry of Personnel, Public Grievances and Pensions",personnel,"Ministry of Personnel, Public Grievances and Pensions",
+Ministry of Petroleum and Natural Gas,,,petroleum,Ministry of Petroleum and Natural Gas,petroleum,Ministry of Petroleum and Natural Gas,
+Petroleum and Natural Gas,,,petroleum,Ministry of Petroleum and Natural Gas,petroleum,Ministry of Petroleum and Natural Gas,
+Ministry of Planning,,,planning,Ministry of Planning,planning,Ministry of Planning,
+Planning,,,planning,Ministry of Planning,planning,Ministry of Planning,
+"Ministry of Ports, Shipping and Waterways",,,ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",Renamed 2020.
+Ministry of Shipping,,,ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",Renamed 2020.
+Shipping,,,ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",ports_shipping_waterways,"Ministry of Ports, Shipping and Waterways",Renamed 2020.
+Ministry of Power,,,power,Ministry of Power,power,Ministry of Power,
+Power,,,power,Ministry of Power,power,Ministry of Power,
+Ministry of Railways,,,railways,Ministry of Railways,railways,Ministry of Railways,Budgetary support only; Railways' own receipts and spending are outside these totals.
+Railways,,,railways,Ministry of Railways,railways,Ministry of Railways,Budgetary support only; Railways' own receipts and spending are outside these totals.
+Ministry of Road Transport and Highways,,,road_transport_highways,Ministry of Road Transport and Highways,road_transport_highways,Ministry of Road Transport and Highways,Split from Surface Transport in 2000.
+Road Transport and Highways,,,road_transport_highways,Ministry of Road Transport and Highways,road_transport_highways,Ministry of Road Transport and Highways,Split from Surface Transport in 2000.
+Surface Transport,,,surface_transport,Ministry of Surface Transport,road_transport_highways,Ministry of Road Transport and Highways,Listed only in Budget 2000-01; split into Road Transport and Highways and Shipping.
+Department of Land Resources,,,land_resources,Department of Land Resources,rural_development,Ministry of Rural Development,
+Land Resources,,,land_resources,Department of Land Resources,rural_development,Ministry of Rural Development,
+Department of Rural Development,,,rural_development,Department of Rural Development,rural_development,Ministry of Rural Development,
+Rural Development,,,rural_development,Department of Rural Development,rural_development,Ministry of Rural Development,
+Biotechnology,,,biotechnology,Department of Biotechnology,science_technology,Ministry of Science and Technology,
+Department of Biotechnology,,,biotechnology,Department of Biotechnology,science_technology,Ministry of Science and Technology,
+Department of Science and Technology,,,science_technology,Department of Science and Technology,science_technology,Ministry of Science and Technology,
+Science and Technology,,,science_technology,Department of Science and Technology,science_technology,Ministry of Science and Technology,
+Department of Scientific and Industrial Research,,,scientific_industrial_research,Department of Scientific and Industrial Research,science_technology,Ministry of Science and Technology,
+Scientific and Industrial Research,,,scientific_industrial_research,Department of Scientific and Industrial Research,science_technology,Ministry of Science and Technology,
+Ministry of Skill Development and Entrepreneurship,,,skill_development,Ministry of Skill Development and Entrepreneurship,skill_development,Ministry of Skill Development and Entrepreneurship,Created 2014.
+Ministry of Skill Development and Entreprenuership,,,skill_development,Ministry of Skill Development and Entrepreneurship,skill_development,Ministry of Skill Development and Entrepreneurship,Created 2014.
+Skill Development and Entrepreneurship,,,skill_development,Ministry of Skill Development and Entrepreneurship,skill_development,Ministry of Skill Development and Entrepreneurship,Created 2014.
+Department of Empowerment of Persons with Disabilities,,,disability_affairs,Department of Empowerment of Persons with Disabilities,social_justice,Ministry of Social Justice and Empowerment,Created 2012; renamed 2014.
+Disability Affairs,,,disability_affairs,Department of Empowerment of Persons with Disabilities,social_justice,Ministry of Social Justice and Empowerment,Created 2012; renamed 2014.
+Empowerment of Persons with Disabilities,,,disability_affairs,Department of Empowerment of Persons with Disabilities,social_justice,Ministry of Social Justice and Empowerment,Created 2012; renamed 2014.
+Department of Social Justice and Empowerment,,,social_justice,Department of Social Justice and Empowerment,social_justice,Ministry of Social Justice and Empowerment,
+Social Justice and Empowerment,,,social_justice,Department of Social Justice and Empowerment,social_justice,Ministry of Social Justice and Empowerment,
+Department of Space,,,space,Department of Space,space,Department of Space,
+Space,,,space,Department of Space,space,Department of Space,
+Ministry of Statistics and Programme Implementation,,,statistics,Ministry of Statistics and Programme Implementation,statistics,Ministry of Statistics and Programme Implementation,
+Statistics and Programme Implementation,,,statistics,Ministry of Statistics and Programme Implementation,statistics,Ministry of Statistics and Programme Implementation,
+Ministry of Steel,,,steel,Ministry of Steel,steel,Ministry of Steel,
+Steel,,,steel,Ministry of Steel,steel,Ministry of Steel,
+Ministry of Textiles,,,textiles,Ministry of Textiles,textiles,Ministry of Textiles,
+Textiles,,,textiles,Ministry of Textiles,textiles,Ministry of Textiles,
+Ministry of Tourism,,,tourism,Ministry of Tourism,tourism,Ministry of Tourism,
+Tourism,,,tourism,Ministry of Tourism,tourism,Ministry of Tourism,
+Ministry of Tribal Affairs,,,tribal_affairs,Ministry of Tribal Affairs,tribal_affairs,Ministry of Tribal Affairs,
+Tribal Affairs,,,tribal_affairs,Ministry of Tribal Affairs,tribal_affairs,Ministry of Tribal Affairs,
+Andaman & Nicobar Islands,,,ut_andaman_nicobar,Andaman and Nicobar Islands,home_affairs,Ministry of Home Affairs,Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Andaman and Nicobar Islands,,,ut_andaman_nicobar,Andaman and Nicobar Islands,home_affairs,Ministry of Home Affairs,Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Chandigarh,,,ut_chandigarh,Chandigarh,home_affairs,Ministry of Home Affairs,Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Dadra & Nagar Haveli,,,ut_dadra_nagar_haveli,Dadra and Nagar Haveli,home_affairs,Ministry of Home Affairs,Merged with Daman and Diu in 2020 (kept as separate ids). Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Dadra and Nagar Haveli,,,ut_dadra_nagar_haveli,Dadra and Nagar Haveli,home_affairs,Ministry of Home Affairs,Merged with Daman and Diu in 2020 (kept as separate ids). Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Daman & Diu,,,ut_daman_diu,Daman and Diu,home_affairs,Ministry of Home Affairs,Merged with Dadra and Nagar Haveli in 2020. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Daman and Diu,,,ut_daman_diu,Daman and Diu,home_affairs,Ministry of Home Affairs,Merged with Dadra and Nagar Haveli in 2020. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+National Capital Territory of Delhi,,,ut_delhi,Transfers to Delhi,home_affairs,Ministry of Home Affairs,Central assistance to the Delhi government (a UT with legislature); listed under UTs until 2016-17 and as 'Transfers to Delhi' from 2017-18. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Transfers to Delhi,,,ut_delhi,Transfers to Delhi,home_affairs,Ministry of Home Affairs,Central assistance to the Delhi government (a UT with legislature); listed under UTs until 2016-17 and as 'Transfers to Delhi' from 2017-18. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Dadra and Nagar Haveli and Daman and Diu,,,ut_dnh_dd,Dadra and Nagar Haveli and Daman and Diu,home_affairs,Ministry of Home Affairs,Formed 2020 by merging two UTs (kept as separate ids). Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Transfers to Jammu and Kashmir,,,ut_jammu_kashmir,Transfers to Jammu and Kashmir,home_affairs,Ministry of Home Affairs,"From 2020-21, after J&K became a UT with legislature. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory."
+Ladakh,,,ut_ladakh,Ladakh,home_affairs,Ministry of Home Affairs,Created 2019. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Lakshadweep,,,ut_lakshadweep,Lakshadweep,home_affairs,Ministry of Home Affairs,Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Lumpsum Provision for new/ restructured Schemes for UTs with and without Legislature,,,ut_lumpsum_new_schemes,Lump-sum provision for new/restructured UT schemes,home_affairs,Ministry of Home Affairs,Budget 2004-05 only. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Pondicherry,,,ut_puducherry,Transfers to Puducherry,home_affairs,Ministry of Home Affairs,Same treatment as Delhi. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Puducherry,,,ut_puducherry,Transfers to Puducherry,home_affairs,Ministry of Home Affairs,Same treatment as Delhi. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Transfers to Puducherry,,,ut_puducherry,Transfers to Puducherry,home_affairs,Ministry of Home Affairs,Same treatment as Delhi. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+UT Schemes(Others),,,ut_schemes_others,UT schemes (others),home_affairs,Ministry of Home Affairs,2014-15 to 2016-17 only. Union Territory demand: grouped under Home Affairs as in the Demands for Grants (and PRS); the item level stays union_territory.
+Ministry of Women and Child Development,,,women_child,Ministry of Women and Child Development,women_child,Ministry of Women and Child Development,
+Women and Child Development,,,women_child,Ministry of Women and Child Development,women_child,Ministry of Women and Child Development,
+Ministry of Youth Affairs and Sports,,,youth_sports,Ministry of Youth Affairs and Sports,youth_sports,Ministry of Youth Affairs and Sports,
+Youth Affairs and Sports,,,youth_sports,Ministry of Youth Affairs and Sports,youth_sports,Ministry of Youth Affairs and Sports,

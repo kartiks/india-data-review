@@ -13,16 +13,17 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
      2017-18), quarterly (urban, from 2018) and monthly (from 2025).
 2. Consumer prices: CPI (base 2012 = 100), /api/cpi/getCPIIndex, Jan 2013 to
    Dec 2025. Every group and subgroup for All India; the general index for
-   every state. The new 2024-base series (from Jan 2026) is not in the API yet.
+   every state. The new 2024-base series (from Jan 2026) is item 5.
 3. CPI for agricultural and rural labourers (Labour Bureau),
    /api/cpialrl/getCpialrlRecords.
 4. Household spending: Household Consumption Expenditure Survey (HCES)
    2022-23 and 2023-24, /api/hces/getHcesRecords.
 5. Consumer prices, new series (base 2024 = 100), from January 2026: MoSPI's
    monthly press releases on PIB. MoSPI's data service lists the base-2024
-   filters but returns no data for them, so the figures are read from each
-   release's PDF (annexures: divisions, groups, states, and the All-India
-   series from January 2025). Add each new month's release page below.
+   filters but returns no data for them, so the figures are read from the
+   tables on each release's page (divisions, groups, states, and the All-India
+   series from January 2025) and checked against the release's PDF where it
+   has one. Add each new month's release page below.
 """
 
 API = "https://api.mospi.gov.in/api"

@@ -54,7 +54,22 @@ const charts = SIZES.map((sz) => {
     const last = [...s.points.keys()].reverse().find((i) => s.points[i].value != null);
     return { s, d, last };
   });
-  return { sz, xs, y, xTicks, paths, right };
+  // Annotation labels: put a label on a second row if it would overlap the previous one.
+  const charW = sz.font * 0.58;
+  const placed: { x0: number; x1: number; row: number }[] = [];
+  const notes = annotations.map((a) => {
+    const i = years.indexOf(a.year);
+    if (i < 0) return null;
+    const w = a.label.length * charW;
+    const left = xs[i] > sz.left + (sz.width - sz.left) * 0.55;
+    const x0 = left ? xs[i] - 4 - w : xs[i] + 4;
+    const x1 = x0 + w;
+    let row = 0;
+    while (placed.some((p) => p.row === row && x0 < p.x1 + 6 && x1 > p.x0 - 6)) row++;
+    placed.push({ x0, x1, row });
+    return { i, label: a.label, left, ty: sz.top + 2 + row * sz.font * 1.3 };
+  }).filter((n): n is NonNullable<typeof n> => !!n);
+  return { sz, xs, y, xTicks, paths, right, notes };
 });
 
 const tooltipData = JSON.stringify({
@@ -81,7 +96,7 @@ const tooltipData = JSON.stringify({
       )}
     </ul>
   )}
-  {charts.map(({ sz, xs, y, xTicks, paths, right }) => (
+  {charts.map(({ sz, xs, y, xTicks, paths, right, notes }) => (
     <svg
       class={`plot plot-${sz.name}`}
       viewBox={`0 0 ${sz.width} ${sz.height}`}
@@ -101,18 +116,12 @@ const tooltipData = JSON.stringify({
       {xTicks.map(({ yr, i }) => (
         <text x={xs[i]} y={sz.height - 8} text-anchor={i === years.length - 1 && right < 30 ? "end" : "middle"} class="tick">{yr}</text>
       ))}
-      {annotations.map((a) => {
-        const i = years.indexOf(a.year);
-        if (i < 0) return null;
-        return (
-          <g class="annotation">
-            <line x1={xs[i]} x2={xs[i]} y1={sz.top} y2={sz.height - sz.bottom} />
-            {xs[i] > sz.left + (sz.width - sz.left) * 0.55
-              ? <text x={xs[i] - 4} y={sz.top + 2} dy="0.8em" text-anchor="end" class="tick">{a.label}</text>
-              : <text x={xs[i] + 4} y={sz.top + 2} dy="0.8em" class="tick">{a.label}</text>}
-          </g>
-        );
-      })}
+      {notes.map((n) => (
+        <g class="annotation">
+          <line x1={xs[n.i]} x2={xs[n.i]} y1={sz.top} y2={sz.height - sz.bottom} />
+          <text x={n.left ? xs[n.i] - 4 : xs[n.i] + 4} y={n.ty} dy="0.8em" text-anchor={n.left ? "end" : "start"} class="tick">{n.label}</text>
+        </g>
+      ))}
       {paths.map(({ s, d }) => (
         <path d={d} fill="none" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
       ))}

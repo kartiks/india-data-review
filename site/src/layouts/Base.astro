@@ -26,6 +26,13 @@ const nav = [
     <title>{title === "India Budget Review" ? title : `${title} · India Budget Review`}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={link("/favicon.svg")} type="image/svg+xml" />
+    {Astro.site && <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="India Budget Review" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {Astro.site && <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />}
+    <meta name="twitter:card" content="summary" />
     <script is:inline>
       try {
         const t = localStorage.getItem("theme");

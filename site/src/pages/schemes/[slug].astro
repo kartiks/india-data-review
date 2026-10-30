@@ -32,6 +32,9 @@ const rows = SCHEME_YEARS.map((y) => {
 const docName = s.type === "css" ? "Statement 4A" : "Statement 4B";
 const firstBudget = names[0]?.budget;
 const listedLate = firstBudget && firstBudget > SCHEME_YEARS_FIRST_BUDGET;
+const lastBudget = names.at(-1)?.budget;
+const latestBudget = SCHEME_YEARS[SCHEME_YEARS.length - 1];
+const noLongerListed = lastBudget && lastBudget < latestBudget;
 ---
 <Base title={s.name} section="schemes" description={`${s.name}: budget allocations and spending since 2017-18, from India's Expenditure Profile.`}>
   <p class="small"><a href={link("/schemes/")}>← All schemes</a></p>
@@ -56,6 +59,13 @@ const listedLate = firstBudget && firstBudget > SCHEME_YEARS_FIRST_BUDGET;
     <p class="note">
       First listed as a separate scheme in Budget {firstBudget}. Before that, its money may have been reported as part
       of a larger umbrella scheme or under another name, so earlier years are not shown here.
+    </p>
+  )}
+  {noLongerListed && (
+    <p class="note">
+      Not listed after Budget {lastBudget}. Schemes are often renamed, merged into a larger scheme or closed; the budget
+      documents don't always say which. <a href={link("/schemes/")}>Search the schemes list</a> for a successor (for example,
+      the mid-day meal scheme continues as PM POSHAN).
     </p>
   )}
   {[...notes].map((n) => <p class="note">{n}</p>)}

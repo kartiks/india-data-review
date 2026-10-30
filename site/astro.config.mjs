@@ -4,7 +4,7 @@ import { defineConfig } from "astro/config";
 // SITE_URL / SITE_BASE are set by the deploy workflow (e.g. GitHub Pages serves under /<repo>/).
 export default defineConfig({
   output: "static",
-  site: process.env.SITE_URL || undefined,
+  site: process.env.SITE_URL || "https://india-budget-review.vercel.app",
   base: process.env.SITE_BASE || "/",
   trailingSlash: "always",
   build: { format: "directory" },

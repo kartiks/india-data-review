@@ -1,5 +1,7 @@
 # India Budget Review
 
+**Live site: https://india-budget-review.vercel.app**
+
 A website on India's Union Budget, 2000-01 to today, built only from official
 budget documents and checked automatically. This repository holds the data
 pipeline (`pipeline/`), the verified datasets (`data/`), the downloaded source

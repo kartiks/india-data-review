@@ -1,0 +1,13 @@
+---
+import Base from "../layouts/Base.astro";
+import { link } from "../lib/url";
+---
+<Base title="Page not found">
+  <h1>Page not found</h1>
+  <p class="muted">There's no page at this address. It may have moved, or a scheme may have been renamed.</p>
+  <ul>
+    <li><a href={link("/")}>Latest budget overview</a></li>
+    <li><a href={link("/years/")}>All budget years</a></li>
+    <li><a href={link("/ministries/")}>Ministries</a> · <a href={link("/schemes/")}>Search schemes</a></li>
+  </ul>
+</Base>

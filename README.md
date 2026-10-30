@@ -1,4 +1,14 @@
-# India Budget Review — data pipeline
+# India Budget Review
+
+A website on India's Union Budget, 2000-01 to today, built only from official
+budget documents and checked automatically. This repository holds the data
+pipeline (`pipeline/`), the verified datasets (`data/`), the downloaded source
+files (`sources/`) and the website (`site/`).
+
+> This repository previously held an Android app (Expo/React Native). That code
+> is preserved at the tag `android-app-final`.
+
+## Data pipeline
 
 Verified data on the Union Budget of India, **2000-01 to 2026-27**, taken
 straight from official budget documents and checked automatically:

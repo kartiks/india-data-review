@@ -3,7 +3,7 @@
 import fs from "node:fs";
 import path from "node:path";
 
-const AREAS = ["budget", "gdp"];
+const AREAS = ["budget", "gdp", "jobs-prices"];
 fs.rmSync(path.resolve("public", "data"), { recursive: true, force: true });
 for (const area of AREAS) {
   const src = path.resolve("..", area, "data");

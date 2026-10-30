@@ -2,7 +2,7 @@
 
 Live: https://india-data-review.k4tech.in
 
-A static, mobile-first website built from the verified datasets in `../budget/data` and `../gdp/data`
+A static, mobile-first website built from the verified datasets in `../budget/data`, `../gdp/data` and `../jobs-prices/data`
 (produced by each area's pipeline). Every page is pre-rendered; charts are SVG drawn at build time, with a
 small script for hover/touch/keyboard readouts and a table view under every chart.
 
@@ -28,9 +28,13 @@ npm run check    # type check
 | `/gdp/growth/`, `/gdp/revisions/`, `/gdp/forecasts/` | Growth since 2000-01; every estimate stage; forecasts vs outcome |
 | `/gdp/sectors/`, `/gdp/spending/`, `/gdp/quarters/` | GVA by sector; spending, investment and saving; quarterly growth |
 | `/gdp/sources/` | GDP sources, checks, problems found in the official data, downloads |
-| `/about/` | What the site is, principles, both areas' check results |
+| `/jobs-prices/` | Unemployment, women in work, inflation, spending per person; monthly inflation |
+| `/jobs-prices/jobs/`, `/jobs-prices/work/` | PLFS: participation and unemployment by sex, age, area, education, group, state; industry, type of work, job conditions, earnings |
+| `/jobs-prices/prices/`, `/jobs-prices/spending/` | CPI inflation by month, year, group and state; CPI-AL/RL; HCES spending by state, class, item, group |
+| `/jobs-prices/states/`, `/jobs-prices/sources/` | All states side by side; sources, checks, problems found, downloads |
+| `/about/` | What the site is, principles, every area's check results |
 
-Code layout: `src/lib/budget/` and `src/lib/gdp/` read each area's data; `src/components/` holds the shared
+Code layout: `src/lib/budget/`, `src/lib/gdp/` and `src/lib/jobs-prices/` read each area's data; `src/components/` holds the shared
 charts (`components/budget/` the budget-only ones); `src/layouts/Base.astro` has the tabs and sub-navigation,
 and works out the area from the URL.
 
@@ -47,6 +51,6 @@ frontmatter.
 
 ## Deployment
 
-Hosted on Vercel (project Root Directory: `site`). The build reads `../budget/data` and `../gdp/data`, so
+Hosted on Vercel (project Root Directory: `site`). The build reads each area's `data/` folder, so
 Vercel's "Include files outside the root directory" setting must stay on (the default).
 Every push to `main` deploys; other branches get preview URLs.

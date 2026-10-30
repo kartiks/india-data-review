@@ -1,0 +1,187 @@
+---
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import BarList from "../../../components/BarList.astro";
+import DotRows from "../../../components/DotRows.astro";
+import {
+  rate, periods, periodLabel, distinct, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel,
+  type Gender, type Sector,
+} from "../../../lib/jobs-prices/data";
+import { axisPct, pct } from "../../../lib/format";
+
+const Y = PLFS_LATEST;
+const all = rate({ year: Y })!;
+const women = rate({ year: Y, gender: "female" })!;
+const men = rate({ year: Y, gender: "male" })!;
+const youth = rate({ year: Y, age: "15-29 years" })!;
+const first = rate({ year: PLFS_YEARS[0], gender: "female" })!;
+
+const SECTORS: [Sector, string][] = [["rural + urban", "All India"], ["rural", "Rural"], ["urban", "Urban"]];
+const GENDERS: { g: Gender; name: string; slot: number }[] = [
+  { g: "female", name: "Women", slot: 2 }, { g: "male", name: "Men", slot: 1 }, { g: "person", name: "Everyone", slot: 7 },
+];
+const bySexArea = (field: "lfpr" | "wpr" | "ur", age = "15 years and above") =>
+  SECTORS.map(([s, label]) => ({ label, strong: s === "rural + urban", values: GENDERS.map(({ g }) => rate({ year: Y, sector: s, gender: g, age })?.[field] ?? null) }));
+const dotSeries = GENDERS.map(({ name, slot }) => ({ name, slot }));
+
+// Over the survey years (usual status, aged 15 and over)
+const trend = (field: "lfpr" | "ur") => GENDERS.map(({ g, name, slot }) => ({
+  name, slot, points: PLFS_YEARS.map((y) => ({ value: rate({ year: y, gender: g })?.[field] ?? null })),
+}));
+
+// Quarterly urban unemployment (current weekly status), from Apr-Jun 2018
+const qs = periods("quarterly");
+const qLabels = qs.map((p) => periodLabel(p.year, p.period));
+const qSeries = GENDERS.map(({ g, name, slot }) => ({
+  name, slot,
+  points: qs.map((p) => ({ value: rate({ frequency: "quarterly", year: p.year, period: p.period, sector: "urban", gender: g })?.ur ?? null })),
+}));
+const qLeftOut = qs.length * 3 - qSeries.reduce((n, s) => n + s.points.filter((p) => p.value != null).length, 0);
+const covid = qs.findIndex((p) => p.year === "2020" && p.period === "Q2");
+const covidUr = qSeries[2].points[covid]?.value;
+
+// Monthly unemployment (current weekly status), from 2025
+const ms = periods("monthly");
+const mLabels = ms.map((p) => periodLabel(p.year, p.period));
+const mSeries = SECTORS.map(([s, label], i) => ({
+  name: label === "All India" ? "Rural + urban" : label, slot: [7, 3, 4][i],
+  points: ms.map((p) => ({ value: rate({ frequency: "monthly", year: p.year, period: p.period, sector: s })?.ur ?? null })),
+}));
+const lastM = ms[ms.length - 1];
+
+// Education (MoSPI publishes this breakdown for all ages)
+const EDU = distinct("education", { frequency: "annual", year: Y, age: "All ages" }).filter((e) => e !== "all");
+const eduRows = EDU.map((e) => {
+  const r = rate({ year: Y, age: "All ages", education: e });
+  return r?.ur != null ? { label: cleanLabel(e), value: r.ur, display: pct(r.ur), sub: r.lfpr != null ? `${pct(r.lfpr)} in the labour force` : undefined } : null;
+}).filter((r): r is NonNullable<typeof r> => !!r);
+
+// Social group and religion (aged 15 and over)
+const groupRows = (field: "social_group" | "religion") => distinct(field, { frequency: "annual", year: Y }).filter((v) => v !== "all")
+  .map((v) => {
+    const r = rate({ year: Y, [field]: v });
+    return r?.lfpr != null ? { label: v.charAt(0).toUpperCase() + v.slice(1), value: r.lfpr, display: pct(r.lfpr), sub: r.ur != null ? `unemployment ${pct(r.ur)}` : undefined } : null;
+  })
+  .filter((r): r is NonNullable<typeof r> => !!r)
+  .sort((a, b) => b.value - a.value);
+
+// States
+const stateRows = (field: "ur" | "lfpr") => PLFS_STATES.map((st) => ({
+  label: st,
+  values: [rate({ year: Y, state: st, gender: "female" })?.[field] ?? null, rate({ year: Y, state: st, gender: "male" })?.[field] ?? null],
+  sort: rate({ year: Y, state: st })?.[field] ?? -1,
+})).filter((r) => r.values.some((v) => v != null)).sort((a, b) => b.sort - a.sort);
+const SRC = "MoSPI, Periodic Labour Force Survey (PLFS), via MoSPI's data service.";
+---
+<Base title="Jobs" section="jobs" description="Who works in India and who is looking for work: participation, unemployment and the worker ratio from MoSPI's Periodic Labour Force Survey, by sex, age, area, education and state.">
+  <h1>Jobs</h1>
+  <p class="lede">
+    In {Y}, <strong>{pct(all.lfpr!)}</strong> of Indians aged 15 and over were working or looking for work, and{" "}
+    <strong>{pct(all.ur!)}</strong> of them could not find work, according to MoSPI's Periodic Labour Force Survey.
+    Fewer than half as many women as men are in the labour force.
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Unemployment rate, {Y}</div><div class="value">{pct(all.ur!)}</div><div class="sub">aged 15+; youth (15–29): {pct(youth.ur!)}</div></div>
+    <div class="tile"><div class="label">In the labour force, {Y}</div><div class="value">{pct(all.lfpr!)}</div><div class="sub">working or seeking work, aged 15+</div></div>
+    <div class="tile"><div class="label">Women in the labour force</div><div class="value">{pct(women.lfpr!)}</div><div class="sub">men: {pct(men.lfpr!)}; women in {PLFS_YEARS[0]}: {pct(first.lfpr!)}</div></div>
+    <div class="tile"><div class="label">Working, {Y}</div><div class="value">{pct(all.wpr!)}</div><div class="sub">worker population ratio, aged 15+</div></div>
+  </div>
+
+  <section class="card note-card">
+    <h2>Three measures</h2>
+    <p class="small">
+      <strong>Labour force participation</strong>: the share of people who are working or looking for work.{" "}
+      <strong>Worker population ratio</strong>: the share who are working. <strong>Unemployment rate</strong>: the share
+      of the labour force (not of everyone) who are looking for work but have none. Annual figures use the survey's
+      <em>usual status</em> (what a person mainly did over the past year, counting a subsidiary job of at least 30 days);
+      quarterly and monthly figures use <em>current weekly status</em> (the past seven days).
+    </p>
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows title={`Labour force participation, ${Y}`} subtitle="Share of people aged 15 and over who are working or looking for work." series={dotSeries} rows={bySexArea("lfpr")} format={(v) => pct(v)} source={SRC} />
+    </section>
+    <section class="card">
+      <DotRows title={`Unemployment rate, ${Y}`} subtitle="Share of the labour force aged 15 and over without work." series={dotSeries} rows={bySexArea("ur")} format={(v) => pct(v)} source={SRC} />
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <LineChart title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+    </section>
+    <section class="card">
+      <LineChart title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+    </section>
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Urban unemployment, quarter by quarter"
+      subtitle={`Towns and cities, aged 15 and over, current weekly status, ${qLabels[0]} to ${qLabels[qLabels.length - 1]}. ${covidUr ? `In Apr–Jun 2020, during the COVID-19 lockdown, it reached ${pct(covidUr)}.` : ""}`}
+      years={qLabels}
+      series={qSeries}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      source={`${SRC} Gaps: ${qLeftOut} quarterly figures in MoSPI's data service fail its own consistency checks (see Sources) and are not shown.`}
+    />
+  </section>
+
+  {ms.length > 0 && (
+    <section class="card">
+      <LineChart
+        title="Unemployment, month by month"
+        subtitle={`Aged 15 and over, current weekly status. MoSPI's monthly survey started in January 2025; latest ${periodLabel(lastM.year, lastM.period)}.`}
+        years={mLabels}
+        series={mSeries}
+        format={axisPct}
+        tableFormat={(v) => pct(v)}
+        zero={false}
+        source={SRC}
+      />
+    </section>
+  )}
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows title={`Young people (15–29), unemployment rate, ${Y}`} series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
+    </section>
+    <section class="card">
+      <h3>Unemployment by education, {Y}</h3>
+      <p class="muted small">All ages, usual status. Graduates are far more likely to be looking for work than people with little schooling, who mostly cannot afford not to work.</p>
+      <BarList rows={eduRows} tone={3} label="Unemployment rate by level of education" />
+      <p class="source">{SRC}</p>
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3>Labour force participation by social group, {Y}</h3>
+      <p class="muted small">Aged 15 and over, usual status.</p>
+      <BarList rows={groupRows("social_group")} tone={1} label="Labour force participation by social group" />
+      <p class="source">{SRC}</p>
+    </section>
+    <section class="card">
+      <h3>Labour force participation by religion, {Y}</h3>
+      <p class="muted small">Aged 15 and over, usual status. MoSPI publishes the four largest religions.</p>
+      <BarList rows={groupRows("religion")} tone={1} label="Labour force participation by religion" />
+      <p class="source">{SRC}</p>
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows title={`Women and men in the labour force, by state, ${Y}`} subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("lfpr")} format={(v) => pct(v)} source={SRC} />
+    </section>
+    <section class="card">
+      <DotRows title={`Unemployment by state, ${Y}`} subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("ur")} format={(v) => pct(v)} source={SRC} />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .note-card p { margin: 0; }
+</style>

@@ -1,0 +1,80 @@
+---
+import Base from "../../../layouts/Base.astro";
+import {
+  rate, PLFS_LATEST, PLFS_STATES, WORKERS, cpiState, averageInflation, CPI_LAST, hcesValue, HCES_LATEST, NOT_IMPUTED,
+} from "../../../lib/jobs-prices/data";
+import { gpct, pct } from "../../../lib/format";
+
+const Y = PLFS_LATEST;
+const lastYear = CPI_LAST.slice(0, 4);
+const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
+// State names differ between the surveys only for the merged UT and old spellings.
+const CPI_NAME: Record<string, string[]> = { "Dadra & Nagar Haveli & Daman & Diu": ["Dadra & Nagar Haveli", "Daman & Diu"] };
+const regular = (st: string) => WORKERS.find((r) => r.year === Y && r.state === st && r.sector === "rural + urban" && r.gender === "person"
+  && r.breakdown === "broad_status_employment" && r.category.startsWith("4."))?.value ?? null;
+const cpiOf = (st: string) => {
+  if (CPI_NAME[st]) return undefined; // two separate indices in the CPI; no combined figure
+  return averageInflation(cpiState(st, "Combined"), lastYear) ?? averageInflation(cpiState(st, "Urban"), lastYear);
+};
+const mpce = (st: string, sector: "Rural" | "Urban") => hcesValue({ indicator: "mpce", year: HCES_LATEST, state: st, sector, imputation_type: NOT_IMPUTED });
+const rows = PLFS_STATES.map((st) => ({
+  st,
+  ur: rate({ year: Y, state: st })?.ur ?? null,
+  women: rate({ year: Y, state: st, gender: "female" })?.lfpr ?? null,
+  regular: regular(st),
+  infl: cpiOf(st),
+  rural: mpce(st, "Rural"),
+  urban: mpce(st, "Urban"),
+}));
+const india = {
+  ur: rate({ year: Y })?.ur, women: rate({ year: Y, gender: "female" })?.lfpr,
+  infl: averageInflation(cpiState("All India", "Combined"), lastYear), rural: mpce("All India", "Rural"), urban: mpce("All India", "Urban"),
+};
+const f = (v: number | null | undefined, fmt: (v: number) => string) => (v == null ? "–" : fmt(v));
+---
+<Base title="States" section="states" description="Indian states side by side: unemployment, women's labour force participation, salaried jobs, consumer inflation and household spending, from MoSPI's surveys.">
+  <h1>States</h1>
+  <p class="lede">Every state and union territory on the same measures, from MoSPI's three surveys. Notes on each column are below the table.</p>
+
+  <section class="card">
+    <div class="table-scroll">
+      <table class="states">
+        <thead>
+          <tr>
+            <th>State / UT</th>
+            <th>Unemployment, {Y}</th>
+            <th>Women in labour force, {Y}</th>
+            <th>Regular salaried jobs, {Y}</th>
+            <th>Inflation, {lastYear}</th>
+            <th>Spending per person, rural, {HCES_LATEST}</th>
+            <th>Spending per person, urban, {HCES_LATEST}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="india">
+            <td>All India</td><td>{f(india.ur, pct)}</td><td>{f(india.women, pct)}</td><td>–</td><td>{f(india.infl, gpct)}</td><td>{f(india.rural, rupees)}</td><td>{f(india.urban, rupees)}</td>
+          </tr>
+          {rows.map((r) => (
+            <tr>
+              <td>{r.st}</td><td>{f(r.ur, pct)}</td><td>{f(r.women, pct)}</td><td>{f(r.regular, pct)}</td><td>{f(r.infl, gpct)}</td><td>{f(r.rural, rupees)}</td><td>{f(r.urban, rupees)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <ul class="small muted notes">
+      <li><strong>Unemployment</strong> and <strong>women in the labour force</strong>: aged 15 and over, usual status (PLFS).</li>
+      <li><strong>Regular salaried jobs</strong>: share of workers with a regular wage or salary (PLFS). MoSPI's All-India figure for this breakdown does not add up, so it is not shown.</li>
+      <li><strong>Inflation</strong>: average Consumer Price Index for {lastYear} on {Number(lastYear) - 1}, rural and urban combined (urban where MoSPI publishes no combined index). The CPI keeps Dadra & Nagar Haveli and Daman & Diu separate and has no index for Ladakh.</li>
+      <li><strong>Spending per person</strong>: average monthly consumption spending, excluding items received free (HCES).</li>
+      <li>A dash means MoSPI publishes no figure, or the figure failed the checks (see Sources).</li>
+    </ul>
+  </section>
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .states td:not(:first-child), .states th:not(:first-child) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .states tr.india td { font-weight: 600; }
+  .notes { margin-top: 12px; padding-left: 18px; }
+</style>

@@ -1,0 +1,137 @@
+---
+import Base from "../../../layouts/Base.astro";
+import DotRows from "../../../components/DotRows.astro";
+import { hces, hcesValue, HCES_YEARS, HCES_LATEST, NOT_IMPUTED, IMPUTED, type HcesRow } from "../../../lib/jobs-prices/data";
+import { gpct, pct } from "../../../lib/format";
+
+const Y = HCES_LATEST;
+const Y0 = HCES_YEARS[0];
+const SRC = "MoSPI, Household Consumption Expenditure Survey (HCES), via MoSPI's data service.";
+const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
+const q = (o: Partial<HcesRow>) => ({ year: Y, state: "All India", imputation_type: NOT_IMPUTED, ...o });
+const mpce = (sector: "Rural" | "Urban", o: Partial<HcesRow> = {}) => hcesValue(q({ indicator: "mpce", sector, ...o }));
+const rural = mpce("Rural")!, urban = mpce("Urban")!;
+const rural0 = mpce("Rural", { year: Y0 })!, urban0 = mpce("Urban", { year: Y0 })!;
+const ruralImp = mpce("Rural", { imputation_type: IMPUTED })!, urbanImp = mpce("Urban", { imputation_type: IMPUTED })!;
+const gini = (sector: "Rural" | "Urban", o: Partial<HcesRow> = {}) => hcesValue(q({ indicator: "gini", sector, ...o }));
+const RU = [{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }];
+
+// States, rural vs urban
+const STATES = [...new Set(hces({ indicator: "mpce", year: Y }).map((r) => r.state))].filter((s) => s !== "All India").sort();
+const stateRows = [{ label: "All India", strong: true, values: [rural, urban] }].concat(
+  STATES.map((st) => ({ label: st, strong: false, values: [mpce("Rural", { state: st }) ?? null, mpce("Urban", { state: st }) ?? null] as number[] }))
+    .sort((a, b) => (b.values[0] ?? 0) - (a.values[0] ?? 0)),
+);
+
+// Spending classes (5% and 10% slices of the population, poorest first)
+const classNames = [...new Set(hces(q({ indicator: "classes", sector: "Rural" })).map((r) => r.category))]
+  .filter((c) => c !== "All").sort((a, b) => parseFloat(a) - parseFloat(b));
+const classRows = classNames.map((c) => ({
+  label: `${c.replace("-", "–")}%`,
+  values: [hcesValue(q({ indicator: "classes", sector: "Rural", category: c })) ?? null, hcesValue(q({ indicator: "classes", sector: "Urban", category: c })) ?? null],
+}));
+const top = classRows[classRows.length - 1].values, bottom = classRows[0].values;
+
+// What households spend on (shares of spending)
+const FOOD = new Set(["Cereal", "Cereal Substitutes", "Gram", "Pulses and Pulse Products", "Milk and Milk Products", "Salt", "Sugar", "Edible Oil",
+  "Egg, Fish & Meat", "Vegetables", "Fruits (fresh)", "Fruits (dry)", "Spices", "Beverages, Processed Food, etc."]);
+const share = (sector: "Rural" | "Urban", category: string, o: Partial<HcesRow> = {}) => hcesValue(q({ indicator: "shares", sector, category, ...o }));
+const foodR = share("Rural", "Food Total")!, foodU = share("Urban", "Food Total")!;
+const foodR0 = share("Rural", "Food Total", { year: Y0 }), foodU0 = share("Urban", "Food Total", { year: Y0 });
+const cats = [...new Set(hces(q({ indicator: "shares", sector: "Rural" })).map((r) => r.category))].filter((c) => c !== "Food Total" && c !== "Non-Food Total");
+const catRows = (food: boolean) => cats.filter((c) => FOOD.has(c) === food)
+  .map((c) => ({ label: c, values: [share("Rural", c) ?? null, share("Urban", c) ?? null] }))
+  .sort((a, b) => ((b.values[0] ?? 0) + (b.values[1] ?? 0)) - ((a.values[0] ?? 0) + (a.values[1] ?? 0)));
+const foodStateRows = STATES.map((st) => ({ label: st, values: [share("Rural", "Food Total", { state: st }) ?? null, share("Urban", "Food Total", { state: st }) ?? null] }))
+  .filter((r) => r.values.some((v) => v != null)).sort((a, b) => (b.values[0] ?? 0) - (a.values[0] ?? 0));
+
+// Social group and household type
+const groupRows = ["Scheduled Tribe", "Scheduled Caste", "Other Backward Class", "Others"].map((g) => ({
+  label: g === "Others" ? "Others (general)" : g,
+  values: [hcesValue(q({ indicator: "social_group", sector: "Rural", category: g })) ?? null, hcesValue(q({ indicator: "social_group", sector: "Urban", category: g })) ?? null],
+}));
+const typeRows = (sector: "Rural" | "Urban") => hces(q({ indicator: "household_type", sector }))
+  .filter((r) => r.category !== "All" && r.value != null)
+  .map((r) => ({ label: r.category, values: [r.value] }))
+  .sort((a, b) => (b.values[0] ?? 0) - (a.values[0] ?? 0));
+
+// Inequality
+const giniRows = [{ label: "All India", strong: true, values: [gini("Rural") ?? null, gini("Urban") ?? null] }].concat(
+  STATES.map((st) => ({ label: st, strong: false, values: [gini("Rural", { state: st }) ?? null, gini("Urban", { state: st }) ?? null] }))
+    .filter((r) => r.values.some((v) => v != null)).sort((a, b) => (b.values[1] ?? 0) - (a.values[1] ?? 0)),
+);
+---
+<Base title="Household spending" section="spending" description="What Indian households spend, from MoSPI's Household Consumption Expenditure Survey: rural and urban, by state, by spending class, on food and other items.">
+  <h1>Household spending</h1>
+  <p class="lede">
+    In {Y} the average person in rural India spent <strong>{rupees(rural)}</strong> a month on consumption, and in
+    urban India <strong>{rupees(urban)}</strong>, {((urban / rural - 1) * 100).toFixed(0)}% more, according to MoSPI's
+    Household Consumption Expenditure Survey. Food was {pct(foodR)} of rural and {pct(foodU)} of urban spending.
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Rural, {Y}</div><div class="value">{rupees(rural)}</div><div class="sub">per person a month; {Y0}: {rupees(rural0)} ({gpct((rural / rural0 - 1) * 100)})</div></div>
+    <div class="tile"><div class="label">Urban, {Y}</div><div class="value">{rupees(urban)}</div><div class="sub">per person a month; {Y0}: {rupees(urban0)} ({gpct((urban / urban0 - 1) * 100)})</div></div>
+    <div class="tile"><div class="label">Food's share of spending</div><div class="value">{pct(foodR)} <span class="unit">rural</span></div><div class="sub">{pct(foodU)} urban{foodR0 != null && foodU0 != null ? `; ${Y0}: ${pct(foodR0)} and ${pct(foodU0)}` : ""}</div></div>
+    <div class="tile"><div class="label">Inequality (Gini), {Y}</div><div class="value">{gini("Rural")} <span class="unit">rural</span></div><div class="sub">{gini("Urban")} urban; {Y0}: {gini("Rural", { year: Y0 })} and {gini("Urban", { year: Y0 })}</div></div>
+  </div>
+
+  <section class="card note-card">
+    <h2>About these figures</h2>
+    <p class="small">
+      Figures are monthly consumption spending per person (MPCE), at the prices of the survey year, not adjusted for
+      inflation. They exclude items households received free. Valuing those items (food from the public distribution
+      system, school meals, laptops, bicycles and so on) at market prices raises the {Y} averages to {rupees(ruralImp)}{" "}
+      (rural) and {rupees(urbanImp)} (urban). The survey was redesigned in 2022-23, so these two rounds are not directly
+      comparable with earlier ones (last in 2011-12).
+    </p>
+  </section>
+
+  <section class="card">
+    <DotRows title={`Spending per person by state, ${Y}`} subtitle="Average monthly consumption per person, rural and urban. Sorted by rural spending." series={RU} rows={stateRows} format={rupees} source={SRC} />
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows
+        title={`Spending by class, ${Y}`}
+        subtitle={`Average spending of each slice of the population, ranked from the lowest-spending 5% to the highest. The top 5% in towns spend ${(top[1]! / bottom[1]!).toFixed(0)} times as much as the bottom 5%; in villages ${(top[0]! / bottom[0]!).toFixed(0)} times.`}
+        series={RU}
+        rows={classRows}
+        format={rupees}
+        source={SRC}
+      />
+    </section>
+    <section class="card">
+      <DotRows title={`Spending by social group, ${Y}`} subtitle="Average monthly consumption per person." series={RU} rows={groupRows} format={rupees} source={SRC} />
+      <h3 class="sub-h">By what the household mainly does, rural</h3>
+      <DotRows title="" series={[{ name: "Rural", slot: 3 }]} rows={typeRows("Rural")} format={rupees} />
+      <h3 class="sub-h">By what the household mainly does, urban</h3>
+      <DotRows title="" series={[{ name: "Urban", slot: 4 }]} rows={typeRows("Urban")} format={rupees} source={SRC} />
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows title={`Food: share of spending, ${Y}`} subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(true)} format={(v) => pct(v, 2)} source={SRC} />
+    </section>
+    <section class="card">
+      <DotRows title={`Other items: share of spending, ${Y}`} subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(false)} format={(v) => pct(v, 2)} source={SRC} />
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows title={`Food's share of spending by state, ${Y}`} subtitle="Sorted by the rural share." series={RU} rows={foodStateRows} format={(v) => pct(v)} source={SRC} />
+    </section>
+    <section class="card">
+      <DotRows title={`Inequality of spending by state, ${Y}`} subtitle="Gini coefficient: 0 if everyone spent the same, 1 if one person spent everything. Sorted by urban." series={RU} rows={giniRows} format={(v) => v.toFixed(3)} zero={false} source={SRC} />
+    </section>
+  </div>
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .note-card p { margin: 0; }
+  .sub-h { margin-top: 20px; font-size: 0.95rem; }
+</style>

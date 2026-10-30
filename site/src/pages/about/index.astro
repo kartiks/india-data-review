@@ -4,10 +4,11 @@ import fs from "node:fs";
 import path from "node:path";
 import Base from "../../layouts/Base.astro";
 
-// Read each area's validation report: the site is only built when both pass.
+// Read each area's validation report: the site is only built when all of them pass.
 const areas = [
   { id: "budget", name: "Union Budget", sources: "/budget/sources/" },
   { id: "gdp", name: "GDP", sources: "/gdp/sources/" },
+  { id: "jobs-prices", name: "Jobs and prices", sources: "/jobs-prices/sources/" },
 ].map((a) => {
   const report = fs.readFileSync(path.resolve(process.cwd(), "..", a.id, "data", "validation_report.md"), "utf8");
   const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
@@ -19,21 +20,21 @@ const total = areas.reduce((s, a) => s + a.checks, 0);
   <h1>About India Data Review</h1>
   <p>
     India Data Review presents official data on India's economy and public finances: what the government budgets
-    and spends, and how the economy grows. Every number is read by a program from the government's own documents
+    and spends, how the economy grows, and how people work, earn and spend. Every number is read by a program from the government's own documents
     and data services, kept with a fingerprint of the file it came from, and checked before the site is built.
   </p>
 
   <section class="card">
     <h2>Principles</h2>
     <ul>
-      <li><strong>Official sources only.</strong> Budget documents (indiabudget.gov.in), MoSPI's national accounts, the Economic Survey and the Reserve Bank of India. No news reports, no estimates of our own.</li>
+      <li><strong>Official sources only.</strong> Budget documents (indiabudget.gov.in), MoSPI's national accounts and surveys (labour force, consumer prices, household spending), the Economic Survey and the Reserve Bank of India. No news reports, no estimates of our own.</li>
       <li><strong>Every figure traceable.</strong> Each number links back to the document or data release it came from; the downloaded files are kept with their SHA-256 fingerprints.</li>
-      <li><strong>Checked automatically.</strong> {total.toLocaleString("en-IN")} checks across both areas{areas.every((a) => a.passed) ? ", all passing" : ""}. The site cannot be built if any fails. Problems found in the official data are listed with a reason, not hidden.</li>
+      <li><strong>Checked automatically.</strong> {total.toLocaleString("en-IN")} checks across all areas{areas.every((a) => a.passed) ? ", all passing" : ""}. The site cannot be built if any fails. Problems found in the official data are listed with a reason, not hidden.</li>
       <li><strong>Nothing changed.</strong> The site picks, adds up and divides published figures, and says so wherever it does. Estimates are labelled as estimates.</li>
     </ul>
   </section>
 
-  <div class="grid-2">
+  <div class="grid-2 areas">
     {areas.map((a) => (
       <section class="card">
         <h2>{a.name}</h2>
@@ -47,10 +48,14 @@ const total = areas.reduce((s, a) => s + a.checks, 0);
   <section class="card">
     <h2>Coming next</h2>
     <ul>
-      <li>Rural and urban indicators published every year: consumer prices, employment (PLFS), household spending (HCES).</li>
-      <li>State GDP, from MoSPI.</li>
+      <li>State GDP, from MoSPI, and state comparisons from the RBI's Handbook of Statistics on Indian States.</li>
+      <li>Population (Census 2011, projections, births and deaths), education and health.</li>
       <li>GDP revision history for 2000-01 to 2010-11, and IMF forecasts.</li>
     </ul>
   </section>
 
 </Base>
+
+<style>
+  @media (min-width: 860px) { .areas { grid-template-columns: 1fr 1fr 1fr; } }
+</style>

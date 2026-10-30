@@ -7,6 +7,7 @@ import PromiseGap from "../components/PromiseGap.astro";
 import Money from "../components/Money.astro";
 import * as B from "../lib/budget/data";
 import * as G from "../lib/gdp/data";
+import * as J from "../lib/jobs-prices/data";
 import { axisPct, gpct, pct } from "../lib/format";
 
 // ---- headline tiles --------------------------------------------------------------
@@ -57,12 +58,25 @@ const gapRows = G.BUDGET.filter((b) => b.budget >= "2019-20").map((b) => {
 }).filter((r): r is NonNullable<typeof r> => !!r).reverse();
 
 const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", label: "COVID-19" }];
+
+// ---- consumer prices vs the GDP deflator (jobs-prices + gdp) ---------------------------------
+// GDP deflator inflation from MoSPI's published growth rates: (1 + nominal) / (1 + real) - 1, 2011-12 base.
+const cpiGeneral = J.cpiAllIndia(J.GENERAL);
+const priceYears: string[] = [];
+for (let y = 2014; `${y + 1}-03` <= J.CPI_LAST; y++) priceYears.push(`${y}-${String(y + 1).slice(2)}`);
+const cpiFy = priceYears.map((y) => ({ value: J.averageInflation(cpiGeneral, y) ?? null }));
+const deflator = priceYears.map((y) => {
+  const r = G.longRow(y);
+  const n = r?.growth?.nominal, re = r?.growth?.real;
+  return n != null && re != null ? { value: ((1 + n / 100) / (1 + re / 100) - 1) * 100, kind: G.STAGE_LABEL[r!.stage] } : { value: null };
+});
+const ur = J.rate({ year: J.PLFS_LATEST });
 ---
 <Base title="India Data Review">
   <h1>India's economy and public finances, from the official numbers</h1>
   <p class="lede">
-    The Union Budget since 2000-01 and India's GDP from the national accounts, read straight from government
-    documents and data services, and checked automatically.
+    The Union Budget since 2000-01, India's GDP from the national accounts, and jobs, prices and household spending
+    from MoSPI's surveys, read straight from government documents and data services, and checked automatically.
   </p>
 
   <div class="tiles">
@@ -80,6 +94,11 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
       <div class="label">Fiscal deficit, {by}</div>
       <div class="value">{fd.pctGdp != null ? pct(fd.pctGdp) : "–"}</div>
       <div class="sub">of GDP, Budget Estimate</div>
+    </a>
+    <a class="tile tile-link" href={link("/jobs-prices/prices/")}>
+      <div class="label">Consumer inflation, {J.monthLabel(J.CPI_LAST)}</div>
+      <div class="value">{gpct(cpiGeneral.find((p) => p.month === J.CPI_LAST)!.inflation!)}</div>
+      <div class="sub">on a year earlier; unemployment {J.PLFS_LATEST}: {pct(ur!.ur!)}</div>
     </a>
     <a class="tile tile-link" href="#share">
       <div class="label">Centre's spending, {lastActual}</div>
@@ -122,6 +141,22 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
   </section>
 
   <section class="card">
+    <LineChart
+      title="Two measures of inflation"
+      subtitle="Consumer prices (what households pay) against the GDP deflator (prices across everything the economy produces, including exports and investment goods), fiscal years, on the year before."
+      years={priceYears}
+      series={[
+        { name: "Consumer prices (CPI)", slot: 7, points: cpiFy },
+        { name: "GDP deflator", slot: 2, points: deflator },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v)}
+      annotations={[{ year: "2020-21", label: "COVID-19" }]}
+      source="CPI: MoSPI, base 2012, average of the April–March monthly indices on the year before (worked out here). GDP deflator: MoSPI's nominal and real GDP growth on the 2011-12 base, latest estimate, combined as (1 + nominal) ÷ (1 + real) − 1."
+    />
+  </section>
+
+  <section class="card">
     <h2>The Budget's GDP assumption vs what happened</h2>
     <p class="muted">
       Every budget ratio (deficit, debt, spending as % of GDP) rests on a forecast of nominal GDP. Blue: the economy
@@ -142,6 +177,11 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
       <p class="muted">Growth since 1951-52, every revision of every estimate since 2011-12, forecasts against outcomes, sectors, spending and quarters, on both of MoSPI's series.</p>
       <p class="small"><a href={link("/gdp/revisions/")}>Revisions</a> · <a href={link("/gdp/forecasts/")}>Forecasts</a> · <a href={link("/gdp/sectors/")}>Sectors</a> · <a href={link("/gdp/quarters/")}>Quarters</a></p>
     </section>
+    <section class="card">
+      <h2><a href={link("/jobs-prices/")}>Jobs and prices</a></h2>
+      <p class="muted">Work and unemployment from the Periodic Labour Force Survey, consumer prices since 2013 and household spending in 2022-23 and 2023-24, rural and urban, by state.</p>
+      <p class="small"><a href={link("/jobs-prices/jobs/")}>Jobs</a> · <a href={link("/jobs-prices/work/")}>Earnings</a> · <a href={link("/jobs-prices/prices/")}>Prices</a> · <a href={link("/jobs-prices/spending/")}>Spending</a></p>
+    </section>
   </div>
 </Base>
 
@@ -150,5 +190,6 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
   .tile-link { display: block; color: inherit; text-decoration: none; }
   .tile-link:hover { border-color: var(--accent); }
   .areas { margin-bottom: 16px; }
+  @media (min-width: 860px) { .areas { grid-template-columns: 1fr 1fr 1fr; } }
   .areas h2 a { text-decoration: none; }
 </style>

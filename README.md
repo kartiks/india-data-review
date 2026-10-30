@@ -2,14 +2,15 @@
 
 **Live site: https://india-data-review.k4tech.in**
 
-India's economy and public finances from official data, checked automatically. One website with an area per
+India's economy, public finances, jobs and prices from official data, checked automatically. One website with an area per
 type of data, and a shared home page with charts that use more than one area.
 
 | Folder | What |
 |---|---|
 | [`budget/`](budget/README.md) | Union Budget 2000-01 to today: pipeline, verified data, source documents |
 | [`gdp/`](gdp/README.md) | GDP and national accounts (MoSPI), the Budget's GDP assumption, Economic Survey and RBI forecasts |
-| [`site/`](site/README.md) | The website: `/` home, `/budget/…`, `/gdp/…`, `/about/` |
+| [`jobs-prices/`](jobs-prices/README.md) | Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES), from MoSPI |
+| [`site/`](site/README.md) | The website: `/` home, `/budget/…`, `/gdp/…`, `/jobs-prices/…`, `/about/` |
 
 Each data area is self-contained: its own `pipeline/` (a Python package run with uv), `data/` (the verified
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
@@ -23,6 +24,7 @@ URL and SHA-256). The site refuses to build unless every area's `data/validation
 ```bash
 (cd budget/pipeline && uv run python -m budget_pipeline)   # ~3 min; --fetch downloads anything missing
 (cd gdp/pipeline && uv run python -m gdp_pipeline)         # --refresh after each MoSPI release
+(cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # --refresh after each MoSPI release
 (cd site && npm install && npm run build)                  # or: npm run dev
 ```
 
@@ -36,5 +38,5 @@ URL and SHA-256). The site refuses to build unless every area's `data/validation
 
 ## Deployment
 
-Vercel, project Root Directory `site` (it reads `../budget/data` and `../gdp/data`, so "Include files
+Vercel, project Root Directory `site` (it reads each area's `data/` folder, so "Include files
 outside the root directory" must stay on).

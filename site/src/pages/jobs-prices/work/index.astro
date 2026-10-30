@@ -1,0 +1,207 @@
+---
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import BarList from "../../../components/BarList.astro";
+import DotRows from "../../../components/DotRows.astro";
+import StackedColumns from "../../../components/StackedColumns.astro";
+import {
+  WORKERS, CONDITIONS, EARNINGS, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel, cpiAllIndia, yearAverage, GENERAL,
+  type Gender, type Sector, type CpiSector,
+} from "../../../lib/jobs-prices/data";
+import { axisPct, gpct, pct } from "../../../lib/format";
+
+const Y = PLFS_LATEST;
+const SRC = "MoSPI, Periodic Labour Force Survey (PLFS), usual status, via MoSPI's data service.";
+const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
+const w = (q: Partial<{ year: string; state: string; sector: Sector; gender: Gender; breakdown: string }>) =>
+  WORKERS.filter((r) => r.year === (q.year ?? Y) && r.state === (q.state ?? "All India") && r.sector === (q.sector ?? "rural + urban")
+    && r.gender === (q.gender ?? "person") && r.breakdown === q.breakdown && r.value != null);
+
+// Broad industry (agriculture / industry / services), All India, over the years. MoSPI publishes this breakdown
+// only in current weekly status (the past seven days); the industry sections below are usual status.
+const BROAD = ["primary", "secondary", "tertiary"];
+const broadLabel: Record<string, string> = { primary: "Agriculture, forestry & fishing", secondary: "Industry (incl. mining, construction)", tertiary: "Services" };
+const broadCats = BROAD.map((b, i) => ({ id: b, label: broadLabel[b], slot: [6, 4, 1][i] }));
+const broadOf = (year: string, gender: Gender = "person", sector: Sector = "rural + urban") =>
+  BROAD.map((b) => w({ year, gender, sector, breakdown: "broad_industry_work" }).find((r) => r.category.startsWith(b))?.value ?? null);
+const sectionA = (gender: Gender) => w({ gender, breakdown: "industry_section" }).find((r) => r.category.startsWith("A_"))?.value ?? null;
+const agriNow = sectionA("person")!;
+const agriWomen = sectionA("female")!;
+const agriMen = sectionA("male")!;
+
+// Industry sections (All India)
+const sections = w({ breakdown: "industry_section" }).filter((r) => r.category !== "All")
+  .map((r) => ({ label: cleanLabel(r.category), value: r.value!, display: pct(r.value!) }))
+  .sort((a, b) => b.value - a.value);
+
+// Type of employer (All India)
+const employers = w({ breakdown: "enterprise_type" })
+  .map((r) => ({ label: cleanLabel(r.category), value: r.value!, display: pct(r.value!) }))
+  .sort((a, b) => b.value - a.value);
+
+// Type of work by state (MoSPI's All-India shares for this breakdown do not add up; see Sources)
+const STATUS = [
+  { key: "1.", label: "Own-account / employer", slot: 4 }, { key: "2.", label: "Unpaid family helper", slot: 5 },
+  { key: "4.", label: "Regular wage or salary", slot: 1 }, { key: "5.", label: "Casual labour", slot: 8 },
+];
+const statusOf = (state: string) => {
+  const rows = w({ state, breakdown: "broad_status_employment" });
+  return STATUS.map((s) => rows.find((r) => r.category.startsWith(s.key))?.value ?? null);
+};
+const regularRows = PLFS_STATES.map((st) => {
+  const v = statusOf(st);
+  return v[2] != null ? { label: st, value: v[2], display: pct(v[2]), sub: v[3] != null ? `casual ${pct(v[3])} · self-employed ${pct((v[0] ?? 0) + (v[1] ?? 0))}` : undefined } : null;
+}).filter((r): r is NonNullable<typeof r> => !!r).sort((a, b) => b.value - a.value);
+
+// Job conditions of regular employees (July-June survey years)
+const C_YEARS = [...new Set(CONDITIONS.map((r) => r.year))].sort();
+const COND = [
+  { key: "1.", label: "No written job contract", slot: 8 }, { key: "2.", label: "No paid leave", slot: 4 },
+  { key: "3.", label: "No social security", slot: 7 },
+];
+const cond = (year: string, key: string, gender: Gender = "person") =>
+  CONDITIONS.find((r) => r.year === year && r.state === "All India" && r.sector === "rural + urban" && r.gender === gender && r.condition.startsWith(key))?.value ?? null;
+const lastC = C_YEARS[C_YEARS.length - 1];
+
+// Earnings
+const KINDS = [
+  { kind: "regular", title: "Regular wage or salary", unit: "a month", note: "Average earnings in the previous calendar month from regular salaried work." },
+  { kind: "casual", title: "Casual labour", unit: "a day", note: "Average earnings per day from casual work, other than public works." },
+  { kind: "self", title: "Self-employment", unit: "a month", note: "Average gross earnings over the last 30 days from self-employment." },
+] as const;
+const earn = (kind: string, year: string, gender: Gender = "person", sector: Sector = "rural + urban", state = "All India") =>
+  EARNINGS.find((r) => r.kind === kind && r.year === year && r.state === state && r.sector === sector && r.gender === gender)?.value ?? null;
+const SECTORS: [Sector, string, CpiSector][] = [["rural + urban", "All India", "Combined"], ["rural", "Rural", "Rural"], ["urban", "Urban", "Urban"]];
+const y0 = PLFS_YEARS[0];
+// Growth after inflation: earnings divided by the average consumer price index of the same calendar year.
+const realGrowth = (kind: string, sector: Sector, cs: CpiSector) => {
+  const a = earn(kind, y0, "person", sector), b = earn(kind, Y, "person", sector);
+  const pa = yearAverage(cpiAllIndia(GENERAL, cs), y0), pb = yearAverage(cpiAllIndia(GENERAL, cs), Y);
+  if (a == null || b == null || pa === undefined || pb === undefined) return undefined;
+  return { nominal: (b / a - 1) * 100, real: ((b / pb) / (a / pa) - 1) * 100, prices: (pb / pa - 1) * 100 };
+};
+const cpiCovers = yearAverage(cpiAllIndia(GENERAL), Y) !== undefined;
+---
+<Base title="Work and earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
+  <h1>Work and earnings</h1>
+  <p class="lede">
+    <strong>{pct(agriNow)}</strong> of India's workers were in agriculture, forestry or fishing in {Y}:
+    {" "}{pct(agriWomen)} of working women and {pct(agriMen)} of working men. A regular salaried job paid{" "}
+    <strong>{rupees(earn("regular", Y)!)}</strong> a month on average; casual work <strong>{rupees(earn("casual", Y)!)}</strong> a day.
+  </p>
+
+  <section class="card">
+    <StackedColumns
+      title="Where people work"
+      subtitle={`Share of workers by broad industry, all India, ${PLFS_YEARS[0]}–${Y}. Current weekly status (what people did in the past seven days), the only basis on which MoSPI publishes this breakdown.`}
+      years={PLFS_YEARS}
+      categories={broadCats}
+      values={PLFS_YEARS.map((y) => broadOf(y))}
+      format={axisPct}
+      tipFormat={(v) => pct(v)}
+      max={100}
+      source={SRC}
+    />
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <DotRows
+        title={`Share working in agriculture, ${Y}`}
+        subtitle="Agriculture, forestry and fishing; current weekly status."
+        series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]}
+        rows={SECTORS.map(([s, label]) => ({ label, strong: s === "rural + urban", values: [broadOf(Y, "female", s)[0], broadOf(Y, "male", s)[0]] }))}
+        format={(v) => pct(v)}
+        source={SRC}
+      />
+    </section>
+    <section class="card">
+      <h3>Workers by industry, {Y}</h3>
+      <p class="muted small">All India, share of all workers.</p>
+      <BarList rows={sections.slice(0, 12)} tone={1} label="Share of workers by industry" />
+      <p class="source">{SRC} The smallest {sections.length - 12} industries are in the table download.</p>
+    </section>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3>Regular salaried jobs by state, {Y}</h3>
+      <p class="muted small">
+        Share of workers with a regular wage or salary. The rest are self-employed (including unpaid help in a family
+        business) or casual labourers. MoSPI's All-India figures for this breakdown do not add up, so they are not shown.
+      </p>
+      <BarList rows={regularRows} tone={1} label="Share of workers in regular salaried jobs, by state" />
+      <p class="source">{SRC}</p>
+    </section>
+    <section class="card">
+      <h3>Who employs workers, {Y}</h3>
+      <p class="muted small">All India, share of workers outside farming by type of enterprise.</p>
+      <BarList rows={employers} tone={3} label="Workers by type of enterprise" />
+      <p class="source">{SRC}</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Conditions of regular salaried jobs"
+      subtitle={`Share of regular employees without each benefit, all India, survey years July–June ${C_YEARS[0]} to ${lastC}. In ${lastC}, ${pct(cond(lastC, "4.")!)} had none of the three.`}
+      years={C_YEARS}
+      series={COND.map((c) => ({ name: c.label, slot: c.slot, points: C_YEARS.map((y) => ({ value: cond(y, c.key) })) }))}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      source="MoSPI, Periodic Labour Force Survey annual reports (July–June years), via MoSPI's data service."
+    />
+  </section>
+
+  <h2 class="section-h">Earnings</h2>
+  <div class="tiles">
+    {KINDS.map((k) => (
+      <div class="tile"><div class="label">{k.title}, {Y}</div><div class="value">{rupees(earn(k.kind, Y)!)}</div><div class="sub">{k.unit}; women {rupees(earn(k.kind, Y, "female")!)}, men {rupees(earn(k.kind, Y, "male")!)}</div></div>
+    ))}
+  </div>
+
+  <div class="grid-3">
+    {KINDS.map((k) => (
+      <section class="card">
+        <DotRows
+          title={`${k.title}, ${Y}`}
+          subtitle={`${k.note} ₹ ${k.unit}.`}
+          series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]}
+          rows={SECTORS.map(([s, label]) => ({ label, strong: s === "rural + urban", values: [earn(k.kind, Y, "female", s), earn(k.kind, Y, "male", s)] }))}
+          format={rupees}
+          source={SRC}
+        />
+      </section>
+    ))}
+  </div>
+
+  {cpiCovers && (
+    <section class="card">
+      <h3>Earnings after inflation, {y0} to {Y}</h3>
+      <p class="muted small">
+        Change in average earnings, and the same after dividing by the average Consumer Price Index of each year (rural
+        index for rural earnings, urban for urban, combined for all India). Worked out here from MoSPI's figures.
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Earnings</th><th>Area</th><th>In rupees</th><th>Prices</th><th>After inflation</th></tr></thead>
+          <tbody>
+            {KINDS.flatMap((k) => SECTORS.map(([s, label, cs]) => {
+              const g = realGrowth(k.kind, s, cs);
+              return g ? <tr><td>{k.title}</td><td>{label}</td><td>{gpct(g.nominal)}</td><td>{gpct(g.prices)}</td><td><strong>{gpct(g.real)}</strong></td></tr> : null;
+            }))}
+          </tbody>
+        </table>
+      </div>
+      <p class="source">{SRC} Consumer Price Index (base 2012): MoSPI.</p>
+    </section>
+  )}
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .section-h { margin: 24px 0 12px; }
+  .grid-3 { display: grid; gap: 16px; margin-bottom: 16px; }
+  .grid-3 > .card { margin: 0; }
+  @media (min-width: 860px) { .grid-3 { grid-template-columns: 1fr 1fr 1fr; } }
+</style>

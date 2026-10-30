@@ -1,0 +1,88 @@
+---
+import { link } from "../../lib/url";
+import Base from "../../layouts/Base.astro";
+import LineChart from "../../components/LineChart.astro";
+import {
+  rate, PLFS_LATEST, cpiAllIndia, GENERAL, CPI_LAST, monthRange, monthLabel, averageInflation, hcesValue, HCES_LATEST, NOT_IMPUTED,
+} from "../../lib/jobs-prices/data";
+import { axisPct, gpct, pct } from "../../lib/format";
+
+const Y = PLFS_LATEST;
+const all = rate({ year: Y })!;
+const women = rate({ year: Y, gender: "female" })!;
+const general = cpiAllIndia(GENERAL);
+const latest = general.find((p) => p.month === CPI_LAST)!;
+const lastYear = CPI_LAST.slice(0, 4);
+const avg = averageInflation(general, lastYear)!;
+const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
+const m = (sector: "Rural" | "Urban") => hcesValue({ indicator: "mpce", year: HCES_LATEST, state: "All India", sector, imputation_type: NOT_IMPUTED })!;
+
+const firstInfl = general.find((p) => p.inflation != null)!.month;
+const months = monthRange(firstInfl, CPI_LAST);
+const peak = months.reduce((a, b) => ((general.find((p) => p.month === b)?.inflation ?? -99) > (general.find((p) => p.month === a)?.inflation ?? -99) ? b : a));
+---
+<Base title="Jobs & prices" section="overview" description="Jobs, consumer prices and household spending in India from MoSPI's official surveys, rural and urban, by state, checked automatically.">
+  <h1>Jobs, prices and household spending</h1>
+  <p class="lede">
+    How many Indians work, what they earn, how fast prices rise and what households spend, from the Ministry of
+    Statistics' surveys, with every figure checked. These are the rural and urban measures that India's GDP figures do
+    not provide.
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Unemployment rate, {Y}</div><div class="value">{pct(all.ur!)}</div><div class="sub">aged 15+, usual status</div></div>
+    <div class="tile"><div class="label">Women in the labour force, {Y}</div><div class="value">{pct(women.lfpr!)}</div><div class="sub">aged 15+; everyone {pct(all.lfpr!)}</div></div>
+    <div class="tile"><div class="label">Consumer inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latest.inflation!)}</div><div class="sub">{lastYear} average {gpct(avg)}</div></div>
+    <div class="tile"><div class="label">Spending per person, {HCES_LATEST}</div><div class="value">{rupees(m("Rural"))} <span class="unit">rural</span></div><div class="sub">{rupees(m("Urban"))} urban, a month</div></div>
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Consumer price inflation"
+      subtitle={`All India, on the same month a year earlier. Highest: ${gpct(general.find((p) => p.month === peak)!.inflation!)} in ${monthLabel(peak)}.`}
+      years={months.map(monthLabel)}
+      series={[{ name: "All India", slot: 7, points: months.map((mm) => ({ value: general.find((p) => p.month === mm)?.inflation ?? null })) }]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v, 2)}
+      source="MoSPI, Consumer Price Index (base 2012), via MoSPI's data service."
+    />
+  </section>
+
+  <div class="grid-2">
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/jobs/")}>Jobs</a></h2>
+      <p class="muted">Who is working or looking for work, by sex, age, area, education and state; unemployment each quarter and month.</p>
+    </div>
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/work/")}>Work and earnings</a></h2>
+      <p class="muted">The industries people work in, salaried vs casual work, job conditions, and earnings before and after inflation.</p>
+    </div>
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/prices/")}>Prices</a></h2>
+      <p class="muted">Consumer price inflation since 2014: rural and urban, food and other groups, by state, and for farm labourers.</p>
+    </div>
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/spending/")}>Household spending</a></h2>
+      <p class="muted">What households spend per person, on what, by state and spending class, and how unequal it is.</p>
+    </div>
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/states/")}>States</a></h2>
+      <p class="muted">Every state side by side: unemployment, women at work, salaried jobs, inflation and spending.</p>
+    </div>
+    <div class="card link-card">
+      <h2><a href={link("/jobs-prices/sources/")}>Sources and checks</a></h2>
+      <p class="muted">Where every number comes from, how it is checked, and the errors found in the official data.</p>
+    </div>
+  </div>
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .link-card { position: relative; }
+  .link-card h2 a { text-decoration: none; }
+  .link-card h2 a::after { content: ""; position: absolute; inset: 0; }
+  .link-card:hover { border-color: var(--accent); }
+  .link-card p { margin: 0; }
+  .grid-2 { margin-bottom: 16px; }
+  @media (min-width: 860px) { .grid-2 { grid-template-columns: 1fr 1fr 1fr; } }
+</style>

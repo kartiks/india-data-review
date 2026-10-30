@@ -1,0 +1,181 @@
+---
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import BarList from "../../../components/BarList.astro";
+import DotRows from "../../../components/DotRows.astro";
+import {
+  cpiAllIndia, cpiState, CPI_KEYS, CPI_STATES, CPI_FIRST, CPI_LAST, GENERAL, FOOD, monthRange, monthLabel,
+  yearAverage, averageInflation, cpiLabel, CPIALRL, type CpiPoint, type CpiSector,
+} from "../../../lib/jobs-prices/data";
+import { axisPct, gpct } from "../../../lib/format";
+
+const SRC = "MoSPI, Consumer Price Index (base 2012 = 100), via MoSPI's data service.";
+const lastYear = CPI_LAST.slice(0, 4);
+const general = cpiAllIndia(GENERAL);
+const food = cpiAllIndia(FOOD);
+const at = (pts: CpiPoint[], m: string) => pts.find((p) => p.month === m);
+const latest = at(general, CPI_LAST)!;
+const latestFood = at(food, CPI_LAST);
+const avg = averageInflation(general, lastYear)!;
+const since2012 = latest.index! - 100;
+
+// Monthly inflation since inflation is first published (January 2014)
+const firstInfl = general.find((p) => p.inflation != null)!.month;
+const months = monthRange(firstInfl, CPI_LAST);
+const labels = months.map(monthLabel);
+const line = (pts: CpiPoint[]) => months.map((m) => ({ value: at(pts, m)?.inflation ?? null }));
+const SECT: [CpiSector, string, number][] = [["Combined", "All India", 7], ["Rural", "Rural", 3], ["Urban", "Urban", 4]];
+
+// Average inflation by fiscal year (April to March)
+const fys: string[] = [];
+for (let y = Number(firstInfl.slice(0, 4)); `${y + 1}-03` <= CPI_LAST; y++) fys.push(`${y}-${String(y + 1).slice(2)}`);
+const fyPoints = SECT.map(([s, name, slot]) => ({
+  name, slot, points: fys.map((y) => ({ value: averageInflation(cpiAllIndia(GENERAL, s), y) ?? null })),
+}));
+const highFy = fys.reduce((a, b) => ((averageInflation(general, b) ?? 0) > (averageInflation(general, a) ?? 0) ? b : a));
+const lowFy = fys.reduce((a, b) => ((averageInflation(general, b) ?? 99) < (averageInflation(general, a) ?? 99) ? b : a));
+
+// Groups: average inflation in the latest calendar year, and the price level against 2012
+const GROUPS = CPI_KEYS.filter((k) => k.endsWith("-Overall") && k !== GENERAL);
+const SUBS = CPI_KEYS.filter((k) => !k.endsWith("-Overall") && k.startsWith("Food and Beverages|"));
+const avgRows = (keys: string[]) => keys.map((k) => {
+  const v = averageInflation(cpiAllIndia(k), lastYear);
+  return v === undefined ? null : { label: cpiLabel(k), value: v, display: gpct(v), sub: `index ${yearAverage(cpiAllIndia(k), lastYear)!.toFixed(1)}` };
+}).filter((r): r is NonNullable<typeof r> => !!r).sort((a, b) => b.value - a.value);
+const levelRows = CPI_KEYS.filter((k) => k !== FOOD).map((k) => {
+  const p = at(cpiAllIndia(k), CPI_LAST);
+  return p?.index != null ? { label: cpiLabel(k), value: p.index - 100, display: `+${(p.index - 100).toFixed(0)}%`, sub: `index ${p.index}` } : null;
+}).filter((r): r is NonNullable<typeof r> => !!r).sort((a, b) => b.value - a.value);
+
+// States: average inflation in the latest year, rural and urban
+const stateRows = CPI_STATES.map((st) => ({
+  label: st,
+  values: [averageInflation(cpiState(st, "Rural"), lastYear) ?? null, averageInflation(cpiState(st, "Urban"), lastYear) ?? null],
+  sort: averageInflation(cpiState(st, "Combined"), lastYear) ?? averageInflation(cpiState(st, "Urban"), lastYear) ?? -99,
+})).filter((r) => r.values.some((v) => v != null)).sort((a, b) => b.sort - a.sort);
+
+// Farm and rural labourers (Labour Bureau): All India general index, both bases
+const alrl = CPIALRL.filter((r) => r.state === "All India").sort((a, b) => a.month.localeCompare(b.month));
+const alrlMonths = [...new Set(alrl.filter((r) => r.inflation_al != null || r.inflation_rl != null).map((r) => r.month))];
+const alrlLabels = alrlMonths.map(monthLabel);
+const alrlBy = (m: string) => alrl.filter((r) => r.month === m);
+const pick = (m: string, k: "inflation_al" | "inflation_rl") => {
+  const rows = alrlBy(m);
+  return (rows.find((r) => r.base_year === "2019") ?? rows[0])?.[k] ?? null;
+};
+const newBaseFrom = alrl.find((r) => r.base_year === "2019")?.month;
+const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")?.month;
+---
+<Base title="Prices" section="prices" description="Consumer price inflation in India from MoSPI's Consumer Price Index: monthly since 2014, rural and urban, food and other groups, and by state.">
+  <h1>Prices</h1>
+  <p class="lede">
+    Consumer prices were <strong>{gpct(latest.inflation!)}</strong> higher in {monthLabel(CPI_LAST)} than a year
+    earlier, and <strong>{gpct(avg)}</strong> higher on average in {lastYear} than in {Number(lastYear) - 1}, by MoSPI's
+    Consumer Price Index. Prices are {since2012.toFixed(0)}% higher than in 2012.
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latest.inflation!)}</div><div class="sub">on a year earlier, all India</div></div>
+    <div class="tile"><div class="label">Average inflation, {lastYear}</div><div class="value">{gpct(avg)}</div><div class="sub">average index on the year before</div></div>
+    {latestFood?.inflation != null && <div class="tile"><div class="label">Food inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latestFood.inflation)}</div><div class="sub">Consumer Food Price Index</div></div>}
+    <div class="tile"><div class="label">Prices since 2012</div><div class="value">+{since2012.toFixed(0)}%</div><div class="sub">index {latest.index} ({monthLabel(CPI_LAST)}; 2012 = 100)</div></div>
+  </div>
+
+  <section class="card note-card">
+    <h2>One series, ending in December 2025</h2>
+    <p class="small">
+      This is MoSPI's Consumer Price Index on base 2012, from {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}. From
+      January 2026 MoSPI publishes a new series on base 2024, with a new basket of goods and services; its figures are
+      not yet in MoSPI's data service and are not shown here. Since 2016 the RBI's target has been 4% inflation, with a
+      band of 2% to 6%.
+    </p>
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Consumer price inflation, month by month"
+      subtitle={`Change in the index on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}.`}
+      years={labels}
+      series={SECT.map(([s, name, slot]) => ({ name, slot, points: line(cpiAllIndia(GENERAL, s)) }))}
+      format={axisPct}
+      tableFormat={(v) => gpct(v, 2)}
+      source={SRC}
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Food and all items"
+      subtitle="Inflation in the Consumer Food Price Index and in the general index, all India."
+      years={labels}
+      series={[{ name: "All items", slot: 7, points: line(general) }, { name: "Food", slot: 2, points: line(food) }]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v, 2)}
+      source={SRC}
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Average inflation by fiscal year"
+      subtitle={`Average index for April to March, on the year before. Highest: ${highFy} (${gpct(averageInflation(general, highFy)!)}); lowest: ${lowFy} (${gpct(averageInflation(general, lowFy)!)}).`}
+      years={fys}
+      series={fyPoints}
+      format={axisPct}
+      tableFormat={(v) => gpct(v)}
+      source={`${SRC} Yearly averages of the published monthly indices, worked out here.`}
+    />
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3>Inflation by group, {lastYear}</h3>
+      <p class="muted small">Average index for {lastYear} on {Number(lastYear) - 1}, all India, rural and urban combined.</p>
+      <BarList rows={avgRows(GROUPS)} tone={7} label={`Average inflation by group, ${lastYear}`} />
+      <h3 class="sub-h">Food items</h3>
+      <BarList rows={avgRows(SUBS)} tone={2} label={`Average inflation by food item, ${lastYear}`} />
+      <p class="source">{SRC}</p>
+    </section>
+    <section class="card">
+      <h3>How much prices have risen since 2012</h3>
+      <p class="muted small">Index in {monthLabel(CPI_LAST)} (2012 = 100), all India, rural and urban combined.</p>
+      <BarList rows={levelRows} tone={4} label="Rise in prices since 2012 by group and item" />
+      <p class="source">{SRC}</p>
+    </section>
+  </div>
+
+  <section class="card">
+    <DotRows
+      title={`Inflation by state, ${lastYear}`}
+      subtitle={`Average index for ${lastYear} on ${Number(lastYear) - 1}. Sorted by the combined figure. MoSPI publishes Dadra & Nagar Haveli and Daman & Diu separately in this series, and no separate index for Ladakh.`}
+      series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
+      rows={stateRows}
+      format={(v) => gpct(v)}
+      zero={false}
+      source={`${SRC} Yearly averages worked out here.`}
+    />
+  </section>
+
+  {alrlMonths.length > 0 && (
+    <section class="card">
+      <LineChart
+        title="Prices for farm and rural labourers"
+        subtitle={`Labour Bureau's Consumer Price Index for Agricultural Labourers and for Rural Labourers, all India, inflation on a year earlier. Base 1986-87${lastOldBase ? ` to ${monthLabel(lastOldBase)}` : ""}${newBaseFrom ? `; base 2019 from ${monthLabel(newBaseFrom)}` : ""}.`}
+        years={alrlLabels}
+        series={[
+          { name: "Agricultural labourers", slot: 6, points: alrlMonths.map((m) => ({ value: pick(m, "inflation_al") })) },
+          { name: "Rural labourers", slot: 5, points: alrlMonths.map((m) => ({ value: pick(m, "inflation_rl") })) },
+        ]}
+        format={axisPct}
+        tableFormat={(v) => gpct(v, 2)}
+        source="Labour Bureau (Ministry of Labour and Employment), CPI-AL and CPI-RL, via MoSPI's data service."
+      />
+    </section>
+  )}
+</Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .note-card p { margin: 0; }
+  .sub-h { margin-top: 18px; }
+</style>

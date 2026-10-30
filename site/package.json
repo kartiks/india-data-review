@@ -1,0 +1,21 @@
+{
+  "name": "india-budget-review-site",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-data.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/copy-data.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "7.4.4"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "@types/node": "26.6.6",
+    "typescript": "6.0.3"
+  }
+}

@@ -8,7 +8,7 @@ straight from official budget documents and checked automatically:
 - **Spending by ministry/department** (2000-01 onward).
 - **Spending by scheme:** every Centrally Sponsored and Central Sector scheme (from Budget 2017-18).
 
-This is the data layer for the upcoming website; the website itself is not built yet.
+The website that presents this data is in `site/` (see `site/README.md`); it can only be built when every data check passes.
 
 ## Run it
 

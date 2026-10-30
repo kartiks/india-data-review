@@ -1,0 +1,14 @@
+---
+import Base from "../../layouts/Base.astro";
+import YearOverview from "../../components/YearOverview.astro";
+import { YEARS } from "../../lib/data";
+
+export function getStaticPaths() {
+  return YEARS.map((year) => ({ params: { year } }));
+}
+const { year } = Astro.params as { year: string };
+---
+<Base title={`Union Budget ${year}`} section="overview"
+  description={`India's Union Budget ${year}: receipts, spending, borrowing, taxes, ministries and schemes.`}>
+  <YearOverview year={year} />
+</Base>

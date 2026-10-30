@@ -1,0 +1,9 @@
+---
+import Base from "../layouts/Base.astro";
+import YearOverview from "../components/YearOverview.astro";
+import { LATEST_YEAR } from "../lib/data";
+---
+<Base title="India Budget Review" section="overview"
+  description={`India's Union Budget ${LATEST_YEAR}: where the money comes from and goes, checked against official documents.`}>
+  <YearOverview year={LATEST_YEAR} />
+</Base>

@@ -1,0 +1,89 @@
+---
+import "../styles/global.css";
+import { LATEST_YEAR } from "../lib/data";
+
+interface Props {
+  title: string;
+  description?: string;
+  section?: "overview" | "trends" | "taxes" | "ministries" | "schemes" | "about";
+}
+const { title, description = "India's Union Budget from 2000-01 to today, from official documents, checked.", section } = Astro.props;
+const nav = [
+  { id: "overview", href: "/", label: "Overview" },
+  { id: "trends", href: "/trends/", label: "Trends" },
+  { id: "taxes", href: "/taxes/", label: "Taxes" },
+  { id: "ministries", href: "/ministries/", label: "Ministries" },
+  { id: "schemes", href: "/schemes/", label: "Schemes" },
+  { id: "about", href: "/about/", label: "Sources" },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title === "India Budget Review" ? title : `${title} · India Budget Review`}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script is:inline>
+      try {
+        const t = localStorage.getItem("theme");
+        if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+      } catch {}
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/">India Budget Review</a>
+        <button class="theme" type="button" aria-label="Switch light or dark theme" title="Light / dark">◐</button>
+      </div>
+      <nav class="wrap" aria-label="Main">
+        <ul>
+          {nav.map((n) => (
+            <li><a href={n.href} aria-current={section === n.id ? "page" : undefined}>{n.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+    </header>
+    <main class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap small">
+        <p>
+          Every figure comes from the Government of India's budget documents (indiabudget.gov.in), from Budget 2000-01
+          to Budget {LATEST_YEAR}, and is checked automatically: accounting rules, agreement between documents and
+          with RBI and PRS figures. <a href="/about/">How the data is checked</a>.
+        </p>
+        <p class="muted">₹1 lakh crore = ₹1,00,000 crore ≈ ₹1 trillion. BE = Budget Estimate, RE = Revised Estimate.</p>
+      </div>
+    </footer>
+    <div class="tooltip" role="status" aria-live="polite" hidden></div>
+    <script>
+      import "../scripts/charts";
+      const btn = document.querySelector<HTMLButtonElement>("button.theme");
+      btn?.addEventListener("click", () => {
+        const root = document.documentElement;
+        const dark = root.dataset.theme
+          ? root.dataset.theme === "dark"
+          : matchMedia("(prefers-color-scheme: dark)").matches;
+        root.dataset.theme = dark ? "light" : "dark";
+        try { localStorage.setItem("theme", root.dataset.theme); } catch {}
+      });
+    </script>
+  </body>
+</html>
+
+<style>
+  .site-header { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 10; }
+  .bar { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; }
+  .brand { font-weight: 700; color: var(--ink); text-decoration: none; font-size: 1.05rem; }
+  .theme { background: none; border: 1px solid var(--border); color: var(--ink-2); border-radius: 8px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; }
+  nav ul { list-style: none; margin: 0 -7px; padding: 4px 0 0; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  nav ul::-webkit-scrollbar { display: none; }
+  nav a { display: block; padding: 8px 7px 10px; color: var(--ink-2); text-decoration: none; font-size: 0.92rem; white-space: nowrap; border-bottom: 2px solid transparent; }
+  nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  nav a:hover { color: var(--ink); }
+  .site-footer { border-top: 1px solid var(--border); padding: 20px 0 32px; color: var(--ink-2); }
+</style>

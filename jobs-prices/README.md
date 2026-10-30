@@ -37,6 +37,45 @@ uv run pytest
 A full download is about 1,100 API pages (some 40 minutes). The API keeps only the latest figures, so when a
 re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 
+## Keeping it up to date
+
+### Each month
+
+**Consumer prices (12th of the month).** MoSPI's data service does not yet return the base-2024 index, so:
+
+1. Find the release on PIB: search pib.gov.in for "Press Release of Consumer Price Index on Base 2024=100 for
+   <Month>, <year>", and copy the address of the English page
+   (`https://www.pib.gov.in/PressReleasePage.aspx?PRID=…&reg=3&lang=1`).
+2. Add it to `CPI2024_RELEASES` in `pipeline/jobs_prices_pipeline/sources.py`, keyed by the index month
+   (`"2026-10": "…"`).
+3. Run `uv run python -m jobs_prices_pipeline --fetch`. It downloads only the new release (page content and PDF),
+   reads it, and checks it against its PDF and the earlier releases. The previous month's figures move from
+   provisional to final.
+
+**Jobs (PLFS monthly bulletin, mid-month; quarterly bulletin each quarter) and farm and rural labourers' prices
+(end of the month).** Run `--refresh`. It re-downloads everything (about 40 minutes); files that changed are kept in
+`sources/snapshots/`.
+
+### When MoSPI's data service carries the base-2024 index
+
+Check now and then with `https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2024&series=Current&year=2026&Format=JSON&limit=5`
+(the base-2024 series numbers states differently: All India is `state_code=1`). When it returns rows, add base-2024
+queries to `queries()` in `sources.py`, read them in `build.py` beside the base-2012 ones, and compare them with
+the press-release figures before switching the site over; the release reader can then be retired.
+
+### New survey rounds
+
+New PLFS years, CPI months and HCES rounds arrive through `--refresh` with no code change. A new indicator, a new
+breakdown or a renamed field needs code: the field names are listed in `build.py` (`PLFS_FIELDS`, `HCES_SITE`) and the
+checks will fail on anything they cannot read.
+
+### When a check fails
+
+Every allowed exception is in `pipeline/jobs_prices_pipeline/checks.py`, as a reason (`LEFT_OUT`, `ALL_INDIA_STATUS`,
+`HCES_MISMATCH`, `BACKTICK` …) and the rule that applies it. Figures the site must not show are flagged in `build.py`
+(`flag_rates` for jobs, `hces` for spending), with the reason kept in the CSV's `left_out` column. Read the failure
+in `data/validation_report.md`, compare the figure with MoSPI's own publication, and only then add a rule.
+
 ## What's in `data/`
 
 | File | What it is |

@@ -28,7 +28,38 @@ uv run pytest                               # parser tests + end-to-end checks (
 ```
 
 The command exits with an error if any check fails, so it can gate a website build.
-Current result: **117,270 checks, 0 failures** (see `data/validation_report.md`).
+Result when last built: **117,426 checks, 0 failures** (see `data/validation_report.md`).
+
+## Adding a new budget
+
+Once a year, after the Union Budget (usually 1 February; in an election year, the full budget that follows the
+interim one, which the pipeline skips):
+
+1. Set `LATEST_BUDGET` to the new budget's first year in **both** `pipeline/budget_pipeline/sources.py` and
+   `../gdp/pipeline/gdp_pipeline/sources.py` (for example `2027` for 2027-28). The latest budget's documents live at
+   `indiabudget.gov.in/doc/…`; earlier ones move to `indiabudget.gov.in/budget<year>/doc/…`, which `sources.py`
+   already handles. Files already downloaded are kept; nothing is fetched again.
+2. Run `uv run python -m budget_pipeline --fetch`. It downloads the new year's documents in every format and
+   checks each file's title, so a wrong file is refused.
+3. Fix what the checks report. Usual causes, and where each fix goes (always with a written reason):
+   - a renamed ministry or scheme: `pipeline/budget_pipeline/data_maps/ministry_names.csv` or `scheme_names.csv`;
+   - a typo or a copy (Excel/HTML) that differs from the PDF: `annotations.py` for the headline table,
+     `KNOWN_EXCEPTIONS` in `taxes.py`, `ministries.py` or `schemes.py` for the others;
+   - figures missing from a PDF's text layer: read them from the page rendered as an image and add them to
+     `IMAGE_READINGS` in `schemes.py`, with the reason and the broken fragment the text layer shows; a reading is
+     applied only where that exact fragment appears, so a corrected file is never overridden.
+4. Independent references:
+   - **PRS Legislative Research.** Type PRS's tables for the new budget into a new CSV in
+     `sources/reference/prs/` (same columns as `prs_union_budget_2026_27.csv`), point `PRS_FILE` in
+     `pipeline/budget_pipeline/datasets.py` at it, and update `sources/reference/prs/README.md` with the PRS
+     document's address.
+   - **RBI Handbook of Statistics on Indian Economy** (new edition each year, usually in the second half). Replace
+     the three table addresses in `RBI_TABLES` in `pipeline/budget_pipeline/reference.py` with the new edition's
+     (from the handbook page, `RBI_HANDBOOK_PAGE`), then run `--fetch`.
+5. In `../gdp/`, run `uv run python -m gdp_pipeline --fetch`: it reads the new budget's GDP assumption from Budget at
+   a Glance. If the sentence's numbers are missing from the PDF's text layer, add the sentence to `IMAGE_READ` in
+   `../gdp/pipeline/gdp_pipeline/budget.py`, read from the page image; the checks re-compute its growth rate.
+6. Build the site and check the new year's pages, then commit `data/`, `sources/` and the code changes.
 
 ## What's in `data/`
 

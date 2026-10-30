@@ -1,0 +1,61 @@
+{
+ "source": "Ministry of Statistics and Programme Implementation (MoSPI), National Accounts Statistics API",
+ "query": {
+  "base_year": "2022-23",
+  "series": "Current",
+  "frequency_code": "Annually",
+  "indicator_code": 10
+ },
+ "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=10",
+ "total_records": 4,
+ "rows": [
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2022-23",
+   "indicator": "Private Final Consumption Expenditure",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "quarter": null,
+   "current_price": "14938852",
+   "constant_price": "14938852",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2023-24",
+   "indicator": "Private Final Consumption Expenditure",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "quarter": null,
+   "current_price": "16415547",
+   "constant_price": "15871241",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2024-25",
+   "indicator": "Private Final Consumption Expenditure",
+   "frequency": "Annual",
+   "revision": "First Revised Estimates",
+   "quarter": null,
+   "current_price": "18078011",
+   "constant_price": "16891582",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2025-26",
+   "indicator": "Private Final Consumption Expenditure",
+   "frequency": "Annual",
+   "revision": "Provisional Estimates",
+   "quarter": null,
+   "current_price": "19617965",
+   "constant_price": "18108907",
+   "unit": "₹ Crore"
+  }
+ ]
+}

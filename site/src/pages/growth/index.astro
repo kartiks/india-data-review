@@ -1,0 +1,100 @@
+---
+import Base from "../../layouts/Base.astro";
+import LineChart from "../../components/LineChart.astro";
+import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBaseOf, bestOf, range } from "../../lib/data";
+import { axisPct, gpct, money, moneyShort } from "../../lib/format";
+
+const years = range("2000-01", LONG[LONG.length - 1].year);
+const rows = years.map((y) => LONG.find((r) => r.year === y)!);
+const kind = (stage: string) => (stage === "BACK" ? "Back series" : STAGE_LABEL[stage]);
+const real = rows.map((r) => ({ value: r.growth?.real ?? null, kind: kind(r.stage) }));
+const nominal = rows.map((r) => ({ value: r.growth?.nominal ?? null, kind: kind(r.stage) }));
+
+const gdpOld = oldBaseOf(years, (n) => n.gdp?.cur);
+const newYears = yearsOf(NEW);
+const gdpNew = bestOf(NEW, years, (n) => n.gdp?.cur);
+const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", label: "COVID-19" }];
+
+// Decade averages of published/derived real growth (simple mean of yearly rates), 2011-12 base.
+const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", LONG[LONG.length - 1].year]].map(([a, b]) => {
+  const ys = range(a, b);
+  const v = ys.map((y) => LONG.find((r) => r.year === y)?.growth?.real).filter((x): x is number => x !== undefined);
+  return { label: `${a} to ${b}`, avg: v.reduce((s, x) => s + x, 0) / v.length, n: v.length };
+});
+---
+<Base title="Growth" section="growth" description="India's real and nominal GDP growth since 2000-01, and the size of the economy, from MoSPI's national accounts.">
+  <h1>Growth since 2000-01</h1>
+  <p class="muted">
+    On MoSPI's 2011-12 base, which covers every year from 2000-01 (through its back series) to 2025-26. Each year
+    shows the latest estimate; the new 2022-23-base figures are on the <a href="../">overview</a> and below.
+  </p>
+
+  <div class="tiles">
+    {decades.map((d) => (
+      <div class="tile">
+        <div class="label">Average real growth, {d.label}</div>
+        <div class="value">{gpct(d.avg)}</div>
+        <div class="sub">simple average of {d.n} years</div>
+      </div>
+    ))}
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Real and nominal GDP growth"
+      subtitle="Nominal growth is in today's rupees; real growth removes price changes. The gap between them is roughly inflation in the economy."
+      years={years}
+      series={[
+        { name: "Real", slot: 1, points: real },
+        { name: "Nominal", slot: 2, points: nominal },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v)}
+      annotations={events}
+      source="MoSPI, 2011-12 base. To 2011-12: back series, growth worked out from its GDP levels. From 2012-13: growth as published, latest estimate."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Size of the economy (GDP at current prices)"
+      subtitle="The two series are drawn separately: the new base measures the economy differently."
+      years={years}
+      series={[
+        { name: SERIES_LABEL[OLD], slot: 1, points: gdpOld.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+        { name: SERIES_LABEL[NEW], slot: 2, points: gdpNew.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+      ]}
+      format={moneyShort}
+      tableFormat={money}
+      source="MoSPI. 2000-01 to 2010-11: back series on the 2011-12 base. Later years: latest estimate in each series."
+    />
+  </section>
+
+  <section class="card">
+    <h2>Every year</h2>
+    <p class="muted small">Latest estimate in each series, as published by MoSPI.</p>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Year</th><th>Real growth</th><th>Nominal growth</th><th>Estimate</th><th>New series: real</th><th>New series: estimate</th></tr>
+        </thead>
+        <tbody>
+          {[...years].reverse().map((y) => {
+            const r = LONG.find((x) => x.year === y)!;
+            const n = newYears.includes(y) ? latestGrowth(y, NEW) : undefined;
+            return (
+              <tr>
+                <td>{y}</td>
+                <td>{r.growth?.real !== undefined ? gpct(r.growth.real) : "–"}</td>
+                <td>{r.growth?.nominal != null ? gpct(r.growth.nominal) : "–"}</td>
+                <td>{kind(r.stage)}{r.growth && !r.growth.published ? " (from levels)" : ""}</td>
+                <td>{n && n.series === NEW ? gpct(n.real) : "–"}</td>
+                <td>{n && n.series === NEW ? kind(n.stage) : ""}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</Base>

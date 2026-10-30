@@ -1,0 +1,69 @@
+---
+import Base from "../../layouts/Base.astro";
+import LineChart from "../../components/LineChart.astro";
+import BarList from "../../components/BarList.astro";
+import { OLD, NEW, SERIES_LABEL, quarters, quarterNode } from "../../lib/data";
+import { axisPct, gpct, money } from "../../lib/format";
+
+const real = (s: string, p: string) => quarterNode(s, p)?.growth?.gdp?.real;
+const withGrowth = (s: string) => quarters(s).filter((p) => real(s, p) !== undefined);
+const periods = [...new Set([...withGrowth(OLD), ...withGrowth(NEW)])].sort();
+const pts = (s: string) => periods.map((p) => ({ value: real(s, p) ?? null, kind: "Latest" }));
+
+const newQ = withGrowth(NEW);
+const lastQ = newQ[newQ.length - 1];
+const lq = quarterNode(NEW, lastQ)!;
+const SHORT: Record<string, string> = {
+  agriculture: "Agriculture", mining: "Mining", manufacturing: "Manufacturing", utilities: "Utilities",
+  construction: "Construction", trade_transport: "Trade, hotels & transport", finance_realestate: "Finance & real estate",
+  public_other: "Public admin & other services", total: "Total GVA",
+};
+const sectorRows = Object.entries(lq.gva_growth ?? {})
+  .filter(([k, g]) => SHORT[k] && k !== "total" && g.real !== undefined)
+  .map(([k, g]) => ({ label: SHORT[k], value: g.real!, display: gpct(g.real!) }))
+  .sort((a, b) => b.value - a.value);
+const prev = newQ[newQ.length - 2];
+---
+<Base title="Quarters" section="quarters" description="India's quarterly GDP growth, from MoSPI's quarterly estimates.">
+  <h1>Quarter by quarter</h1>
+  <p class="muted">
+    MoSPI estimates GDP for each quarter about two months after it ends. Growth is compared with the same quarter a
+    year earlier. Quarters run April–June (Q1), July–September (Q2), October–December (Q3) and January–March (Q4).
+  </p>
+
+  <div class="tiles">
+    <div class="tile">
+      <div class="label">Real growth, {lastQ}</div>
+      <div class="value">{gpct(real(NEW, lastQ)!)}</div>
+      <div class="sub">nominal {gpct(lq.growth!.gdp!.nominal!)}; previous quarter {gpct(real(NEW, prev)!)}</div>
+    </div>
+    <div class="tile">
+      <div class="label">GDP in {lastQ}</div>
+      <div class="value">{money(lq.gdp!.cur!, { digits: 1 })}</div>
+      <div class="sub">current prices, new series</div>
+    </div>
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Real GDP growth by quarter"
+      subtitle="On the same quarter a year earlier, latest estimate. The two series overlap from 2023-24."
+      years={periods}
+      series={[
+        { name: SERIES_LABEL[OLD], slot: 1, points: pts(OLD) },
+        { name: SERIES_LABEL[NEW], slot: 2, points: pts(NEW) },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v)}
+      annotations={[{ year: "2020-21 Q1", label: "Lockdown" }]}
+      source="MoSPI quarterly GDP estimates, growth rates as published. MoSPI keeps only the latest estimate for each quarter."
+    />
+  </section>
+
+  <section class="card">
+    <h2>By sector, {lastQ}</h2>
+    <p class="muted small">Real GVA growth on the same quarter a year earlier, new 2022-23 series.</p>
+    <BarList rows={sectorRows} tone={1} label={`Real growth by sector, ${lastQ}`} />
+    <p class="source">MoSPI quarterly estimates, GVA growth at constant prices, as published.</p>
+  </section>
+</Base>

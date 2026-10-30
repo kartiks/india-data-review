@@ -1,0 +1,49 @@
+{
+ "source": "Ministry of Statistics and Programme Implementation (MoSPI), National Accounts Statistics API",
+ "query": {
+  "base_year": "2022-23",
+  "series": "Current",
+  "frequency_code": "Annually",
+  "indicator_code": 3
+ },
+ "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=3",
+ "total_records": 3,
+ "rows": [
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2022-23",
+   "indicator": "Taxes on Products",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "state": null,
+   "current_price": "2963201",
+   "constant_price": "2963201",
+   "unit": "₹ Lakh"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2023-24",
+   "indicator": "Taxes on Products",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "state": null,
+   "current_price": "3244229",
+   "constant_price": "3129392",
+   "unit": "₹ Lakh"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2024-25",
+   "indicator": "Taxes on Products",
+   "frequency": "Annual",
+   "revision": "First Revised Estimates",
+   "state": null,
+   "current_price": "3541954",
+   "constant_price": "3369848",
+   "unit": "₹ Lakh"
+  }
+ ]
+}

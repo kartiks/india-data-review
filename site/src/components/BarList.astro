@@ -1,0 +1,46 @@
+---
+import { link } from "../lib/url";
+// Ranked horizontal bars in plain HTML (reads well on phones; every value is labelled, so no tooltip needed).
+export interface Row {
+  label: string;
+  value: number;
+  display: string; // main value text, e.g. "24 paise"
+  sub?: string; // secondary text, e.g. "₹12.3 lakh crore"
+  href?: string;
+  note?: string;
+}
+interface Props {
+  rows: Row[];
+  tone?: number; // categorical color slot 1..8
+  max?: number;
+  label?: string; // accessible name for the list
+}
+const { rows, tone = 1, max = Math.max(...rows.map((r) => Math.abs(r.value))), label } = Astro.props;
+---
+<ol class="barlist" aria-label={label}>
+  {rows.map((r) => (
+    <li>
+      <div class="line">
+        {r.href ? <a href={link(r.href)} class="name">{r.label}</a> : <span class="name">{r.label}</span>}
+        <span class="val"><strong>{r.display}</strong>{r.sub && <span class="sub">{r.sub}</span>}</span>
+      </div>
+      <div class="track" aria-hidden="true">
+        <div class="bar" style={`width:${Math.max(0.5, (Math.abs(r.value) / (max || 1)) * 100).toFixed(2)}%;background:var(--s${tone})`} />
+      </div>
+      {r.note && <p class="row-note small muted">{r.note}</p>}
+    </li>
+  ))}
+</ol>
+
+<style>
+  .barlist { list-style: none; margin: 0; padding: 0; }
+  .barlist li { padding: 7px 0; }
+  .line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 0.92rem; }
+  .name { color: var(--ink); }
+  a.name { color: var(--link); }
+  .val { text-align: right; white-space: nowrap; }
+  .val .sub { display: block; font-size: 0.78rem; color: var(--ink-2); }
+  .track { margin-top: 4px; height: 10px; }
+  .bar { height: 10px; border-radius: 0 4px 4px 0; }
+  .row-note { margin: 2px 0 0; }
+</style>

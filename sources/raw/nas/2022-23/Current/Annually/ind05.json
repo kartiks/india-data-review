@@ -1,0 +1,61 @@
+{
+ "source": "Ministry of Statistics and Programme Implementation (MoSPI), National Accounts Statistics API",
+ "query": {
+  "base_year": "2022-23",
+  "series": "Current",
+  "frequency_code": "Annually",
+  "indicator_code": 5
+ },
+ "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=5",
+ "total_records": 4,
+ "rows": [
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2022-23",
+   "indicator": "Gross Domestic Product",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "quarter": null,
+   "current_price": "26177001",
+   "constant_price": "26177001",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2023-24",
+   "indicator": "Gross Domestic Product",
+   "frequency": "Annual",
+   "revision": "Final Estimates",
+   "quarter": null,
+   "current_price": "29073287",
+   "constant_price": "28094358",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2024-25",
+   "indicator": "Gross Domestic Product",
+   "frequency": "Annual",
+   "revision": "First Revised Estimates",
+   "quarter": null,
+   "current_price": "31798524",
+   "constant_price": "30115428",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2022-23",
+   "series": "Current",
+   "year": "2025-26",
+   "indicator": "Gross Domestic Product",
+   "frequency": "Annual",
+   "revision": "Provisional Estimates",
+   "quarter": null,
+   "current_price": "34536796",
+   "constant_price": "32470100",
+   "unit": "₹ Crore"
+  }
+ ]
+}

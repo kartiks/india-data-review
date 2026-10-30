@@ -1,0 +1,1762 @@
+{
+ "budget/2011-12/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2011-2012/ub2011-12/bag/bag1.pdf",
+  "file": "sources/raw/budget/2011-12/bag1.pdf",
+  "sha256": "33b364f77269a75635ed14d179178ca99dd0972ad1e893cec7dd9aa3741fa65b",
+  "bytes": 441815,
+  "fetched_at": "2026-10-30T08:45:00+00:00"
+ },
+ "budget/2012-13/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag1.pdf",
+  "file": "sources/raw/budget/2012-13/bag1.pdf",
+  "sha256": "fabf5ecfbcb1927329bfbf8553c43ffcc2b1debaead363186877de0d6a00b00b",
+  "bytes": 107396,
+  "fetched_at": "2026-10-30T08:45:00+00:00"
+ },
+ "budget/2013-14/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2013-2014/ub2013-14/bag/bag1.pdf",
+  "file": "sources/raw/budget/2013-14/bag1.pdf",
+  "sha256": "83a8f93c10790f06f8a484c108a7c86ad8bc115c4ef2106a92728db4f8d408b2",
+  "bytes": 62158,
+  "fetched_at": "2026-10-30T08:45:01+00:00"
+ },
+ "budget/2014-15/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2014-2015/ub2014-15/bag/bag1.pdf",
+  "file": "sources/raw/budget/2014-15/bag1.pdf",
+  "sha256": "1bf97f0fc365041c34e2b3206e4815960ee5c645be22c02ac7fad92c0c0b68df",
+  "bytes": 73611,
+  "fetched_at": "2026-10-30T08:45:02+00:00"
+ },
+ "budget/2015-16/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/bag/bag1.pdf",
+  "file": "sources/raw/budget/2015-16/bag1.pdf",
+  "sha256": "aad004d519d555599cbafe3da18af08538f31a8a1e01362b2bb98965f5d88912",
+  "bytes": 99820,
+  "fetched_at": "2026-10-30T08:45:02+00:00"
+ },
+ "budget/2016-17/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag11.pdf",
+  "file": "sources/raw/budget/2016-17/bag1.pdf",
+  "sha256": "85f2e904fc2d6280cee31d457606d3bf421673600af527f8c8b62662f90041f1",
+  "bytes": 245591,
+  "fetched_at": "2026-10-30T08:45:03+00:00"
+ },
+ "budget/2017-18/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2017-2018/ub2017-18/bag/bag1.pdf",
+  "file": "sources/raw/budget/2017-18/bag1.pdf",
+  "sha256": "c217dc71043865d2f78d080cc5e875f3569687e23c0008d71ea1df45ee524e67",
+  "bytes": 595496,
+  "fetched_at": "2026-10-30T08:45:04+00:00"
+ },
+ "budget/2018-19/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/bag/bag1.pdf",
+  "file": "sources/raw/budget/2018-19/bag1.pdf",
+  "sha256": "0d3b2c1904cf2c9af52956eb42556a23c1cfce4a8e813cb42839e58397249a91",
+  "bytes": 445256,
+  "fetched_at": "2026-10-30T08:45:04+00:00"
+ },
+ "budget/2019-20/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2019-20/bag1.pdf",
+  "sha256": "81e8ab5b98e7b497b2b30c7e592c70c35bb33e04f2c21cecbc10b212d9273dcf",
+  "bytes": 544031,
+  "fetched_at": "2026-10-30T08:45:05+00:00"
+ },
+ "budget/2020-21/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2020-21/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2020-21/bag1.pdf",
+  "sha256": "1f2eba79d60e40e928abc4068b4d3b4929940efadfa0b3bfa62f6c0acb8c3dff",
+  "bytes": 539471,
+  "fetched_at": "2026-10-30T08:45:06+00:00"
+ },
+ "budget/2021-22/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2021-22/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2021-22/bag1.pdf",
+  "sha256": "89bb053ce6c312e025bbbd25cf9ffff82cf5a014642bac3132fc79b3968153ae",
+  "bytes": 732970,
+  "fetched_at": "2026-10-30T08:45:06+00:00"
+ },
+ "budget/2022-23/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2022-23/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2022-23/bag1.pdf",
+  "sha256": "9ad916187020c7e3a6d7e03da439ca6720b662bc1ac6261323b97091d954078e",
+  "bytes": 1295214,
+  "fetched_at": "2026-10-30T08:45:07+00:00"
+ },
+ "budget/2023-24/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2023-24/bag1.pdf",
+  "sha256": "a388738767dfd6582bc46e5d3324094e2fc995e883a90b151af5c9c0e204e052",
+  "bytes": 2303566,
+  "fetched_at": "2026-10-30T08:45:08+00:00"
+ },
+ "budget/2024-25/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2024-25/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2024-25/bag1.pdf",
+  "sha256": "356fb4c90cc919ff578373c6dfc56e3115be2e6f49cc22a42f62094aae0b772d",
+  "bytes": 1147809,
+  "fetched_at": "2026-10-30T08:45:09+00:00"
+ },
+ "budget/2025-26/bag1": {
+  "url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2025-26/bag1.pdf",
+  "sha256": "eb49127d4b774a1c6cfa6076f56f0dc64cbff308c29ef1e598f3f042c6ceab0e",
+  "bytes": 1341701,
+  "fetched_at": "2026-10-30T08:45:10+00:00"
+ },
+ "budget/2026-27/bag1": {
+  "url": "https://www.indiabudget.gov.in/doc/Budget_at_Glance/bag1.pdf",
+  "file": "sources/raw/budget/2026-27/bag1.pdf",
+  "sha256": "9b6e8f27d7f8b980e029e15bb43b93b80e89b88f825cd662e4d2b32ee2803d53",
+  "bytes": 679795,
+  "fetched_at": "2026-10-30T08:45:10+00:00"
+ },
+ "forecast/07cb85c3699f": {
+  "url": "https://www.indiabudget.gov.in/budget2012-2013/es2011-12/echap-01.pdf",
+  "file": "sources/raw/forecast/07cb85c3699f.pdf",
+  "sha256": "95cc9a643f1b0be899b809754f8a9d9cdacb7c4c9da472f6268a330c426b18a2",
+  "bytes": 768551,
+  "fetched_at": "2026-10-30T08:55:17+00:00",
+  "document": "economic_survey 2012-13"
+ },
+ "forecast/0bfb4fa4204f": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62514",
+  "file": "sources/raw/forecast/0bfb4fa4204f.html",
+  "sha256": "136eb884832612ba3c47703161fc69a3cb3b8895caf1616a9d0201bf2a646b59",
+  "bytes": 119550,
+  "fetched_at": "2026-10-30T08:58:11+00:00",
+  "document": "rbi 2026-27"
+ },
+ "forecast/1183ee30f9bf": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=38818",
+  "file": "sources/raw/forecast/1183ee30f9bf.html",
+  "sha256": "3a15c3ef6442522f7aa0dc8968b537eb55e7d12e8bf83828f21f0ea2f758544b",
+  "bytes": 127572,
+  "fetched_at": "2026-10-30T08:57:09+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/12c0675bd46c": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=45152",
+  "file": "sources/raw/forecast/12c0675bd46c.html",
+  "sha256": "a112665e68fa0a92c483823118b50d418c3d979120e624cd581e9930cd3b5990",
+  "bytes": 132410,
+  "fetched_at": "2026-10-30T08:57:21+00:00",
+  "document": "rbi 2018-19"
+ },
+ "forecast/145b3c09fb27": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=7136&Mode=0",
+  "file": "sources/raw/forecast/145b3c09fb27.html",
+  "sha256": "b254749d85d5f33c234143a5ce9acd6b86bedd65f9c05ff59ac072770b8264b8",
+  "bytes": 193767,
+  "fetched_at": "2026-10-30T08:56:44+00:00",
+  "document": "rbi 2012-13"
+ },
+ "forecast/198bbf5a8b17": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=59692",
+  "file": "sources/raw/forecast/198bbf5a8b17.html",
+  "sha256": "ef415ef4aee868920a65560b7b37f0f934525217dbe2f94c1c815cc7822c335f",
+  "bytes": 115939,
+  "fetched_at": "2026-10-30T08:58:03+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/1d4f7bb9755b": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=41256",
+  "file": "sources/raw/forecast/1d4f7bb9755b.html",
+  "sha256": "242a1f551ae11ab304654c8690c20bc336355d290af988b3c04b8d3cb7e30bf9",
+  "bytes": 130491,
+  "fetched_at": "2026-10-30T08:57:13+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/1ebd8b67541f": {
+  "url": "https://www.indiabudget.gov.in/budget2014-2015/es2013-14/echap-01.pdf",
+  "file": "sources/raw/forecast/1ebd8b67541f.pdf",
+  "sha256": "3df9b061c75f31037a501cf2b4c4c56ef6d9423f64a933ea6bb43f20b4d2ea43",
+  "bytes": 519895,
+  "fetched_at": "2026-10-30T08:55:19+00:00",
+  "document": "economic_survey 2014-15"
+ },
+ "forecast/1f907badb4da": {
+  "url": "https://www.indiabudget.gov.in/budget2022-23/economicsurvey/doc/eschapter/echap01.pdf",
+  "file": "sources/raw/forecast/1f907badb4da.pdf",
+  "sha256": "28e111e48bbb642049405eb0433b0bdc2eb1d1e70522972bd7b38644418236c1",
+  "bytes": 2943253,
+  "fetched_at": "2026-10-30T08:55:28+00:00",
+  "document": "economic_survey 2022-23"
+ },
+ "forecast/20a551644729": {
+  "url": "https://www.rbi.org.in/Scripts/bs_viewcontent.aspx?Id=3859",
+  "file": "sources/raw/forecast/20a551644729.html",
+  "sha256": "9b497534eb7f7924036ec866c7f442c5a38bac579080b773c2cdd9be1fcaf3f5",
+  "bytes": 87843,
+  "fetched_at": "2026-10-30T08:57:31+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/212e508de423": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=63742",
+  "file": "sources/raw/forecast/212e508de423.html",
+  "sha256": "705cb95e458f6f78540a6058e1e9e84199ece1b92844ad281eaf35c72e6f8652",
+  "bytes": 120064,
+  "fetched_at": "2026-10-30T08:58:14+00:00",
+  "document": "rbi 2026-27"
+ },
+ "forecast/24c59a6b8a9f": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=8711&Mode=0",
+  "file": "sources/raw/forecast/24c59a6b8a9f.html",
+  "sha256": "4c91f881371ed7cd237383a69aced22c9c5060f4e715f557789f78cdeb2c4b71",
+  "bytes": 118276,
+  "fetched_at": "2026-10-30T08:56:51+00:00",
+  "document": "rbi 2013-14"
+ },
+ "forecast/2602906e1b78": {
+  "url": "https://www.indiabudget.gov.in/budget2023-24/economicsurvey/doc/eschapter/echap01.pdf",
+  "file": "sources/raw/forecast/2602906e1b78.pdf",
+  "sha256": "511e275c6c57fffd0bd73868ad0b28d7bd7617181c800d467b1d6304cfd129a3",
+  "bytes": 1938914,
+  "fetched_at": "2026-10-30T08:55:29+00:00",
+  "document": "economic_survey 2023-24"
+ },
+ "forecast/2698c31ed3ce": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=53832",
+  "file": "sources/raw/forecast/2698c31ed3ce.html",
+  "sha256": "e03592ef55c7ed32eb1aa9b1d5a18e76ad5fc3d939c69d47b37b860008bc4a1d",
+  "bytes": 119693,
+  "fetched_at": "2026-10-30T08:57:45+00:00",
+  "document": "rbi 2022-23"
+ },
+ "forecast/313b833415f6": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=43078",
+  "file": "sources/raw/forecast/313b833415f6.html",
+  "sha256": "f619e79253051a51432e41f56b0ff0ef922ac88f253a59ee136332d1114d4064",
+  "bytes": 128221,
+  "fetched_at": "2026-10-30T08:57:16+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/33890b7c1341": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=46722",
+  "file": "sources/raw/forecast/33890b7c1341.html",
+  "sha256": "bb5c3bc2104bd3cb2acfb48cc5e55d94bf1b642dec741a56d64365b323f1ba51",
+  "bytes": 128395,
+  "fetched_at": "2026-10-30T08:57:24+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/35072f1d5947": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=36654",
+  "file": "sources/raw/forecast/35072f1d5947.html",
+  "sha256": "d5dd302a898c83adc52ad18a322f2dc2008eaa05cd85a8d09df27d0714877f05",
+  "bytes": 151211,
+  "fetched_at": "2026-10-30T08:57:04+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/395a84d8c0b1": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=46235",
+  "file": "sources/raw/forecast/395a84d8c0b1.html",
+  "sha256": "b62795cce68a985c290b191288d7228acd62419956eba0ad53ea59450a5ef28d",
+  "bytes": 130090,
+  "fetched_at": "2026-10-30T08:57:23+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/3a0793ecd337": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=33628",
+  "file": "sources/raw/forecast/3a0793ecd337.html",
+  "sha256": "36a4ff5186c78051fef5e75dd17c4b6ccf92a965fd2e0dd10533cacb41f598b5",
+  "bytes": 142440,
+  "fetched_at": "2026-10-30T08:56:58+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/3a36138317d9": {
+  "url": "https://www.indiabudget.gov.in/budget2013-2014/es2012-13/echap-01.pdf",
+  "file": "sources/raw/forecast/3a36138317d9.pdf",
+  "sha256": "4bb16561456b30917551391b32020ff88c0d33bbda4715afe924df94370e7551",
+  "bytes": 1876747,
+  "fetched_at": "2026-10-30T08:55:18+00:00",
+  "document": "economic_survey 2013-14"
+ },
+ "forecast/3d9950431434": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=32649",
+  "file": "sources/raw/forecast/3d9950431434.html",
+  "sha256": "ea3a52d5c593fcdb3a7a9a9485b73f92658f2ed5ae47e7f15afa4e2f32f7704f",
+  "bytes": 124834,
+  "fetched_at": "2026-10-30T08:56:56+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/44dfc11b6666": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=39505",
+  "file": "sources/raw/forecast/44dfc11b6666.html",
+  "sha256": "602123ec92321d185390fd378b604472b3f58a9f3b861d0f0eafde4bdbd1a69a",
+  "bytes": 126695,
+  "fetched_at": "2026-10-30T08:57:10+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/4d7f5be190ad": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=43573",
+  "file": "sources/raw/forecast/4d7f5be190ad.html",
+  "sha256": "74885d63208b15c69cbce870de23426252f090447f0f8e53bb9772d04486d847",
+  "bytes": 129850,
+  "fetched_at": "2026-10-30T08:57:17+00:00",
+  "document": "rbi 2018-19"
+ },
+ "forecast/4f5b7151b875": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60176",
+  "file": "sources/raw/forecast/4f5b7151b875.html",
+  "sha256": "a69297ce25b34853b8fa761d389720be1c28e557f1d59f22b4893838f1519ab8",
+  "bytes": 117361,
+  "fetched_at": "2026-10-30T08:58:04+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/52f33e60beda": {
+  "url": "https://www.indiabudget.gov.in/budget2024-25/economicsurvey/doc/eschapter/echap01.pdf",
+  "file": "sources/raw/forecast/52f33e60beda.pdf",
+  "sha256": "e5b16eb547115ac907a81158ada2f2bc2989b36a4e0590996df2325d122dc582",
+  "bytes": 2237589,
+  "fetched_at": "2026-10-30T08:55:30+00:00",
+  "document": "economic_survey 2024-25"
+ },
+ "forecast/559e81d4b390": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=31773",
+  "file": "sources/raw/forecast/559e81d4b390.html",
+  "sha256": "64a34ac542d4599bc18b958c5113bc3ee0897a752ae0acf62d1d3cfb0ff877f9",
+  "bytes": 122178,
+  "fetched_at": "2026-10-30T08:56:54+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/56645b1d9b0d": {
+  "url": "https://www.indiabudget.gov.in/budget2015-2016/es2014-15/echapvol1-01.pdf",
+  "file": "sources/raw/forecast/56645b1d9b0d.pdf",
+  "sha256": "8c8a4ede92bdc41d79b0e2a117fb1629718ca94e311c528f1b0aff7054968764",
+  "bytes": 1899260,
+  "fetched_at": "2026-10-30T08:55:20+00:00",
+  "document": "economic_survey 2015-16"
+ },
+ "forecast/573f167f8504": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60957",
+  "file": "sources/raw/forecast/573f167f8504.html",
+  "sha256": "b11a65c69d96751020824d7239e6526bbeb2e58a5571a8ccdba201d1b07e1fd1",
+  "bytes": 118731,
+  "fetched_at": "2026-10-30T08:58:06+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/5a94366559e4": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=31329",
+  "file": "sources/raw/forecast/5a94366559e4.html",
+  "sha256": "810e8187c4e2dc6a2431a287a1d30e0c03c1dc4ea65624680f7e6128f6f7745d",
+  "bytes": 121017,
+  "fetched_at": "2026-10-30T08:56:53+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/5d486caedd04": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=37734",
+  "file": "sources/raw/forecast/5d486caedd04.html",
+  "sha256": "91e4656156e6dc13e254833c77f5326aa2d7a0ef5f22f0cd183369c0a26ac6b7",
+  "bytes": 126828,
+  "fetched_at": "2026-10-30T08:57:07+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/5f97778f4e61": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=54465",
+  "file": "sources/raw/forecast/5f97778f4e61.html",
+  "sha256": "dc594e55b677b3d4810ce34e49deb685717abe30eba001f41d6be79918831674",
+  "bytes": 119307,
+  "fetched_at": "2026-10-30T08:57:47+00:00",
+  "document": "rbi 2022-23"
+ },
+ "forecast/6373601e9d41": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=56502",
+  "file": "sources/raw/forecast/6373601e9d41.html",
+  "sha256": "e61366a0a15bb196df27115fbd9f757aeb1ef68fc274f6a38d9e7cbbbea5012d",
+  "bytes": 118949,
+  "fetched_at": "2026-10-30T08:57:54+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/6396d300d0a8": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=52011",
+  "file": "sources/raw/forecast/6396d300d0a8.html",
+  "sha256": "a4abcf1a1063545979930a6572ab7f5b7d49e66a3137541d90105c5769c75bcf",
+  "bytes": 122513,
+  "fetched_at": "2026-10-30T08:57:39+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/63eb1baf0ab9": {
+  "url": "https://www.indiabudget.gov.in/budget2018-2019/economicsurvey2017-2018/pdf/001-031_Chapter_01_ENGLISH_Vol_01_2017-18.pdf",
+  "file": "sources/raw/forecast/63eb1baf0ab9.pdf",
+  "sha256": "d86f15ceaff25a771202cf7f87e0a560065fe05345e810d35df1f01e617fb101",
+  "bytes": 1438329,
+  "fetched_at": "2026-10-30T08:55:23+00:00",
+  "document": "economic_survey 2018-19"
+ },
+ "forecast/67645f5eecc7": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=7647&Mode=0",
+  "file": "sources/raw/forecast/67645f5eecc7.html",
+  "sha256": "f31f0b55e462f3a75b6939a104f02137aea9dd27c5d13631cb71ea037b2c6088",
+  "bytes": 188188,
+  "fetched_at": "2026-10-30T08:56:46+00:00",
+  "document": "rbi 2012-13"
+ },
+ "forecast/75814fc64038": {
+  "url": "https://www.rbi.org.in/Scripts/bs_viewcontent.aspx?Id=3847",
+  "file": "sources/raw/forecast/75814fc64038.html",
+  "sha256": "719c6fdd69768ba3864c09052b54e8aa35c96f54a72a04a5ecde0c03013dbf4f",
+  "bytes": 87293,
+  "fetched_at": "2026-10-30T08:57:31+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/77e4306431cd": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=50747",
+  "file": "sources/raw/forecast/77e4306431cd.html",
+  "sha256": "56883b096ca73018df731e88f5dfacbd19ffe80b8af1b90c7907392b785e7678",
+  "bytes": 120377,
+  "fetched_at": "2026-10-30T08:57:35+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/7cc0fd4591e9": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=38224",
+  "file": "sources/raw/forecast/7cc0fd4591e9.html",
+  "sha256": "c563fc24a0a873f96763cf7972df3df0b0d9004a2bde281a720642097ccf8bcd",
+  "bytes": 121671,
+  "fetched_at": "2026-10-30T08:57:08+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/7d41e94c000c": {
+  "url": "https://www.indiabudget.gov.in/budget2016-2017/es2015-16/echapvol1-01.pdf",
+  "file": "sources/raw/forecast/7d41e94c000c.pdf",
+  "sha256": "15540cf0b9126e71ad066811e7343bb8a6e55d3db489f8e29e95f02bf5dacb75",
+  "bytes": 3078210,
+  "fetched_at": "2026-10-30T08:55:21+00:00",
+  "document": "economic_survey 2016-17"
+ },
+ "forecast/7d69fdbb96bb": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=30911",
+  "file": "sources/raw/forecast/7d69fdbb96bb.html",
+  "sha256": "a4ff5a4bb77137063ac36ab1874f69e1bce09b20d31ccb6e81dfa845fa01a650",
+  "bytes": 135942,
+  "fetched_at": "2026-10-30T08:56:52+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/7e3721bc3f4b": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=61332",
+  "file": "sources/raw/forecast/7e3721bc3f4b.html",
+  "sha256": "0b067e641c85e5bbf0171ff3fc9fab3dd95ba46a3a0bca7b333a3263a627d020",
+  "bytes": 119675,
+  "fetched_at": "2026-10-30T08:58:07+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/7f289c2374a8": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62169",
+  "file": "sources/raw/forecast/7f289c2374a8.html",
+  "sha256": "26e70a566d6e21d3e2f177dc1444f28e66e616eda67a111bca264f7fe0688c05",
+  "bytes": 119063,
+  "fetched_at": "2026-10-30T08:58:10+00:00",
+  "document": "rbi 2026-27"
+ },
+ "forecast/805c3fdca7d1": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=45656",
+  "file": "sources/raw/forecast/805c3fdca7d1.html",
+  "sha256": "0748197ef593faaeacbdb9985a6922b38eb45a99b0cc072526919d2b68825f9e",
+  "bytes": 132564,
+  "fetched_at": "2026-10-30T08:57:22+00:00",
+  "document": "rbi 2018-19"
+ },
+ "forecast/834bdc58680b": {
+  "url": "https://www.indiabudget.gov.in/budget2020-21/economicsurvey/doc/vol2chapter/echap01_vol2.pdf",
+  "file": "sources/raw/forecast/834bdc58680b.pdf",
+  "sha256": "05d9e64a4d2a5b8f33abb2d7dff1559330a4f29d22837d2f730410d557e076ca",
+  "bytes": 1280601,
+  "fetched_at": "2026-10-30T08:55:25+00:00",
+  "document": "economic_survey 2020-21"
+ },
+ "forecast/84dbfb92e697": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=7479&Mode=0",
+  "file": "sources/raw/forecast/84dbfb92e697.html",
+  "sha256": "3e57cc3240cfae7cb4d2b37dfd3b47229c1f88355b2b1ff2ba86bd426bb1c11a",
+  "bytes": 137665,
+  "fetched_at": "2026-10-30T08:56:45+00:00",
+  "document": "rbi 2012-13"
+ },
+ "forecast/8500b962a9d7": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=57637",
+  "file": "sources/raw/forecast/8500b962a9d7.html",
+  "sha256": "8243c10dbe5bf1e1a11cb5ca693c5248fa48389f50bb5e259a58696ef2227908",
+  "bytes": 119052,
+  "fetched_at": "2026-10-30T08:57:57+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/86614a7cc8be": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=36124",
+  "file": "sources/raw/forecast/86614a7cc8be.html",
+  "sha256": "fca5be30d03efee5e48123535dc8efa1ad10633b2fa9fef0cf4336afb9855f75",
+  "bytes": 124638,
+  "fetched_at": "2026-10-30T08:57:03+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/88d4e1a82691": {
+  "url": "https://www.indiabudget.gov.in/budget2017-2018/es2016-17/echap01.pdf",
+  "file": "sources/raw/forecast/88d4e1a82691.pdf",
+  "sha256": "35bacbe5a78aa22f2f88980369a83d95d6feecec4717846abfb30f596b5c03fc",
+  "bytes": 1789390,
+  "fetched_at": "2026-10-30T08:55:23+00:00",
+  "document": "economic_survey 2017-18"
+ },
+ "forecast/89a48ff0d117": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=55472",
+  "file": "sources/raw/forecast/89a48ff0d117.html",
+  "sha256": "920ed7b9cd4e3b9402233641f688202e3aac9994b4c15c1606d0cabda4b8928d",
+  "bytes": 118644,
+  "fetched_at": "2026-10-30T08:57:51+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/91a0e15858aa": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=44636",
+  "file": "sources/raw/forecast/91a0e15858aa.html",
+  "sha256": "a5b8e9a6cc3a3f363b5aef8a377bb841e460bec7d20a240a24c9c08899abf644",
+  "bytes": 129579,
+  "fetched_at": "2026-10-30T08:57:19+00:00",
+  "document": "rbi 2018-19"
+ },
+ "forecast/91b7901aa3f5": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=50479",
+  "file": "sources/raw/forecast/91b7901aa3f5.html",
+  "sha256": "228c40379adf99e31a7d7238dc293f3fd784d28d138d318bcf7e3c0e02e14e6f",
+  "bytes": 118957,
+  "fetched_at": "2026-10-30T08:57:34+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/9284c4e5c73b": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=32197",
+  "file": "sources/raw/forecast/9284c4e5c73b.html",
+  "sha256": "837d324115af7c21113bfd048b989048bb734a8f44cb6c2f49ca962863adde2e",
+  "bytes": 138348,
+  "fetched_at": "2026-10-30T08:56:55+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/92b0cdfbb05b": {
+  "url": "https://www.indiabudget.gov.in/economicsurvey/doc/eschapter/echap01.pdf",
+  "file": "sources/raw/forecast/92b0cdfbb05b.pdf",
+  "sha256": "19bd4f1239b0bf8c2ad389f86ffa3fe1184cfa19eb8081ae6684f8763f318b22",
+  "bytes": 1053419,
+  "fetched_at": "2026-10-30T08:55:31+00:00",
+  "document": "economic_survey 2026-27"
+ },
+ "forecast/976d8ebcf38e": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=6376&Mode=0",
+  "file": "sources/raw/forecast/976d8ebcf38e.html",
+  "sha256": "1bee76ff478a668e82ef68ae01276c3a589f25d89ad37d2833d20ef0983d77b3",
+  "bytes": 207118,
+  "fetched_at": "2026-10-30T08:56:40+00:00",
+  "document": "rbi 2011-12"
+ },
+ "forecast/9979a11c2988": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=34073",
+  "file": "sources/raw/forecast/9979a11c2988.html",
+  "sha256": "e679083f609279fbab2109f811642f6762e899b8826f46abffd2603ea7179293",
+  "bytes": 126376,
+  "fetched_at": "2026-10-30T08:56:59+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/9cf856d3ba13": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=35595",
+  "file": "sources/raw/forecast/9cf856d3ba13.html",
+  "sha256": "c0dd7c26337853da96b11b4bd3d47da10730c9c87c78afd49cc40b69e0215a69",
+  "bytes": 124398,
+  "fetched_at": "2026-10-30T08:57:03+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/9dd659e992e1": {
+  "url": "https://www.indiabudget.gov.in/budget2011-2012/es2010-11/echap-01.pdf",
+  "file": "sources/raw/forecast/9dd659e992e1.pdf",
+  "sha256": "93fcf3a3ef625a2dffae0829733659d979b8cedab994c62849a8b008c2000364",
+  "bytes": 196177,
+  "fetched_at": "2026-10-30T08:55:17+00:00",
+  "document": "economic_survey 2011-12"
+ },
+ "forecast/9e3f30a1a2da": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=56888",
+  "file": "sources/raw/forecast/9e3f30a1a2da.html",
+  "sha256": "ce5114124b79e302a635bac8b00600cc321cfbf97ef130fd94bcf1b643aa1b16",
+  "bytes": 116717,
+  "fetched_at": "2026-10-30T08:57:55+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/9f2dc94220e4": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=61749",
+  "file": "sources/raw/forecast/9f2dc94220e4.html",
+  "sha256": "41bdfa16eac40b8e738f187b1d8635c21642e4567da90bcb5573091a02aec2be",
+  "bytes": 118749,
+  "fetched_at": "2026-10-30T08:58:08+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/a16c9e1433b7": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=63287",
+  "file": "sources/raw/forecast/a16c9e1433b7.html",
+  "sha256": "3f99644dc4818e1a0344a02e4ca495a480135b71cbe85f8a7eee7acc19fd63f5",
+  "bytes": 118337,
+  "fetched_at": "2026-10-30T08:58:13+00:00",
+  "document": "rbi 2026-27"
+ },
+ "forecast/a5b42bc3808e": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58447",
+  "file": "sources/raw/forecast/a5b42bc3808e.html",
+  "sha256": "eb9b30f62b3e895b9d210f94a7292c9dc6eea56268e583ce204f158526c12934",
+  "bytes": 119271,
+  "fetched_at": "2026-10-30T08:58:00+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/a66659331d1b": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=50175",
+  "file": "sources/raw/forecast/a66659331d1b.html",
+  "sha256": "41b92201ab82023984969f98865d6bd304e78634938c90ae148a5bcd0bc97e02",
+  "bytes": 128040,
+  "fetched_at": "2026-10-30T08:57:32+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/a696241fc711": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=53247",
+  "file": "sources/raw/forecast/a696241fc711.html",
+  "sha256": "6b2894dd240e176bc5fb952b4107ad9fc1c77afce8925b91eea2ff2f1b23e14e",
+  "bytes": 123042,
+  "fetched_at": "2026-10-30T08:57:43+00:00",
+  "document": "rbi 2022-23"
+ },
+ "forecast/a6c728c29859": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=60604",
+  "file": "sources/raw/forecast/a6c728c29859.html",
+  "sha256": "87630c9166dea21106bf80168069d23204209b66f8f01928d718aeb0fc45e362",
+  "bytes": 119127,
+  "fetched_at": "2026-10-30T08:58:05+00:00",
+  "document": "rbi 2025-26"
+ },
+ "forecast/a857050b3a96": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=6631&Mode=0",
+  "file": "sources/raw/forecast/a857050b3a96.html",
+  "sha256": "1e568ff9496920440dd1461459d7e7dec620cab06f5f2e576146a987a0397a43",
+  "bytes": 145428,
+  "fetched_at": "2026-10-30T08:56:41+00:00",
+  "document": "rbi 2011-12"
+ },
+ "forecast/af615a497482": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=52366",
+  "file": "sources/raw/forecast/af615a497482.html",
+  "sha256": "e8a94e4f998e7cc76f6ae99adf2bb95489e55590bcc91a28c339c6450c984ae2",
+  "bytes": 123818,
+  "fetched_at": "2026-10-30T08:57:40+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/b18cd5531a20": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=51683",
+  "file": "sources/raw/forecast/b18cd5531a20.html",
+  "sha256": "ee338188f16dff0319384aeb7fb40aab09030811de0c5e57151d08959fb292da",
+  "bytes": 121177,
+  "fetched_at": "2026-10-30T08:57:38+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/b28ed2f221d9": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=59244",
+  "file": "sources/raw/forecast/b28ed2f221d9.html",
+  "sha256": "d9e8c963256ac7e328e7755779e3c974f32c8f181d65055696daa4f1910a4138",
+  "bytes": 118058,
+  "fetched_at": "2026-10-30T08:58:02+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/b638ec25b391": {
+  "url": "https://www.indiabudget.gov.in/budget2019-20/economicsurvey/doc/vol2chapter/echap01_vol2.pdf",
+  "file": "sources/raw/forecast/b638ec25b391.pdf",
+  "sha256": "01230ebe6997dcc7f77eae11e802a6e01d4f4c206cb61cfc6894ded6a5cb9d3f",
+  "bytes": 993772,
+  "fetched_at": "2026-10-30T08:55:24+00:00",
+  "document": "economic_survey 2019-20"
+ },
+ "forecast/bd8c36d6eeda": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=41852",
+  "file": "sources/raw/forecast/bd8c36d6eeda.html",
+  "sha256": "eabd0df929a1d89bebbc6c35db42d5b5e7aff105957127599fa64761efc5b066",
+  "bytes": 132006,
+  "fetched_at": "2026-10-30T08:57:14+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/bdfc79b19567": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=54818",
+  "file": "sources/raw/forecast/bdfc79b19567.html",
+  "sha256": "6989cfd6d7d74b5f2f6c533ac830774697e10bfa9840d22b4c3eba7c4b643bfa",
+  "bytes": 120023,
+  "fetched_at": "2026-10-30T08:57:48+00:00",
+  "document": "rbi 2022-23"
+ },
+ "forecast/bf3a4f463983": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=52687",
+  "file": "sources/raw/forecast/bf3a4f463983.html",
+  "sha256": "f9fd85e938df095f3ec5cd62508c176ed585d3afaff04f52d70f0d160f4265f6",
+  "bytes": 124176,
+  "fetched_at": "2026-10-30T08:57:42+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/bfb7c9ccc96f": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=57275",
+  "file": "sources/raw/forecast/bfb7c9ccc96f.html",
+  "sha256": "6a12234ba535595fd0bbf2b8302744c02ffc531dfd400fb139a3b8d6292c94c8",
+  "bytes": 117223,
+  "fetched_at": "2026-10-30T08:57:56+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/c003c3c4f4fa": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=47225",
+  "file": "sources/raw/forecast/c003c3c4f4fa.html",
+  "sha256": "9bb7a1a98e6c1bf922961215f7ec1110caa35f85dc7252ef74f7cd5391f118b7",
+  "bytes": 127969,
+  "fetched_at": "2026-10-30T08:57:25+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/c58de5d935c0": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=48802",
+  "file": "sources/raw/forecast/c58de5d935c0.html",
+  "sha256": "1a62838b24046e6dfc7cc2ec281e4f11b8728061d3045bc7ab61c2919a3c8afc",
+  "bytes": 131523,
+  "fetched_at": "2026-10-30T08:57:29+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/c5baf91cafb2": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=6958&Mode=0",
+  "file": "sources/raw/forecast/c5baf91cafb2.html",
+  "sha256": "68bdcf7d76ce8dff80c11e35aeada88cac81a176d2bd6c0e9855c721173154d4",
+  "bytes": 147635,
+  "fetched_at": "2026-10-30T08:56:43+00:00",
+  "document": "rbi 2011-12"
+ },
+ "forecast/c99abbfd22ee": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=33144",
+  "file": "sources/raw/forecast/c99abbfd22ee.html",
+  "sha256": "b683447d1fefedf382a00fd12492f811d07b3bbe1d4ca76822725b196a3c60ef",
+  "bytes": 140115,
+  "fetched_at": "2026-10-30T08:56:57+00:00",
+  "document": "rbi 2014-15"
+ },
+ "forecast/c9f3611a9e63": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58850",
+  "file": "sources/raw/forecast/c9f3611a9e63.html",
+  "sha256": "4d1a604526328f6808888733fdbf875d369e9f44d828d90adfae2e30c1d4f89a",
+  "bytes": 116256,
+  "fetched_at": "2026-10-30T08:58:01+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/cd407821f5f8": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=47818",
+  "file": "sources/raw/forecast/cd407821f5f8.html",
+  "sha256": "1fcc21817e242809e614b53b56e5f21ee21e06393ed4d5f15d039abce56937b3",
+  "bytes": 127444,
+  "fetched_at": "2026-10-30T08:57:26+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/d0d68a8c66f9": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=48319",
+  "file": "sources/raw/forecast/d0d68a8c66f9.html",
+  "sha256": "fea520e7690c95167b4fd873c769c55096f10581bec1e155ba9e7199c637fc82",
+  "bytes": 128885,
+  "fetched_at": "2026-10-30T08:57:27+00:00",
+  "document": "rbi 2019-20"
+ },
+ "forecast/d238a749fe67": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=8278&Mode=0",
+  "file": "sources/raw/forecast/d238a749fe67.html",
+  "sha256": "27539b7cff7b903feb29e01f84a829d5cec2fdfe667c80304e9dd7ef803dce6c",
+  "bytes": 135077,
+  "fetched_at": "2026-10-30T08:56:49+00:00",
+  "document": "rbi 2013-14"
+ },
+ "forecast/d28eb698f0ac": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=34614",
+  "file": "sources/raw/forecast/d28eb698f0ac.html",
+  "sha256": "3bd29a2c745a846be50c9c9d6d220d1e725c03363ba1fee547d4cfc440ae13d4",
+  "bytes": 125242,
+  "fetched_at": "2026-10-30T08:57:01+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/d4777df38572": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=51381",
+  "file": "sources/raw/forecast/d4777df38572.html",
+  "sha256": "23cda9ba2bcca699265abd7ac9f02dd81b3fe7267e0c2967340bfe50a9d88f78",
+  "bytes": 121624,
+  "fetched_at": "2026-10-30T08:57:37+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/d893728ae160": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=37151",
+  "file": "sources/raw/forecast/d893728ae160.html",
+  "sha256": "ef9639953a8a3d93a2d901d79ac07e5b9f5c749c02117f848b086a2d594568d4",
+  "bytes": 124545,
+  "fetched_at": "2026-10-30T08:57:05+00:00",
+  "document": "rbi 2016-17"
+ },
+ "forecast/d98aacecf613": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=35087",
+  "file": "sources/raw/forecast/d98aacecf613.html",
+  "sha256": "ff73cff5ae2f981f1fc563665b69129a517b25d99eec805e3a455f022881c811",
+  "bytes": 142115,
+  "fetched_at": "2026-10-30T08:57:02+00:00",
+  "document": "rbi 2015-16"
+ },
+ "forecast/d9b20bf74e31": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=51077",
+  "file": "sources/raw/forecast/d9b20bf74e31.html",
+  "sha256": "ba1d619a6f3bbae4019d1077c7b20d671443bb857bbb34bbebb316f11b8f0242",
+  "bytes": 121227,
+  "fetched_at": "2026-10-30T08:57:36+00:00",
+  "document": "rbi 2021-22"
+ },
+ "forecast/dbab74bc6869": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=49342",
+  "file": "sources/raw/forecast/dbab74bc6869.html",
+  "sha256": "2cecf0b5fa373aa005af08c8e8df34d9556175efc103e3db951a62b435e7d501",
+  "bytes": 133527,
+  "fetched_at": "2026-10-30T08:57:30+00:00",
+  "document": "rbi 2020-21"
+ },
+ "forecast/deaa8f3b9177": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=56173",
+  "file": "sources/raw/forecast/deaa8f3b9177.html",
+  "sha256": "8f6b8b042031f8c255dd98f0abdeda2d5ae719b2c56b485991b29f543412dc94",
+  "bytes": 118126,
+  "fetched_at": "2026-10-30T08:57:53+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/dedbcd1f77f0": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=8532&Mode=0",
+  "file": "sources/raw/forecast/dedbcd1f77f0.html",
+  "sha256": "86dea03416f3317c01bfbad3f97612c119033dbb38e85558087603a03be8d510",
+  "bytes": 138213,
+  "fetched_at": "2026-10-30T08:56:50+00:00",
+  "document": "rbi 2013-14"
+ },
+ "forecast/def0b692f4c7": {
+  "url": "https://www.indiabudget.gov.in/budget2021-22/economicsurvey/doc/vol2chapter/echap01_vol2.pdf",
+  "file": "sources/raw/forecast/def0b692f4c7.pdf",
+  "sha256": "b23f1a2e778573d13f22580c5cd6d6a69834d90ec8d7886e67cda70efd75cab7",
+  "bytes": 10965817,
+  "fetched_at": "2026-10-30T08:55:27+00:00",
+  "document": "economic_survey 2021-22"
+ },
+ "forecast/df52551b97d1": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=40069",
+  "file": "sources/raw/forecast/df52551b97d1.html",
+  "sha256": "c4791dd9d8c688e1cb108e152226020eb49cf97710219372fd5b3e2461d20117",
+  "bytes": 132345,
+  "fetched_at": "2026-10-30T08:57:11+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/e21bbba9b1b2": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=55178",
+  "file": "sources/raw/forecast/e21bbba9b1b2.html",
+  "sha256": "4b849a14d93cd62be723fb63359a3901a5528e977dbaa75f247552e9b419cbab",
+  "bytes": 120385,
+  "fetched_at": "2026-10-30T08:57:49+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/e4d7ae1025da": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=62863",
+  "file": "sources/raw/forecast/e4d7ae1025da.html",
+  "sha256": "bf40888b12e7accee51c6baa67d325595b0282aa30c24006441c3f4522db65be",
+  "bytes": 120398,
+  "fetched_at": "2026-10-30T08:58:12+00:00",
+  "document": "rbi 2026-27"
+ },
+ "forecast/e4e1a027b698": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=42476",
+  "file": "sources/raw/forecast/e4e1a027b698.html",
+  "sha256": "492bf19beefde5c83514d881aa55ab030507ee87eb5132433697d267f4cde6a9",
+  "bytes": 128263,
+  "fetched_at": "2026-10-30T08:57:15+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/e6fbf8106861": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=40685",
+  "file": "sources/raw/forecast/e6fbf8106861.html",
+  "sha256": "cdbc85bcc55e8ccbd0b98a590f4ac72ebcb11d281e65053aaf7719617de0fe42",
+  "bytes": 130886,
+  "fetched_at": "2026-10-30T08:57:12+00:00",
+  "document": "rbi 2017-18"
+ },
+ "forecast/eb6f0162beea": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=58050",
+  "file": "sources/raw/forecast/eb6f0162beea.html",
+  "sha256": "e9d92aa449498c8c0e869ad3f18966b2ea6ffec8d88ae4f54254145bf8ce00d6",
+  "bytes": 118705,
+  "fetched_at": "2026-10-30T08:57:59+00:00",
+  "document": "rbi 2024-25"
+ },
+ "forecast/ef8b0023596b": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=7956&Mode=0",
+  "file": "sources/raw/forecast/ef8b0023596b.html",
+  "sha256": "263c93dd3c8fdbd01dbcd534b095b052431d4db8afca655ff4ddee318e29256a",
+  "bytes": 189615,
+  "fetched_at": "2026-10-30T08:56:48+00:00",
+  "document": "rbi 2013-14"
+ },
+ "forecast/f28c73c964b3": {
+  "url": "https://www.indiabudget.gov.in/budget2025-26/economicsurvey/doc/eschapter/echap01.pdf",
+  "file": "sources/raw/forecast/f28c73c964b3.pdf",
+  "sha256": "778f19e5f7d8fac0ed506cef95cc17db8fe05acdc86aca0a51dcf3ca58d4c5b6",
+  "bytes": 1828381,
+  "fetched_at": "2026-10-30T08:55:31+00:00",
+  "document": "economic_survey 2025-26"
+ },
+ "forecast/f3a637461694": {
+  "url": "https://www.rbi.org.in/Scripts/NotificationUser.aspx?Id=7833&Mode=0",
+  "file": "sources/raw/forecast/f3a637461694.html",
+  "sha256": "bb413fa63c22fb494067a1e4a4377aa47bac81dc2bce56cb9f0fbaae52399f82",
+  "bytes": 138261,
+  "fetched_at": "2026-10-30T08:56:47+00:00",
+  "document": "rbi 2012-13"
+ },
+ "forecast/f4907e129c83": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=55814",
+  "file": "sources/raw/forecast/f4907e129c83.html",
+  "sha256": "17aa351c07f1ea9f67694d879681d6d0817510b19377d008337bcb073c78368f",
+  "bytes": 118842,
+  "fetched_at": "2026-10-30T08:57:52+00:00",
+  "document": "rbi 2023-24"
+ },
+ "forecast/f5beb8e46f7f": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=44125",
+  "file": "sources/raw/forecast/f5beb8e46f7f.html",
+  "sha256": "6a04559dba6d8df3ac41228488ecbfd26976b2fd3ecef92312837b190ff5f1c9",
+  "bytes": 129788,
+  "fetched_at": "2026-10-30T08:57:18+00:00",
+  "document": "rbi 2018-19"
+ },
+ "forecast/f998e44ddea3": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=53537",
+  "file": "sources/raw/forecast/f998e44ddea3.html",
+  "sha256": "02887d2962ace4daef041816084ba06dcb4c380da61e74c883e564a7d31ea3f6",
+  "bytes": 122515,
+  "fetched_at": "2026-10-30T08:57:44+00:00",
+  "document": "rbi 2022-23"
+ },
+ "forecast/f9c794f868c9": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=25299",
+  "file": "sources/raw/forecast/f9c794f868c9.html",
+  "sha256": "89aa9e9caf63e0a316b19ec82a8d0a19ae1b94b6f173723d45305a56db53c236",
+  "bytes": 130429,
+  "fetched_at": "2026-10-30T08:56:42+00:00",
+  "document": "rbi 2011-12"
+ },
+ "forecast/f9fe2402a908": {
+  "url": "https://www.indiabudget.gov.in/budget2016-2017/es2015-16/echapvol2-01.pdf",
+  "file": "sources/raw/forecast/f9fe2402a908.pdf",
+  "sha256": "3b0966ab6a1d85914ac7bd07b8b263321dec6c4643a0e55166aee70b7bef7fde",
+  "bytes": 1235143,
+  "fetched_at": "2026-10-30T08:55:22+00:00",
+  "document": "economic_survey 2016-17"
+ },
+ "forecast/fc569759908b": {
+  "url": "https://www.rbi.org.in/Scripts/BS_PressReleaseDisplay.aspx?prid=54148",
+  "file": "sources/raw/forecast/fc569759908b.html",
+  "sha256": "e537a049eb1e3ea8efa65735855287b4f1461f055b1eafde9d917324cc88c6a2",
+  "bytes": 119523,
+  "fetched_at": "2026-10-30T08:57:46+00:00",
+  "document": "rbi 2022-23"
+ },
+ "nas/2011-12/Back/Annually/ind01": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=1",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind01.json",
+  "sha256": "53698139cac86a19cf4748bb1cd8d1789f41a0066c5ee15b0d5e6c6ebbd93434",
+  "bytes": 681098,
+  "fetched_at": "2026-10-30T08:44:11+00:00",
+  "records": 1760
+ },
+ "nas/2011-12/Back/Annually/ind02": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=2",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind02.json",
+  "sha256": "e081d5adb9b9a35617af746983cee885a1acbcf383a7b89dc1cf4731440dcec6",
+  "bytes": 17079,
+  "fetched_at": "2026-10-30T08:44:12+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind03": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=3",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:13+00:00"
+ },
+ "nas/2011-12/Back/Annually/ind04": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=4",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:13+00:00"
+ },
+ "nas/2011-12/Back/Annually/ind05": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=5",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind05.json",
+  "sha256": "416ad409d7101bad1ca463be6ca2acdd435caae26e2507dd61ec0ada5297a55c",
+  "bytes": 17289,
+  "fetched_at": "2026-10-30T08:44:14+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind06": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=6",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind06.json",
+  "sha256": "723cf7119e01bbace79ad711ffb9e826a73a95fa5f99caee0288757bd62075dd",
+  "bytes": 18320,
+  "fetched_at": "2026-10-30T08:44:15+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind07": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=7",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind07.json",
+  "sha256": "8e36a79e8e1c95565d4dd6aaba89ca37a168f05729092220751e2b8108e17084",
+  "bytes": 15920,
+  "fetched_at": "2026-10-30T08:44:15+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind08": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=8",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind08.json",
+  "sha256": "4ae135658f00a0e9e5cbb6f6908c5338a627b316ee5513e5074417841dd71f80",
+  "bytes": 19993,
+  "fetched_at": "2026-10-30T08:44:16+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind09": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=9",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind09.json",
+  "sha256": "634bbca4c7def4f5c4c6d0ab97472bf002eff3ca12f91c8d63211f7f9373128c",
+  "bytes": 19687,
+  "fetched_at": "2026-10-30T08:44:17+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind10": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=10",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind10.json",
+  "sha256": "33adcc42e3b397385269d8cb004e7a79a84940b002edf273a6fec81ec6aca839",
+  "bytes": 18202,
+  "fetched_at": "2026-10-30T08:44:18+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind11": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=11",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind11.json",
+  "sha256": "1dbd4c16931a5ce00e4b45feb04a6326ec415db884fccf0aef5dc01fa5b1cd7e",
+  "bytes": 18272,
+  "fetched_at": "2026-10-30T08:44:19+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind12": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=12",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind12.json",
+  "sha256": "7860628954ed3165174191bbdcb164c9a417c330949248e315b4f559c5b61b2a",
+  "bytes": 16640,
+  "fetched_at": "2026-10-30T08:44:20+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind13": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=13",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind13.json",
+  "sha256": "1c3cdbbd5a06642d26178a408c9e6e98e58ce154a4cd403c55a3264d131bd878",
+  "bytes": 3992,
+  "fetched_at": "2026-10-30T08:44:20+00:00",
+  "records": 14
+ },
+ "nas/2011-12/Back/Annually/ind14": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=14",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind14.json",
+  "sha256": "f5d7791d6503f7ddd6505be308f8fbf34d8b32f5ce18524621cb0a71d0339212",
+  "bytes": 17516,
+  "fetched_at": "2026-10-30T08:44:21+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind15": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=15",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind15.json",
+  "sha256": "83d400bf5a2d923636a570afd79e918789dc9a8aa6fc808f7eaa188aaa7aceb1",
+  "bytes": 17533,
+  "fetched_at": "2026-10-30T08:44:22+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind16": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=16",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind16.json",
+  "sha256": "41aa5120b61790da7fc0d14accef655477462c0b85c28a13f5df770286c74579",
+  "bytes": 16872,
+  "fetched_at": "2026-10-30T08:44:23+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind17": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=17",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind17.json",
+  "sha256": "66de4977ac78158a7c7f011ead0b17bce4386661aec5b7d3d78d31f754239f34",
+  "bytes": 15989,
+  "fetched_at": "2026-10-30T08:44:24+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind18": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=18",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind18.json",
+  "sha256": "544216da235640147e2b7f457a2d4a70739b15b88711a6e74e2e9bdf5798c34a",
+  "bytes": 16496,
+  "fetched_at": "2026-10-30T08:44:25+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind19": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=19",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind19.json",
+  "sha256": "6d3bc0d0dd83d996c4737689d024ff2513b4aaa6ad71267f3f64cdacbb2f9487",
+  "bytes": 16380,
+  "fetched_at": "2026-10-30T08:44:26+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind20": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=20",
+  "file": "sources/raw/nas/2011-12/Back/Annually/ind20.json",
+  "sha256": "9878c6ceab07fea9a8dd0a46e288b0a9e07b0b20ab081d8a48a94ece612fbd5e",
+  "bytes": 17138,
+  "fetched_at": "2026-10-30T08:44:26+00:00",
+  "records": 62
+ },
+ "nas/2011-12/Back/Annually/ind21": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=21",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:27+00:00"
+ },
+ "nas/2011-12/Back/Annually/ind22": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=22",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:27+00:00"
+ },
+ "nas/2011-12/Current/Annually/ind01": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=1",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind01.json",
+  "sha256": "921fe9a26a309e77e8a40839a9681214210368fb511fe343b9a17c24ff29e623",
+  "bytes": 636197,
+  "fetched_at": "2026-10-30T08:43:10+00:00",
+  "records": 1546
+ },
+ "nas/2011-12/Current/Annually/ind02": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=2",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind02.json",
+  "sha256": "139f274b82cc25c42497257ab3e5d626fee12a82a75a6cf1b18264ae778f5a20",
+  "bytes": 19945,
+  "fetched_at": "2026-10-30T08:43:11+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind03": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=3",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind03.json",
+  "sha256": "8a0abbf53bae1386ac2d00ec3030aa9505388dff2c1037ec46f46c1a6ae5414e",
+  "bytes": 10239,
+  "fetched_at": "2026-10-30T08:43:11+00:00",
+  "records": 34
+ },
+ "nas/2011-12/Current/Annually/ind04": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=4",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind04.json",
+  "sha256": "90df138691a468a12ad0f14f7802590e2af3c2319bc09074d93ffb506e483e23",
+  "bytes": 10314,
+  "fetched_at": "2026-10-30T08:43:12+00:00",
+  "records": 34
+ },
+ "nas/2011-12/Current/Annually/ind05": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=5",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind05.json",
+  "sha256": "6432e8ec902e63aa36165eb61d1e5f3afdc09c1b56ca7a983b1d11014abe7a8e",
+  "bytes": 20160,
+  "fetched_at": "2026-10-30T08:43:13+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind06": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=6",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind06.json",
+  "sha256": "d7f433de5ffc2ed9653b2042af48a6dbf85a243cfcc73c12b06c885ca91bb12b",
+  "bytes": 91501,
+  "fetched_at": "2026-10-30T08:43:15+00:00",
+  "records": 272
+ },
+ "nas/2011-12/Current/Annually/ind07": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=7",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind07.json",
+  "sha256": "83fd479a40a712e81b1ada96a14b63050187168bb7ca2aafb0226a56eb9122f3",
+  "bytes": 18703,
+  "fetched_at": "2026-10-30T08:43:16+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind08": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=8",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind08.json",
+  "sha256": "f23f173995034268e91813aa49492b386d704c79f6a388f159264c9d01246aaf",
+  "bytes": 332915,
+  "fetched_at": "2026-10-30T08:43:21+00:00",
+  "records": 850
+ },
+ "nas/2011-12/Current/Annually/ind09": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=9",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind09.json",
+  "sha256": "3ae5da979d4eee984aaf652f7397589e6317433a099d0be3741bd61294f9858a",
+  "bytes": 97311,
+  "fetched_at": "2026-10-30T08:43:23+00:00",
+  "records": 270
+ },
+ "nas/2011-12/Current/Annually/ind10": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=10",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind10.json",
+  "sha256": "32a129c969c7b1c95bea089d022765e0cf8b0dee54067b36eef81a6256101d58",
+  "bytes": 21076,
+  "fetched_at": "2026-10-30T08:43:24+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind11": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=11",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind11.json",
+  "sha256": "6a4dfcfd6a4f0a03cd8609fc781f465214896d5cbdbc08d10f4c30a410f8e61c",
+  "bytes": 21221,
+  "fetched_at": "2026-10-30T08:43:25+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind12": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=12",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind12.json",
+  "sha256": "0077dc05d05e5d4a12a45f27068e5023a62d24b91a98d44d79b54bfd9a334d2b",
+  "bytes": 19441,
+  "fetched_at": "2026-10-30T08:43:26+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind13": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=13",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind13.json",
+  "sha256": "ea71c47cfe6bf601891750135aefd25ccd3bf9ac8c31f52d809cadac5686ca13",
+  "bytes": 19052,
+  "fetched_at": "2026-10-30T08:43:26+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind14": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=14",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind14.json",
+  "sha256": "0f4fde656cb0a12d9eb0685c8e07cc927033d88dd52e4fcb76b111d813efe8cc",
+  "bytes": 20439,
+  "fetched_at": "2026-10-30T08:43:27+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind15": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=15",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind15.json",
+  "sha256": "8f9e9c97ae851fd08c06890e27af465be67db705df9a933e4fb7f2dda3dc724c",
+  "bytes": 20439,
+  "fetched_at": "2026-10-30T08:43:28+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind16": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=16",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind16.json",
+  "sha256": "17c4cf4c0d4ce2c6907f9c6815efedb7bc8924f10506230a08f942a6963ee1b8",
+  "bytes": 10380,
+  "fetched_at": "2026-10-30T08:43:29+00:00",
+  "records": 34
+ },
+ "nas/2011-12/Current/Annually/ind17": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=17",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind17.json",
+  "sha256": "db67b58c53e7b1acd1af863cb9455eca25aaf706b82ca6d90544a31fc9037e20",
+  "bytes": 18776,
+  "fetched_at": "2026-10-30T08:43:30+00:00",
+  "records": 66
+ },
+ "nas/2011-12/Current/Annually/ind18": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=18",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind18.json",
+  "sha256": "aaa89524a9b52e3450d5f2435f979669781f41f6855fa89af004a717741b1546",
+  "bytes": 10146,
+  "fetched_at": "2026-10-30T08:43:30+00:00",
+  "records": 34
+ },
+ "nas/2011-12/Current/Annually/ind19": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=19",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind19.json",
+  "sha256": "f1cdd69bab62a7750285fddf439e4f818908b06a802066c96d1f86bb7e0368a6",
+  "bytes": 19464,
+  "fetched_at": "2026-10-30T08:43:31+00:00",
+  "records": 67
+ },
+ "nas/2011-12/Current/Annually/ind20": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=20",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind20.json",
+  "sha256": "37548f7756011effd95f71e95244a7db5c988f887ec3a5df6c0b843f7b464f76",
+  "bytes": 86684,
+  "fetched_at": "2026-10-30T08:43:33+00:00",
+  "records": 272
+ },
+ "nas/2011-12/Current/Annually/ind21": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=21",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind21.json",
+  "sha256": "6e01d50333292f7479a6953a4647b8b82b68e0a3137533e0a59f1a91822bbcec",
+  "bytes": 455604,
+  "fetched_at": "2026-10-30T08:43:41+00:00",
+  "records": 1248
+ },
+ "nas/2011-12/Current/Annually/ind22": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=22",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind22.json",
+  "sha256": "a8d9bd76cd26f47f78e22dda55a80e7dc75488d838efc305fe1bf69da3f6e84d",
+  "bytes": 18030,
+  "fetched_at": "2026-10-30T08:43:42+00:00",
+  "records": 64
+ },
+ "nas/2011-12/Current/Quarterly/ind01": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=1",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind01.json",
+  "sha256": "e568d9ccb7d5241caef53703648b117624e9b6ce6d2218b11b5bba7e2083a124",
+  "bytes": 201964,
+  "fetched_at": "2026-10-30T08:43:46+00:00",
+  "records": 522
+ },
+ "nas/2011-12/Current/Quarterly/ind02": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=2",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind02.json",
+  "sha256": "15464c1750d1320a5b5285f5c9592263554d84512fa89663a85e54b9554ccfec",
+  "bytes": 16463,
+  "fetched_at": "2026-10-30T08:43:47+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind03": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=3",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:47+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind04": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=4",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:48+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind05": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=5",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind05.json",
+  "sha256": "4d4c0c30107c26cf92a523159a7b474b6e61c10779819dc2f51268b579ce7bf3",
+  "bytes": 16637,
+  "fetched_at": "2026-10-30T08:43:48+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind06": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=6",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:49+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind07": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=7",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:49+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind08": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=8",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:50+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind09": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=9",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind09.json",
+  "sha256": "5ebee2ac2fc9d18efaf034a02d763a89f7234b6f3e2b46559f324d263bd29dc7",
+  "bytes": 18910,
+  "fetched_at": "2026-10-30T08:43:50+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind10": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=10",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind10.json",
+  "sha256": "17ff38d967d1ed8e35b1e4d8e17c33f7011992c0be95e57998d95f93545ac850",
+  "bytes": 17509,
+  "fetched_at": "2026-10-30T08:43:51+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind11": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=11",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind11.json",
+  "sha256": "03dfa90d798c1068d4a1b82f0701d7af01357188018225b8033882b1f5d11db3",
+  "bytes": 17567,
+  "fetched_at": "2026-10-30T08:43:52+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind12": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=12",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind12.json",
+  "sha256": "385f901ae18c902319994b080efdb7e9cca6fc3e5c3cae8521b29e23c179a507",
+  "bytes": 16005,
+  "fetched_at": "2026-10-30T08:43:53+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind13": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=13",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind13.json",
+  "sha256": "e5913207969c01d0d7c6b69205b39ed3b5e0fafdae27f2fecbcd9a35bab1a2a3",
+  "bytes": 15667,
+  "fetched_at": "2026-10-30T08:43:54+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind14": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=14",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind14.json",
+  "sha256": "974704630dc678ff3e64403c765846ef7371430d54b36e0836f248920b87ac15",
+  "bytes": 16894,
+  "fetched_at": "2026-10-30T08:43:54+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind15": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=15",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind15.json",
+  "sha256": "7b41f01ee999f0037813791c58f0f98e1fc43b5dae333020c03458dcf225eb1a",
+  "bytes": 16909,
+  "fetched_at": "2026-10-30T08:43:55+00:00",
+  "records": 58
+ },
+ "nas/2011-12/Current/Quarterly/ind16": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=16",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:56+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind17": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=17",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:56+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind18": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=18",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:57+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind19": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=19",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:57+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind20": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=20",
+  "empty": true,
+  "checked_at": "2026-10-30T08:43:58+00:00"
+ },
+ "nas/2011-12/Current/Quarterly/ind21": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=21",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind21.json",
+  "sha256": "95390a70c98226d4cc2cf3a3ce87b187f158e170cd925f988d7a5a3eed40638b",
+  "bytes": 176650,
+  "fetched_at": "2026-10-30T08:44:00+00:00",
+  "records": 522
+ },
+ "nas/2011-12/Current/Quarterly/ind22": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=22",
+  "file": "sources/raw/nas/2011-12/Current/Quarterly/ind22.json",
+  "sha256": "ec03c42edbac7fc51cf4ed4f47bde168be3745a3a0f36cab1e3609046a9e2b2b",
+  "bytes": 15341,
+  "fetched_at": "2026-10-30T08:44:01+00:00",
+  "records": 58
+ },
+ "nas/2022-23/Current/Annually/ind01": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=1",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind01.json",
+  "sha256": "7519f4e2ce6f27cb221abb98f0f77742b90b96bceb571ef62c0c114096d231b5",
+  "bytes": 53106,
+  "fetched_at": "2026-10-30T08:44:28+00:00",
+  "records": 129
+ },
+ "nas/2022-23/Current/Annually/ind02": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=2",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind02.json",
+  "sha256": "1d492ac75a747d9f17a80c46db3437b75de5475455eace54df59ea597f81d802",
+  "bytes": 1564,
+  "fetched_at": "2026-10-30T08:44:29+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind03": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=3",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind03.json",
+  "sha256": "d80e983948132f47562f05cca4c3bfc2f79963d7d7bfb9980d17b709a7a05ca9",
+  "bytes": 1248,
+  "fetched_at": "2026-10-30T08:44:30+00:00",
+  "records": 3
+ },
+ "nas/2022-23/Current/Annually/ind04": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=4",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind04.json",
+  "sha256": "f454db0a18f9757fbafb126c5aad7806fa105cc17da47702427e861bde1bfb9b",
+  "bytes": 1254,
+  "fetched_at": "2026-10-30T08:44:30+00:00",
+  "records": 3
+ },
+ "nas/2022-23/Current/Annually/ind05": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=5",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind05.json",
+  "sha256": "356d0f9359162a13e886eea4095366ff2ce5a0df9503dfeabd8372235007092a",
+  "bytes": 1576,
+  "fetched_at": "2026-10-30T08:44:31+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind06": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=6",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind06.json",
+  "sha256": "1a8831ee18e4f871c299ba5dea70b82bf71e39209d0437c28613feb11dc37fb4",
+  "bytes": 8322,
+  "fetched_at": "2026-10-30T08:44:32+00:00",
+  "records": 24
+ },
+ "nas/2022-23/Current/Annually/ind07": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=7",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind07.json",
+  "sha256": "c92cf2ca03fe0d863fcc2f6aa7eaa0f2e15cf44b2e88b240730949a0df97429f",
+  "bytes": 1488,
+  "fetched_at": "2026-10-30T08:44:33+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind08": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=8",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind08.json",
+  "sha256": "935822808794711360952fc428dddeec75dfe3173481c8d499f5880213d81670",
+  "bytes": 29404,
+  "fetched_at": "2026-10-30T08:44:34+00:00",
+  "records": 75
+ },
+ "nas/2022-23/Current/Annually/ind09": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=9",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind09.json",
+  "sha256": "5d0ecdd71321c26a7e9a7b7d2d61ac2ccf9caddcc3ec641888d0c4599d939532",
+  "bytes": 8240,
+  "fetched_at": "2026-10-30T08:44:35+00:00",
+  "records": 22
+ },
+ "nas/2022-23/Current/Annually/ind10": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=10",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind10.json",
+  "sha256": "302550cdcdadc83ca0f091529236e309af54afd4ddde79687840d9e36709a899",
+  "bytes": 1638,
+  "fetched_at": "2026-10-30T08:44:35+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind11": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=11",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind11.json",
+  "sha256": "9db92cf7b324902c1e1c84f8c0874c2a4b431f10dbc02a9394372a2525f909c9",
+  "bytes": 1642,
+  "fetched_at": "2026-10-30T08:44:36+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind12": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=12",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind12.json",
+  "sha256": "24cf1b0612f228c451204bb0302799e6ea6117b16a53b14df37b64b44bb24c8d",
+  "bytes": 1534,
+  "fetched_at": "2026-10-30T08:44:37+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind13": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=13",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind13.json",
+  "sha256": "2a005ba5131a05a0bedaeb86943e65d7a5ba8894d7af949dd3244879ef4025f9",
+  "bytes": 1510,
+  "fetched_at": "2026-10-30T08:44:37+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind14": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=14",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind14.json",
+  "sha256": "027b6122d9d75d1268f1fb79160e95bcc464bfe9bdcd6f9cc62698eaa4e7fecc",
+  "bytes": 1594,
+  "fetched_at": "2026-10-30T08:44:39+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind15": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=15",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind15.json",
+  "sha256": "51d8deda320b0eb88648253c9919fa4af1b423ffd82fa03b9c56576a781156bd",
+  "bytes": 1594,
+  "fetched_at": "2026-10-30T08:44:40+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind16": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=16",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind16.json",
+  "sha256": "e6d53f086bc77a0c08c16c22018115d06ab6f4eabae390f29005ccb6d9c8550c",
+  "bytes": 1262,
+  "fetched_at": "2026-10-30T08:44:40+00:00",
+  "records": 3
+ },
+ "nas/2022-23/Current/Annually/ind17": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=17",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind17.json",
+  "sha256": "7a1b0cd88668410ddc7d5f5665ad5d36e25bc8f78005c8e9682f063b29a88eee",
+  "bytes": 1494,
+  "fetched_at": "2026-10-30T08:44:41+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind18": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=18",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind18.json",
+  "sha256": "ca10d047bb119677dfcacb961f574447d631823d26946f8c40e8895dd5220795",
+  "bytes": 1239,
+  "fetched_at": "2026-10-30T08:44:42+00:00",
+  "records": 3
+ },
+ "nas/2022-23/Current/Annually/ind19": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=19",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind19.json",
+  "sha256": "abe4f38a399194e5c09b58d00f48f50da5cc0698b00408570f8c962274819c6d",
+  "bytes": 1514,
+  "fetched_at": "2026-10-30T08:44:43+00:00",
+  "records": 4
+ },
+ "nas/2022-23/Current/Annually/ind20": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=20",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind20.json",
+  "sha256": "5f04d8480a0506214dd8fab50faa78f7aae4a9fc66fa5c2b1d84048506003bca",
+  "bytes": 7887,
+  "fetched_at": "2026-10-30T08:44:43+00:00",
+  "records": 24
+ },
+ "nas/2022-23/Current/Annually/ind21": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=21",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind21.json",
+  "sha256": "ab7a801b1ecb6210bd281834cbe90e583ddc9211639bff8fd8fc3f3afbfaba09",
+  "bytes": 27740,
+  "fetched_at": "2026-10-30T08:44:44+00:00",
+  "records": 75
+ },
+ "nas/2022-23/Current/Annually/ind22": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=22",
+  "file": "sources/raw/nas/2022-23/Current/Annually/ind22.json",
+  "sha256": "79b39ded6197b3e5ca139fc6023647870ceebe49bc2799c844baaba92952e141",
+  "bytes": 1212,
+  "fetched_at": "2026-10-30T08:44:45+00:00",
+  "records": 3
+ },
+ "nas/2022-23/Current/Quarterly/ind01": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=1",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind01.json",
+  "sha256": "e5c428f0ad9395f008c5db2c63ee376f4496c70d930a77e12cbd12a03dc7afd9",
+  "bytes": 59601,
+  "fetched_at": "2026-10-30T08:44:46+00:00",
+  "records": 153
+ },
+ "nas/2022-23/Current/Quarterly/ind02": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=2",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind02.json",
+  "sha256": "439fd82531de8bf1b4c0abb9d8aebc0ebdeddbcc85c7f49ac97eb782ac6968e3",
+  "bytes": 5106,
+  "fetched_at": "2026-10-30T08:44:47+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind03": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=3",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:47+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind04": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=4",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:48+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind05": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=5",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind05.json",
+  "sha256": "911e3664c6f2e3e738a17adba69d1678b594deed48b2470d0f4299d9c7f6b54b",
+  "bytes": 5157,
+  "fetched_at": "2026-10-30T08:44:48+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind06": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=6",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:49+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind07": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=7",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:49+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind08": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=8",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:50+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind09": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=9",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind09.json",
+  "sha256": "b28188ff75fc6a9ab39975c3cf024b0097a09d3b8e3ef088de7eeddf8f46cb55",
+  "bytes": 5837,
+  "fetched_at": "2026-10-30T08:44:50+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind10": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=10",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind10.json",
+  "sha256": "0f451e66eb2334b525f28ddd2c606565e63821288fb1362d285d46e9c673fd58",
+  "bytes": 5414,
+  "fetched_at": "2026-10-30T08:44:51+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind11": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=11",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind11.json",
+  "sha256": "bb81a8ad47f3cff761310183e7f05c5065d19d60dfda5e54528ceac9994b8586",
+  "bytes": 5432,
+  "fetched_at": "2026-10-30T08:44:52+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind12": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=12",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind12.json",
+  "sha256": "95dd177641bd5f25948b72cc39b08c7891fcc94890a725230a8d7805f10ab061",
+  "bytes": 4992,
+  "fetched_at": "2026-10-30T08:44:52+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind13": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=13",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind13.json",
+  "sha256": "ebbe032034df4c7492c9107a2a16506a1313c114a2f0301a51da5bf823510151",
+  "bytes": 4882,
+  "fetched_at": "2026-10-30T08:44:53+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind14": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=14",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind14.json",
+  "sha256": "738708f3e7124f7819360693ae41d80272d038579a2d8feea8a2ecbdd0961d1d",
+  "bytes": 5261,
+  "fetched_at": "2026-10-30T08:44:54+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind15": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=15",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind15.json",
+  "sha256": "8474dc0b7ec2f0ad90ad798bf59595c0e3026911e30127ef83f22073199862d6",
+  "bytes": 5261,
+  "fetched_at": "2026-10-30T08:44:55+00:00",
+  "records": 17
+ },
+ "nas/2022-23/Current/Quarterly/ind16": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=16",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:55+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind17": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=17",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:56+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind18": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=18",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:57+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind19": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=19",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:57+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind20": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=20",
+  "empty": true,
+  "checked_at": "2026-10-30T08:44:58+00:00"
+ },
+ "nas/2022-23/Current/Quarterly/ind21": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=21",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind21.json",
+  "sha256": "3918b7af68d25e99b3cde02321a9428c944ae893d6dc769331e44b74908982d9",
+  "bytes": 39933,
+  "fetched_at": "2026-10-30T08:44:58+00:00",
+  "records": 117
+ },
+ "nas/2022-23/Current/Quarterly/ind22": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=22",
+  "file": "sources/raw/nas/2022-23/Current/Quarterly/ind22.json",
+  "sha256": "3f4635660e24067ca1f86d35161f506f91ad99876555538615d0c5e209da470f",
+  "bytes": 3746,
+  "fetched_at": "2026-10-30T08:44:59+00:00",
+  "records": 13
+ }
+}

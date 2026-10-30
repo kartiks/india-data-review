@@ -1,0 +1,122 @@
+---
+// Stacked columns over fiscal years (part-to-whole over time). Segments are separated by a 2px surface gap;
+// only the top segment gets the rounded data-end. Hover/tap/focus a column for its breakdown.
+import { SIZES, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  years: string[];
+  categories: { id: string; label: string; slot: number }[];
+  values: (number | null)[][]; // [year][category]
+  kinds?: string[]; // per year, e.g. "Actual" / "RE" / "BE"
+  format: (v: number) => string; // axis
+  tipFormat?: (v: number) => string;
+  tableFormat?: (v: number) => string;
+  source?: string;
+  max?: number; // fixed top of the scale, e.g. 100 for shares
+}
+const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max } = Astro.props;
+const totals = values.map((row) => row.reduce<number>((s, v) => s + (v ?? 0), 0));
+const ticks = niceTicks(0, max ?? Math.max(...totals), 4);
+const id = "c" + Math.random().toString(36).slice(2, 9);
+const GAP = 2;
+
+const charts = SIZES.map((sz) => {
+  const right = 12;
+  const band = (sz.width - sz.left - right) / years.length;
+  const w = Math.min(24, Math.max(4, band - 3));
+  const x = (i: number) => sz.left + i * band + (band - w) / 2;
+  const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
+  const cols = values.map((row, i) => {
+    let acc = 0;
+    const present = row.map((v, j) => ({ v, j })).filter(({ v }) => v != null && v > 0);
+    const segs = present.map(({ v, j }, k) => {
+      const y0 = y(acc);
+      acc += v!;
+      const y1 = y(acc);
+      const isTop = k === present.length - 1;
+      // 2px surface gap: trim the top of every segment except the last one
+      const top = isTop ? y1 : Math.min(y0, y1 + GAP);
+      return { j, d: isTop ? columnPath(x(i), y0, w, top) : `M${x(i)},${y0}V${top}H${x(i) + w}V${y0}Z` };
+    });
+    return { i, segs, x: x(i), band };
+  });
+  const xTicks = xTickIndices(years.length, sz.name).map((i) => ({ yr: years[i], i }));
+  return { sz, cols, y, xTicks, right, band, x, w };
+});
+
+const tipData = JSON.stringify({
+  columns: years.map((yr, i) => ({
+    title: `${yr}${kinds[i] && kinds[i] !== "Actual" ? ` (${kinds[i]})` : ""} · total ${tipFormat(totals[i])}`,
+    rows: categories
+      .map((c, j) => ({ slot: c.slot, value: values[i][j] == null ? "–" : tipFormat(values[i][j]!), name: c.label }))
+      .reverse(),
+  })),
+});
+---
+<figure class="chart stacked" id={id}>
+  <figcaption>
+    <h3>{title}</h3>
+    {subtitle && <p class="muted small">{subtitle}</p>}
+  </figcaption>
+  <ul class="legend small" aria-label="Legend">
+    {categories.map((c) => (
+      <li><svg width="12" height="12" aria-hidden="true"><rect width="12" height="12" rx="2" fill={`var(--s${c.slot})`} /></svg>{c.label}</li>
+    ))}
+  </ul>
+  {charts.map(({ sz, cols, y, xTicks, right, band, x, w }) => (
+    <svg class={`plot plot-${sz.name}`} viewBox={`0 0 ${sz.width} ${sz.height}`} role="img"
+      aria-label={`${title}. Values are listed in the table below.`} style={`font-size:${sz.font}px`}>
+      {ticks.map((t) => (
+        <g>
+          <line x1={sz.left} x2={sz.width - right} y1={y(t)} y2={y(t)} class={t === 0 ? "baseline" : "gridline"} />
+          <text x={sz.left - 6} y={y(t)} dy="0.32em" text-anchor="end" class="tick">{format(t)}</text>
+        </g>
+      ))}
+      {xTicks.map(({ yr, i }) => (
+        <text x={i === years.length - 1 ? x(i) + w : x(i) + w / 2} y={sz.height - 8} text-anchor={i === years.length - 1 ? "end" : "middle"} class="tick">{yr}</text>
+      ))}
+      {cols.map((c) => (
+        <g data-col={c.i} tabindex="0" class="col" aria-label={`${years[c.i]}: total ${tipFormat(totals[c.i])}`}>
+          <rect x={sz.left + c.i * band} y={sz.top} width={band} height={sz.height - sz.top - sz.bottom} fill="transparent" />
+          {c.segs.map((s) => <path d={s.d} fill={`var(--s${categories[s.j].slot})`} />)}
+        </g>
+      ))}
+    </svg>
+  ))}
+  <script type="application/json" class="chart-data" set:html={tipData} />
+  <details class="table-view">
+    <summary>Show as table</summary>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Year</th>{categories.map((c) => <th>{c.label}</th>)}<th>Total</th></tr></thead>
+        <tbody>
+          {years.map((yr, i) => (
+            <tr>
+              <td>{yr}{kinds[i] && kinds[i] !== "Actual" ? ` (${kinds[i]})` : ""}</td>
+              {categories.map((_, j) => <td>{values[i][j] == null ? "–" : tableFormat(values[i][j]!)}</td>)}
+              <td>{tableFormat(totals[i])}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {source && <p class="source">{source}</p>}
+</figure>
+
+<style>
+  .chart { margin: 0; }
+  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .plot { width: 100%; height: auto; display: block; touch-action: pan-y; }
+  .plot-lg { display: none; }
+  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
+  .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
+  .plot :global(.tick) { fill: var(--muted); }
+  .col { cursor: pointer; outline: none; }
+  .col:global(.active) path, .col:focus path { opacity: 0.8; }
+  .col:focus rect { stroke: var(--accent); stroke-width: 1; }
+</style>

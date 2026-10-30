@@ -1,0 +1,185 @@
+---
+// Line chart over fiscal years, drawn at build time.
+// Hollow markers = estimates (Budget or Revised); the line itself is the best figure available each year.
+import { SIZES, niceTicks, scale, xTickIndices } from "../lib/chart";
+
+export interface Point {
+  value: number | null;
+  kind?: string; // "Actual" | "RE" | "BE"
+  estimate?: boolean;
+}
+export interface Series {
+  name: string;
+  slot: number; // categorical slot 1..8
+  points: Point[]; // aligned with `years`
+}
+interface Props {
+  title: string;
+  subtitle?: string;
+  years: string[];
+  series: Series[];
+  format: (v: number) => string; // axis + tooltip
+  tableFormat?: (v: number) => string;
+  tipFormat?: (v: number) => string; // hover readout (defaults to tableFormat)
+  annotations?: { year: string; label: string }[];
+  zero?: boolean; // include zero in the y range (default true)
+  source?: string;
+}
+const { title, subtitle, years, series, format, tableFormat = format, tipFormat = tableFormat, annotations = [], zero = true, source } = Astro.props;
+
+const values = series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v != null);
+let lo = Math.min(...values);
+let hi = Math.max(...values);
+if (zero) { lo = Math.min(0, lo); hi = Math.max(0, hi); }
+const ticks = niceTicks(lo, hi, 4);
+const hasEstimates = series.some((s) => s.points.some((p) => p.estimate && p.value != null));
+const id = "c" + Math.random().toString(36).slice(2, 9);
+
+const charts = SIZES.map((sz) => {
+  // Right margin holds the end label; with 2+ series end labels are dropped (legend + hover instead).
+  const right = series.length === 1 ? sz.right : sz.name === "lg" ? 36 : 12;
+  const x = scale(0, years.length - 1, sz.left, sz.width - right);
+  const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
+  const xs = years.map((_, i) => x(i));
+  // Label the latest year, then every fifth year back from it, so labels never collide.
+  const xTicks = xTickIndices(years.length, sz.name).map((i) => ({ yr: years[i], i }));
+  const paths = series.map((s) => {
+    let d = "";
+    let pen = false;
+    s.points.forEach((p, i) => {
+      if (p.value == null) { pen = false; return; }
+      d += `${pen ? "L" : "M"}${xs[i].toFixed(1)},${y(p.value).toFixed(1)}`;
+      pen = true;
+    });
+    const last = [...s.points.keys()].reverse().find((i) => s.points[i].value != null);
+    return { s, d, last };
+  });
+  // Annotation labels: put a label on a second row if it would overlap the previous one.
+  const charW = sz.font * 0.58;
+  const placed: { x0: number; x1: number; row: number }[] = [];
+  const notes = annotations.map((a) => {
+    const i = years.indexOf(a.year);
+    if (i < 0) return null;
+    const w = a.label.length * charW;
+    const left = xs[i] > sz.left + (sz.width - sz.left) * 0.55;
+    const x0 = left ? xs[i] - 4 - w : xs[i] + 4;
+    const x1 = x0 + w;
+    let row = 0;
+    while (placed.some((p) => p.row === row && x0 < p.x1 + 6 && x1 > p.x0 - 6)) row++;
+    placed.push({ x0, x1, row });
+    return { i, label: a.label, left, ty: sz.top + 2 + row * sz.font * 1.3 };
+  }).filter((n): n is NonNullable<typeof n> => !!n);
+  return { sz, xs, y, xTicks, paths, right, notes };
+});
+
+const tooltipData = JSON.stringify({
+  years,
+  series: series.map((s) => ({
+    name: s.name,
+    slot: s.slot,
+    values: s.points.map((p) => (p.value == null ? null : { t: tipFormat(p.value), k: p.kind ?? "" })),
+  })),
+});
+---
+<figure class="chart line-chart" id={id}>
+  <figcaption>
+    <h3>{title}</h3>
+    {subtitle && <p class="muted small">{subtitle}</p>}
+  </figcaption>
+  {(series.length > 1 || hasEstimates) && (
+    <ul class="legend small" aria-label="Legend">
+      {series.length > 1 && series.map((s) => (
+        <li><svg width="16" height="10" aria-hidden="true"><line x1="1" y1="5" x2="15" y2="5" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linecap="round" /></svg>{s.name}</li>
+      ))}
+      {hasEstimates && (
+        <li><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" /></svg>Estimate (no actual yet)</li>
+      )}
+    </ul>
+  )}
+  {charts.map(({ sz, xs, y, xTicks, paths, right, notes }) => (
+    <svg
+      class={`plot plot-${sz.name}`}
+      viewBox={`0 0 ${sz.width} ${sz.height}`}
+      role="img"
+      aria-label={`${title}. Values are listed in the table below.`}
+      data-xs={xs.map((v) => v.toFixed(1)).join(",")}
+      data-top={sz.top}
+      data-bottom={sz.height - sz.bottom}
+      style={`font-size:${sz.font}px`}
+    >
+      {ticks.map((t) => (
+        <g>
+          <line x1={sz.left} x2={sz.width - right} y1={y(t)} y2={y(t)} class={t === 0 ? "baseline" : "gridline"} />
+          <text x={sz.left - 6} y={y(t)} dy="0.32em" text-anchor="end" class="tick">{format(t)}</text>
+        </g>
+      ))}
+      {xTicks.map(({ yr, i }) => (
+        <text x={xs[i]} y={sz.height - 8} text-anchor={i === years.length - 1 && right < 30 ? "end" : "middle"} class="tick">{yr}</text>
+      ))}
+      {notes.map((n) => (
+        <g class="annotation">
+          <line x1={xs[n.i]} x2={xs[n.i]} y1={sz.top} y2={sz.height - sz.bottom} />
+          <text x={n.left ? xs[n.i] - 4 : xs[n.i] + 4} y={n.ty} dy="0.8em" text-anchor={n.left ? "end" : "start"} class="tick">{n.label}</text>
+        </g>
+      ))}
+      {paths.map(({ s, d }) => (
+        <path d={d} fill="none" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+      ))}
+      {paths.map(({ s, last }) =>
+        s.points.map((p, i) =>
+          p.value == null ? null : p.estimate ? (
+            <circle cx={xs[i]} cy={y(p.value)} r="4" fill="var(--surface)" stroke={`var(--s${s.slot})`} stroke-width="2" />
+          ) : i === last ? (
+            <circle cx={xs[i]} cy={y(p.value)} r="4" fill={`var(--s${s.slot})`} stroke="var(--surface)" stroke-width="2" />
+          ) : null,
+        ),
+      )}
+      {right > 40 && series.length === 1 && paths.map(({ s, last }) =>
+        last == null ? null : (
+          <text x={xs[last] + 9} y={y(s.points[last].value!)} dy="0.32em" class="end-label">
+            {format(s.points[last].value!)}
+          </text>
+        ),
+      )}
+      <line class="crosshair" x1="0" x2="0" y1={sz.top} y2={sz.height - sz.bottom} visibility="hidden" />
+      <rect class="hit" x={sz.left - 6} y="0" width={sz.width - right - sz.left + 12} height={sz.height} fill="transparent" />
+    </svg>
+  ))}
+  <script type="application/json" class="chart-data" set:html={tooltipData} />
+  <details class="table-view">
+    <summary>Show as table</summary>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Year</th>{series.map((s) => <th>{s.name}</th>)}</tr></thead>
+        <tbody>
+          {years.map((yr, i) => (
+            <tr>
+              <td>{yr}</td>
+              {series.map((s) => {
+                const p = s.points[i];
+                return <td>{p.value == null ? "–" : tableFormat(p.value)}{p.kind && p.value != null && p.kind !== "Actual" ? ` (${p.kind})` : ""}</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </details>
+  {source && <p class="source">{source}</p>}
+</figure>
+
+<style>
+  .chart { margin: 0; }
+  .chart figcaption h3 { margin-bottom: 2px; }
+  .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
+  .legend li { display: flex; align-items: center; gap: 6px; }
+  .plot { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
+  .plot-lg { display: none; }
+  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
+  .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
+  .plot :global(.tick) { fill: var(--muted); }
+  .plot :global(.end-label) { fill: var(--ink-2); font-weight: 600; }
+  .plot :global(.annotation line) { stroke: var(--axis); stroke-width: 1; }
+  .plot :global(.crosshair) { stroke: var(--ink-2); stroke-width: 1; }
+</style>

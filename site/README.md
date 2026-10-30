@@ -1,16 +1,15 @@
-# India Budget Review — website
+# India Data Review — website
 
-Live: https://india-budget-review.k4tech.in
+Live: https://india-data-review.k4tech.in
 
-A static, mobile-first website built from the verified datasets in `../data`
-(produced by `../pipeline`). Every page is pre-rendered; charts are SVG drawn
-at build time, with a small script for hover/touch/keyboard readouts and a
-table view under every chart.
+A static, mobile-first website built from the verified datasets in `../budget/data` and `../gdp/data`
+(produced by each area's pipeline). Every page is pre-rendered; charts are SVG drawn at build time, with a
+small script for hover/touch/keyboard readouts and a table view under every chart.
 
 ```bash
 npm install
 npm run dev      # http://localhost:4321
-npm run build    # static site in dist/ (refuses to build if the data checks did not pass)
+npm run build    # static site in dist/ (refuses to build unless every area's checks passed)
 npm run check    # type check
 ```
 
@@ -18,28 +17,37 @@ npm run check    # type check
 
 | Path | What |
 |---|---|
-| `/` and `/years/<year>/` | One budget year: headline figures, where each rupee comes from and goes, announced vs outcome, largest schemes |
-| `/trends/` | 2000-01 to today: borrowing, spending vs revenue, interest burden, capital spending |
-| `/taxes/` | Tax mix over time, income vs corporation tax, states' share, latest budget in detail |
-| `/ministries/`, `/ministries/<id>/` | Spending by ministry; each ministry's history, departments and schemes |
-| `/schemes/`, `/schemes/<slug>/` | Searchable list of ~1,400 schemes; each scheme's history with links to the source PDFs |
-| `/about/` | Sources, how the data is checked, problems found in official files, downloads |
+| `/` | Home: headline figures from each area; the Centre's budget as % of GDP; tax growth vs GDP growth; Budget GDP assumption vs outcome |
+| `/budget/` and `/budget/years/<year>/` | One budget year: headline figures, where each rupee comes from and goes, announced vs outcome, largest schemes |
+| `/budget/trends/` | 2000-01 to today: borrowing, spending vs revenue, interest burden, capital spending |
+| `/budget/taxes/` | Tax mix over time, income vs corporation tax, states' share, latest budget in detail |
+| `/budget/ministries/`, `/budget/ministries/<id>/` | Spending by ministry; each ministry's history, departments and schemes |
+| `/budget/schemes/`, `/budget/schemes/<slug>/` | Searchable list of ~1,400 schemes; each scheme's history with links to the source PDFs |
+| `/budget/sources/` | Budget sources, checks, problems found in official files, downloads |
+| `/gdp/` | Latest growth, GDP, latest quarter; real growth since 1951-52 |
+| `/gdp/growth/`, `/gdp/revisions/`, `/gdp/forecasts/` | Growth since 2000-01; every estimate stage; forecasts vs outcome |
+| `/gdp/sectors/`, `/gdp/spending/`, `/gdp/quarters/` | GVA by sector; spending, investment and saving; quarterly growth |
+| `/gdp/sources/` | GDP sources, checks, problems found in the official data, downloads |
+| `/about/` | What the site is, principles, both areas' check results |
+
+Code layout: `src/lib/budget/` and `src/lib/gdp/` read each area's data; `src/components/` holds the shared
+charts (`components/budget/` the budget-only ones); `src/layouts/Base.astro` has the tabs and sub-navigation,
+and works out the area from the URL.
 
 ## How numbers are chosen
 
-`src/lib/data.ts` only picks, sums and labels published values; it never
-changes a number. A year shows Actual figures if published, else Revised,
-else Budget Estimates, and all figures on a year page come from the same
-estimate type. Notes attached to figures in the data (e.g. image-read values,
-one-off debt transactions) are shown next to them.
+The data modules only pick, add up, divide and label published values; they never change a number.
+Budget: a year shows Actual figures if published, else Revised, else Budget Estimates. GDP: levels from
+MoSPI's 2011-12 and 2022-23 series are never mixed; long-run charts use the 2011-12 base. Home-page ratios
+divide a budget figure by MoSPI's GDP (2011-12 base) for the same year, and say so.
 
-Charts use the validated categorical palette (light and dark), thin marks,
-legends for 2+ series, hollow markers for estimates, and a table view.
+Note for editing `.astro` files: avoid a non-null `!` directly before a division (`x! / y`) in frontmatter —
+the type checker's converter reads it as the start of a regular expression and loses the end of the
+frontmatter.
 
 ## Deployment
 
-Hosted on Vercel (project Root Directory: `site`). `vercel.json` sets the
-build; the build reads `../data`, so Vercel's "Include files outside the root
-directory" setting must stay on (the default). Every push to `main` deploys;
-other branches get preview URLs. For a host that serves under a sub-path (e.g.
-GitHub Pages), set `SITE_BASE=/<repo>` and `SITE_URL` when building.
+Hosted on Vercel (project Root Directory: `site`). The build reads `../budget/data` and `../gdp/data`, so
+Vercel's "Include files outside the root directory" setting must stay on (the default). `vercel.json`
+redirects the old domain (india-budget-review.k4tech.in) path-for-path to `/budget/…` on the new one.
+Every push to `main` deploys; other branches get preview URLs.

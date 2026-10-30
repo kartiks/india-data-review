@@ -5,6 +5,26 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "trailingSlash": true,
+  "redirects": [
+    {
+      "source": "/about/",
+      "has": [{ "type": "host", "value": "india-budget-review.k4tech.in" }],
+      "destination": "https://india-data-review.k4tech.in/budget/sources/",
+      "permanent": true
+    },
+    {
+      "source": "/data/:file",
+      "has": [{ "type": "host", "value": "india-budget-review.k4tech.in" }],
+      "destination": "https://india-data-review.k4tech.in/data/budget/:file",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "india-budget-review.k4tech.in" }],
+      "destination": "https://india-data-review.k4tech.in/budget/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/_astro/(.*)",

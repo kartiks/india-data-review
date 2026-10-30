@@ -1,0 +1,103 @@
+---
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import { YEARS, headline, announcedVsOutcome, bestSeries, type Kind } from "../../../lib/budget/data";
+import { money, moneyShort, pct } from "../../../lib/format";
+
+const h = (field: string, pctGdp = false) => (y: string, k: Kind) => {
+  const v = headline(y, field, k);
+  return pctGdp ? v?.pctGdp ?? undefined : v?.value;
+};
+const events = [
+  { year: "2008-09", label: "Financial crisis" },
+  { year: "2020-21", label: "COVID-19" },
+];
+const fd = announcedVsOutcome(YEARS, h("fiscal_deficit", true));
+const rd = announcedVsOutcome(YEARS, h("revenue_deficit", true));
+const ratio = (num: string, den: string) => (y: string, k: Kind) => {
+  const a = headline(y, num, k), b = headline(y, den, k);
+  return a && b && a.source.budget === b.source.budget ? (a.value / b.value) * 100 : undefined;
+};
+const raised = (y: string, k: Kind) => {
+  const r = headline(y, "total_receipts", k), b = headline(y, "borrowings", k);
+  return r && b ? r.value - b.value : undefined;
+};
+const pctFmt = (v: number) => pct(v, v >= 10 || Number.isInteger(v) ? 0 : 1);
+---
+<Base title="Trends since 2000" section="trends" description="India's Union Budget from 2000-01: deficits, spending, interest and capital spending over time.">
+  <h1>Trends since 2000-01</h1>
+  <p class="muted">Each chart shows the outcome (actual figures; hollow markers are revised estimates where actuals aren't out yet) and, where useful, what was announced in the budget.</p>
+
+  <section class="card" id="deficit">
+    <LineChart
+      title="Borrowing: fiscal deficit, % of GDP"
+      subtitle="How much the Centre borrows to cover the gap between spending and income."
+      years={YEARS}
+      series={[
+        { name: "Outcome", slot: 1, points: fd.outcome },
+        { name: "Announced in the budget", slot: 2, points: fd.announced },
+      ]}
+      format={pctFmt}
+      tableFormat={(v) => pct(v)}
+      annotations={events}
+      source="Budget at a Glance, % of GDP as printed in each budget. 2000-01's budget did not print the ratio."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Spending and money raised without borrowing"
+      subtitle="The gap between the two lines is the year's borrowing."
+      years={YEARS}
+      series={[
+        { name: "Total spending", slot: 1, points: bestSeries(YEARS, h("total_expenditure")) },
+        { name: "Raised without borrowing", slot: 3, points: bestSeries(YEARS, raised) },
+      ]}
+      format={moneyShort}
+      tableFormat={money}
+      annotations={events}
+      source="Budget at a Glance: total expenditure; total receipts minus borrowings."
+    />
+  </section>
+
+  <section class="card" id="interest">
+    <LineChart
+      title="Interest payments as a share of revenue"
+      subtitle="Paise of every rupee of revenue receipts that go to interest on past borrowing."
+      years={YEARS}
+      series={[{ name: "Interest / revenue receipts", slot: 1, points: bestSeries(YEARS, ratio("interest_payments", "revenue_receipts")) }]}
+      format={(v) => pct(v, 0)}
+      tableFormat={(v) => pct(v)}
+      source="Budget at a Glance: interest payments ÷ revenue receipts, same document and column."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Capital spending as a share of all spending"
+      subtitle="Roads, railways, defence equipment and other assets, versus day-to-day spending."
+      years={YEARS}
+      series={[{ name: "Capital / total spending", slot: 1, points: bestSeries(YEARS, ratio("capital_expenditure", "total_expenditure")) }]}
+      format={(v) => pct(v, 0)}
+      tableFormat={(v) => pct(v)}
+      annotations={[{ year: "2003-04", label: "Debt repayments counted (2002–05)" }]}
+      source="Budget at a Glance. 2002-03 to 2004-05 capital spending includes repayments to the National Small Savings Fund, so those years read high."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Revenue deficit, % of GDP"
+      subtitle="Borrowing used for day-to-day spending rather than for building assets."
+      years={YEARS}
+      series={[
+        { name: "Outcome", slot: 1, points: rd.outcome },
+        { name: "Announced in the budget", slot: 2, points: rd.announced },
+      ]}
+      format={pctFmt}
+      tableFormat={(v) => pct(v)}
+      annotations={events}
+      source="Budget at a Glance, % of GDP as printed."
+    />
+  </section>
+</Base>

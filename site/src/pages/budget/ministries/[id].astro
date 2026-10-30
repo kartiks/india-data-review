@@ -1,0 +1,107 @@
+---
+import { link } from "../../../lib/url";
+import Money from "../../../components/Money.astro";
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import BarList from "../../../components/BarList.astro";
+import {
+  MINISTRIES, YEARS, LATEST_YEAR, SCHEME_YEARS, ministryTotal, deptValue, announcedVsOutcome, schemesOfMinistry,
+  schemeValue, best, headline, type Ministry,
+} from "../../../lib/budget/data";
+import { money, moneyShort, signedPct } from "../../../lib/format";
+
+export function getStaticPaths() {
+  return MINISTRIES.map((m) => ({ params: { id: m.id }, props: { m } }));
+}
+const { m } = Astro.props as { m: Ministry };
+const series = announcedVsOutcome(YEARS, (y, k) => ministryTotal(y, m, k)?.value);
+const latestBE = ministryTotal(LATEST_YEAR, m, "be");
+const lastActualYear = [...YEARS].reverse().find((y) => ministryTotal(y, m, "actual"));
+const lastActual = lastActualYear ? ministryTotal(lastActualYear, m, "actual") : undefined;
+const total = headline(LATEST_YEAR, "total_expenditure", "be")!.value;
+
+const depts = m.departments
+  .map((d) => {
+    const years = YEARS.filter((y) => best((k) => deptValue(y, d.id, k)));
+    const latest = best((k) => deptValue(LATEST_YEAR, d.id, k));
+    return { d, years, latest };
+  })
+  .filter((x) => x.years.length)
+  .sort((a, b) => (b.latest?.value ?? -1) - (a.latest?.value ?? -1));
+
+const schemeYear = SCHEME_YEARS[SCHEME_YEARS.length - 1];
+const schemes = schemesOfMinistry(m)
+  .map((s) => ({ s, v: schemeValue(schemeYear, s.key, "be") }))
+  .filter((x) => x.v && x.v.value > 0)
+  .sort((a, b) => b.v!.value - a.v!.value);
+const isFinance = m.id === "finance";
+const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"));
+---
+<Base title={m.name} section="ministries" description={`${m.name}: spending in every Union Budget since 2000-01, from official documents.`}>
+  <p class="small"><a href={link("/budget/ministries/")}>← All ministries</a></p>
+  <h1>{m.name}</h1>
+
+  <div class="tiles">
+    {latestBE && (
+      <div class="tile"><div class="label">Budget {LATEST_YEAR}</div><div class="value"><Money value={latestBE.value} /></div>
+        <div class="sub">{((latestBE.value / total) * 100).toFixed(1)}% of all spending</div></div>
+    )}
+    {lastActual && (
+      <div class="tile"><div class="label">Actual {lastActualYear}</div><div class="value"><Money value={lastActual.value} /></div>
+        {(() => { const be = ministryTotal(lastActualYear!, m, "be"); return be ? <div class="sub">{signedPct(((lastActual.value - be.value) / be.value) * 100)} vs its budget</div> : null; })()}
+      </div>
+    )}
+  </div>
+
+  {isFinance && <p class="note">Includes interest on government debt, pensions and grants to states, which are paid through Ministry of Finance demands.</p>}
+
+  <section class="card">
+    <LineChart
+      title="Spending each year"
+      subtitle="Outcome (actual, or revised where actuals aren't out yet) and the amount announced in each budget."
+      years={YEARS}
+      series={[
+        { name: "Outcome", slot: 1, points: series.outcome },
+        { name: "Announced in the budget", slot: 2, points: series.announced },
+      ]}
+      format={moneyShort}
+      tableFormat={money}
+      annotations={hasPre2017 ? [{ year: "2017-18", label: "Budget restructured" }] : []}
+      source="Expenditure Budget Vol. 1 Statement 2 (to 2016-17); Expenditure Profile Statement 3 (from 2017-18). Totals add up the ministry's departments."
+    />
+    {hasPre2017 && (
+      <p class="small muted">
+        Up to 2016-17 these totals include Central Assistance for State Plans routed through the ministry. In 2017-18 the
+        Plan/Non-plan split ended and several demands were split, merged or moved, so the two periods aren't strictly
+        comparable.
+      </p>
+    )}
+  </section>
+
+  <section class="card">
+    <h2>Departments</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Department / line</th><th>{LATEST_YEAR}</th><th>Years in budget</th></tr></thead>
+        <tbody>
+          {depts.map(({ d, years, latest }) => (
+            <tr>
+              <td class="wrap-text">{d.name}</td>
+              <td>{latest && years.includes(LATEST_YEAR) ? money(latest.value) : "–"}</td>
+              <td>{years[0] === years[years.length - 1] ? years[0] : `${years[0]} to ${years[years.length - 1]}`}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  {schemes.length > 0 && (
+    <section class="card">
+      <h2>Schemes, {schemeYear}</h2>
+      <p class="muted small">Budget Estimates for each scheme run by this ministry.</p>
+      <BarList label="Schemes" rows={schemes.slice(0, 25).map(({ s, v }) => ({ label: s.name, value: v!.value, display: money(v!.value), href: `/budget/schemes/${s.slug}/` }))} />
+      {schemes.length > 25 && <p class="small muted">And {schemes.length - 25} smaller schemes. <a href={link("/budget/schemes/")}>Search all schemes</a>.</p>}
+    </section>
+  )}
+</Base>

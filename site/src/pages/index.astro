@@ -1,9 +1,154 @@
 ---
+// Home: headline figures from each area, and charts that need both datasets (budget figures over MoSPI's GDP).
+import { link } from "../lib/url";
 import Base from "../layouts/Base.astro";
-import YearOverview from "../components/YearOverview.astro";
-import { LATEST_YEAR } from "../lib/data";
+import LineChart from "../components/LineChart.astro";
+import PromiseGap from "../components/PromiseGap.astro";
+import Money from "../components/Money.astro";
+import * as B from "../lib/budget/data";
+import * as G from "../lib/gdp/data";
+import { axisPct, gpct, pct } from "../lib/format";
+
+// ---- headline tiles --------------------------------------------------------------
+const gdpNode = G.node(G.NEW, G.LATEST_YEAR, G.LATEST_STAGE)!;
+const gdpGrowth = G.growthAt(G.NEW, G.LATEST_YEAR, G.LATEST_STAGE)!;
+const by = B.LATEST_YEAR;
+const spend = B.headline(by, "total_expenditure", "be")!;
+const fd = B.headline(by, "fiscal_deficit", "be")!;
+
+// ---- the Centre's budget as a share of MoSPI GDP -------------------------------------
+// GDP: 2011-12 base throughout (back series to 2010-11, then the latest estimate), so the denominator is one series.
+const years = B.YEARS.filter((y) => G.oldBaseOf([y], (n) => n.gdp?.cur)[0] !== undefined);
+const gdpOf = (y: string) => G.oldBaseOf([y], (n) => n.gdp?.cur)[0];
+const ofGdp = (field: string) => B.bestSeries(years, (y, k) => {
+  const v = B.headline(y, field, k)?.value;
+  const g = gdpOf(y)?.value;
+  return v !== undefined && g ? (v / g) * 100 : undefined;
+});
+const spendShare = ofGdp("total_expenditure");
+const revShare = ofGdp("revenue_receipts");
+const fdShare = ofGdp("fiscal_deficit");
+const lastActual = [...years].reverse().find((y) => spendShare[years.indexOf(y)].kind === "Actual")!;
+const lastActualShare = spendShare[years.indexOf(lastActual)].value!;
+const firstShare = spendShare[0].value!;
+
+// ---- tax growth vs nominal GDP growth --------------------------------------------
+const grossTax = (y: string, k: B.Kind) => B.tax(y, "gross_tax_revenue", k)?.value;
+const taxYears = years.slice(1);
+const taxGrowth = taxYears.map((y) => {
+  const prev = B.YEARS[B.YEARS.indexOf(y) - 1];
+  for (const [k, label] of [["actual", "Actual"], ["re", "RE"]] as [B.Kind, string][]) {
+    const a = grossTax(y, k), p = grossTax(prev, "actual") ?? grossTax(prev, "re");
+    if (a !== undefined && p) return { value: (a / p - 1) * 100, kind: label, estimate: k !== "actual" };
+  }
+  return { value: null };
+});
+const nominalGrowth = taxYears.map((y) => {
+  const r = G.longRow(y);
+  return r?.growth?.nominal != null ? { value: r.growth.nominal, kind: r.stage === "BACK" ? "Back series" : G.STAGE_LABEL[r.stage] } : { value: null };
+});
+const pairs = taxYears.map((_, i) => [taxGrowth[i].value, nominalGrowth[i].value]).filter(([a, b]) => a != null && b != null) as [number, number][];
+const fasterYears = pairs.filter(([t, g]) => t > g).length;
+
+// ---- Budget's GDP assumption vs outcome (same 2011-12 series, from Budget 2015-16) ----------
+const gapRows = G.BUDGET.filter((b) => b.budget >= "2019-20").map((b) => {
+  const st = G.latestStage(G.OLD, b.budget, (n) => n.gdp?.cur !== undefined);
+  return st ? { label: `Budget ${b.budget}`, be: b.gdp_crore, outcome: G.node(G.OLD, b.budget, st)!.gdp!.cur!, outcomeKind: G.STAGE_LABEL[st] } : null;
+}).filter((r): r is NonNullable<typeof r> => !!r).reverse();
+
+const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", label: "COVID-19" }];
 ---
-<Base title="India Budget Review" section="overview"
-  description={`India's Union Budget ${LATEST_YEAR}: where the money comes from and goes, checked against official documents.`}>
-  <YearOverview year={LATEST_YEAR} />
+<Base title="India Data Review">
+  <h1>India's economy and public finances, from the official numbers</h1>
+  <p class="lede">
+    The Union Budget since 2000-01 and India's GDP from the national accounts, read straight from government
+    documents and data services, and checked automatically.
+  </p>
+
+  <div class="tiles">
+    <a class="tile tile-link" href={link("/gdp/")}>
+      <div class="label">GDP growth, {G.LATEST_YEAR}</div>
+      <div class="value">{gpct(gdpGrowth.real!)}</div>
+      <div class="sub">real; GDP <Money value={gdpNode.gdp!.cur!} /></div>
+    </a>
+    <a class="tile tile-link" href={link("/budget/")}>
+      <div class="label">Union Budget {by}: spending</div>
+      <div class="value"><Money value={spend.value} /></div>
+      <div class="sub">{spend.pctGdp != null ? `${pct(spend.pctGdp)} of GDP, ` : ""}Budget Estimate</div>
+    </a>
+    <a class="tile tile-link" href={link("/budget/trends/")}>
+      <div class="label">Fiscal deficit, {by}</div>
+      <div class="value">{fd.pctGdp != null ? pct(fd.pctGdp) : "–"}</div>
+      <div class="sub">of GDP, Budget Estimate</div>
+    </a>
+    <a class="tile tile-link" href="#share">
+      <div class="label">Centre's spending, {lastActual}</div>
+      <div class="value">{pct(lastActualShare)}</div>
+      <div class="sub">of GDP (actuals); {pct(firstShare)} in {years[0]}</div>
+    </a>
+  </div>
+
+  <section class="card" id="share">
+    <LineChart
+      title="The Centre's budget as a share of the economy"
+      subtitle="Union government spending, revenue and borrowing (fiscal deficit), each as % of MoSPI's GDP for the same year. Hollow markers: budget figures not yet final."
+      years={years}
+      series={[
+        { name: "Spending", slot: 1, points: spendShare },
+        { name: "Revenue receipts", slot: 3, points: revShare },
+        { name: "Fiscal deficit", slot: 2, points: fdShare },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      annotations={events}
+      source="Budget at a Glance (actuals, else revised, else budget estimates) divided by MoSPI's nominal GDP on the 2011-12 base (back series to 2010-11, then the latest estimate). Budgets print their own % of GDP using the GDP estimate known at the time, so their ratios differ slightly from these."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Tax revenue growth vs growth of the economy"
+      subtitle={`Gross tax revenue against nominal GDP, both on the year before. Taxes grew faster than the economy in ${fasterYears} of ${pairs.length} years.`}
+      years={taxYears}
+      series={[
+        { name: "Gross tax revenue", slot: 1, points: taxGrowth },
+        { name: "Nominal GDP", slot: 2, points: nominalGrowth },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => gpct(v)}
+      annotations={[{ year: "2017-18", label: "GST" }, ...events]}
+      source="Gross tax revenue: Budget at a Glance and Receipt Budget (actuals; revised estimates where actuals are not out), growth worked out from the levels. Nominal GDP growth: MoSPI, 2011-12 base."
+    />
+  </section>
+
+  <section class="card">
+    <h2>The Budget's GDP assumption vs what happened</h2>
+    <p class="muted">
+      Every budget ratio (deficit, debt, spending as % of GDP) rests on a forecast of nominal GDP. Blue: the economy
+      came out bigger than the Budget assumed.
+    </p>
+    <PromiseGap rows={gapRows} limit={15} />
+    <p class="source">Budget at a Glance; MoSPI, 2011-12 base, latest estimate. <a href={link("/gdp/forecasts/")}>All budgets, and the Economic Survey and RBI forecasts</a>.</p>
+  </section>
+
+  <div class="grid-2 areas">
+    <section class="card">
+      <h2><a href={link("/budget/")}>Union Budget</a></h2>
+      <p class="muted">Every budget from 2000-01 to {B.LATEST_YEAR}: receipts, spending, deficits, taxes, ministries and some 1,400 schemes, with announced figures against what was spent.</p>
+      <p class="small"><a href={link("/budget/trends/")}>Trends</a> · <a href={link("/budget/taxes/")}>Taxes</a> · <a href={link("/budget/ministries/")}>Ministries</a> · <a href={link("/budget/schemes/")}>Schemes</a></p>
+    </section>
+    <section class="card">
+      <h2><a href={link("/gdp/")}>GDP</a></h2>
+      <p class="muted">Growth since 1951-52, every revision of every estimate since 2011-12, forecasts against outcomes, sectors, spending and quarters, on both of MoSPI's series.</p>
+      <p class="small"><a href={link("/gdp/revisions/")}>Revisions</a> · <a href={link("/gdp/forecasts/")}>Forecasts</a> · <a href={link("/gdp/sectors/")}>Sectors</a> · <a href={link("/gdp/quarters/")}>Quarters</a></p>
+    </section>
+  </div>
 </Base>
+
+<style>
+  .lede { font-size: 1.08rem; max-width: 46em; }
+  .tile-link { display: block; color: inherit; text-decoration: none; }
+  .tile-link:hover { border-color: var(--accent); }
+  .areas { margin-bottom: 16px; }
+  .areas h2 a { text-decoration: none; }
+</style>

@@ -1,0 +1,109 @@
+---
+import { link } from "../../../lib/url";
+import fs from "node:fs";
+import path from "node:path";
+import Base from "../../../layouts/Base.astro";
+import { YEARS, LATEST_YEAR } from "../../../lib/budget/data";
+
+const report = fs.readFileSync(path.resolve(process.cwd(), "..", "budget", "data", "validation_report.md"), "utf8");
+const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
+const sections = [...report.matchAll(/^## (✅|❌) (.+)$/gm)].map((x) => ({ ok: x[1] === "✅", title: x[2] }));
+const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
+const files = [
+  ["fiscal.json", "Headline figures: receipts, spending, deficits"],
+  ["taxes.json", "Taxes by type, states' share, non-tax revenue"],
+  ["ministries.json", "Spending by ministry and department"],
+  ["schemes.json", "Spending by scheme (from 2017-18)"],
+  ["observations.csv", "Every headline number read, from every document"],
+  ["validation_report.md", "Every check and every documented exception"],
+];
+---
+<Base title="Sources and methods" section="about" description="Where every budget figure on India Data Review comes from, and how it is checked.">
+  <h1>Sources and methods</h1>
+  <p>
+    Every number on this site was read from the Government of India's own budget documents on{" "}
+    <a href="https://www.indiabudget.gov.in" rel="external noopener">indiabudget.gov.in</a>, for every budget from{" "}
+    {YEARS[0]} to {LATEST_YEAR}, by a program that downloads and parses the official files. Nothing is estimated or
+    taken from news reports. Four figures missing from a PDF's text layer were read from the page image; each is marked.
+  </p>
+
+  <section class="card">
+    <h2>Checked automatically</h2>
+    <p>
+      <strong>{checks} checks{m && m[1] === "PASSED" ? ", all passing" : ""}.</strong> The data is rebuilt from the
+      original documents and checked whenever they change, and the site cannot be built unless every check passes.
+    </p>
+    <ul>
+      <li><strong>Accounting rules</strong> in every column of every document: totals equal their parts, deficits follow from receipts and spending, net tax equals gross tax minus the states' share.</li>
+      <li><strong>Tables agree with each other</strong>: ministry spending adds up to total spending in every budget; taxes add up to the headline tax figure; scheme totals match the ministries' statement.</li>
+      <li><strong>The same number, two documents</strong>: most figures are printed in two budgets (an estimate, then reprinted the next year) and must agree.</li>
+      <li><strong>Other copies</strong>: Excel and web copies of each table are compared with the printed PDF.</li>
+      <li><strong>Independent publishers</strong>: compared with the Reserve Bank of India's <em>Handbook of Statistics on Indian Economy</em> and PRS Legislative Research's budget analysis.</li>
+    </ul>
+    <details class="table-view">
+      <summary>All {sections.length} groups of checks</summary>
+      <ul class="small">{sections.map((s) => <li>{s.ok ? "✓" : "✗"} {s.title}</li>)}</ul>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>Which documents</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>What</th><th>Document</th></tr></thead>
+        <tbody>
+          <tr><td class="wrap-text">Headline figures</td><td class="wrap-text">Budget at a Glance</td></tr>
+          <tr><td class="wrap-text">Taxes</td><td class="wrap-text">Budget at a Glance, Receipts; Receipt Budget Annex 7 for actuals 2000-01 to 2007-08</td></tr>
+          <tr><td class="wrap-text">Ministries</td><td class="wrap-text">Expenditure Budget Vol. 1, Statement 2 (to 2016-17); Expenditure Profile, Statement 3 (from 2017-18)</td></tr>
+          <tr><td class="wrap-text">Schemes</td><td class="wrap-text">Expenditure Profile, Statements 4A and 4B (from 2017-18)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Budget Estimate, Revised Estimate, Actual</h2>
+    <p>Each budget prints four columns: what was actually spent two years ago, last year's Budget Estimate and Revised Estimate, and the new year's Budget Estimate. So every year has up to three figures:</p>
+    <ul>
+      <li><strong>Budget Estimate (BE)</strong>: what was announced, from that year's budget.</li>
+      <li><strong>Revised Estimate (RE)</strong>: the updated figure near the end of the year, from the next budget.</li>
+      <li><strong>Actual</strong>: what really happened, from the budget two years later.</li>
+    </ul>
+    <p>Charts show actual figures where they exist, and mark revised or budget estimates with hollow circles.</p>
+  </section>
+
+  <section class="card">
+    <h2>Problems found in the official files</h2>
+    <p>Checking every number turned up errors in the government's own files. None of them is "fixed" silently: the printed figure is used and the issue is noted.</p>
+    <ul>
+      <li>The 2005-06 web pages carry the 2003-04 budget's numbers; the PDFs are used instead.</li>
+      <li>Several Excel copies (2023-24, 2025-26 and others) differ from the printed PDFs; the PDFs match what the next budget reprints.</li>
+      <li>A few typos in printed tables, e.g. 2015-16 capital receipts in Budget 2017-18, and two transposed figures in Budget 2023-24's ministry statement.</li>
+      <li>Four figures in two scheme statements are missing from the PDF's text layer and were read from the page image; each carries a note, and the largest was confirmed against a separate statement.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Limits</h2>
+    <ul>
+      <li>"% of GDP" is shown only where the budget prints it (the deficits).</li>
+      <li>2002-03 to 2004-05 capital spending includes debt repayments to the National Small Savings Fund, so those years look higher than they were.</li>
+      <li>Before 2017-18 the budget was split into Plan and Non-plan, and many ministries were reorganised in 2017-18, so very long comparisons for one ministry have breaks.</li>
+      <li>Scheme figures start with Budget 2017-18.</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <h2>Privacy</h2>
+    <p>
+      The site counts page views with Vercel Web Analytics, which uses no cookies and doesn't collect personal
+      information or track you across sites. It only tells us which pages are read, and from roughly where.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Download the data</h2>
+    <ul>{files.map(([f, d]) => <li><a href={link(`/data/budget/${f}`)}>{f}</a>: {d}</li>)}</ul>
+    <p class="small muted">All amounts are in ₹ crore. Each value records the budget and document it was read from.</p>
+  </section>
+</Base>

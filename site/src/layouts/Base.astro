@@ -1,37 +1,65 @@
 ---
 import { link } from "../lib/url";
 import "../styles/global.css";
-import { LATEST_YEAR } from "../lib/data";
+import { LATEST_YEAR as BUDGET_YEAR } from "../lib/budget/data";
+import { LATEST_YEAR as GDP_YEAR } from "../lib/gdp/data";
 
 interface Props {
   title: string;
   description?: string;
-  section?: "overview" | "trends" | "taxes" | "ministries" | "schemes" | "about";
+  section?: string; // sub-tab within the area, e.g. "taxes", "revisions", "about" (= that area's Sources)
 }
-const { title, description = "India's Union Budget from 2000-01 to today, from official documents, checked.", section } = Astro.props;
+const SITE = "India Data Review";
+const { title, description = "India's economy and public finances from official data, checked: the Union Budget since 2000-01 and GDP from MoSPI's national accounts.", section } = Astro.props;
+
+// The area comes from the URL: /budget/..., /gdp/..., /about/, or the home page.
+const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+const pathname = Astro.url.pathname.slice(base.length) || "/";
+const area = pathname.startsWith("/budget/") ? "budget" : pathname.startsWith("/gdp/") ? "gdp" : pathname.startsWith("/about/") ? "about" : pathname === "/" ? "home" : "";
+
+const tabs = [
+  { id: "home", href: "/", label: "Home" },
+  { id: "budget", href: "/budget/", label: "Budget" },
+  { id: "gdp", href: "/gdp/", label: "GDP" },
+  { id: "about", href: "/about/", label: "About" },
+];
+const subnav: Record<string, { id: string; href: string; label: string }[]> = {
+  budget: [
+    { id: "overview", href: "/budget/", label: "Overview" },
+    { id: "trends", href: "/budget/trends/", label: "Trends" },
+    { id: "taxes", href: "/budget/taxes/", label: "Taxes" },
+    { id: "ministries", href: "/budget/ministries/", label: "Ministries" },
+    { id: "schemes", href: "/budget/schemes/", label: "Schemes" },
+    { id: "about", href: "/budget/sources/", label: "Sources" },
+  ],
+  gdp: [
+    { id: "overview", href: "/gdp/", label: "Overview" },
+    { id: "growth", href: "/gdp/growth/", label: "Growth" },
+    { id: "revisions", href: "/gdp/revisions/", label: "Revisions" },
+    { id: "forecasts", href: "/gdp/forecasts/", label: "Forecasts" },
+    { id: "sectors", href: "/gdp/sectors/", label: "Sectors" },
+    { id: "spending", href: "/gdp/spending/", label: "Spending" },
+    { id: "quarters", href: "/gdp/quarters/", label: "Quarters" },
+    { id: "about", href: "/gdp/sources/", label: "Sources" },
+  ],
+};
+const sub = subnav[area];
+const fullTitle = title === SITE ? title : `${title} · ${area === "budget" ? "Budget · " : area === "gdp" ? "GDP · " : ""}${SITE}`;
 // Vercel Web Analytics (cookieless page-view counts). Only in builds made on Vercel, where the
 // /_vercel/insights script exists; local and other builds leave it out.
 const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
-const nav = [
-  { id: "overview", href: "/", label: "Overview" },
-  { id: "trends", href: "/trends/", label: "Trends" },
-  { id: "taxes", href: "/taxes/", label: "Taxes" },
-  { id: "ministries", href: "/ministries/", label: "Ministries" },
-  { id: "schemes", href: "/schemes/", label: "Schemes" },
-  { id: "about", href: "/about/", label: "Sources" },
-];
 ---
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title === "India Budget Review" ? title : `${title} · India Budget Review`}</title>
+    <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="icon" href={link("/favicon.svg")} type="image/svg+xml" />
     {Astro.site && <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site).href} />}
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="India Budget Review" />
+    <meta property="og:site_name" content={SITE} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     {Astro.site && <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />}
@@ -52,28 +80,55 @@ const nav = [
   <body>
     <header class="site-header">
       <div class="wrap bar">
-        <a class="brand" href={link("/")}>India Budget Review</a>
+        <a class="brand" href={link("/")}>{SITE}</a>
         <button class="theme" type="button" aria-label="Switch light or dark theme" title="Light / dark">◐</button>
       </div>
-      <nav class="wrap" aria-label="Main">
+      <nav class="wrap tabs" aria-label="Sections">
         <ul>
-          {nav.map((n) => (
-            <li><a href={link(n.href)} aria-current={section === n.id ? "page" : undefined}>{n.label}</a></li>
+          {tabs.map((t) => (
+            <li><a href={link(t.href)} aria-current={area === t.id ? (sub ? "true" : "page") : undefined}>{t.label}</a></li>
           ))}
         </ul>
       </nav>
+      {sub && (
+        <nav class="subnav" aria-label={area === "budget" ? "Budget pages" : "GDP pages"}>
+          <ul class="wrap">
+            {sub.map((n) => (
+              <li><a href={link(n.href)} aria-current={section === n.id ? "page" : undefined}>{n.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      )}
     </header>
     <main class="wrap">
       <slot />
     </main>
     <footer class="site-footer">
       <div class="wrap small">
-        <p>
-          Every figure comes from the Government of India's budget documents (indiabudget.gov.in), from Budget 2000-01
-          to Budget {LATEST_YEAR}, and is checked automatically: accounting rules, agreement between documents and
-          with RBI and PRS figures. <a href={link("/about/")}>How the data is checked</a>.
+        {area === "budget" && (
+          <p>
+            Budget figures come from the Government of India's budget documents (indiabudget.gov.in), from Budget
+            2000-01 to Budget {BUDGET_YEAR}, and are checked automatically: accounting rules, agreement between
+            documents and with RBI and PRS figures. <a href={link("/budget/sources/")}>How the data is checked</a>.
+          </p>
+        )}
+        {area === "gdp" && (
+          <p>
+            National accounts come from the Ministry of Statistics and Programme Implementation (MoSPI), up to its
+            {" "}{GDP_YEAR} estimates; forecasts from the Economic Survey, the Reserve Bank of India and the Union
+            Budget. Every figure is checked automatically. <a href={link("/gdp/sources/")}>Sources and checks</a>.
+          </p>
+        )}
+        {(area !== "budget" && area !== "gdp") && (
+          <p>
+            Every figure comes from official sources (Union Budget documents, MoSPI's national accounts, the Economic
+            Survey and the RBI) and is checked automatically. <a href={link("/about/")}>About this site</a>.
+          </p>
+        )}
+        <p class="muted">
+          ₹1 lakh crore = ₹1,00,000 crore ≈ ₹1 trillion. BE = Budget Estimate, RE = Revised Estimate. Real = after
+          inflation (constant prices); nominal = in today's rupees (current prices).
         </p>
-        <p class="muted">₹1 lakh crore = ₹1,00,000 crore ≈ ₹1 trillion. BE = Budget Estimate, RE = Revised Estimate.</p>
         <p class="muted">Visits are counted with Vercel Web Analytics: no cookies, no personal data.</p>
       </div>
     </footer>
@@ -98,10 +153,17 @@ const nav = [
   .bar { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; }
   .brand { font-weight: 700; color: var(--ink); text-decoration: none; font-size: 1.05rem; }
   .theme { background: none; border: 1px solid var(--border); color: var(--ink-2); border-radius: 8px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; }
-  nav ul { list-style: none; margin: 0 -7px; padding: 4px 0 0; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+  nav ul { list-style: none; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
   nav ul::-webkit-scrollbar { display: none; }
-  nav a { display: block; padding: 8px 7px 10px; color: var(--ink-2); text-decoration: none; font-size: 0.92rem; white-space: nowrap; border-bottom: 2px solid transparent; }
-  nav a[aria-current="page"] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
-  nav a:hover { color: var(--ink); }
+  .tabs ul { margin: 0 -7px; padding: 4px 0 0; }
+  .tabs a { display: block; padding: 8px 9px 10px; color: var(--ink-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; border-bottom: 2px solid transparent; }
+  .tabs a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
+  .tabs a:hover { color: var(--ink); }
+  .subnav { background: var(--surface-2); border-top: 1px solid var(--border); }
+  .subnav ul { padding-top: 2px; padding-bottom: 2px; }
+  .subnav li:first-child a { margin-left: -9px; }
+  .subnav a { display: block; padding: 6px 9px; color: var(--ink-2); text-decoration: none; font-size: 0.86rem; white-space: nowrap; border-radius: 6px; }
+  .subnav a[aria-current="page"] { color: var(--ink); background: var(--surface); font-weight: 600; }
+  .subnav a:hover { color: var(--ink); }
   .site-footer { border-top: 1px solid var(--border); padding: 20px 0 32px; color: var(--ink-2); }
 </style>

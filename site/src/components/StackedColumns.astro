@@ -14,10 +14,11 @@ interface Props {
   tipFormat?: (v: number) => string;
   tableFormat?: (v: number) => string;
   source?: string;
+  max?: number; // fixed top of the scale, e.g. 100 for shares
 }
-const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source } = Astro.props;
+const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max } = Astro.props;
 const totals = values.map((row) => row.reduce<number>((s, v) => s + (v ?? 0), 0));
-const ticks = niceTicks(0, Math.max(...totals), 4);
+const ticks = niceTicks(0, max ?? Math.max(...totals), 4);
 const id = "c" + Math.random().toString(36).slice(2, 9);
 const GAP = 2;
 
@@ -74,7 +75,7 @@ const tipData = JSON.stringify({
         </g>
       ))}
       {xTicks.map(({ yr, i }) => (
-        <text x={x(i) + w / 2} y={sz.height - 8} text-anchor={i === years.length - 1 ? "end" : "middle"} class="tick">{yr}</text>
+        <text x={i === years.length - 1 ? x(i) + w : x(i) + w / 2} y={sz.height - 8} text-anchor={i === years.length - 1 ? "end" : "middle"} class="tick">{yr}</text>
       ))}
       {cols.map((c) => (
         <g data-col={c.i} tabindex="0" class="col" aria-label={`${years[c.i]}: total ${tipFormat(totals[c.i])}`}>

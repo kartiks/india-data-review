@@ -1,0 +1,110 @@
+---
+import Base from "../../../layouts/Base.astro";
+import LineChart from "../../../components/LineChart.astro";
+import {
+  OLD, NEW, LONG, STAGE_LABEL, oldBaseOf, bestOf, latestStage, node, range, share, type Node,
+} from "../../../lib/gdp/data";
+import { axisPct, pct } from "../../../lib/format";
+
+const years = range("2000-01", LONG[LONG.length - 1].year);
+const kind = (stage?: string) => (!stage ? "" : stage === "BACK" ? "Back series" : STAGE_LABEL[stage]);
+
+// Share of GDP, both from the same estimate (current prices).
+const ofGdp = (get: (n: Node) => number | undefined) => (n: Node) => share(get(n), n.gdp?.cur);
+const line = (picks: ReturnType<typeof oldBaseOf>) => picks.map((p) => ({ value: p?.value ?? null, kind: kind(p?.stage) }));
+const pfce = oldBaseOf(years, ofGdp((n) => n.pfce?.cur));
+const gfce = oldBaseOf(years, ofGdp((n) => n.gfce?.cur));
+const gfcf = oldBaseOf(years, ofGdp((n) => n.gfcf?.cur));
+const netx = oldBaseOf(years, ofGdp((n) => (n.exports?.cur !== undefined && n.imports?.cur !== undefined ? n.exports.cur - n.imports.cur : undefined)));
+const saving = oldBaseOf(years, ofGdp((n) => n.saving?.cur));
+
+// Investment and saving by who, 2011-12 base, years with the sector split.
+const syears = range("2011-12", "2023-24");
+const sec = (field: "gfcf_by_sector" | "saving_by_sector", ids: string[]) =>
+  bestOf(OLD, syears, (n) => {
+    const by = n[field];
+    if (!by || !ids.every((i) => by[i]?.cur !== undefined)) return undefined;
+    return share(ids.reduce((s, i) => s + by[i].cur!, 0), n.gdp?.cur);
+  });
+const WHO = [
+  { name: "Households", ids: ["households"], slot: 1 },
+  { name: "Private companies", ids: ["private_nonfin", "private_fin"], slot: 2 },
+  { name: "Public sector companies", ids: ["public_nonfin", "public_fin"], slot: 3 },
+  { name: "Government", ids: ["government"], slot: 4 },
+];
+
+// New series, latest year with a sector split.
+const nyear = ["2025-26", "2024-25", "2023-24", "2022-23"].find((y) => latestStage(NEW, y, (n) => n.gfcf_by_sector !== undefined))!;
+const nst = latestStage(NEW, nyear, (n) => n.gfcf_by_sector !== undefined)!;
+const nn = node(NEW, nyear, nst)!;
+const nInv = share(nn.gfcf?.cur, nn.gdp?.cur)!;
+const nSav = share(nn.saving?.cur, nn.gdp?.cur)!;
+const nCons = share(nn.pfce?.cur, nn.gdp?.cur)!;
+---
+<Base title="Spending, investment and saving" section="spending" description="India's GDP by spending: household consumption, government, investment and trade, plus investment and saving by sector.">
+  <h1>Spending, investment and saving</h1>
+  <p class="muted">
+    GDP can also be measured by who spends it: households, government, investment in buildings and machinery, and
+    the rest of the world. All shares are of GDP at current prices in the same year and estimate.
+  </p>
+
+  <div class="tiles">
+    <div class="tile"><div class="label">Household spending, {nyear}</div><div class="value">{pct(nCons)}</div><div class="sub">of GDP, new series ({STAGE_LABEL[nst]})</div></div>
+    <div class="tile"><div class="label">Investment rate, {nyear}</div><div class="value">{pct(nInv)}</div><div class="sub">fixed investment, % of GDP</div></div>
+    <div class="tile"><div class="label">Saving rate, {nyear}</div><div class="value">{pct(nSav)}</div><div class="sub">gross saving, % of GDP</div></div>
+  </div>
+
+  <section class="card">
+    <LineChart
+      title="Where GDP goes"
+      subtitle="Share of GDP. Net exports are exports minus imports; India usually imports more than it exports."
+      years={years}
+      series={[
+        { name: "Household spending", slot: 1, points: line(pfce) },
+        { name: "Investment (fixed)", slot: 2, points: line(gfcf) },
+        { name: "Government spending", slot: 3, points: line(gfce) },
+        { name: "Net exports", slot: 4, points: line(netx) },
+      ]}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      annotations={[{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", label: "COVID-19" }]}
+      source="MoSPI, 2011-12 base: back series to 2010-11, then the latest estimate. Shares do not add to 100: changes in stocks, valuables and a statistical discrepancy make up the rest."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Saving rate"
+      subtitle="Gross saving of the whole economy as a share of GDP."
+      years={years}
+      series={[{ name: "Gross saving", slot: 1, points: line(saving) }]}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      source="MoSPI, 2011-12 base: back series to 2010-11, then the latest estimate that includes saving."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Who invests"
+      subtitle="Fixed investment by sector, % of GDP. Households include small unincorporated businesses and farms."
+      years={syears}
+      series={WHO.map((w) => ({ name: w.name, slot: w.slot, points: line(sec("gfcf_by_sector", w.ids)) }))}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      source="MoSPI, gross fixed capital formation by institutional sector, 2011-12 base, latest estimate with the split."
+    />
+  </section>
+
+  <section class="card">
+    <LineChart
+      title="Who saves"
+      subtitle="Gross saving by sector, % of GDP. Government saving is below zero when it borrows for day-to-day spending."
+      years={syears}
+      series={WHO.map((w) => ({ name: w.name, slot: w.slot, points: line(sec("saving_by_sector", w.ids)) }))}
+      format={axisPct}
+      tableFormat={(v) => pct(v)}
+      source="MoSPI, gross saving by institutional sector, 2011-12 base, latest estimate with the split."
+    />
+  </section>
+</Base>

@@ -1,0 +1,15 @@
+---
+import { link } from "../../lib/url";
+// "Source: ..." line linking to the official document the figures were read from.
+import { type Kind, KIND_LABEL, nextYear, headline } from "../../lib/budget/data";
+
+interface Props { year: string; kind: Kind; docs: string[] }
+const { year, kind, docs } = Astro.props;
+const budget = kind === "be" ? year : kind === "re" ? nextYear(year) : nextYear(nextYear(year));
+const url = headline(year, "total_expenditure", kind)?.source.url;
+---
+<p class="source">
+  Source: {docs.join("; ")}, Budget {budget} ({KIND_LABEL[kind]}s for {year}).{" "}
+  {url && <><a href={url} rel="external noopener">Official PDF</a>{" · "}</>}
+  <a href={link("/budget/sources/")}>How it's checked</a>
+</p>

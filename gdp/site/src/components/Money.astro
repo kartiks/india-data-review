@@ -1,7 +1,0 @@
----
-// A large amount with a smaller unit: "₹53.47 lakh crore" -> ₹53.47 <small>lakh crore</small>.
-import { moneyParts } from "../lib/format";
-interface Props { value: number }
-const { num, unit } = moneyParts(Astro.props.value);
----
-{num}{unit && <span class="unit"> {unit}</span>}

@@ -1,0 +1,161 @@
+---
+import { link } from "../../lib/url";
+import Money from "../Money.astro";
+import BarList from "../BarList.astro";
+import PromiseGap from "../PromiseGap.astro";
+import SourceLine from "./SourceLine.astro";
+import { YEARS, LATEST_YEAR, KIND_LABEL, headline, yearKind, nextYear, type Kind } from "../../lib/budget/data";
+import { comesFrom, goesTo, previous, promiseGaps, topSchemes, YEAR_NOTES } from "../../lib/budget/views";
+import { money, pct, signedPct } from "../../lib/format";
+
+interface Props { year: string }
+const { year } = Astro.props;
+const kind: Kind = yearKind(year);
+const i = YEARS.indexOf(year);
+const prevYear = YEARS[i - 1];
+const nextY = YEARS[i + 1];
+
+const status: Record<Kind, string> = {
+  be: `Budget Estimates, as announced in Budget ${year}. Revised figures come with Budget ${nextYear(year)}.`,
+  re: `Revised Estimates, published in Budget ${nextYear(year)}. Actual figures follow a year later.`,
+  actual: `Actual figures, published in Budget ${nextYear(nextYear(year))}.`,
+};
+
+const total = headline(year, "total_expenditure", kind)!;
+const receipts = headline(year, "total_receipts", kind);
+const borrow = headline(year, "borrowings", kind);
+const fd = headline(year, "fiscal_deficit", kind);
+const interest = headline(year, "interest_payments", kind);
+const revRec = headline(year, "revenue_receipts", kind);
+const capex = headline(year, "capital_expenditure", kind);
+const raised = receipts && borrow ? receipts.value - borrow.value : undefined;
+const prevTotal = previous(year, (y, k) => headline(y, "total_expenditure", k), kind);
+
+const from = comesFrom(year, kind);
+const to = goesTo(year, kind);
+const sum = (rows?: { value: number }[]) => rows?.reduce((s, r) => s + r.value, 0) ?? 1;
+const fromTotal = sum(from);
+const toTotal = sum(to);
+const paise = (v: number, t: number) => {
+  const n = Math.round((v / t) * 100);
+  return n === 1 ? "1 paisa" : n === 0 ? "under 1 paisa" : `${n} paise`;
+};
+const gaps = promiseGaps(year);
+const schemes = topSchemes(year, kind, 8);
+---
+<section class="head">
+  <div class="title-row">
+    <h1>Union Budget {year}</h1>
+    <form class="year-pick" action={link("/budget/years/")} method="get">
+      <label class="sr-only" for="year-select">Budget year</label>
+      <select id="year-select" name="y" data-year-select>
+        {[...YEARS].reverse().map((y) => <option value={y} selected={y === year}>{y}</option>)}
+      </select>
+    </form>
+  </div>
+  <p class="muted"><span class="chip">{KIND_LABEL[kind]}</span> {status[kind]}</p>
+  <nav class="prevnext small" aria-label="Other years">
+    {prevYear && <a href={link(`/budget/years/${prevYear}/`)}>← {prevYear}</a>}
+    {nextY && <a href={link(nextY === LATEST_YEAR ? "/budget/" : `/budget/years/${nextY}/`)}>{nextY} →</a>}
+  </nav>
+</section>
+
+{YEAR_NOTES[year] && <p class="note">{YEAR_NOTES[year]}</p>}
+
+<div class="tiles">
+  <div class="tile">
+    <div class="label">Total spending</div>
+    <div class="value"><Money value={total.value} /></div>
+    {prevTotal && <div class="sub">{signedPct(((total.value - prevTotal.v.value) / prevTotal.v.value) * 100)} on {prevTotal.year} ({prevTotal.v.kind === "actual" ? "actual" : prevTotal.v.kind.toUpperCase()})</div>}
+  </div>
+  {raised != null && (
+    <div class="tile">
+      <div class="label">Raised without borrowing</div>
+      <div class="value"><Money value={raised} /></div>
+      <div class="sub">Taxes, other revenue, asset sales</div>
+    </div>
+  )}
+  {fd && (
+    <div class="tile">
+      <div class="label">Borrowing (fiscal deficit)</div>
+      <div class="value"><Money value={fd.value} /></div>
+      <div class="sub">{fd.pctGdp != null ? `${pct(fd.pctGdp)} of GDP` : "% of GDP not printed this year"}</div>
+    </div>
+  )}
+  {interest && revRec && (
+    <div class="tile">
+      <div class="label">Interest payments</div>
+      <div class="value"><Money value={interest.value} /></div>
+      <div class="sub">{Math.round((interest.value / revRec.value) * 100)} paise of every rupee of revenue</div>
+    </div>
+  )}
+  {capex && (
+    <div class="tile">
+      <div class="label">Capital spending</div>
+      <div class="value"><Money value={capex.value} /></div>
+      <div class="sub">{pct((capex.value / total.value) * 100, 0)} of all spending</div>
+    </div>
+  )}
+</div>
+
+<div class="grid-2">
+  {from && (
+    <section class="card">
+      <h2>Where each rupee comes from</h2>
+      <p class="muted small">Out of every ₹1 the Centre raises, before handing states their share of taxes.</p>
+      <BarList rows={from.map((r) => ({ label: r.label, value: r.value, display: paise(r.value, fromTotal), sub: money(r.value), href: r.href }))} tone={1} label="Sources of money" />
+      <SourceLine year={year} kind={kind} docs={["Budget at a Glance", "Receipts"]} />
+    </section>
+  )}
+  {to && (
+    <section class="card">
+      <h2>Where each rupee goes</h2>
+      <p class="muted small">States' share of taxes, interest, and spending by ministry.</p>
+      <BarList rows={to.map((r) => ({ label: r.label, value: r.value, display: paise(r.value, toTotal), sub: money(r.value), href: r.href }))} tone={1} label="Uses of money" />
+      <SourceLine year={year} kind={kind} docs={["Receipts", "Statement of ministries' expenditure"]} />
+    </section>
+  )}
+</div>
+
+{gaps ? (
+  <section class="card">
+    <h2>Announced vs {gaps.kind === "actual" ? "what happened" : "revised"}</h2>
+    <p class="muted small">
+      How far the {KIND_LABEL[gaps.kind].toLowerCase()} for {year} landed from the Budget Estimate announced in Budget {year}.
+      Blue means more than budgeted, red means less.
+    </p>
+    <PromiseGap rows={gaps.rows} />
+  </section>
+) : (
+  <section class="card">
+    <h2>Announced vs what happened</h2>
+    <p class="muted">These are this year's announced figures. The Revised Estimates arrive with Budget {nextYear(year)}.</p>
+    {prevYear && <p><a href={link(`/budget/years/${prevYear}/`)}>See how {prevYear}'s budget turned out →</a></p>}
+  </section>
+)}
+
+{schemes.length > 0 && (
+  <section class="card">
+    <h2>Largest schemes</h2>
+    <p class="muted small">Centrally Sponsored and Central Sector schemes, {KIND_LABEL[kind].toLowerCase()}s for {year}.</p>
+    <BarList rows={schemes.map(({ s, v }) => ({ label: s.name, value: v.value, display: money(v.value), href: `/budget/schemes/${s.slug}/`, note: s.department }))} tone={1} label="Largest schemes" />
+    <p class="small"><a href={link("/budget/schemes/")}>Search all schemes →</a></p>
+  </section>
+)}
+
+<script>
+  document.querySelector<HTMLSelectElement>("[data-year-select]")?.addEventListener("change", (e) => {
+    const y = (e.target as HTMLSelectElement).value;
+    const latest = (e.target as HTMLSelectElement).options[0].value;
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
+    location.href = base + (y === latest ? "/budget/" : `/budget/years/${y}/`);
+  });
+</script>
+
+<style>
+  .title-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+  .title-row h1 { margin: 0; }
+  .head { margin-bottom: 12px; }
+  .head p { margin: 8px 0 4px; }
+  .prevnext { display: flex; justify-content: space-between; }
+</style>

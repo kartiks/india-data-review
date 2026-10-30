@@ -40,3 +40,10 @@ export function moneyParts(crore: number): { num: string; unit: string } {
   const m = s.match(/^(.*?)\s(lakh crore|crore)$/);
   return m ? { num: m[1], unit: m[2] } : { num: s, unit: "" };
 }
+
+/** Growth rate with a true minus sign: "7.8%", "−5.7%". */
+export const gpct = (v: number, digits = 1) => `${v < 0 ? "−" : ""}${Math.abs(v).toFixed(digits)}%`;
+/** Change in percentage points: "+1.8 pts", "−0.4 pts". */
+export const pts = (v: number) => `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v).toFixed(1)} pts`;
+/** Axis label for growth: "8%", "−4%". */
+export const axisPct = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v)}%`;

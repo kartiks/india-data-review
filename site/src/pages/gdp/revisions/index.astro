@@ -1,0 +1,123 @@
+---
+import Base from "../../../layouts/Base.astro";
+import RangeRows from "../../../components/RangeRows.astro";
+import {
+  DS, OLD, NEW, STAGE_LABEL, STAGE_SHORT, STAGE_ORDER, stagesOf, growthAt, yearsOf, latestStage,
+} from "../../../lib/gdp/data";
+import { axisPct, gpct, pts } from "../../../lib/format";
+
+const years = yearsOf(OLD).filter((y) => y >= "2014-15"); // the first year the 2011-12 series covers from its first estimate
+const real = (s: string, y: string, st: string) => growthAt(s, y, st)?.real;
+const withGrowth = (s: string, y: string) => stagesOf(s, y).filter((st) => real(s, y, st) !== undefined);
+
+const rows = [...years].reverse().map((y) => {
+  const st = withGrowth(OLD, y);
+  const first = st[0], last = st[st.length - 1];
+  const marks = [
+    { s: 0, v: real(OLD, y, first), text: `${gpct(real(OLD, y, first)!)} (${STAGE_LABEL[first]})` },
+    ...st.slice(1, -1).map((m) => ({ s: 1, v: real(OLD, y, m), text: `${gpct(real(OLD, y, m)!)} (${STAGE_LABEL[m]})` })),
+    ...(st.length > 1 ? [{ s: 2, v: real(OLD, y, last), text: `${gpct(real(OLD, y, last)!)} (${STAGE_LABEL[last]})` }] : []),
+  ];
+  const ns = latestStage(NEW, y, (n) => n.growth?.gdp?.real !== undefined);
+  if (ns) marks.push({ s: 3, v: real(NEW, y, ns), text: `${gpct(real(NEW, y, ns)!)} (${STAGE_LABEL[ns]})` });
+  return { label: y, marks };
+});
+
+// Revision from first to latest estimate, for years that have had at least their first revised estimate.
+const settled = years.filter((y) => withGrowth(OLD, y).some((st) => STAGE_ORDER[st] >= STAGE_ORDER.RE1));
+const revs = settled.map((y) => {
+  const st = withGrowth(OLD, y);
+  return { y, first: real(OLD, y, st[0])!, last: real(OLD, y, st[st.length - 1])!, firstSt: st[0], lastSt: st[st.length - 1] };
+}).map((r) => ({ ...r, d: r.last - r.first }));
+const meanAbs = revs.reduce((s, r) => s + Math.abs(r.d), 0) / revs.length;
+const up = revs.filter((r) => r.d > 0.05).length, down = revs.filter((r) => r.d < -0.05).length;
+const biggest = revs.reduce((a, b) => (Math.abs(b.d) > Math.abs(a.d) ? b : a));
+
+const allStages = DS.stages.filter((s) => years.some((y) => real(OLD, y, s.id) !== undefined));
+---
+<Base title="Revisions" section="revisions" description="How India's GDP growth estimates change from the first advance estimate to the final figure.">
+  <h1>How GDP estimates get revised</h1>
+  <p class="muted">
+    MoSPI publishes a first estimate of a year's growth before the year ends, then revises it as fuller data arrive:
+    up to six estimates over about four years. Shown here for the 2011-12-base series, which kept every stage.
+  </p>
+
+  <div class="tiles">
+    <div class="tile">
+      <div class="label">Average revision, first to latest</div>
+      <div class="value">{meanAbs.toFixed(1)} pts</div>
+      <div class="sub">either way, {settled[0]} to {settled[settled.length - 1]}</div>
+    </div>
+    <div class="tile">
+      <div class="label">Revised up / down</div>
+      <div class="value">{up} / {down}</div>
+      <div class="sub">of {revs.length} years</div>
+    </div>
+    <div class="tile">
+      <div class="label">Biggest revision</div>
+      <div class="value">{biggest.y}</div>
+      <div class="sub">{gpct(biggest.first)} → {gpct(biggest.last)} ({pts(biggest.d)})</div>
+    </div>
+  </div>
+
+  <section class="card">
+    <RangeRows
+      title="Real GDP growth: first estimate to latest"
+      subtitle="Each row is one year. The line runs from the lowest to the highest estimate published for it."
+      series={[
+        { name: "First estimate", slot: 1, shape: "ring", join: true },
+        { name: "Revisions in between", slot: 1, shape: "small", join: true },
+        { name: "Latest estimate (2011-12 base)", slot: 1, shape: "dot", join: true },
+        { name: "New 2022-23 series", slot: 2, shape: "diamond" },
+      ]}
+      rows={rows}
+      format={axisPct}
+      source="MoSPI national accounts: GDP growth rate at constant prices, as published at each estimate stage."
+    />
+  </section>
+
+  <section class="card">
+    <h2>Every estimate</h2>
+    <p class="muted small">Real GDP growth (%) at each stage, 2011-12 base. Nominal growth is in the downloadable data.</p>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Year</th>{allStages.map((s) => <th title={s.label}>{STAGE_SHORT[s.id]}</th>)}<th>New series</th></tr></thead>
+        <tbody>
+          {[...years].reverse().map((y) => {
+            const ns = latestStage(NEW, y, (n) => n.growth?.gdp?.real !== undefined);
+            return (
+              <tr>
+                <td>{y}</td>
+                {allStages.map((s) => <td>{real(OLD, y, s.id) !== undefined ? gpct(real(OLD, y, s.id)!) : ""}</td>)}
+                <td>{ns ? `${gpct(real(NEW, y, ns)!)} (${STAGE_SHORT[ns]})` : ""}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>When each estimate comes out</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Estimate</th><th class="left">When</th></tr></thead>
+        <tbody>
+          {DS.stages.filter((s) => STAGE_ORDER[s.id] <= STAGE_ORDER.RE3).map((s) => (
+            <tr><td>{s.label}</td><td class="wrap-text left">{s.when}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">
+      From 2025, MoSPI's revision policy calls the last revision the "Final Estimate". The new 2022-23 series is only
+      available as its latest estimates (MoSPI's data service keeps no earlier ones), so this site saves each release
+      as it comes out and the history of the new series will build up from here.
+    </p>
+  </section>
+</Base>
+
+<style>
+  th.left, td.left { text-align: left; }
+</style>

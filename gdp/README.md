@@ -1,8 +1,8 @@
-# India GDP Review
+# GDP data
 
-A companion to [India Budget Review](https://india-budget-review.k4tech.in): India's GDP and national
-accounts from official sources, checked automatically. This folder holds the data pipeline (`pipeline/`),
-the datasets (`data/`), the downloaded source files (`sources/`) and the website (`site/`).
+The GDP area of [India Data Review](../README.md): India's GDP and national accounts from official
+sources, checked automatically. This folder holds the data pipeline (`pipeline/`), the datasets (`data/`)
+and the downloaded source files (`sources/`). The website is in `../site/` (pages under `/gdp/`).
 
 ## What's covered
 
@@ -27,7 +27,7 @@ uv run python -m gdp_pipeline --refresh   # re-download everything (run after ea
 uv run pytest
 ```
 
-The command exits with an error if any check fails, and the website refuses to build unless
+The command exits with an error if any check fails, and the website (`../site/`) refuses to build unless
 `data/validation_report.md` says PASSED.
 
 **Run `--refresh` after every MoSPI release.** MoSPI's data service keeps only the latest estimate for the

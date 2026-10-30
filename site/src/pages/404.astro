@@ -4,10 +4,13 @@ import { link } from "../lib/url";
 ---
 <Base title="Page not found">
   <h1>Page not found</h1>
-  <p class="muted">There's no page at this address. It may have moved, or a scheme may have been renamed.</p>
+  <p class="muted">
+    There's no page at this address. It may have moved: budget pages now live under <a href={link("/budget/")}>/budget/</a>
+    and GDP pages under <a href={link("/gdp/")}>/gdp/</a>.
+  </p>
   <ul>
-    <li><a href={link("/")}>Latest budget overview</a></li>
-    <li><a href={link("/years/")}>All budget years</a></li>
-    <li><a href={link("/ministries/")}>Ministries</a> · <a href={link("/schemes/")}>Search schemes</a></li>
+    <li><a href={link("/")}>Home</a></li>
+    <li><a href={link("/budget/")}>Union Budget</a>: <a href={link("/budget/years/")}>all years</a> · <a href={link("/budget/ministries/")}>ministries</a> · <a href={link("/budget/schemes/")}>search schemes</a></li>
+    <li><a href={link("/gdp/")}>GDP</a>: <a href={link("/gdp/growth/")}>growth</a> · <a href={link("/gdp/revisions/")}>revisions</a> · <a href={link("/gdp/forecasts/")}>forecasts</a></li>
   </ul>
 </Base>

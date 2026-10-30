@@ -94,6 +94,14 @@ const files = [
   </section>
 
   <section class="card">
+    <h2>Privacy</h2>
+    <p>
+      The site counts page views with Vercel Web Analytics, which uses no cookies and doesn't collect personal
+      information or track you across sites. It only tells us which pages are read, and from roughly where.
+    </p>
+  </section>
+
+  <section class="card">
     <h2>Download the data</h2>
     <ul>{files.map(([f, d]) => <li><a href={link(`/data/${f}`)}>{f}</a>: {d}</li>)}</ul>
     <p class="small muted">All amounts are in ₹ crore. Each value records the budget and document it was read from.</p>

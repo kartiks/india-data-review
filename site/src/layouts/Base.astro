@@ -9,6 +9,9 @@ interface Props {
   section?: "overview" | "trends" | "taxes" | "ministries" | "schemes" | "about";
 }
 const { title, description = "India's Union Budget from 2000-01 to today, from official documents, checked.", section } = Astro.props;
+// Vercel Web Analytics (cookieless page-view counts). Only in builds made on Vercel, where the
+// /_vercel/insights script exists; local and other builds leave it out.
+const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
 const nav = [
   { id: "overview", href: "/", label: "Overview" },
   { id: "trends", href: "/trends/", label: "Trends" },
@@ -33,6 +36,12 @@ const nav = [
     <meta property="og:description" content={description} />
     {Astro.site && <meta property="og:url" content={new URL(Astro.url.pathname, Astro.site).href} />}
     <meta name="twitter:card" content="summary" />
+    {analytics && (
+      <>
+        <script is:inline>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+        <script is:inline defer src="/_vercel/insights/script.js"></script>
+      </>
+    )}
     <script is:inline>
       try {
         const t = localStorage.getItem("theme");
@@ -65,6 +74,7 @@ const nav = [
           with RBI and PRS figures. <a href={link("/about/")}>How the data is checked</a>.
         </p>
         <p class="muted">₹1 lakh crore = ₹1,00,000 crore ≈ ₹1 trillion. BE = Budget Estimate, RE = Revised Estimate.</p>
+        <p class="muted">Visits are counted with Vercel Web Analytics: no cookies, no personal data.</p>
       </div>
     </footer>
     <div class="tooltip" role="status" aria-live="polite" hidden></div>

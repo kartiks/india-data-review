@@ -1,7 +1,6 @@
 # India Data Review
 
-**Live site: https://india-data-review.k4tech.in** (formerly India Budget Review, india-budget-review.k4tech.in;
-old links redirect)
+**Live site: https://india-data-review.k4tech.in**
 
 India's economy and public finances from official data, checked automatically. One website with an area per
 type of data, and a shared home page with charts that use more than one area.
@@ -38,5 +37,4 @@ URL and SHA-256). The site refuses to build unless every area's `data/validation
 ## Deployment
 
 Vercel, project Root Directory `site` (it reads `../budget/data` and `../gdp/data`, so "Include files
-outside the root directory" must stay on). `site/vercel.json` redirects every path on the old domain
-india-budget-review.k4tech.in to the same page under `/budget/` on india-data-review.k4tech.in.
+outside the root directory" must stay on).

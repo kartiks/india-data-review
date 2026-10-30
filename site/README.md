@@ -48,6 +48,5 @@ frontmatter.
 ## Deployment
 
 Hosted on Vercel (project Root Directory: `site`). The build reads `../budget/data` and `../gdp/data`, so
-Vercel's "Include files outside the root directory" setting must stay on (the default). `vercel.json`
-redirects the old domain (india-budget-review.k4tech.in) path-for-path to `/budget/…` on the new one.
+Vercel's "Include files outside the root directory" setting must stay on (the default).
 Every push to `main` deploys; other branches get preview URLs.

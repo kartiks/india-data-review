@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 MANIFEST = ROOT / "sources" / "manifest.json"
 
-HEADERS = {"User-Agent": "india-budget-review-data-pipeline/0.1 (python-requests)"}
+HEADERS = {"User-Agent": "india-data-review-budget-pipeline/0.1 (python-requests)"}
 
 
 def looks_valid(ext: str, content: bytes) -> bool:

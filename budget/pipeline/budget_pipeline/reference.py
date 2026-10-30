@@ -21,7 +21,7 @@ from .readers import read_xlsx
 ROOT = Path(__file__).resolve().parents[2]
 REF_DIR = ROOT / "sources" / "reference" / "rbi"
 REF_MANIFEST = ROOT / "sources" / "reference" / "manifest.json"
-HEADERS = {"User-Agent": "india-budget-review-data-pipeline/0.1 (python-requests)"}
+HEADERS = {"User-Agent": "india-data-review-budget-pipeline/0.1 (python-requests)"}
 
 RBI_HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy"
 RBI_TABLES = {

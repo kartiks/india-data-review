@@ -62,8 +62,10 @@ def consolidate(rows: list[dict], id_fields: tuple[str, ...], value_fields: tupl
         for name, r in (("be", be), ("re", re_), ("actual", actual)):
             if r is not None and any(r.get(f) is not None for f in value_fields):
                 item[name] = pick(r)
+        # A BE always comes from its own budget. Mixing in a later budget's reprint would combine two
+        # documents' layouts (e.g. across the 2017-18 reorganisation of demands) and double count.
         if be is None and restated is not None:
-            item["be"] = pick(restated)  # e.g. the early tax tables, where the own-year copy lacks an item
+            item["be_restated"] = pick(restated)
         elif be and restated and any(
             be.get(f) is not None and restated.get(f) is not None and abs(be[f] - restated[f]) > 0.01
             for f in value_fields
@@ -275,6 +277,7 @@ def build_all() -> list[tuple]:
     _, s = build_schemes(ministries.observations(m_parsed))
     sections += s
     sections.append(check_prs())
+    sections += check_published()
     return sections
 
 
@@ -318,3 +321,47 @@ def check_prs() -> tuple:
     return ("Matches PRS Legislative Research, Union Budget 2026-27 Analysis (independent)", checked, failures,
             [f"{checked - len(failures)} of {checked} published figures match to the crore: headline totals, "
              "taxes by type, five ministries and Defence, four schemes."])
+
+
+def check_published() -> list[tuple]:
+    """Checks on the published JSON files themselves (not only on the source documents).
+
+    The chosen values for one year and estimate type come from one budget, so
+    they must still add up: ministry lines to the grand total, and net tax to
+    gross tax less the deductions.
+    """
+    sections = []
+    mins = json.loads((DATA / "ministries.json").read_text())
+    items = mins["items"]
+    failures, checked = [], 0
+    for year, entry in mins["years"].items():
+        for kind in ("be", "re", "actual"):
+            gt = entry.get("grand_total", {}).get(kind)
+            if not gt:
+                continue
+            parts = [v[kind]["total_crore"] for k, v in entry.items()
+                     if items.get(k, {}).get("level") in ("department", "union_territory", "state_plan_assistance")
+                     and kind in v and v[kind].get("total_crore") is not None]
+            checked += 1
+            if abs(sum(parts) - gt["total_crore"]) > 1:
+                failures.append(f"{kind.upper()} {year}: lines add to {sum(parts):,.2f}, grand total "
+                                f"{gt['total_crore']:,.2f}")
+    sections.append(("Published ministries.json: lines add up to the grand total for every year and estimate",
+                     checked, failures, []))
+    taxes = json.loads((DATA / "taxes.json").read_text())
+    failures, checked = [], 0
+    for year, entry in taxes["years"].items():
+        for kind in ("be", "re", "actual"):
+            g, n = entry.get("gross_tax_revenue", {}).get(kind), entry.get("net_tax_revenue", {}).get(kind)
+            if not g or not n or g["source_budget"] != n["source_budget"]:
+                continue
+            ded = sum(entry.get(d, {}).get(kind, {}).get("value") or 0 for d in
+                      ("states_share", "states_share_adjustment", "nccd_transferred", "ut_local_bodies_assignment")
+                      if entry.get(d, {}).get(kind, {}).get("source_budget") == g["source_budget"])
+            checked += 1
+            if abs(g["value"] - ded - n["value"]) > 5:
+                failures.append(f"{kind.upper()} {year}: gross {g['value']:,.0f} - deductions {ded:,.0f} != net "
+                                f"{n['value']:,.0f}")
+    sections.append(("Published taxes.json: net tax = gross tax - states' share - other deductions",
+                     checked, failures, []))
+    return sections

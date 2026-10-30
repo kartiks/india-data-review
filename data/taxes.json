@@ -36,7 +36,7 @@
   "ut_local_bodies_assignment": "taxes to local bodies"
  },
  "units": "Rs crore",
- "generated_at": "2026-10-30T06:49:14+00:00",
+ "generated_at": "2026-10-30T06:55:36+00:00",
  "rules": "BE from that year's budget; RE from the next; Actual from the one after. be_restated = the BE as reprinted a year later, when different.",
  "years": {
   "2000-01": {
@@ -206,7 +206,7 @@
      "label_as_printed": "less surcharge on union taxes/duties transferred to the national calamity contingency fund",
      "source_url": "https://www.indiabudget.gov.in/budget_archive/ub2001-02/bag/bag2.htm"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2001-02",
      "document": "receipts",
@@ -4675,7 +4675,7 @@
      "label_as_printed": "wealth tax",
      "source_url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/bag/bag2.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": 603.0,
      "source_budget": "2011-12",
      "document": "receipts",
@@ -7196,7 +7196,7 @@
      "label_as_printed": "cgst",
      "source_url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2018-19",
      "document": "receipts",
@@ -7334,7 +7334,7 @@
      "label_as_printed": "gst",
      "source_url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2018-19",
      "document": "receipts",
@@ -7357,7 +7357,7 @@
      "label_as_printed": "gst compensation cess",
      "source_url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2018-19",
      "document": "receipts",
@@ -7380,7 +7380,7 @@
      "label_as_printed": "igst",
      "source_url": "https://www.indiabudget.gov.in/budget2019-20/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2018-19",
      "document": "receipts",
@@ -10026,7 +10026,7 @@
      "label_as_printed": "less- states share adjustment for prior years",
      "source_url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2023-24",
      "document": "receipts",
@@ -10460,7 +10460,7 @@
      "label_as_printed": "other taxes",
      "source_url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag5.pdf"
     },
-    "be": {
+    "be_restated": {
      "value": null,
      "source_budget": "2024-25",
      "document": "receipts",

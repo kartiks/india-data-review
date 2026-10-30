@@ -2,7 +2,7 @@
 
 Headline figures, taxes, ministries and schemes. Every allowed exception lists its reason.
 
-**Result: PASSED** (117270 checks, 0 failures)
+**Result: PASSED** (117426 checks, 0 failures)
 
 ## ✅ Accounting rules hold in every source column
 1066 checks, 0 failures.
@@ -433,3 +433,11 @@ Headline figures, taxes, ministries and schemes. Every allowed exception lists i
 117 checks, 0 failures.
 
 - 117 of 117 published figures match to the crore: headline totals, taxes by type, five ministries and Defence, four schemes.
+
+## ✅ Published ministries.json: lines add up to the grand total for every year and estimate
+78 checks, 0 failures.
+
+
+## ✅ Published taxes.json: net tax = gross tax - states' share - other deductions
+78 checks, 0 failures.
+

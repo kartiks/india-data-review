@@ -1327,7 +1327,7 @@
   }
  },
  "units": "Rs crore",
- "generated_at": "2026-10-30T06:49:48+00:00",
+ "generated_at": "2026-10-30T06:56:14+00:00",
  "rules": "BE from that year's budget; RE from the next; Actual from the one after. be_restated = the BE as reprinted a year later, when different.",
  "years": {
   "2000-01": {
@@ -53019,7 +53019,7 @@
     }
    },
    "aids_control": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -57136,7 +57136,7 @@
      "label_as_printed": "A. UNION TERRITORIES WITH LEGISLATURE (1 + 2)",
      "source_url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 2054.59,
      "plan_crore": 1464.59,
      "non_plan_crore": 590.0,
@@ -57208,7 +57208,7 @@
      "label_as_printed": "B. DONER (g+h)",
      "source_url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 1550.0,
      "plan_crore": 1550.0,
      "non_plan_crore": null,
@@ -57280,7 +57280,7 @@
      "label_as_printed": "B. UNION TERRITORIES WITHOUT LEGISLATURE (3 + 4 + 5 + 6 + 7)",
      "source_url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 5251.68,
      "plan_crore": 2103.49,
      "non_plan_crore": 3148.19,
@@ -57371,7 +57371,7 @@
      "label_as_printed": "I. CENTRAL SECTOR",
      "source_url": "https://www.indiabudget.gov.in/budget2012-2013/ub2012-13/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 1012519.05,
      "plan_crore": 280599.99,
      "non_plan_crore": 731919.06,
@@ -70124,7 +70124,7 @@
     }
    },
    "disability_affairs": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -72899,7 +72899,7 @@
     }
    },
    "state_plans:aids_control": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -72918,7 +72918,7 @@
     }
    },
    "state_plans:animal_husbandry_dairying": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -72937,7 +72937,7 @@
     }
    },
    "state_plans:ayush": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73009,7 +73009,7 @@
     }
    },
    "state_plans:commerce": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73028,7 +73028,7 @@
     }
    },
    "state_plans:disability_affairs": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73047,7 +73047,7 @@
     }
    },
    "state_plans:drinking_water_sanitation": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73119,7 +73119,7 @@
     }
    },
    "state_plans:environment": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73138,7 +73138,7 @@
     }
    },
    "state_plans:food_processing": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73157,7 +73157,7 @@
     }
    },
    "state_plans:health_family_welfare": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73193,7 +73193,7 @@
      "label_as_printed": "o. Higher Education",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73212,7 +73212,7 @@
     }
    },
    "state_plans:home_affairs": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73248,7 +73248,7 @@
      "label_as_printed": "m. Housing and Urban Poverty Alleviation",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73267,7 +73267,7 @@
     }
    },
    "state_plans:labour_employment": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73286,7 +73286,7 @@
     }
    },
    "state_plans:land_resources": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73322,7 +73322,7 @@
      "label_as_printed": "q. Law and Justice",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73341,7 +73341,7 @@
     }
    },
    "state_plans:meity": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73360,7 +73360,7 @@
     }
    },
    "state_plans:minority_affairs": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73538,7 +73538,7 @@
     }
    },
    "state_plans:rural_development": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73557,7 +73557,7 @@
     }
    },
    "state_plans:school_education": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73576,7 +73576,7 @@
     }
    },
    "state_plans:social_justice": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73648,7 +73648,7 @@
     }
    },
    "state_plans:textiles": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73667,7 +73667,7 @@
     }
    },
    "state_plans:tourism": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73756,7 +73756,7 @@
      "label_as_printed": "cc. Urban Development",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73775,7 +73775,7 @@
     }
    },
    "state_plans:water_resources": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73811,7 +73811,7 @@
      "label_as_printed": "ee. Women and Child Development",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73830,7 +73830,7 @@
     }
    },
    "state_plans:youth_sports": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -73989,7 +73989,7 @@
      "label_as_printed": "A. STATE PLANS",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 128150.0,
      "plan_crore": 128150.0,
      "non_plan_crore": null,
@@ -74080,7 +74080,7 @@
      "label_as_printed": "A. UNION TERRITORIES WITH LEGISLATURE (1 + 2 + 3)",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 2413.9,
      "plan_crore": 1826.9,
      "non_plan_crore": 587.0,
@@ -74152,7 +74152,7 @@
      "label_as_printed": "B. DONER (gg+hh)",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 1780.0,
      "plan_crore": 1780.0,
      "non_plan_crore": null,
@@ -74224,7 +74224,7 @@
      "label_as_printed": "B. UNION TERRITORIES WITHOUT LEGISLATURE (4 + 5 + 6 + 7 + 8)",
      "source_url": "https://www.indiabudget.gov.in/budget2015-2016/ub2015-16/eb/stat02.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 8750.32,
      "plan_crore": 4497.1,
      "non_plan_crore": 4253.22,
@@ -75144,7 +75144,7 @@
     }
    },
    "ut_schemes_others": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -78841,7 +78841,7 @@
     }
    },
    "skill_development": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -88789,7 +88789,7 @@
      "label_as_printed": "47. Cabinet",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 419.64,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -88842,7 +88842,7 @@
      "label_as_printed": "71. Central Vigilance Commission",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 27.68,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -89266,7 +89266,7 @@
      "label_as_printed": "21. Capital Outlay on Defence Services",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 78586.68,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -89389,7 +89389,7 @@
      "label_as_printed": "22. Defence Pensions",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 82332.66,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -89461,7 +89461,7 @@
      "label_as_printed": "20. Defence Services (Revenue)",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 143869.46,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -89567,7 +89567,7 @@
      "label_as_printed": "34. Direct Taxes",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 5387.0,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -90890,7 +90890,7 @@
      "label_as_printed": "36. Indian Audit and Accounts Department",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 3664.73,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -90943,7 +90943,7 @@
      "label_as_printed": "35. Indirect Taxes",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 5340.0,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -91049,7 +91049,7 @@
      "label_as_printed": "37. Interest Payments",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 492669.95,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -91312,7 +91312,7 @@
      "label_as_printed": "76. Lok Sabha",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 624.29,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -91753,7 +91753,7 @@
      "label_as_printed": "39. Pensions",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 31070.0,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -92035,7 +92035,7 @@
      "label_as_printed": "48. Police",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 70184.58,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -92266,7 +92266,7 @@
      "label_as_printed": "75. Staff, Household and Allowances of the President",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 52.59,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -92425,7 +92425,7 @@
      "label_as_printed": "77. Rajya Sabha",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 377.21,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -92444,7 +92444,7 @@
     }
    },
    "repayment_of_debt": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -94021,7 +94021,7 @@
      "label_as_printed": "40. Transfers to States",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 125496.36,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -94144,7 +94144,7 @@
      "label_as_printed": "79. Union Public Service Commission",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 217.0,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -94742,7 +94742,7 @@
      "label_as_printed": "78. Secretariat of the Vice-President",
      "source_url": "https://www.indiabudget.gov.in/budget2018-2019/ub2018-19/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 4.61,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -97180,7 +97180,7 @@
      "label_as_printed": "56. Ministry of Housing and Urban Affairs",
      "source_url": "https://www.indiabudget.gov.in/budget2019-20/doc/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 40617.84,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -102043,7 +102043,7 @@
     }
    },
    "fisheries": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -110495,7 +110495,7 @@
      "label_as_printed": "53. Dadra and Nagar Haveli and Daman and Diu",
      "source_url": "https://www.indiabudget.gov.in/budget2021-22/doc/eb/stat3a.pdf"
     },
-    "be": {
+    "be_restated": {
      "total_crore": 1999.47,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -110514,7 +110514,7 @@
     }
    },
    "ut_jammu_kashmir": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -110533,7 +110533,7 @@
     }
    },
    "ut_ladakh": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,
@@ -116916,7 +116916,7 @@
     }
    },
    "cooperation": {
-    "be": {
+    "be_restated": {
      "total_crore": null,
      "plan_crore": null,
      "non_plan_crore": null,

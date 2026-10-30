@@ -1,7 +1,7 @@
 {
  "description": "Union Government of India: headline budget figures (Budget at a Glance), in Rs crore.",
  "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
- "generated_at": "2026-10-30T06:49:09+00:00",
+ "generated_at": "2026-10-30T06:55:30+00:00",
  "fields": {
   "revenue_receipts": "Revenue receipts",
   "tax_revenue_net": "Tax revenue (net to Centre)",

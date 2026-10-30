@@ -1,0 +1,181 @@
+{
+ "source": "Ministry of Statistics and Programme Implementation (MoSPI), National Accounts Statistics API",
+ "query": {
+  "base_year": "2011-12",
+  "series": "Back",
+  "frequency_code": "Annually",
+  "indicator_code": 13
+ },
+ "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Back&frequency_code=Annually&indicator_code=13",
+ "total_records": 14,
+ "rows": [
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2008-09",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "74074",
+   "constant_price": "113738",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2009-10",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "119310",
+   "constant_price": "179220",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2010-11",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "167034",
+   "constant_price": "237367",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2011-12",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "253033",
+   "constant_price": "253033",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2002-03",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "14316",
+   "constant_price": "29712",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2001-02",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "14552",
+   "constant_price": "30998",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2000-01",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "15103",
+   "constant_price": "32759",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "1999-2000",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "15919",
+   "constant_price": "35662",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2003-04",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "25205",
+   "constant_price": "49501",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2005-06",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "42459",
+   "constant_price": "76626",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2004-05",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "42112",
+   "constant_price": "77839",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2006-07",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "50990",
+   "constant_price": "87090",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "2007-08",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": "54973",
+   "constant_price": "89612",
+   "unit": "₹ Crore"
+  },
+  {
+   "base_year": "2011-12",
+   "series": "Back",
+   "year": "1998-99",
+   "indicator": "Valuables",
+   "frequency": "Annual",
+   "revision": null,
+   "quarter": null,
+   "current_price": null,
+   "constant_price": null,
+   "unit": "₹ Crore"
+  }
+ ]
+}

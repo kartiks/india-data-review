@@ -1,0 +1,12 @@
+---
+import Base from "../layouts/Base.astro";
+import { link } from "../lib/url";
+---
+<Base title="Page not found">
+  <h1>Page not found</h1>
+  <p class="muted">There's no page at this address.</p>
+  <ul>
+    <li><a href={link("/")}>Overview</a> · <a href={link("/growth/")}>Growth</a> · <a href={link("/revisions/")}>Revisions</a></li>
+    <li><a href={link("/forecasts/")}>Forecasts</a> · <a href={link("/sectors/")}>Sectors</a> · <a href={link("/quarters/")}>Quarters</a></li>
+  </ul>
+</Base>

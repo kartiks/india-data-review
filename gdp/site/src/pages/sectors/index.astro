@@ -1,0 +1,135 @@
+---
+import Base from "../../layouts/Base.astro";
+import LineChart from "../../components/LineChart.astro";
+import StackedColumns from "../../components/StackedColumns.astro";
+import BarList from "../../components/BarList.astro";
+import {
+  OLD, NEW, STAGE_LABEL, LONG, LATEST_YEAR, oldBaseOf, latestStage, node, annual, range, industrySum, share,
+} from "../../lib/data";
+import { axisPct, gpct, money, pct } from "../../lib/format";
+
+const years = range("2000-01", LONG[LONG.length - 1].year);
+const SHORT: Record<string, string> = {
+  agriculture: "Agriculture", mining: "Mining", manufacturing: "Manufacturing", utilities: "Utilities",
+  construction: "Construction", trade_transport: "Trade, hotels & transport", finance_realestate: "Finance & real estate",
+  public_other: "Public admin & other services",
+};
+// Fixed slot per industry, so colours follow the industry everywhere.
+const SLOT: Record<string, number> = {
+  agriculture: 6, mining: 4, manufacturing: 2, utilities: 5, construction: 8, trade_transport: 1, finance_realestate: 7, public_other: 3,
+};
+const order = ["agriculture", "mining", "manufacturing", "utilities", "construction", "trade_transport", "finance_realestate", "public_other"];
+
+// Shares of the sum of the eight industries, current prices, latest estimate each year.
+const picks = oldBaseOf(years, (n) => industrySum(n));
+const nodes = years.map((y, i) => {
+  const p = picks[i];
+  if (!p) return undefined;
+  return p.series === OLD ? node(OLD, y, p.stage) : annual(p.series)[y]?.BACK;
+});
+const shares = nodes.map((n) => {
+  if (!n) return order.map(() => null);
+  const tot = industrySum(n);
+  return order.map((i) => share(n.gva_by_industry?.[i]?.cur, tot) ?? null);
+});
+const kinds = picks.map((p) => (p ? (p.stage === "BACK" ? "Back series" : STAGE_LABEL[p.stage]) : ""));
+
+// Latest year, new series: growth by industry.
+const ns = latestStage(NEW, LATEST_YEAR, (n) => n.gva_growth !== undefined)!;
+const ng = node(NEW, LATEST_YEAR, ns)!;
+const latestRows = order.map((i) => ({ i, g: ng.gva_growth?.[i]?.real, share: share(ng.gva_by_industry?.[i]?.cur, industrySum(ng)) ?? 0 }))
+  .filter((r) => r.g !== undefined)
+  .sort((a, b) => b.g! - a.g!);
+
+// Growth over time by industry: published GVA growth, latest estimate, 2011-12 base.
+const gyears = range("2012-13", LONG[LONG.length - 1].year);
+const gpoints = (ind: string) => gyears.map((y) => {
+  const st = latestStage(OLD, y, (n) => n.gva_growth?.[ind]?.real !== undefined);
+  return st ? { value: annual(OLD)[y][st].gva_growth![ind].real!, kind: STAGE_LABEL[st] } : { value: null };
+});
+const groups = [
+  { title: "Agriculture", ids: ["agriculture"] },
+  { title: "Industry", ids: ["manufacturing", "construction", "mining", "utilities"] },
+  { title: "Services", ids: ["trade_transport", "finance_realestate", "public_other"] },
+];
+
+// Inside agriculture and manufacturing: latest year with sub-industries in the new series.
+const subYear = [...Object.keys(annual(NEW))].sort().reverse().find((y) => {
+  const st = latestStage(NEW, y, (n) => n.gva_sub !== undefined);
+  return !!st;
+})!;
+const subSt = latestStage(NEW, subYear, (n) => n.gva_sub !== undefined)!;
+const sub = node(NEW, subYear, subSt)!;
+const SUBNAME: Record<string, string> = {
+  crops: "Crops", livestock: "Livestock", forestry_and_logging: "Forestry & logging", fishing_and_aquaculture: "Fishing & aquaculture",
+  food_products_beverages_and_tobacco: "Food, drinks & tobacco", textiles_apparel_and_leather_products: "Textiles, clothing & leather",
+  metal_products: "Metal products", machinery_and_equipment: "Machinery & equipment", other_manufactured_goods: "Other manufacturing",
+};
+const subRows = (ind: string) => {
+  const parts = sub.gva_sub?.[ind] ?? {};
+  const total = sub.gva_by_industry![ind].cur!;
+  return Object.entries(parts).filter(([k]) => SUBNAME[k]).map(([k, v]) => ({
+    label: SUBNAME[k], value: v.cur!, display: pct(share(v.cur, total) ?? 0, 0), sub: money(v.cur!),
+  })).sort((a, b) => b.value - a.value);
+};
+const first = shares[0], last = shares[shares.length - 1];
+const delta = (id: string) => last[order.indexOf(id)]! - first[order.indexOf(id)]!;
+---
+<Base title="Sectors" section="sectors" description="India's economy by sector: the share of agriculture, industry and services in GDP since 2000-01, and how fast each grows.">
+  <h1>The economy by sector</h1>
+  <p class="muted">
+    Gross value added (GVA) by industry: what each part of the economy produces, before product taxes. Since{" "}
+    {years[0]}, agriculture's share has gone from {pct(first[0]!, 0)} to {pct(last[0]!, 0)}, while finance and real
+    estate's share {delta("finance_realestate") >= 0 ? "rose" : "fell"} by {Math.abs(delta("finance_realestate")).toFixed(0)} points.
+  </p>
+
+  <section class="card">
+    <StackedColumns
+      title="Share of the economy by sector"
+      subtitle="Percent of gross value added, current prices. 2011-12 base: back series to 2010-11, then the latest estimate."
+      years={years}
+      categories={order.map((id) => ({ id, label: SHORT[id], slot: SLOT[id] }))}
+      values={shares}
+      kinds={kinds}
+      max={100}
+      format={(v) => `${v}%`}
+      tipFormat={(v) => pct(v)}
+      source="MoSPI national accounts. Before 2004-05 the back series' industries do not add up exactly to total GVA, so shares are of the sum of industries (see Sources)."
+    />
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <h2>Growth by sector, {LATEST_YEAR}</h2>
+      <p class="muted small">Real GVA growth, {STAGE_LABEL[ns].toLowerCase()}, new 2022-23 series, with each sector's share of GVA.</p>
+      <BarList
+        rows={latestRows.map((r) => ({ label: SHORT[r.i], value: r.g!, display: gpct(r.g!), sub: `${pct(r.share, 0)} of GVA` }))}
+        tone={1}
+        label={`Real growth by sector, ${LATEST_YEAR}`}
+      />
+      <p class="source">MoSPI, GVA growth rate at constant prices, as published.</p>
+    </section>
+    <section class="card">
+      <h2>Inside agriculture and manufacturing, {subYear}</h2>
+      <p class="muted small">Share of the sector's GVA, current prices, {STAGE_LABEL[subSt].toLowerCase()}, new series.</p>
+      <h3 class="small">Agriculture, forestry & fishing</h3>
+      <BarList rows={subRows("agriculture")} tone={6} label="Agriculture by sub-sector" />
+      <h3 class="small">Manufacturing</h3>
+      <BarList rows={subRows("manufacturing")} tone={2} label="Manufacturing by sub-sector" />
+    </section>
+  </div>
+
+  {groups.map((g) => (
+    <section class="card">
+      <LineChart
+        title={`Real growth: ${g.title.toLowerCase()}`}
+        years={gyears}
+        series={g.ids.map((id) => ({ name: SHORT[id], slot: SLOT[id], points: gpoints(id) }))}
+        format={axisPct}
+        tableFormat={(v) => gpct(v)}
+        annotations={[{ year: "2020-21", label: "COVID-19" }]}
+        source="MoSPI, GVA growth rate at constant prices, latest estimate, 2011-12 base."
+      />
+    </section>
+  ))}
+</Base>

@@ -1,0 +1,1603 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Notifications | Official Website of Reserve Bank of India </title>
+    <meta name="description" content="Notifications - Reserve Bank of India" />
+    <meta name="keyword" content="RBI Notifications" />
+
+    <meta name="author " content="Reserve Bank of India" />
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="/js/libs/modernizr-2.5.3.min.js"></script>
+
+</head>
+<body onload="SetTreeStyles()">
+    <form method="post" action="./NotificationUser.aspx?Id=7956&amp;Mode=0" id="form1">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKLTkyNjU3NzAzN2RkQgmRo0318k5Gfq5w5ECYQ/xrQnCXX1ezt/NyS1ZhOjA=" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="B1534F13" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEdAAz0n+dkB8EzeBIbNmzUJUV2lK+XrsQEVyjeDxQ0A4GYXFBwzdjZXczwplb2HKGyLlrNyH2BRDHW7ZJm+s8yUnNgi6wX7g7V+51d5y/uZ409MaU74zTCJ05u4w6h9ODXzwxkOnLtYme9ze2BdjTwJgskP6t93AkC4GhUEhJREhdaXBugERoe+4YdP6+Dm7i9UwLINzYr5zRLekLCkqLwgivbfcX9ZaEV78oETjPwNTvjRyaLpyghhgB3dOM81YQT2c/gumm1K6hTqwRBA59047MMjBc6ytv97yCmsAnJv+j67A==" />
+        <input type="hidden" name="hdnYear" id="hdnYear" />
+        <input type="hidden" name="hdnMonth" id="hdnMonth" value="0" />
+        
+<link href="/JQuery/css/jquery-ui-1.8.18.custom2.css" rel="stylesheet" type="text/css" />
+<link href="/includes/print.css" rel="stylesheet" media="print" type="text/css" />
+
+<link href="/Styles/960.css?v=1.0" rel="stylesheet" type="text/css" />
+<link href="/Includes1/rbi.css?v=5.0" rel="Stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/libs/jquery.min.js"></script>
+<script type="text/javascript" src="/JQuery/ui/jquery.ui.revampRBI.js"></script>
+<script type="text/javascript" src="/js/ImgSaveDisable.js"></script>
+
+<script type="text/javascript">
+  
+//Redirect to mobile site start
+    function detectmob() {
+        if (screen.width <= 599 || screen.Height <= 975) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    if (detectmob()) {
+       window.location.href = "https://m.rbi.org.in" + window.location.pathname;
+		
+       
+    }
+
+	//Redirect to mobile site End
+    $(document).ready(function () {
+        Search();
+	SearchLastUpdateDate(); //Fetch Last Date Page
+    });
+
+
+
+  // Fetch Last Date Page
+
+    function SearchLastUpdateDate() {
+        var strFilterComments = new RegExp("^[a-zA-Z0-9 =_:.&?'%,()-–]+$");
+	var url=window.location.href;
+	if(url.indexOf("WSSViewDetail.aspx")>0 || url.indexOf("PublicationReportDetails.aspx")>0)
+	{
+		url=url.substring(url,url.indexOf("?"));
+	}
+        var param = { keyWord1: url.slice(url.lastIndexOf('/') + 1) };
+	param.keyWord1=param.keyWord1.replaceAll("%20"," ");
+	if(param.keyWord1.indexOf("#")>0)
+	{
+		param.keyWord1=param.keyWord1.substring(param.keyWord1,param.keyWord1.indexOf("#"));
+	}
+        if (!strFilterComments.test(param.keyWord1)) {            
+            return false;
+        }
+        else {
+            $.ajax({
+                url: "/Home.aspx/GetLastUpdateDate_new",
+                data: JSON.stringify(param),
+                dataType: "json",
+                type: "POST",
+                contentType: "application/json; charset=utf-8",
+                dataFilter: function (data) { return data; },
+                success: function (data) {
+                    if (data.d.length > 0) {
+                        $('#lblGetLastUpdateDate').text(data.d);
+                    }
+                    else {
+                        response([{ label: "No results found", value: ""}]);
+                    }
+                },
+                error: function (XMLHttpRequest, textStatus, errorThrown) {
+                }
+            });
+
+        }
+    }
+    // Fetch Last Date Page
+
+
+
+    function Search() {
+        highlightTextAutocomplete();
+        $(".autoSuggest").autocomplete({
+
+
+            source: function (request, response) {
+                var param = { keyWord: document.getElementById('txtSearch').value };
+
+                $.ajax({
+                    url: "/Home.aspx/GetKeywords",
+                    data: JSON.stringify(param),
+                    dataType: "json",
+                    type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    dataFilter: function (data) { return data; },
+                    success: function (data) {
+
+                        if (data.d.length > 0) {
+                            response($.map(data.d, function (item) {
+                                return {
+                                    value: RemoveSpecialChars(item)
+
+                                }
+                            }))
+                        }
+                        else {
+                            response([{ label: "No results found", value: ""}]);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        alert(textStatus);
+                    }
+                });
+            },
+
+            
+            minLength: 3
+
+        });
+    }
+
+    function highlightTextAutocomplete() {
+
+        var oldFn = $.ui.autocomplete.prototype._renderItem;
+
+        $.ui.autocomplete.prototype._renderItem = function (ul, item) {
+
+            var t = String(item.value).replace(
+                new RegExp(this.term, "gi"),
+                "<span class='ui-state-highlight'>$&</span>");
+            if (item.value != "") {
+                return $("<li class='borderAutocomplete'></li>")
+                  .data("item.autocomplete", item)
+                  .append("<a role='link'>" + t + "</a>")
+                  .appendTo(ul);
+            }
+
+            else {
+                return $("<li></li>")
+                  .data("item.autocomplete", item)
+                  .append("")
+                  .appendTo(ul);
+            }
+        };
+    }
+
+
+    function RemoveSpecialChars(inputText) {
+        var filteredString = inputText.replace(/[\*\^\'\!\@\$\.\#\(\)\-\?\<\>\;\"\&\+\{\}\:]/g, '');
+        
+        return filteredString;
+    }
+    
+
+    function LoadSearchData(id, key) {
+        if (id == "txtSearch") {
+            if (key == 13) {
+                validateSearchText();
+                return false;
+            }
+        }
+        else validateSearchText();
+        return true;
+    }
+    function validateSearchText() {
+        if (validation()) {
+            var strloc = new String(document.location.href.toString());
+            if (strloc.indexOf("SearchResults.aspx") == -1) {//             
+                window.open("/scripts/SearchResults.aspx?search=" + document.getElementById("txtSearch").value,"_self");
+            }
+            else window.open("/scripts/SearchResults.aspx?search=" + document.getElementById("txtSearch").value,"_self");
+        }
+    }
+    function validation() {
+        strSearch = trim(document.getElementById('txtSearch').value);
+        if (strSearch == "") { alert('Please enter the search text'); return false; }
+        else {
+           
+            var strFilterChars = new RegExp("^[0-9a-zA-Z ]*$");
+            if (!strFilterChars.test(strSearch)) { alert("Please remove special characters from search text"); return false; }
+        }
+        return true;
+    }
+    function trim(value) {
+        value = value.replace(/^\s+/, '');
+        value = value.replace(/\s+$/, '');
+        return value;
+    }
+
+</script>
+
+    <style type="text/css">
+    .blink_msm1 
+{
+    -webkit-animation-name: blinker;
+    -webkit-animation-duration: 3s;
+    -webkit-animation-timing-function: linear;
+    -webkit-animation-iteration-count: infinite;
+
+    -moz-animation-name: blinker;
+    -moz-animation-duration: 3s;
+    -moz-animation-timing-function: linear;
+    -moz-animation-iteration-count: infinite;
+
+    animation-name: blinker;
+    animation-duration: 3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+@-moz-keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+@keyframes blinker {  
+    0% { opacity: 1.0; }
+    50% { opacity: 0.0; }
+    100% { opacity: 1.0; }
+}
+
+.blink_NewWebsite {
+        animation:blinker 1.5s linear 3;
+        color:blue;
+        font-size:1.5em;
+        margin-bottom:0px;
+        }
+    @keyframes blinker
+    {
+        50%{
+            opacity:0;
+        }
+    }
+
+.sr-only {
+position: absolute;
+left: -9999px;
+}
+</style>
+<div class="top_setting">
+    <div class="container_12">
+        <div class="grid_5 top_settings">
+            <a href="#mainsection">Skip to main content </a>
+        </div>
+        <div id="UsrFontCntr_tblThemes" style="float: right" class="grid_4 prefix_3 top_settings">
+            <ul style="margin:0px; padding:0px;">
+               <li class="fonts"> 
+                <a id="UsrFontCntr_LinkBtnSpace" role="button" title="Increase Letter Spacing" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnSpace&#39;,&#39;&#39;)"><img src="/images/letspace.png" alt="Increase Letter Spacing" />
+                                <span id="UsrFontCntr_spanBtnSpace" class="sr-only">Not Pressed</span></a>                                
+            </li>
+
+            <li class="fonts">
+                <a id="UsrFontCntr_LinkBtnFontIncrease" role="button" title="Increase Font Size" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnFontIncrease&#39;,&#39;&#39;)"><img src="/images/font-increase.gif" alt="Increase Font Size" />
+                    
+                </a>
+            </li>
+            <li class="fonts">
+                <a id="UsrFontCntr_LinkBtnFontRegular" role="button" title="Regular Font Size" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnFontRegular&#39;,&#39;&#39;)"><img src="/images/font-reset.gif" alt="Regular Font Size" />
+                    
+                </a>
+            </li>
+            <li class="fonts">
+                <a id="UsrFontCntr_LinkBtnFontDecrease" role="button" title="Decrease Font Size" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnFontDecrease&#39;,&#39;&#39;)"><img src="/images/font-decrease.gif" alt="Decrease Font Size" />
+                    
+                </a>
+            </li></ul>
+		<ul style="margin:0px;padding:0px;">
+            <li class="black">
+                <a id="UsrFontCntr_LinkBtnAccessibilty" role="button" title="Apply Dark Theme" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnAccessibilty&#39;,&#39;&#39;)"><img src="/images/dark-theme.gif" alt="Apply Dark Theme" />
+                    
+                </a>
+            </li>
+            <li class="white">
+                <a id="UsrFontCntr_LinkBtnUndoAccessibilty" role="button" title="Apply Normal Theme" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnUndoAccessibilty&#39;,&#39;&#39;)"><img src="/images/bright-theme.gif" alt="Apply Normal Theme" />
+                     
+                </a>
+            </li>
+            <li class="white">
+            <a id="UsrFontCntr_LinkBtnGreyScale" role="button" title="Apply Grey Theme" href="javascript:__doPostBack(&#39;UsrFontCntr$LinkBtnGreyScale&#39;,&#39;&#39;)"><img src="/images/graytheme.gif" alt="Apply Grey Theme" />
+                                
+                                </a></li>
+
+            </ul>
+		<div>
+		     <a href="#" onclick="javascript:window.print();" id="A1" title="Print This Page" style="text-decoration:none;" >
+                <img src="/images/print-icon.png" alt="Print this page" class="print" />
+		</a></div>
+            <div style="float: right">
+                <label style="margin-right: 6px;">
+                    Change Language</label>
+			
+			<a href="#" onclick="SetLink();" class="link1" title="Change language to Hindi">हिंदी</a>
+			</div>
+                   
+        </div>
+        <div class="clearfix">
+        </div>
+    </div>
+   
+</div>
+<div class="container_12">
+    <div class="grid_4" role="banner">
+        <div class="logo">
+            <a href="/home.aspx" >
+                <img src="/images/rbi-company-logo.jpg" alt="Logo of Official website of Reserve Bank of India" /></a></div>
+    </div>
+    <div class="grid_5" align="right" role="search" style="float: right">
+        <label for="searchbox" class="search_label">
+            Search the Website</label>
+        <input name="UsrFontCntr$txtSearch" type="text" maxlength="103" id="txtSearch" class="search_box autoSuggest" title="Search the Website" aria-label="Search the Website" onkeydown="return LoadSearchData(&#39;txtSearch&#39;,event.keyCode);" placeHolder="Search" />
+        <button id="btnSearch" onclick="return LoadSearchData('btnSearch',event.keyCode);"
+            type="button" class="search_button">
+            Search</button>
+    </div>
+	<div class="grid_2" align="CENTER" role="" style="float: right">
+        <div class="logo" >
+           
+            <img src="../images/BBBP_Logo_4.png" alt="Beti Bachao Beti Padhao Logo" style="width:47%;">
+        </div>
+    	</div>
+    <div class="clearfix">
+    </div>
+</div>
+<!--  NAVIGATION START-->
+<nav role="navigation" aria-label="Main">
+       <div class="menu"><div class="centermenu">
+<ul class="menu">
+  <li><a href="https://rbi.org.in/home.aspx">Home</a></li>
+<li><a href="#" aria-expanded="false" role="button" aria-controls="Ab-Sub1">About Us ▼</a>
+ <ul class="submenu1" id="Ab-Sub1" >
+	 <li><a href="/scripts/AboutUsDisplay.aspx">About Us</a></li>
+     <li><a href="#" aria-expanded="false" role="button" aria-controls="Ab-org">Organisation & Functions <span aria-hidden="true">▶</span></a>
+		 <ul class="submenu1" id="Ab-org">             
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=OrganizationStructure.htm">Organisation Structure</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=Depts.htm">Departments</a></li>
+            <li><a href="Regionaloffices.aspx">Offices</a></li>
+			<li><a href="#" aria-expanded="false" role="button" aria-controls="Ab-tra">Training Establishment <span aria-hidden="true">▶</span></a>                
+				<ul class="submenu1" id="Ab-tra">
+                    <li ><a href="https://cab.rbi.org.in" target="_blank" id="CBOverview">College of Agricultural Banking</a></li>
+                    <li ><a href="/scripts/rbsc.aspx" id="CBNotifications">Reserve Bank Staff College</a></li>
+					<li ><a href="https://cos.rbi.org.in/" id="CBSupervisors">College of Supervisors</a></li>
+                </ul>
+            </li>
+            <li><a href="/scripts/OccasionalPublications.aspx?head=RBI%27s%20Functions%20and%20Working">RBI's Functions and Working</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=PastGovernors.htm">Governors</a></li>
+			<li><a href="/scripts/AboutUsDisplay.aspx?pg=deputygovernors.htm">Deputy Governors</a></li>
+			<li><a href="/scripts/AboutUsDisplay.aspx?pg=ExecutiveDirectors.htm">Executive Directors</a></li>
+        </ul>		
+	 </li>
+<li><a href="AboutUsDisplay.aspx?pg=MediaKit.htm">Media Kit</a></li>
+	 <li><a href="CommunicationPolicy.aspx">Communication Policy of RBI</a></li>
+	
+     <li>
+        <a href="#" aria-expanded="false" role="button" aria-controls="Ab-soi">Sources of Information <span aria-hidden="true">▶</span></a>
+        <ul class="submenu1" id="Ab-soi">
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#AP">Annual Publications</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#HP">Half-yearly Publications</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#QP">Quarterly Publications</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#MP">Monthly Publications</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#WP">Weekly Publications</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#OP">Occasional Publications</a></li>
+            <li><a href="/scripts/SDDSview.aspx">SDDS</a></li>
+            <li><a href="/scripts/BS_NSDPDisplay.aspx">NSDP</a></li>
+            <li><a href="/scripts/Statistics.aspx">Data Releases</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#PS">Publications available on Subscription</a></li>
+            <li><a href="/scripts/AboutUsDisplay.aspx?pg=AllPublications.htm#GI">General Information</a></li>	  
+        </ul>
+     </li>  
+	 <li><a href="/scripts/Project1.aspx">RBI History</a></li>
+	 <li><a href="#" aria-expanded="false" role="button" aria-controls="Ab-mus">Museum <span aria-hidden="true">▶</span></a>
+		<ul class="submenu1" id="Ab-mus">
+			<li><a href="https://therbimuseum.rbi.org.in/">The RBI Museum</a></li>
+			<li><a href="/scripts/ic_museum.aspx">RBI Monetary Museum</a></li>
+         </ul>
+	 </li>
+</ul>
+</li>
+  <li>
+    <a href="#" aria-expanded="false" role="button" aria-controls="No-Sub1">Notifications ▼</a>
+    <ul class="submenu1" id="No-Sub1">
+      <li><a href="/scripts/NotificationUser.aspx">Notifications </a></li>
+             <li><a href="/scripts/BS_ViewMasterDirections.aspx">Master Directions </a></li>
+             <li><a href="/scripts/BS_ViewMasterCirculardetails.aspx">Master Circulars </a></li> 
+	     <li><a href="/scripts/Fs_AmendmentDirections.aspx">Amendment Directions </a></li> 
+	     <li><a href="#" aria-expanded="false" role="button" aria-controls="No-draft">Draft Notifications/Guidelines <span aria-hidden="true">▶</span></a>
+		<ul class="submenu1" id="No-draft">
+			<li><a href="/scripts/DraftNotificationsGuildelines.aspx">Draft Notifications/Guidelines</a></li>
+			<li><a href="/scripts/BS_ViewREwiseDraftDirections.aspx">Draft Directions (RE-wise)</a></li> 
+         	</ul>
+	     </li>
+
+            
+             <li><a href="/scripts/BS_CircularIndexDisplay.aspx">Index To RBI Circulars </a></li> 
+             <li><a href="/scripts/BS_ViewListofstandalonecirculars.aspx">Standalone Circulars </a></li>
+             <li><a href="/scripts/NotificationUserWithdrawnCircular.aspx">Circulars Withdrawn </a></li>
+
+      
+    </ul>
+  </li>
+
+  <li><a href="/scripts/BS_PressReleaseDisplay.aspx">Press Releases</a></li>
+  <li><a href="#" aria-expanded="false" role="button" aria-controls="Sp-Sub1">Speeches & Media Interactions ▼</a>
+	<ul class="submenu1" id="Sp-Sub1">
+	  <li><a href="/scripts/BS_ViewSpeeches.aspx">Speeches</a></li>
+      <li><a href="/scripts/BS_ViewInterviews.aspx">Media Interactions</a></li>
+      <li><a href="/scripts/Lectures.aspx">Memorial Lectures</a></li>
+      <li><a href="/scripts/BS_ViewPodcast.aspx">Podcasts</a></li>
+	</ul>
+  </li>
+  <li><a href="#"  aria-expanded="false" role="button" aria-controls="Pu-Sub1">Publications ▼</a>
+		<ul class="submenu1" id="Pu-Sub1">
+			<li><a href="/scripts/Publications.aspx?publication=Biennial">Biennial</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Annual">Annual</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=HalfYearly">Half-Yearly</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Quarterly">Quarterly</a></li>
+		    <li><a href="/scripts/Publications.aspx?publication=Bimonthly">Bi-monthly</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Monthly">Monthly</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Weekly">Weekly</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Occasional">Occasional</a></li>
+            <li><a href="/scripts/Publications.aspx?publication=Reports">Reports</a></li>
+		    <li><a href="/scripts/OccasionalPublications.aspx?head=Working Papers">Working Papers</a></li>
+		</ul>
+	</li>				  
+  <li><a href="#" aria-expanded="false" role="button" aria-controls="Le-Sub1">Legal Framework ▼</a>
+	<ul class="submenu1" id="Le-Sub1">
+	   <li><a href="/scripts/Act.aspx">Act </a></li>
+       <li><a href="/scripts/Rules.aspx">Rules </a></li>
+       <li><a href="/scripts/Regulations.aspx">Regulations </a></li> 
+       <li class="last"><a href="/scripts/Schemes.aspx">Schemes </a></li>
+	   </ul>
+  </li>
+  <li><a href="#" aria-expanded="false" role="button" aria-controls="Re-Sub1">Research ▼</a>
+		<ul class="submenu1" id="Re-Sub1">
+			<li><a href="/Scripts/ExternalResearchSchemes.aspx">External Research Schemes</a></li>
+			<li><a href="/Scripts/OccasionalPapers.aspx">RBI Occasional Papers</a></li>
+			<li><a href="/Scripts/OccasionalPublications.aspx?head=Working%20Papers">Working Papers</a></li>
+			<li><a href="/Scripts/BS_ViewBulletin.aspx">RBI Bulletin</a></li>
+			<li><a href="/Scripts/Project1.aspx">History</a></li>
+			<li><a href="/Scripts/Occas_DRG_Studies.aspx">DRG Studies</a></li>
+			<li><a href="/Scripts/KLEMS.aspx">KLEMS</a></li>
+			<li class="last"><a href="/Scripts/StateStatisticsFinances.aspx">State Statistics and Finances</a></li>
+        </ul>
+  </li>
+  <li><a href="#" aria-expanded="false" role="button" aria-controls="St-Sub1">Statistics ▼</a>
+		<ul class="submenu1" id="St-Sub1">
+		  <li><a href="/scripts/Statistics.aspx">Data Releases</a></li>
+          <li><a href="https://data.rbi.org.in" target="_blank">Database on Indian Economy</a></li>
+          <li><a href="/scripts/FS_PDS.aspx">Public Debt Statistics</a></li>
+		</ul> 
+  </li>
+  <li><a href="#" aria-expanded="false" role="button" aria-controls="St-Sub1">Regulatory Reporting ▼</a>
+		<ul class="submenu1">
+			<li><a href="/scripts/BS_Listofallreturns.aspx">List of Returns</a></li>
+			<li><a href="/scripts/DataDefinition.aspx">Data Definition</a></li>
+			<li><a href="/scripts/ValidationRules.aspx">Validation rules/ Taxonomy</a></li>
+			<li><a href="/scripts/ReportingPlaform.aspx">List of RBI Reporting Portals</a></li>
+			<li class="last"><a href="/scripts/ReportingFAQ.aspx">FAQs of RBI Reporting Portals</a></li>
+		</ul>
+   </li>
+</ul>
+</div></div>
+</nav>
+<div class="container_12" >
+    <section>
+        <div class="grid_12" >
+            <div id="dialogAlert" title="" tabindex="-1"  style="text-align: center; display: none;">
+                <p id="AM_Message" tabindex="-1" style="color: #444; font-size: 15px; margin: 20px 0; min-height: 40px;"></p>
+            </div>
+        </div>
+    </section>
+</div>
+<!--  NAVIGATION END-->
+<!--HEADER END-->
+<input type="submit" name="UsrFontCntr$btn" value="" id="btn" style="visibility: hidden; height: 0px; width: 0px;" />
+
+<script type="text/javascript">
+    function SetLink() {
+        //a.href = "https://www.rbi.org.in/hindi/Home.aspx";
+        var txt="This will lead you to Hindi (हिन्दी) language website. Are you sure you want to switch to this language?"
+        if(window.confirm(txt)==true){
+            //document.cookie = 'preferLang' + '=;secure; expires=Thu, 01-Jan-70 00:00:01 GMT;path=/;';
+            window.location.replace("https://www.rbi.org.in/hindi/");
+        }
+        else return false;
+        
+    }
+
+
+
+
+	const allMenuItems = document.querySelectorAll("nav ul li");
+	
+	allMenuItems.forEach(item => {
+		item.addEventListener("focusin", (event) => {	
+			const MenuText =event.target.textContent;
+			const allMenuItems1 = document.querySelectorAll(".hasSubmenu");
+			allMenuItems1.forEach(item1 => {
+				if (MenuText === 'Press Releases')
+				{	
+					
+					item1.classList.remove('focused');
+					rollback(item1)
+					item1.classList.remove('open');
+				}
+			});
+			
+		});
+	});
+
+
+const menuItems = document.querySelectorAll(".hasSubmenu");
+menuItems.forEach(item => {
+	item.addEventListener("mouseenter", (event) => {
+		item.className="hasSubmenu open focused"
+		expandThis(item);
+	});
+	item.addEventListener("mouseleave", (event) => {		
+		rollback(item)
+		item.className="hasSubmenu"
+	});
+	item.addEventListener("focusin", (event) => {		
+		const allMenuItems = document.querySelectorAll("nav ul li");
+		allMenuItems.forEach(item1 => {
+			item1.classList.remove('focused');
+			if(item!==item1)
+			rollback(item1)
+			item1.classList.remove('open');	
+		});							
+		item.classList.add('focused');
+	});
+	item.addEventListener("focusout", (event) => {
+		
+		if(!item.className.includes('focused')){
+		
+		rollback(item)
+		item.className="hasSubmenu"
+		}
+		item.classList.remove('focused');
+		item.classList.remove('open');
+	});
+
+    item.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+		if(item.className.includes("hasSubmenu open")){
+			rollback(item)
+			item.className="hasSubmenu"
+		}
+		else{
+          	item.className="hasSubmenu open focused"
+		var ele=item.querySelectorAll("a")[0];
+		
+		expandThis(item);	
+		}
+				
+        }
+	
+    });
+	
+});
+function expandThis(menu){
+ var $targetul = $(menu).children("ul:eq(0)")
+				    if ($targetul.queue().length <= 1) 
+				        if (this.istopheader)
+					$targetul.css({ left: $(this).children('a').eq(0).position().left, top: $mainmenu.position().top + this._dimensions.h - 2 })
+				            
+				    if (document.all && !window.XMLHttpRequest) 
+				        $mainmenu.find('ul').css({ overflow: (this.istopheader) ? 'hidden' : 'visible' })
+					
+					
+				    $targetul.dequeue().stop(true, true).slideDown(droplinemenu.animateduration.over)
+}
+const menuItemsf = document.querySelectorAll("nav .midmenu ul li");
+
+menuItemsf.forEach(item => {
+    item.addEventListener("keydown", (event) => {
+	
+	if(item.className.includes("last") ){
+		 if (pressedKeys['shift'] && event.key === "Tab"){}else{
+		var lastItem = document.getElementsByClassName('hasSubmenu open');
+		rollback(lastItem[0])
+		lastItem[0].className="hasSubmenu";
+		}
+	}
+	
+	});
+	
+	});
+	
+
+function rollback(menu){
+ var $targetul = $(menu).children("ul:eq(0)")
+$targetul.dequeue().stop(true, true).slideUp(droplinemenu.animateduration.out);
+}
+ 
+
+function setLetterSpace(val) {
+    
+	
+    if (false) {
+                    document.body.setAttribute("style", "letter-spacing:1px; line-height:20px; word-spacing:2px;");
+       
+    }
+    else {
+                    document.body.removeAttribute("style");
+    }
+    return false;
+
+    
+    }
+   
+
+// Toggle submenu
+    document.querySelectorAll('.menu li > a').forEach(link => {
+        link.addEventListener('click', function (e) {
+            const submenu = this.nextElementSibling;
+
+            if (submenu && submenu.classList.contains('submenu1')) {linkMessage();
+                e.preventDefault();
+                e.stopPropagation();
+
+                const parentLi = this.parentElement;
+
+                // Close sibling menus ONLY (not entire menu)
+                closeSiblings(parentLi);   
+ 
+
+               
+ 
+                const isExpanded=link.getAttribute('aria-expanded') ==='true';
+                link.setAttribute('aria-expanded',!isExpanded);
+                submenu.hidden=isExpanded;
+                
+                submenu.setAttribute('aria-hidden', isExpanded);
+                setTimeout(()=>{
+                    // Toggle current submenu
+                    submenu.classList.toggle('show', !isExpanded);
+            },50);
+
+        }
+        });
+    });
+
+    //  Close only sibling menus (important fix)
+    function closeSiblings(currentLi) {
+        const siblings = currentLi.parentElement.children;
+
+        Array.from(siblings).forEach(li => {
+            if (li !== currentLi) {
+            const submenus = li.querySelectorAll('.submenu1');
+        submenus.forEach(menu => menu.classList.remove('show'));
+    }
+    });
+    }
+
+    //  Click outside → close all
+    document.addEventListener('click', function () {
+		
+        document.querySelectorAll('.menu li > a').forEach(menu => {
+		if(menu.hasAttribute('aria-expanded')){
+            menu.setAttribute('aria-expanded','false');
+	}
+	
+    });
+
+    document.querySelectorAll('.submenu1').forEach(menu => {
+        menu.setAttribute('aria-hidden','true');
+    menu.classList.remove('show');
+	
+
+    });
+    });
+
+    //  Prevent closing when clicking inside menu
+    document.querySelector('.menu').addEventListener('click', function (e) {linkMessage();
+        e.stopPropagation();
+    });
+
+
+    //  Keyboard support
+    document.querySelectorAll('.menu li > a').forEach(link => {
+        link.addEventListener('keydown', function (e) {
+            const submenu = this.nextElementSibling;
+
+            if ((e.key === 'Enter' || e.key === ' ') && submenu) {
+                e.preventDefault();
+
+                const parentLi = this.parentElement;
+                closeSiblings(parentLi);
+
+
+                const isExpanded=link.getAttribute('aria-expanded') ==='true';
+                link.setAttribute('aria-expanded',!isExpanded);
+                submenu.hidden=isExpanded;
+                submenu.setAttribute('aria-hidden', isExpanded);
+                setTimeout(()=>{
+                    // Toggle current submenu
+                    submenu.classList.toggle('show', !isExpanded);
+            },50);
+
+
+           
+        }
+
+          if (e.key === 'Escape') {
+        document.querySelectorAll('.submenu').forEach(menu => {
+            menu.classList.remove('show');
+    });
+    this.blur();
+    }
+    });
+    });
+    // When focusing main menu items → close other submenus
+    document.querySelectorAll('.menu > li > a').forEach(item => {
+        item.addEventListener('focus', function() {
+
+            document.querySelectorAll('.submenu1').forEach(menu => {
+                
+                if (menu !== this.nextElementSibling) {
+              
+
+            document.querySelectorAll('.menu li > a').forEach(menu => {
+                if(menu.hasAttribute('aria-expanded'))
+                menu.setAttribute('aria-expanded','false');
+		
+            document.querySelectorAll('.submenu1').forEach(menu => {
+                menu.setAttribute('aria-hidden','true');
+            
+            menu.classList.remove('show');
+            
+
+
+        });
+
+	
+    });
+
+    }
+    });
+
+    });
+    });
+
+    //  Close submenu when focus leaves it (TAB navigation)
+    document.querySelectorAll('.menu li').forEach(li => {
+        li.addEventListener('focusout', function (e) {
+            // Check if focus is still inside this <li>
+            if (!li.contains(e.relatedTarget)) {
+                const submenu = li.querySelector('.submenu1');
+                if (submenu) {
+                    submenu.classList.remove('show');
+                    if(li.querySelector('a').hasAttribute('aria-expanded'))
+                        li.querySelector('a').setAttribute('aria-expanded','false');
+	
+
+                    submenu.setAttribute('aria-hidden','true');
+                }
+            }
+        });
+    });
+</script>
+        <div>
+            <div role="main" class="container_12">
+                <a id="mainsection" name="mainsection"></a>
+
+                <nav aria-label="Breadcrumb" class="grid_12 breadcrumbs">
+                    <ul>
+                        <li><a href="../Home.aspx">Home</a></li>
+                        <span id="lblNav"><li><a href="NotificationUser.aspx">Notifications</a></li></span>
+                    </ul>
+
+                </nav>
+                <div class="clear">
+                </div>
+                
+                <div id="pnlDetails" class="grid_11 omega right_blue_border">
+	
+                    <div>
+                        <div id="NotificationUser" class="text1">
+
+
+                            <h1 class="page_title">Notifications</h1>
+                            <div id="example-min">
+                                <div id="doublescroll">
+                                    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
+                                        
+                                        <table class="tablebg" width="100%"><tr><td class="tableheader"><a id='APDF_1E77D99729MS030513FL' target="_blank" href="https://rbidocs.rbi.org.in/rdocs/notification/PDFs/1E77D99729MS030513FL.PDF" aria-labelledby='APDF_1E77D99729MS030513FL SPDF_1E77D99729MS030513FL'>
+   <img alt='PDF - Monetary Policy Statement 2013-14' style='padding: 8px;' src="../Images/pdf.gif" border="0" align="absmiddle"></a> (<span id='SPDF_1E77D99729MS030513FL' aria-hidden="true">720 kb</span>)</td></tr><tr><td align="center" class="tableheader"><b>Monetary Policy Statement 2013-14</b></td></tr><tr class="tablecontent2"><td><table width="100%" border="0" align="center" class="td">  <tr>    <td><p align="center"><strong>By</strong><br />          <strong>Dr. D. Subbarao</strong><br />        <strong>Governor</strong></p>      <p class="head">Introduction</p>      <p>The Annual Policy for 2013-14 is formulated in an environment of incipient signs of stabilisation in the global economy and prospects of a turnaround, <em>albeit</em> modest, in the domestic economy.</p>    <p> 2. In the advanced economies (AEs), near-term risks have receded, aided by improving financial conditions and supportive macroeconomic policies. But this improvement is yet to fully transmit to economic activity which remains sluggish. Policy implementation risks and uncertainty about outcomes continue to threaten the prospects of a sustained recovery. Emerging and developing economies (EDEs) are in the process of a multi-speed recovery. However, weak external demand and domestic bottlenecks continue to restrain investment in some of the major emerging economies. Inflation risks appear contained, reflecting negative output gaps and the recent softening of international crude and food prices.</p>    <p> 3. Domestically, growth slowed much more than anticipated, with both manufacturing and services activity hamstrung by supply bottlenecks and sluggish external demand. Most lead indicators suggest a slow recovery through 2013-14. Inflation eased significantly in Q4 of 2012-13 although upside pressures remain, both at wholesale and retail levels, stemming from elevated food inflation and ongoing administered fuel price revisions. The main risks to the outlook are the still high twin deficits accentuated by the vulnerability to sudden stop and reversal of capital flows, inhibited investment sentiment and tightening supply constraints, particularly in the food and infrastructure sectors.</p>    <p> 4. This Statement, set in the above global and domestic context, should be read and understood together with the detailed review in <em>Macroeconomic</em> <em>and Monetary Developments </em>released yesterday by the Reserve Bank.</p>    <p> 5. This Statement is organised in two parts. Part A covers Monetary Policy and is divided into four Sections: <a href="#s1" class="links">Section I</a> provides an overview of global and domestic macroeconomic developments; <a href="#s2" class="links">Section II</a> sets out the outlook and projections for growth, inflation and monetary aggregates; <a href="#s3" class="links">Section III</a> explains the stance of monetary policy; and <a href="#s4" class="links">Section IV</a> specifies the monetary measures. Part B covers developmental and regulatory policies and is organised into five sections: Financial Stability (<a href="#s5" class="links">Section I</a>); Financial Markets (<a href="#s6" class="links">Section II</a>); Credit Delivery and Financial Inclusion (<a href="#s7" class="links">Section III</a>); Regulatory and Supervisory Measures (<a href="#s8" class="links">Section IV</a>) and Institutional Developments (<a href="#s9" class="links">Section V</a>).</p>    <p align="center" class="head">Part A. Monetary Policy</p>    <p align="center" class="head"><a name="s1" id="s1"></a>I. The State of the Economy</p>    <p class="head">Global Economy</p>    <p>6. Global economic activity remains subdued amidst signs of diverging growth paths across major economies. In the US, a slow recovery is taking hold, driven by improvements in the housing sector and employment conditions. However, the pace of recovery remains vulnerable to the adverse impact of the budget sequestration which will gradually gain pace in the months ahead. Japan’s economy stopped contracting in Q4 of 2012. There has been some improvement in consumer confidence on account of monetary and fiscal stimulus along with a pick-up in external demand on the back of a weakening yen. In the euro area, recessionary conditions, characterised by deterioration in industrial production, weak exports and low domestic demand, continued into Q1 of 2013. High unemployment, fiscal drag and hesitant progress on financial sector repair have eroded consumer confidence.</p>    <p> 7. Growth in several EDEs rebounded from the moderation in 2012 as domestic demand rose on a turnaround in the inventory cycle and some pick-up in investment. Among BRICS countries, growth accelerated in Brazil and South Africa, while it persisted below trend in China, Russia and India.</p>    <p> 8. Inflation has remained benign in the AEs in the absence of demand pressures, and inflation expectations remain well-anchored. The EDEs, on the other hand, present a mixed picture. While inflation has picked up in Brazil, Russia and Turkey, it has eased in China, Korea, Thailand and Chile.</p>    <p> 9. Reflecting a pessimistic demand outlook, crude oil prices eased in March-April 2013 from the elevated levels prevailing through 2012. Non-energy commodity prices have been easing through Q1 of 2013 on softening metal prices and decline in food prices.</p>    <p>        <strong>Domestic Economy</strong></p>    <p> 10. With output expansion of only 4.5 per cent in Q3 of 2012-13, the lowest in 15 quarters, cumulative GDP growth for the period April-December 2012 declined to 5.0 per cent from 6.6 per cent a year ago. This was mainly due to the protracted weakness in industrial activity aggravated by domestic supply bottlenecks, and slowdown in the services sector reflecting weak external demand. The Central Statistics Office (CSO)’s advance estimate of GDP growth for 2012-13 of 5.0 per cent implies that the economy would have expanded by 4.7 per cent in Q4.</p>    <p> 11. The growth of industrial production slid to 0.6 per cent in February 2013 from 2.4 per cent a month ago, mainly due to contraction in mining and electricity generation and slowing growth in manufacturing. Consequently, on a cumulative basis, growth in industrial production decelerated to 0.9 per cent during 2012-13 (April-February) from 3.5 per cent in the corresponding period of the previous year. The Reserve Bank’s order books, inventories<strong> </strong>and capacity utilisation survey (OBICUS) suggests that capacity utilisation remained flat.<strong> </strong><em>Rabi</em> production, particularly of pulses, is expected to be better than a year ago. However, it may not fully offset the decline in <em>kharif</em> output. Consequently, the second advance estimates of crop production <em>(kharif </em>and<em> rabi) </em>for 2012-13 indicate a decline of 3.5 per cent in relation to the final estimates of the previous year. The composite purchasing managers’ index (PMI), which encompasses manufacturing and services, fell to a 17-month low in March 2013. Thus, most recent indicators suggest that growth in Q4 of 2012-13 would have remained low.</p>    <p>12. On the demand side, the persisting decline in capital goods production during April 2012 – February 2013 reflects depressed investment conditions. The moderation in corporate sales and weakening consumer confidence suggest that the slowdown could be spreading to consumption spending.</p>    <p> 13. Headline inflation, as measured by the wholesale price index (WPI), moderated to an average of 7.3 per cent in 2012-13 from 8.9 per cent in the previous year. The easing was particularly significant in Q4 of 2012-13, with the year-end inflation recording at 6.0 per cent. Notwithstanding the moderation in overall inflation, elevated food price inflation was a source of upside pressure through the year owing to the unusual spike in vegetable prices in April 2012 followed by rise in cereal prices on account of the delayed monsoon and the sharp increase in the minimum support price (MSP) for paddy. Fuel inflation averaged in double digits during 2012-13, largely reflecting upward revisions in administered prices and the pass-through of high international crude prices to freely priced items. Non-food manufactured products inflation ruled above the comfort level in the first half of 2012-13 but declined in the second half to come down to 3.5 per cent by March, reflecting easing of input price pressures and erosion of pricing power.</p>    <p> 14. Largely driven by food inflation, retail inflation, as measured by the new combined (rural and urban) consumer price index (CPI) (Base: 2010=100), averaged 10.2 per cent during 2012-13. Even after excluding food and fuel groups, CPI inflation remained sticky, averaging 8.7 per cent. Other CPIs also posted double digit inflation.<strong></strong></p>    <p> 15. Significantly, inflation expectations polled by the Reserve Bank’s urban households’ survey, showed slight moderation in Q4 of 2012-13, even as they remained in double digits, reflecting high food prices. Wage inflation in rural areas, which rose by an average of close to 20 per cent over the period April 2009 to October 2012, declined modestly to 17.4 per cent in January 2013. House price inflation, as measured by the Reserve Bank’s quarterly house price index, continued to rise on a y-o-y basis.</p>    <p> 16. An analysis of corporate performance during Q3 of 2012-13, based on a common sample of 2,473 non-government non-financial companies, indicates that growth of sales as well as profits decelerated significantly. Early results of corporate performance in Q4 indicate continuing moderation in sales though profit margins increased slightly.</p>    <p> 17. Money supply (M<sub>3</sub>) growth was around 14.0 per cent during Q1 of 2012-13 but decelerated thereafter to 11.2 per cent by end-December as time deposit growth slowed down. There was some pick up in deposit mobilisation in Q4, taking deposit growth to 14.3 per cent by end-March. Consequently, M<sub>3</sub> growth reached 13.3 per cent by end-March 2013, slightly above the revised indicative trajectory of 13.0 per cent.</p>    <p> 18. Non-food credit growth decelerated from 18.2 per cent at the beginning of 2012-13 and remained close to 16.0 per cent for the major part of the year. By March 2013, non-food credit growth dropped to 14.0 per cent, lower than the indicative projection of 16.0 per cent, reflecting some risk aversion and muted demand. While the Reserve Bank’s credit conditions survey showed easing of overall credit conditions, there was some tightening for sectors such as metals, construction, infrastructure, commercial real estate, chemicals and finance in Q4 of 2012-13.</p>    <p> 19. The total flow of resources to the commercial sector from banks, non-banks and external sources was higher at <span class="Rupee">`</span>12.8 trillion in 2012-13 as compared with <span class="Rupee">`</span>11.6 trillion in the previous year. This increase was accounted for by higher non-SLR investment by scheduled commercial banks (SCBs), increase in credit flow from NBFCs, gross private placement and public issues by non-financial entities, and higher recourse to short-term credit from abroad and external commercial borrowings.</p>    <p> 20. In consonance with the cuts in the policy repo rate and the cash reserve ratio (CRR) during 2012-13, the modal term deposit rate declined by 11 basis points (bps) and the modal base rate by 50 bps. While the decline in the term deposit rate occurred mostly during the first half, the modal base rate softened by 50 bps to 10.25 per cent in two steps of 25 bps each during Q1 and Q4 of 2012-13. During Q4, 39 banks reduced their base rates in the range of 5-75 bps. The weighted average lending rate of banks declined by 36 bps to 12.17 per cent during 2012-13 (up to February).</p>    <p> 21.  Liquidity remained under pressure throughout the year because of persistently high government cash balances with the Reserve Bank and elevated incremental credit to deposit ratio for much of the year. The net average liquidity injection under the daily liquidity adjustment facility (LAF), at <span class="Rupee">`</span>730 billion during the first half of the year, increased significantly to <span class="Rupee">`</span>1,012 billion during the second half. In order to alleviate liquidity pressures, the Reserve Bank lowered the CRR of SCBs cumulatively by 75 bps on three occasions and the statutory liquidity ratio (SLR) by 100 bps during the year. Additionally, the Reserve Bank injected liquidity to the tune of <span class="Rupee">`</span>1,546 billion through open market operation (OMO) purchase auctions. The net injection of liquidity under the LAF, which peaked at <span class="Rupee">`</span>1,808 billion on March 28, 2013 reflecting the year-end demand, reversed sharply to <span class="Rupee">`</span>842 billion by end-April 2013.</p>    <p> 22. The revised estimates (RE) of central government finances for 2012-13 show that the gross fiscal deficit-GDP ratio at 5.2 per cent was around the budgeted level and within the target set out in the revised roadmap. Budget estimates (BE) for 2013-14 place the gross fiscal deficit-GDP ratio at 4.8 per cent. The envisaged correction is expected to be achieved through a reduction of 0.6 percentage points in the revenue deficit-GDP ratio.</p>    <p> 23. On the back of the policy rate reduction and the announcement of a slew of reform measures by the Government and a firm commitment to fiscal consolidation, the 10-year benchmark yield eased from 8.79 per cent on April 3, 2012 to 7.79 per cent on April 30, 2013.</p>    <p> 24. The current account deficit (CAD) came in at an all-time high of 6.7 per cent of GDP in Q3 of 2012-13. There are indications that it may have narrowed in Q4. The narrowing was largely on account of the trade deficit declining, with exports returning to positive growth after contracting in the first three quarters and non-oil non-gold imports and gold imports declining. Even as the CAD expanded, the surge in capital inflows in the second half of the year ensured that it could be fully financed.</p>    <p align="center" class="head"><a name="s2" id="s2"></a>II. Domestic Outlook and Projections</p>    <p align="justify"><em>Growth</em></p>    <p>25. For GDP growth during 2012-13, the CSO’s advance estimate of 5.0 per cent is lower than the Reserve Bank’s baseline projection of 5.5 per cent set out in the Third Quarter Review (TQR) of January 2013, reflecting slower than expected growth in both industry and services.</p>    <p> 26. During 2013-14, economic activity is expected to show only a modest improvement over last year, with a pick-up likely only in the second half of the year. Conditional upon a normal monsoon, agricultural growth could return to trend levels. The outlook for industrial activity remains subdued, with the pipeline of new investment drying up and existing projects stalled by bottlenecks and implementation gaps. With global growth unlikely to improve significantly from 2012, growth in services and exports may remain sluggish. Accordingly, the baseline GDP growth for 2013-14 is projected at 5.7 per cent (<a href="#c1" class="links">Chart 1</a>).</p>    <div align="center"><img src="../scripts/images/MS030513FL_C1.gif" /><a name="c1" id="c1"></a></div>    <p align="justify"><em>Inflation</em></p>    <p>27. By March 2013, WPI inflation at 6.0 per cent turned out to be lower than the Reserve Bank’s indicative projection of 6.8 per cent, mainly due to a sharp deceleration in non-food manufactured products inflation in the second half of the year. The global inflation outlook for the current year appears more benign compared to last year on expectations of some softening of crude oil and food prices. Accordingly, imported inflation is likely to be lower provided the exchange rate remains broadly stable. Indicators of corporate performance, industrial outlook and PMIs are pointing to a declining pricing power. On the other hand, food inflation is likely to be a source of upside pressure because of persisting supply imbalances. Also, the timing and magnitude of administered price revisions, particularly of electricity and coal, will impact the evolution of the trajectory of inflation in 2013-14.</p>    <p> 28.  Keeping in view the domestic demand-supply balance, the outlook for global commodity prices and the forecast of a normal monsoon, WPI inflation is expected to be range-bound around 5.5 per cent during 2013-14, with some edging down in the first half on account of past policy actions, although there could be some increase in the second half, largely reflecting base effects (<a href="#c2" class="links">Chart 2</a>).</p>    <div align="center"><img src="../scripts/images/MS030513FL_C2.gif" /><a name="c2" id="c2"></a></div>    <p>29. It is critical to consolidate and build upon the recent gains in containing inflation. Accordingly, the Reserve Bank will endeavour to condition the evolution of inflation to a level of 5.0 per cent by March 2014, using all instruments at its command.</p>    <p>30. It is important to re-emphasise that although the most recent episode of high and persistent inflation played out over the past three years, during the 2000s as a whole, inflation averaged around 5.4 and 5.8 per cent, in terms of WPI and CPI, respectively, down from its earlier trend rate of about 7.5 per cent. Given this record and the empirical evidence on the threshold level of inflation that is conducive for sustained growth, the objective is to contain headline WPI inflation at around 5.0 per cent in the short-term, and 3.0 per cent over the medium-term, consistent with India’s broader integration into the global economy. </p>    <p class="head">Monetary Aggregates</p>    <p>31. Consistent with the above growth projections and the Reserve Bank’s inflation tolerance threshold, M<sub>3</sub>  growth for 2013-14 is projected at 13.0 per cent for policy purposes. Consequently, aggregate deposits of SCBs are projected to grow by 14.0 per cent. Keeping in view the resource requirements of the private sector, the growth in non-food credit of SCBs is projected at 15.0 per cent. As always, these numbers are indicative projections and not targets. The conduct of monetary policy would be guided by the evolution of monetary aggregates along these indicative trajectories.</p>    <p class="head">Risk Factors</p>    <p>32. The macroeconomic outlook for 2013-14 is subject to a number of risks as indicated below.</p>    <p>i) By far the biggest risk to the economy stems from the CAD which, last year, was historically the highest and well above the sustainable level of 2.5 per cent of GDP as estimated by the Reserve Bank. Admittedly, the fiscal deficit is programmed to decline, but even factoring that in, it is still high. Large fiscal deficits can potentially spill over into the CAD and undermine its sustainability even further. A large CAD, appreciably above the sustainable level year after year, will put pressure on servicing of external liabilities.</p>    <p> ii) Even as the large CAD is a risk by itself, its financing exposes the economy to the risk of sudden stop and reversal of capital flows. Although the CAD could be financed last year because of easy liquidity conditions in the global system, the global liquidity situation could quickly alter for EDEs, including India, for two reasons. First, the outlook for AEs remains uncertain, and even if there may be no event shocks, there could well be process shocks which could result in capital outflows from EDEs. Second, with quantitative easing (QE), AE central banks are in uncharted territory with considerable uncertainty about the trajectory of recovery and the calibration of QE. Should global liquidity conditions rapidly tighten, India could potentially face a problem of sudden stop and reversal of capital flows jeopardising our macro-financial stability.</p>    <p> iii) Sustained revival of growth is not possible without a revival of investment. But investment sentiment remains inhibited owing to subdued business confidence and dented business profitability. Both borrowers and lenders have become risk averse. Borrowers have become risk averse because of governance concerns, delays in approvals and tighter credit conditions. For lenders, risk aversion stems from the erosion of asset quality, deteriorating cash flow situation of borrowers eroding their credit worthiness and heightened risk premiums.</p>    <p> iv) Looking ahead, the effectiveness of monetary policy in bringing down inflation pressures and anchoring inflation expectations could be undermined by supply constraints in the economy, particularly in the food and infrastructure sectors. Food price pressures, upward revisions in the MSPs and rapid wage increases are leading to a wage-price spiral. Without policy efforts to unlock the tightening supply constraints and bring enduring improvements in productivity and competitiveness, growth could weaken even further and inflationary strains could re-emerge.</p>    <p align="center" class="head"><a name="s3" id="s3"></a>III. The Policy Stance</p>    <p>33. The Reserve Bank began exiting from the crisis driven expansionary policy in October 2009. Between January 2010 and October 2011, the Reserve Bank cumulatively raised the CRR by 100 bps and the policy repo rate 13 times by a total of 375 bps, with the monetary policy stance biased towards containing inflation and anchoring inflation expectations.</p>    <p> 34. In view of slowdown in growth, especially investment activity, and some moderation in inflation, the Reserve Bank paused in December 2011. It indicated that no further tightening might be required and that future actions would be towards lowering the rates. In January 2012, the Reserve Bank signaled a shift in the policy stance towards addressing increasing risks to growth by reversing the tightening cycle. The CRR was reduced cumulatively by 125 bps during January-March 2012 to prepare liquidity conditions for a front-loaded 50 bps reduction in the policy repo rate in April.</p>    <p> 35. Through much of 2012-13, the Reserve Bank persevered with efforts to ease credit and liquidity conditions through a 100 bps reduction in the SLR in August 2012, a cumulative 75 bps reduction in the CRR and 50 bps reduction in the repo rate during September 2012-March 2013.</p>    <p> 36. Cumulatively, during the full year 2012-13, the policy repo rate was reduced by 100 basis points, the SLR by 100 bps and the CRR by 75 basis points, supported by liquidity injections through OMOs of the order of <span class="Rupee">`</span>1.5 trillion. After reducing the policy repo rate by 25 bps in its Mid-Quarter Review (MQR) of March 2013, the Reserve Bank noted that in view of the policy easing already effected, the sluggish ebbing of inflation and widening CAD, the headroom for further monetary easing was quite limited.</p>    <p> 37. Against the backdrop of global and domestic macroeconomic conditions, outlook and risks, the policy stance for 2013-14 has been guided by the following considerations:</p>    <p> 38. First, growth has decelerated continuously and steeply, more than halving from 9.2 per cent in Q4 of 2010-11 to 4.5 per cent in Q3 of 2012-13. The Reserve Bank’s current assessment is that activity will remain subdued during the first half of this year with a modest pick-up, subject to appropriate conditions ensuing, in the second half of 2013-14.</p>    <p> 39. Second, although headline WPI inflation has eased by March 2013 to come close to the Reserve Bank’s tolerance threshold, it is important to note that food price pressures persist and supply constraints are endemic, which could lead to a generalisation of inflation and strains on the balance of payments.</p>    <p> 40. Against this backdrop, the stance of monetary policy is intended to:</p>    <p>• continue to address the accentuated risks to growth;</p>    <p>• guard against the risks of inflation pressures re-emerging and adversely impacting inflation expectations, even as corrections in administered prices release suppressed inflation; and</p>    <p> •  appropriately manage liquidity to ensure adequate credit flow to the productive sectors of the economy.</p>    <p align="center" class="head"><a name="s4" id="s4"></a>IV. Monetary Measures</p>    <p>41. On the basis of the current assessment and in line with policy stance outlined in Section III, the Reserve Bank announces the following policy measures.</p>    <p class="head">      Repo Rate</p>    <p> 42. It has been decided to:</p>    <p>•  reduce the policy repo rate under the liquidity adjustment facility (LAF) by 25 basis points from 7.5 per cent to 7.25 per cent with immediate effect.</p>    <p class="head">      Reverse Repo Rate</p>    <p> 43. The reverse repo rate under the LAF, determined with a spread of 100 basis points below the repo rate, stands adjusted to 6.25 per cent with immediate effect.</p>    <p class="head">      Marginal Standing Facility Rate</p>    <p> 44. The Marginal Standing Facility (MSF) rate, determined with a spread of 100 basis points above the repo rate, stands adjusted to 8.25 per cent with immediate effect.</p>    <p class="head">      Bank Rate</p>    <p> 45. The Bank Rate stands adjusted to 8.25 per cent with immediate effect.</p>    <p class="head">      Cash Reserve Ratio</p>    <p>46. The cash reserve ratio (CRR) of scheduled banks has been retained at 4.0 per cent of their net demand and time liabilities (NDTL). </p>    <p class="head">Guidance</p>    <p>47. The policy action undertaken in this review carries forward the measures put in place since January 2012 towards supporting growth in the face of gradual moderation of headline inflation. Recent monetary policy action, by itself, cannot revive growth. It needs to be supplemented by efforts towards easing the supply bottlenecks, improving governance and stepping up public investment, alongside continuing commitment to fiscal consolidation. With upside risks to inflation still significant in the near term in view of sectoral demand supply imbalances, ongoing correction in administered prices and pressures stemming from MSP increases, monetary policy cannot afford to lower its guard against the possibility of resurgence of inflation pressures. Monetary policy will also have to remain alert to the risks on account of the CAD and its financing, which could warrant a swift reversal of the policy stance. Overall, the balance of risks stemming from the Reserve Bank’s assessment of the growth-inflation dynamic yields little space for further monetary easing. The Reserve Bank will endeavour to actively manage liquidity to reinforce monetary transmission, consistent with the growth-inflation balance.</p>    <p class="head">Mid-Quarter Review of Monetary Policy 2013-14</p>    <p> 48. The next mid-quarter review of Monetary Policy for 2013-14 will be announced through a press release on Monday, June 17, 2013.</p>    <p class="head">        First Quarter Review of Monetary Policy 2013-14</p>    <p>49. The First Quarter Review of Monetary Policy for 2013-14 is scheduled on Tuesday, July 30, 2013. </p>    <p align="center" class="head">Part B. Developmental and Regulatory Policies</p>    <p>50. This part of the Statement reviews the progress on various developmental and regulatory policy measures announced by the Reserve Bank in recent policy statements and also sets out fresh measures.</p>    <p>51. Near-term risks to global financial stability are retreating as the probability associated with tail events has reduced, rekindling risk appetite as reflected in sharp rallies in financial markets. In AEs, funding conditions have improved, but credit conditions remain stressed on concerns about debt overhangs and the persisting fragility of balance sheets. For EDEs, potential spillovers from unconventional policies in AEs remain significant, especially mispricing of credit risk, a rise in liquidity risk, and excessive capital flows entailing increased debt and foreign exchange exposure in response to low borrowing costs. In addition to safeguarding domestic financial stability, these economies also face the challenge of creating conducive financing conditions for accelerating growth with stability. </p>    <p>52. Internationally, efforts towards strengthening the global financial regulatory architecture remain incomplete and delayed, increasing vulnerability and uncertainty. Decisive and well-coordinated actions are needed to progress resolutely on restructuring weak segments of the financial system, building up capital and liquidity buffers and forward looking provisioning, developing a robust framework for systemically important entities, enhancing disclosures to improve market discipline, establishing effective resolution regimes including cross-border resolution agreements, extending the regulatory perimeter to unregulated entities, and convergence of accounting norms. </p>    <p>53. In this challenging and uncertain international environment, ongoing structural reforms seek to make the Indian banking system more efficient, resilient, and socially more relevant. The emphasis has been on strengthening balance sheets and governance frameworks in a non-disruptive manner, sequenced into fortifying and refining the prudential framework in line with Basel III, but adapted to country-specific requirements. A key area of focus has been managing systemic risks in the time dimension through countercyclical policies employing time varying sectoral risk weights and provisioning as also cross-sectionally in terms of interconnectedness and common exposures. The triad of financial inclusion, financial literacy and consumer protection have been recognised as intertwining threads in the pursuit of financial stability. As regards non-bank financial entities, the initial focus on depositor protection has broadened into a more comprehensive framework aimed at mitigating systemic risks. The development of financial markets, products and processes continues to be pursued within the broader context of financial stability, balancing innovations with the containment of excesses in tune with the maturing of the financial system and the needs of the real economy. </p>    <p>54. Against this backdrop, the Statement on Developmental and Regulatory Policies for 2013-14 assesses the progress made on past policy announcements and sets out the policy initiatives in key areas which include strengthening of financial market infrastructure; improving credit flow to productive sectors, including agriculture; implementation of a dynamic provisioning regime for banks; designing of a framework for monitoring liquidity risk; finalisation of guidelines for licensing of new banks in the private sector; reviewing the banking structure in India; regulation of wealth management activities; customer service initiatives; expansion of payment system infrastructure and mitigation of concentration risk in the system; streamlining the system of distribution of banknotes and coins; and improving the mechanism for detection and reporting of counterfeit banknotes. </p>    <p align="center" class="head"><a name="s5" id="s5"></a>I. Financial Stability </p>    <p class="head">Assessment of Financial Stability</p>    <p>55. The sixth Financial Stability Report (FSR), released in December 2012, observed that the overall macroeconomic risks in the Indian financial system had increased since the assessment made in June 2012. Apart from risks to global growth and financial stability, domestic factors such as decline in growth coupled with relatively high inflation, fall in domestic saving, and particularly household financial saving, were found to have increased risks to macroeconomic stability. In addition, the high CAD along with weakening external sector parameters, the stressed fiscal situation, and increasing corporate leverage, especially external commercial borrowings with unhedged exposures were identified as other challenges to macroeconomic stability. For the banking sector, concerns relating to tight liquidity conditions and deteriorating asset quality remain, though the sector has remained resilient to credit, market, and liquidity risks and capable of withstanding macroeconomic shocks, given the comfortable capital to risk-weighted assets ratio (CRAR) for the system as a whole. The inter-linkages among diverse sectors of the financial system were, however, found to be strong with risk of contagion in case of a failure of an institution in the core remaining high. Mutual funds and insurance companies were identified as a potential source of liquidity contagion, being lenders in the financial system.</p>    <span class="head">Sub-Committee of the Financial Stability and Development Council – Recent Initiatives</span>    <p>56. Under the aegis of the Sub-Committee of the Financial Stability and Development Council (FSDC), a Memorandum of Understanding (MoU) was signed by the financial sector regulators (Reserve Bank of India, Securities and Exchange Board of India, Insurance Regulatory and Development Authority and Pension Fund Regulatory and Development Authority) on March 8, 2013 with a view to forging greater cooperation in the field of supervision. The MoU envisages cooperation in the field of consolidated supervision and monitoring of financial groups identified as financial conglomerates. </p>    <p>57. The Sub-Committee of the FSDC approved the National Strategy for Financial Education (NSFE). The NSFE entails provision of financial education for all Indians so as to understand the need and use of saving, the advantages of using the formal financial sector and various options to convert saving into investment, protection through insurance and a realistic recognition of the attributes of these options. The NSFE has been revised, incorporating the feedback received from public consultations and from a global peer review.</p>    <p align="center" class="head"><a name="s6" id="s6"></a>II. Financial Markets</p>    <p class="head">Working Group on Government Securities and Interest Rate Derivatives Markets</p>    <p>58. As stated in the SQR of October 2012, the Report of the Working Group on Government Securities (g-secs) and Interest Rate Derivatives Markets (Chairman: Shri R. Gandhi) was finalised in August 2012. Some of the recommendations such as reducing the time gap between dissemination of the results of primary auctions on the newswires and the auction system; truncating the time window for bidding in the primary auction; changing the settlement cycle of primary auctions in Treasury Bills (T-Bills) from T+2 to T+1; conduct of primary auctions in g-secs as a mix of both uniform-price and multiple-price formats; re-issuances of existing securities in state development loans; standardising interest rate swap (IRS) contracts to facilitate centralised clearing and settlement of these contracts; and migration of secondary market reporting of over-the-counter (OTC) trades in g-secs (outright and repo) from Public Debt Office-Negotiated Dealing System (PDO-NDS) to Negotiated Dealing System-Order Matching (NDS-OM) and Clearcorp Repo Order Matching System (CROMS), respectively, have already been implemented. Further, the Government of India has announced the introduction of inflation-indexed bonds for retail investors in the Union Budget 2013-14. As will be indicated later in this Section, the dispensation regarding held to maturity (HTM) has also been reviewed.</p>    <p>59. Other recommendations including consolidation of the Government of India’s public debt; introduction of cash settled 10-year interest rate futures (IRF); introduction of single bond futures; and simplification of operational procedures for seamless movement of securities from SGL form to demat form and <em>vice versa</em> are being examined in consultation with all stakeholders.</p>    <p class="head">        Fixed Interest Rate Products</p>    <p> 60. As indicated in the SQR, the draft report of the Committee to assess the feasibility of introduction of long-term fixed interest rate loan products by banks (Chairman: Shri K.K. Vohra) was placed on the Reserve Bank’s website inviting views/suggestions from the public/stakeholders. Taking into account the feedback received, the final report was put out on the Reserve Bank’s website in January 2013. Banks may consider implementing these recommendations so that retail customers are not adversely impacted by undue interest rate risk arising out of changes in economic cycles and policy rates.</p>    <p class="head">        Participation of Foreign Institutional Investors in Currency Derivatives</p>    <p> 61. The Finance Minister, in his budget speech for 2013-14, had announced that Foreign Institutional Investors (FIIs) will be permitted to participate in the currency derivatives segment of exchanges to the extent of their rupee-denominated exposure in the country. In line with the above announcement, it is proposed to:</p>    <p> • allow FIIs to hedge their currency risk by using exchange traded currency futures in the domestic exchanges.</p>    <p> Draft guidelines will be issued by end-July 2013.</p>    <p class="head">      Dissemination of Market Liquidity Indicators</p>    <p> 62. Since the introduction of the NDS-OM in 2005, there has been a significant improvement in liquidity and turnover in the secondary market for g-secs. In order to enhance transparency and enable better data dissemination in respect of liquidity, the Clearing Corporation of India Ltd. (CCIL) would henceforth disseminate market liquidity indicators on its website at regular monthly intervals. To start with, bid-ask spreads, number of trades, order book size, impact cost, turnover ratio and number of securities traded would be disseminated on the CCIL website. Further refinements would be carried out based on experience. </p>    <p class="head">Financial Market Infrastructure</p>    <p class="head">Technical Committee on Services/Facilities for Exporters </p>    <p> 63. In order to examine various issues relating to exports such as the availability of credit, transaction costs, insurance, factoring and other procedural aspects in the dealings of exporters with banks and financial institutions, a Technical Committee on Services/Facilities to Exporters (Chairman: Shri G. Padmanabhan) was constituted on February 13, 2013. The Committee submitted its report on April 29, 2013. The recommendations are under examination. The report will be placed on the Reserve Bank’s website shortly.</p>    <p class="head">        Export Reporting and Follow-up</p>    <p> 64. As stated in the SQR, a Working Group (Chairperson: Smt. Rashmi Fauzdar) was constituted to identify gaps in the current export reporting and follow-up procedure, including large number of unmatched export transactions between customs and bank reporting, and to recommend suitable re-engineering of the system. The recommendations of the Working Group are under implementation. With the envisaged architecture expected to be put in place by end-September 2013, Authorised Dealers (ADs) would be required to regularly update the status of documents evidencing exports and receipt of export proceeds for the transactions pertaining to them in the Reserve Bank’s data base, ensuring effective follow-up of large value transactions/ transactions of serious nature and improvement in the monitoring of export transactions.</p>    <p align="center" class="head"><a name="s7" id="s7"></a>III. Credit Delivery and Financial Inclusion</p>    <p class="head">Priority Sector Guidelines </p>    <p> 65. In the light of feedback received from stakeholders regarding enhancement in certain loan limits for being eligible to be classified as priority sector advances<strong> </strong>within the broad contours of the priority sector architecture, it is proposed to:</p>    <p>•  increase the loan limit for micro and small enterprises (MSEs) in the services sector, as defined in the Micro, Small and Medium Enterprises Development (MSMED) Act 2006, from <span class="Rupee">`</span>20 million to <span class="Rupee">`</span>50 million per borrower;</p>    <p>• increase the loan limit from <span class="Rupee">`</span>10 million to <span class="Rupee">`</span>50 million per borrower for bank loans to dealers/sellers of fertilisers, pesticides, seeds, cattle feed, poultry feed, agricultural implements and other inputs which are classified as indirect finance to agriculture; and </p>    <p>• raise the limit on pledge loans (including against warehouse receipts) from the current limit of <span class="Rupee">`</span>2.5 million to <span class="Rupee">`</span>5 million for classification as direct agriculture loans in the case of individual farmers and as indirect agriculture loans in the case of corporates, partnership firms and institutions engaged in agriculture and allied activities.</p>    <p>Guidelines are being issued separately.</p>    <p class="head">      Micro and Small Enterprises</p>    <p> <a name="A66" id="A66"></a>66. In view of the concerns emerging from the deceleration in credit growth to the MSE sector, an Indian Banking Association (IBA)-led Sub-Committee (Chairman: Shri K.R. Kamath) was set up to suggest a structured mechanism to be put in place by banks to monitor the entire gamut of credit related issues pertaining to the sector. The Committee has since submitted its report and based on its recommendations, it has been decided that banks need to:</p>    <p> • strengthen their existing systems of monitoring credit growth to the sector and put in place a system-driven comprehensive performance management information system (MIS) at every supervisory level (branch, region, zone, head office) which should be critically evaluated on a regular basis;</p>    <p> • put in place a system of e-tracking of MSE loan applications and monitor the loan application disposal process in banks, giving branch-wise, region-wise, zone-wise and State-wise positions. A format for the purpose will be provided to banks as recommended by the Sub-Committee. The position in this regard may be displayed by banks on their websites; and</p>    <p> • monitor timely rehabilitation of sick MSE units. A format for the purpose will be provided to banks as recommended by the Sub-Committee. The progress in rehabilitation of sick MSE units should be available on the website of banks.</p>    <p>Detailed guidelines are being issued separately.</p>    <p class="head">Financial Inclusion</p>    <p class="head">Direct Benefit Transfer </p>    <p> 67. With a view to facilitating Direct Benefit Transfer (DBT) for the delivery of social welfare benefits by direct credit to the bank accounts of beneficiaries, it is proposed to advise banks to:</p>    <p> •  open accounts for all eligible individuals in camp mode with the support of local government authorities;</p>    <p>•  seed the existing accounts or the new accounts opened with Aadhaar numbers; and </p>    <p>•  put in place an effective mechanism to monitor and review the progress in the implementation of DBT. </p>    <p>Guidelines are being issued separately.</p>    <p class="head">      Financial Inclusion Plan 2013-16</p>    <p> 68.  The implementation of the Financial Inclusion Plan (FIP) 2010-13, introduced for the first time in April 2010, has led to the establishment of banking outlets in more than 2 lakh villages. In order to take financial inclusion to the next stage of providing universal coverage and facilitating Electronic Benefit Transfer (EBT), banks have been advised to draw up the next FIP for the period 2013-16. The FIPs submitted by banks would be discussed in detail with the Reserve Bank. Banks are, therefore, advised to: </p>    <p>• disaggregate the FIPs to the controlling office and branch level.</p>    <p class="head">      Financial Literacy Material </p>    <p> 69.  In order to link the financially excluded segment with the banking system, a model for conduct of literacy camps by banks has been designed, detailing the operational modalities to culminate in effective financial access to the excluded. Further, to ensure consistency in the financial literacy material reaching the target audience in a simple and lucid manner, the Reserve Bank has prepared comprehensive financial literacy material consisting of a Financial Literacy Guide, a Financial Diary and a set of 16 Financial Literacy Posters. Banks are, therefore, advised to:</p>    <p> • use the model of financial literacy camps as a tool to achieve the targets set under their FIPs;</p>    <p> • use the financial literacy material as a standard curriculum in the literacy camps; and</p>    <p> • be innovative in devising suitable communication channels so that the messages reach the target audience effectively.</p>    <p class="head">      <a name="P70"></a>Lead Bank Scheme - Metropolitan Areas</p>    <p> 70. At present, the Lead Bank Scheme (LBS) is applicable to all districts in the country, excluding districts in metropolitan areas. However, the challenge of financial exclusion is widespread in metropolitan areas also, especially amongst the disadvantaged and low-income groups. With the objective of providing an institutional mechanism for coordination between government authorities and banks, facilitating doorstep banking to the excluded segment of urban poor, and to implement DBT, it has been decided to:</p>    <p> • bring all districts in metropolitan areas under the fold of the LBS.</p>    <p class="head">      Rural Cooperatives: Streamlining of Short Term Cooperative Credit Structure</p>    <p> 71.  As announced in the SQR, the Reserve Bank constituted an Expert Committee (Chairman: Dr. Prakash Bakshi) to undertake an in-depth analysis of the Short-Term Cooperative Credit Structure (STCCS). The Committee submitted its report in January 2013 and made 25 recommendations towards strengthening of the rural cooperative credit architecture.</p>    <p> 72.  An Implementation Committee (Chairman: Shri V. Ramakrishna Rao) comprising members from the National Bank for Agriculture and Rural Development (NABARD) and the Reserve Bank has been formed to ensure effective and expeditious implementation of the recommendations of the Expert Committee, wherever applicable. Progress in this regard will be reported in the SQR of October 2013.</p>    <p class="head">      Customer Service</p>    <p class="head">Implementation of the Damodaran Committee Report</p>    <p> 73. As mentioned in the Monetary Policy Statement of April 2012, a sub-group of the IBA was constituted to examine implementation of some of the recommendations of the Damodaran Committee. These include benchmarking of service charges for basic banking services, charges for non-home branch transactions, zero liability for Automated Teller Machine (ATM)/Point-of-Sale (PoS)/Internet Banking Transactions, and placing the onus on banks to prove customer negligence and discrimination in interest rates offered to old and new borrowers under the floating interest rate regime. The IBA has been advised to draw up a strategic roadmap for implementation of these recommendations, increase customer awareness and ensure that the recommendations of the Committee result in optimisation of desired outcomes.</p>    <p class="head">      Recommendations of Damodaran Committee – Uniformity in Intersol Charges </p>    <p> 74. With the introduction of Core Banking Solution (CBS), it is expected that customers of banks would be treated uniformly at any sales or service delivery point. It is observed, however, that some banks are discriminating against their own customers on the basis of one branch being designated as the ‘home branch’ where charges are not levied for products/services and other branches being referred to as ‘non-home’ branches where charges are levied for the same products/services. This practice is contrary to the spirit of the Reserve Bank’s guidelines on reasonableness of bank charges. With a view to ensuring that bank customers are treated fairly and reasonably without any discrimination and in a transparent manner at all branches of banks/service delivery locations, banks are advised to:</p>    <p> • follow a uniform, fair and transparent pricing policy and not discriminate between their customers at home branch and non-home branches.</p>    <p> Detailed guidelines will be issued by end-June 2013. </p>    <p class="head">      Banking Ombudsman Scheme</p>    <p> 75. As stated in the SQR of October 2012, the Reserve Bank constituted a Working Group to review, update, and revise the Banking Ombudsman Scheme, 2006 (Chairperson: Smt. Suma Varma) in the light of the recommendations and suggestions of the Committee on Customer Service in Banks and the Rajya Sabha Committee on Subordinate Legislation. The Working Group submitted its report in January 2013, which is<strong> </strong>under examination.</p>    <p align="center" class="head"><a name="s8" id="s8"></a>IV. Regulatory and Supervisory Measures</p>    <p class="head">Implementation of Basel III Capital Regulation</p>    <p> 76. The Reserve Bank’s guidelines on Basel III capital regulation have been implemented from April 1, 2013 with the exception of Credit Valuation Adjustment (CVA) risk capital charge for OTC derivatives. Pending resolution of certain issues related to introduction of mandatory forex forward guaranteed settlement through a central counterparty, the implementation of CVA risk capital charge has been deferred to January 1, 2014.</p>    <p> 77. As announced in the SQR, draft guidelines were issued on: (i) composition of capital disclosure requirements; and (ii) capital requirements for banks’ exposures to central counterparties. It is proposed to:</p>    <p> •  issue the final guidelines on composition of capital disclosure requirements by end-May 2013; and</p>    <p> •  issue the final guidelines on capital requirements for banks’ exposures to central counterparties by end-June 2013.</p>    <p class="head">      Guidelines on Liquidity Coverage Ratio and Liquidity Risk Monitoring Tools under Basel III</p>    <p> 78. The Basel III Framework on Liquidity Standards includes Liquidity Coverage Ratio (LCR), Net Stable Funding Ratio (NSFR) and liquidity risk monitoring tools. The Reserve Bank had issued draft guidelines on Liquidity Risk Management and Basel III Framework on Liquidity Standards in February 2012. After taking into account the feedback received from stakeholders, the guidelines on Liquidity Risk Management were issued in November 2012. These included enhanced guidance on liquidity risk governance, and measurement, monitoring and reporting to the Reserve Bank on liquidity positions. The Basel III liquidity standards were subject to an observation period/revision by the Basel Committee with a view to addressing any unintended consequences that the standards may have for financial markets, credit extension and economic growth. The Reserve Bank indicated in the guidelines on liquidity risk management issued in November 2012 that the guidelines on Basel III liquidity standards will be issued once the Basel Committee finalises the relevant framework. The Basel Committee has issued <em>Basel III: The Liquidity Coverage Ratio and Liquidity Risk Monitoring Tools</em> in January 2013 and is in the process of finalising the NSFR and disclosure requirements. The LCR is to be implemented from January 1, 2015 and the NSFR from January 1, 2018. The Reserve Bank will issue the final guidelines on Basel III liquidity standards and liquidity risk monitoring tools, taking into account the revisions by the Basel Committee.</p>    <p class="head">      Implementation of Dynamic Provisioning Regime for Banks in India</p>    <p> 79.  The Reserve Bank had placed a discussion paper on <em>Introduction of Dynamic Loan Loss Provisioning Framework for Banks in India </em>on its website in March 2012, soliciting views/comments. The comments/views received by the Reserve Bank from stakeholders are under examination and various parameters of the proposed dynamic provisioning are being re-calibrated, based on new and updated data obtained from banks. It is proposed to:</p>    <p> •  issue the final guidelines on dynamic provisioning framework and its implementation in a phased manner by end-June 2013.</p>    <p class="head">Final Guidelines on Management of Intra-Group Transactions and Exposures</p>    <p> 80.  The draft guidelines on Management of Intra-Group Transactions and Exposures (ITEs) were issued in August 2012. The draft guidelines prescribed prudential exposure limits on the intra-group exposure of banks along with measures to ensure that banks maintain an arm’s length relationship in their dealings with group entities and meet minimum requirements with respect to group risk management and group-wide oversight. The measures are aimed at ensuring that banks engage in ITEs in a safe and sound manner for containing concentration and contagion risk arising out of ITEs. The comments/feedback on the draft guidelines have been received from various stakeholders and are under examination. It is proposed to:</p>    <p> • issue final guidelines on management of ITEs by end-June 2013.</p>    <p class="head">      <a name="P81"></a>Prudential Guidelines on Restructuring of Advances by Banks/Financial Institutions</p>    <p> 81. It was announced in the SQR that the recommendations of the Working Group (Chairman: Shri B. Mahapatra) to review the existing prudential guidelines on restructuring of advances by banks/financial institutions as also the comments/suggestions received in this regard were under examination and the draft guidelines would be issued by end- January 2013. Accordingly, the draft guidelines were issued on January 31, 2013 for comments till February 28, 2013. Taking into account the comments received, it has been decided to:</p>    <p> • issue the prudential guidelines on restructuring of advances by banks/financial institutions by end-May 2013.</p>    <p class="head">      Commercial Real Estate - Residential Housing: Prudential Norms</p>    <p> 82. In September 2009, the Reserve Bank had issued guidelines on classification of certain exposures as Commercial Real Estate (CRE) exposures. CRE exposures are sensitive in view of their inherent price volatilities. Therefore, these exposures generally attract higher risk weights and higher provisioning requirements. However, it has been generally observed that the residential housing complex sector under the CRE poses lower risk than the other components of CRE sector. Accordingly, it is proposed to:</p>    <p> • carve out a sub-sector of ‘CRE-Residential Housing’ within the CRE sector with appropriate prudential regulatory norms on risk weights and provisioning. </p>    <p> Detailed guidelines will be issued by end-June 2013.</p>    <p class="head">      Guidelines on Reset of Credit Enhancement in Securitisation</p>    <p> 83. The Reserve Bank issued draft guidelines on ‘Revisions to the Guidelines on Securitisation Transactions’ in May 2012. The guidelines introduced norms on minimum holding period, minimum retention ratio, loan origination standards and standards of due diligence with regard to securitisation transactions to ensure orderly growth of the Indian securitisation market. While the extant guidelines do not permit reset of credit enhancements during the life of the securities issued by the special purpose vehicle, it was indicated in May 2012 that guidelines on resetting of credit enhancement would be issued separately. Accordingly, it is proposed to:</p>    <p> •  issue the final guidelines on reset of credit enhancement in securitisation by end-June 2013.</p>    <p class="head">      SLR Holdings under Held to Maturity Category</p>    <p> 84. In terms of extant instructions issued in September 2004, banks are permitted to exceed the limit of 25 per cent of total investments under HTM category, provided the excess comprises only of SLR securities and the total SLR securities held in the HTM category is not more than 25 per cent of their demand and time liabilities (DTL) as on the last Friday of the second preceding fortnight. This relaxation was allowed taking into account the requirement of maintenance of SLR of 25 per cent of DTL under Section 24 of the Banking Regulation Act, 1949 at that time. The SLR requirement has since been brought down to 23 per cent of DTL. Accordingly, it is proposed that:</p>    <p> • banks may exceed the present limit of 25 per cent of total investments under the HTM category provided:</p>    <p> (a) the excess comprises only of SLR securities; and</p>    <p> (b) the total SLR securities held in the HTM category is not more than 23 per cent of their DTL as on the last Friday of the second preceding fortnight, <em>i.e.</em>, in alignment with the current SLR requirement.</p>    <p> This realignment from 25 per cent to 23 per cent, in line with the recommendations of the Working Group on Government Securities and Interest Rate Derivatives Markets, would be effected by way of reduction of at least 50 bps every quarter, beginning with the quarter ending June 2013. </p>    <p> Detailed guidelines will be issued separately.</p>    <p class="head">      Banking Structure in India</p>    <p> 85. The guidelines on Licensing of New Banks in the Private Sector issued in February 2013 indicated that the Reserve Bank would prepare a policy discussion paper on the banking structure in India within two months, keeping in view the recommendations of the Committee on Banking Sector Reforms, 1998 (Chairman: Shri M. Narasimham), the Committee on Financial Sector Reforms, 2008 (Chairman: Shri Raghuram Rajan), and other viewpoints. The discussion paper would cover issues such as consolidation of large-sized banks with a view to having a few global banks, desirability and practicality of having small, localised banks as preferred vehicles for financial inclusion, the need for having investment banks through differentiated licensing regime for domestic and foreign banks instead of granting of universal banking licence, policy regarding presence of foreign banks in India, conversion of urban cooperative banks into commercial banks, and periodicity of licensing new banks, whether in blocks or on tap. It is, therefore, proposed to:</p>    <p> •  issue the discussion paper on the banking structure in India for comments by end-June 2013.</p>    <p class="head">Provision of Wealth Management Services and Marketing and Distribution of Third Party Financial Products</p>    <p><a id="86"></a>86. The Reserve Bank recently undertook investigations in the light of reported allegations that certain banks were involved in structuring transactions to aid tax evasion and fraudulent transfer of funds. The investigations revealed the need for better regulatory compliance by banks. It is proposed to issue guidelines which would include, <em>inter alia</em>, the following:</p>    <p>        <em>(a) Wealth Management </em></p>    <p> 87. Wealth management services (WMS) generally include referral services, investment advisory services (IAS) and portfolio management services (PMS). In India, banks with well-developed branch network have access to a large customer base. Banks offering wealth management services are exposed to reputational risks on account of mis-selling of products, conflict of interest, lack of knowledge and clarity about products and frauds. It is, therefore, proposed to:</p>    <p> • issue draft guidelines on wealth management services offered by banks by end-June 2013.</p>    <p>      <em>(b) Marketing and Distribution of Third Party Financial Products</em></p>    <p> 88. As per extant instructions, banks are allowed to market insurance and mutual fund products as agents of other entities on non-risk participation basis. It has been observed that in some cases, banks did not have clear segregation of duties of marketing personnel from other branch functions, and bank employees were directly receiving incentives from third parties such as insurance, mutual fund and other entities for selling their products. Such practices may lead to mis-selling and distortion of the staff incentive structure. It is, therefore, proposed to advise banks to:</p>    <p> • ensure segregation of the marketing function from the approval/transactional process at bank branches;</p>    <p> •  ensure that its employees do not receive cash/non-cash incentives directly from insurance companies, mutual funds and other third party product providers; and</p>    <p> •  have a board approved policy to avoid mis-selling and conflict of interest in marketing and distribution of own or third party financial products. </p>    <p> Detailed guidelines will be issued by end-June 2013.</p>    <p>      <em>(c) Know Your Customer (KYC) Norms/Anti-Money Laundering (AML) Standards/Combating Financing of Terrorism (CFT)</em></p>    <p> 89.  During the investigations referred to above, it was observed that banks are not carrying out customer due diligence as required under KYC/AML/CFT guidelines while marketing and distributing third party products as agents. Some banks are also not filing Cash Transaction Reports (CTRs) or Suspicious Transaction Reports (STRs) in such cases, wherever required. In this context, it is proposed to advise banks to:</p>    <p> •  carry out customer due diligence as required under extant KYC/AML/CFT guidelines wherever third party products are sold as agents as a measure of abundant precaution, even though KYC/AML/CFT regulations are also applicable to the principal, <em>i.e.,</em> the third party vendor of the products;</p>    <p> • maintain details of third party products sold and related records for a period and in the manner as prescribed in the KYC/AML/CFT guidelines; and</p>    <p> •  file CTRs and STRs wherever required, under the extant KYC/AML/CFT guidelines while marketing and distributing third party products as agents. </p>    <p> Detailed guidelines will be issued by end-June 2013.</p>    <p class="head">      Frequently Asked Questions on KYC/AML/CFT</p>    <p> 90. In order to educate the general public as also banks, the Reserve Bank has been placing on its website Frequently Asked Questions (FAQs) on KYC/AML/CFT. The existing FAQs on KYC/AML/CFT guidelines were placed on the website in May 2011. Since then, a number of new developments have taken place in this area including simplification of KYC norms for further enhancing financial inclusion. With a view to facilitating understanding of KYC/AML/CFT requirements and compliance thereof in a hassle-free manner by banks and the general public for promoting financial inclusion, it is proposed to:</p>    <p> • replace the existing FAQs on KYC/AML/CFT with a comprehensive set of questions and answers by end-June 2013.</p>    <p class="head">      Pricing of Retail Loans</p>    <p> 91. The Reserve Bank has observed wide variations in the rate of interest charged to retail borrowers by banks even when the loan was sanctioned on the same day. In terms of extant instructions, all categories of loans (with certain specified exemptions) are to be linked to the Base Rate from July 2010. It is expected that the final rate of interest charged to the borrower will include product and customer specific charges and will be reasonable and transparent. However, the very wide variation in rates of interest charged by banks on retail loans to different borrowers on the same day cannot possibly be attributed to customers’ risk profiles. Such a practice may be reflective of opaqueness in the system.</p>    <p> 92. Credit management in a bank is essentially an internal management function and banks are expected to prepare a well-defined loan policy approved by their boards, laying down, <em>inter alia</em>, the factors taken into consideration for deciding interest rates. However, keeping in view the findings in this regard, banks are advised to have management oversight on such practicesand also frame policies that ensure pricing of loans, especially retail loans, is transparent, realistic, and related to the risk perception of the borrowers.</p>    <p class="head">      Depositor Education and Awareness Fund</p>    <p> <a name="P93"></a>93. Pursuant to the enactment of The Banking Laws (Amendment) Act, 2012, Section 26A has been inserted in the Banking Regulation Act, 1949 which, <em>inter alia</em>, empowers the Reserve Bank to establish a Depositor Education and Awareness Fund (DEAF). DEAF will be credited with the amount to the credit of any account in India with a banking company which has not been operated upon for a period of ten years or any deposit or any amount remaining unclaimed for more than ten years within a period of three months from the expiry of ten years. DEAF shall be utilised for promotion of depositors’ interest and for such other purposes considered necessary for the promotion of depositors’ interests as specified by the Reserve Bank from time to time. However, the provisions of Section 26A do not prevent a depositor from claiming his/her deposit or operating his/her account or deposit after the expiry of the period of ten years and the banking company should pay the deposit amount and claim refund of such amount from DEAF. In view of the above, it is proposed to:</p>    <p> •  finalise the modalities for setting up of DEAF by end-September 2013.</p>    <p class="head">      Dissemination of Credit Information</p>    <p> 94. It was stated in the SQR that credit institutions should furnish timely and accurate credit information on their borrowers and make extensive use of available credit information as a part of their credit appraisal processes.</p>    <p>      95. Accordingly, a Committee (Chairman: Shri Aditya Puri) consisting of representatives from Credit Information Companies and Credit Institutions has been constituted to examine the available formats for furnishing of credit information by Credit Institutions to the Credit Information Companies in respect of different sectors. The Committee would also suggest best practices for the guidance of Credit Institutions in respect of usage of credit information as a part of their credit appraisal process. The Committee will submit its report by end-September 2013.</p>    <p class="head">      Annual Branch Expansion Plan</p>    <p> 96. At present, domestic scheduled commercial banks (SCBs) are required to allocate at least 25 per cent of the total number of branches proposed to be opened during a year in unbanked rural (Tier 5 and Tier 6) centres while preparing their Annual Branch Expansion Plan (ABEP). Branch expansion in rural areas is essential to address the existing asymmetries in achieving financial inclusion. To facilitate speedier branch expansion in unbanked rural centres for ensuring seamless roll out of the DBT Scheme of the Government of India, banks are advised to:</p>    <p> • front-load the opening of branches in unbanked rural centres over a 3 year cycle co-terminus with the FIP. Credit will be given for branches opened in unbanked rural centres in excess of 25 per cent in a year which will be carried forward to the subsequent year of the FIP.</p>    <p> Detailed guidelines will be issued by end-June 2013.</p>    <p>      <strong>Import of Gold</strong></p>    <p> <a name="A97"></a>97. The Working Group on Gold (Chairman: Shri K.U.B. Rao) had recommended aligning gold import regulations with the rest of imports with a view to reducing gold imports by creating a level playing field between gold imports and other imports. Currently, banks authorised by the Reserve Bank are permitted to import gold on: (i) consignment basis; (ii) unfixed price basis; and (iii) loan basis. Gold is also imported directly by export oriented units (EOUs) / units in Special Economic Zones (SEZs) in the gems and jewellery sector and nominated agencies / banks using letters of credit (LCs). The bulk of the gold imported by nominated banks is, however, on consignment basis whereby the nominated banks do not have to fund these stocks. With a view to reducing the demand for gold for domestic use, it is proposed to:</p>    <p> • restrict the import of gold on consignment basis by banks only to meet the genuine needs of exporters of gold jewellery.</p>    <p>Detailed guidelines will be issued by end-May 2013.</p>    <p class="head">      Lending Against Gold</p>    <p><a id="p98"></a>98. As per extant instructions, banks are currently permitted to grant advances against gold ornaments and other jewellery and against specially minted gold coins sold by banks. However, no advances can be granted by banks for purchase of gold in any form, including primary gold, gold bullion, gold jewellery, gold coins, units of gold exchange traded funds and units of gold mutual funds. While there may not be any objection to grant of advances against specially minted gold coins sold by banks, there is a risk that some of these coins would be weighing much more, thereby circumventing the Reserve Bank’s guidelines regarding restrictions on grant of advance against gold bullion. Accordingly, it is proposed to:</p>    <p> • restrict the facility of advances against the security of gold coins per customer to gold coins weighing up to 50 gms.</p>    <p> Detailed guidelines will be issued by end-May 2013.</p>    <p class="head">      Unhedged Foreign Currency Exposure</p>    <p> 99. In terms of extant instructions, banks should put in place a proper mechanism to rigorously evaluate the risks arising out of unhedged foreign currency exposure of corporates and price them in the credit risk premium, while also considering stipulating a limit on the unhedged positions of corporates on the basis of banks’ board-approved policy. These measures are of utmost importance since unhedged forex exposures of borrowers is a source of risk not only to them but also to the financing banks and the financial system, especially in times of currency volatility. The above measures need to be strengthened by requiring the corporates to put in place a risk management policy for their unhedged forex exposures. These measures have not yet been adequately put in place. In view of this and in order to address the risks on account of unhedged forex exposure of corporates, it is proposed to:</p>    <p> •  increase the risk weight and provisioning requirement on banks’ exposures to corporates on account of the corporates’ unhedged forex exposure positions.</p>    <p> Detailed guidelines will be issued by end-June 2013. </p>    <p align="center" class="head"><a name="s9" id="s9"></a>V. Institutional Developments</p>    <p class="head">Non-Banking Financial Companies</p>    <p class="head">Dealing in Gold Loans</p>    <p> 100.  On February 6, 2013, the Reserve Bank placed on its website the final Report of the Working Group on Gold (Chairman: Shri K.U.B. Rao). The Working Group has made a number of recommendations pertaining to the non-banking financial companies (NBFCs)involved in lending against the collateral of gold. These include loan to value ratio, branch expansion, and review of Fair Practices Code provisions with regard to auction and transparency in loan terms. The recommendations are being examined by the Reserve Bank and it is proposed to:</p>    <p> • issue guidelines to NBFCs by end-May 2013.</p>    <p class="head">      Sharing of Information Technology Resources by Banks</p>    <p> <a name="P101"></a>101. With increased use of information technology (IT) infrastructure by banks, there is a need to examine the issue of shared IT resources in order to optimise costs while maintaining the desired levels of efficiency and security. The feasibility of such shared resources by the banking sector needs to be explored wherever possible, taking into account security issues, data integrity and confidentiality. After making an assessment of various issues, it is proposed to advise banks in this regard by end-August 2013.</p>    <p class="head">      Business Continuity Plan, Vulnerability Assessment and Penetration Testing of Information Systems by banks</p>    <p><a id="p102"></a>102.  As stated in the Monetary Policy Statement of April 2012, banks were advised to put in place appropriate Information Security (IS) framework and IT governance structures to enable, <em>inter alia,</em> better alignment between IT and business.  In order for banks to secure their ISs, ensure their continuity, and check their robustness, they are required to put in place appropriate business continuity plans (BCPs) and test them periodically. These ISs should be subjected to vulnerability assessment and penetration testing. Policies governing the above need to be approved at the board level. Suitable guidelines in this regard will be issued to banks by end-June 2013.</p>    <p class="head">      Payment and Settlement Systems </p>    <p class="head">White Label Point of Sale</p>    <p> 103. In order to increase the reach of Point of Sale (POS) infrastructure to rural areas and promote electronic payments, it is proposed to:</p>    <p> •  prepare a discussion paper on White Label POS and place it in the public domain for comments.</p>    <p class="head">      Expansion of Payment Infrastructure </p>    <p> 104. In order to achieve a truly inter-operable and integrated payment system, it is necessary that the payment systems operated by non-banks are also connected to existing inter-bank card payment systems as envisaged in the document entitled ‘Payment Systems in India: Vision 2012-15’. Accordingly, it is proposed to:</p>    <p> •  issue draft guidelines/access policy for allowing non-bank authorised entities to be part of the payment system infrastructure.</p>    <p class="head">      Concentration Risk in Payment System Infrastructure</p>    <p> 105. Exclusivity or near monopolistic positions of any one or two stakeholders in the payment space is seen as a risk which needs to be addressed. This was highlighted in the ‘Payment Systems in India: Vision 2012-15’. Accordingly, it is proposed to:</p>    <p> •  prepare a discussion paper  examining the measures to be taken to mitigate and eliminate concentration risk in payment system infrastructure.</p>    <p class="head">      Alternate Payments: Committee for Implementation of GIRO Based Payment System</p>    <p> 106. Following the announcement in the SQR, a Committee for Implementation of GIRO based Payment System (Chairman: Shri G. Padmanabhan) was constituted in January 2013. The Committee has submitted its report on April 29, 2013. The report is under examination.</p>    <p class="head">      Uniform Routing Code and Account Number Structure</p>    <p> 107. As announced in the SQR, a Technical Committee (Chairman: Shri Vijay Chugh) comprising various stakeholders was constituted to examine the feasibility of a uniform routing code and uniform account number across banks. The Committee has since submitted its report and its recommendations are being examined by the Reserve Bank.</p>    <p class="head">      Working Group to Study Feasibility of Aadhaar as Additional Factor of Authentication for Card Present Transactions</p>    <p> 108. Following one of the recommendations of the Working Group on securing card present transactions (Chairperson: Ms. Gowri Mukherjee), a Working Group (Chairman: Shri Pulak Kumar Sinha) has been constituted in March 2013 to study the feasibility of Aadhaar as an additional factor for authentication of card present transactions and other related issues. The Working Group is expected to submit its report by end-June 2013.</p>    <p class="head">      Currency Management</p>    <p class="head">Distribution of Banknotes and Coins – Review of Incentives and Penalties</p>    <p> 109.  In pursuance of the announcement made in the Monetary Policy Statement of April 2012, a roadmap for making available services relating to distribution of banknotes and coins to members of the public by identified branches of banks for improved customer service is being worked out. </p>    <p> Detailed guidelines are being issued by end-June 2013.</p>    <p class="head">        Distribution of Banknotes and Coins – Alternative Avenues</p>    <p><a id=p110></a>110. With a view to effectively meeting the growing demand for banknotes and coins in the country, there is a need for identification of alternative avenues for their distribution by banks. For this purpose, banks may explore the possibility of offering these services through Business Correspondents (BC) and consider engaging the services of Cash in Transit (CIT) entities for the purpose of distribution of banknotes and coins, thereby addressing the last mile connectivity issues. <br />      Detailed guidelines will be issued by end-June 2013.</p>    <p class="head">        Improving Currency Distribution in Districts – Identification of Lead Banks</p>    <p> 111. With a view to ensuring that banks have a more pronounced stake in the distribution of banknotes and coins and also to facilitate their uninterrupted supply in places other than metropolitan and urban centres, it is proposed to formulate a scheme on the lines of the Lead Bank Scheme and to allot specific areas (districts/States) to individual banks. The identified Lead Bank will be responsible for ensuring that the genuine needs of people for clean notes and coins are appropriately met through proper coordination with the Currency Chests and Small Coin Depots situated in that area. </p>    <p>      Detailed guidelines will be issued by end-June 2013.</p>    <p class="head">        Detection and Reporting of Counterfeit Banknotes</p>    <p> 112. The Department-related Parliament Standing Committee (DPSC) on Ministry of Home Affairs in its 161st Report has recommended that efforts by the Reserve Bank to constantly upgrade security features in high value currency notes and strengthen mechanisms for detection of counterfeit notes should be made more effective in eradicating the menace of counterfeit notes.</p>    <p> 113. While incorporating new security features/new designs in the banknotes to stay ahead of counterfeiters is an ongoing process, the process of incorporation of better and improved security features has since been initiated by the Government of India in consultation with the Reserve Bank and other stakeholders. </p>    <p> 114. Furthermore, as a step towards strengthening the mechanism for detection of counterfeit notes, the Reserve Bank has advised banks in May 2012 to re-align their cash management to ensure that cash receipts in denomination of  <span class="Rupee">`</span>100 and above are not put into re-circulation without being machine-processed for authenticity. Banks were also advised in November 2012 that wherever counterfeit notes are detected but not impounded and reported, it will be construed as wilful involvement of the bank concerned in circulating counterfeit notes and may attract penal measures. </p>    <p> 115.  In view of the recommendation of the DPSC for addressing the menace of counterfeit notes, it has now been decided that in order to encourage banks to report counterfeit notes detected by them, a scheme of incentives for banks will be introduced. Simultaneously, the existing penalty for non-detection and non-reporting of counterfeit notes by banks is being revisited. </p>    <p>Detailed guidelines will be issued by end-June 2013.</p>    <p class="head">        Second Quarter Review</p>    <p> 116. The next review of the developmental and regulatory policies will be undertaken as part of the Second Quarter Review of Monetary Policy on Tuesday, October 29, 2013. </p>    </td>  </tr></table></td></tr></table>
+                                    </table>
+                                </div>
+                                <br />
+                                <div align="right">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+</div>
+                <div class="grid_1 archives alpha">
+                    <span id="DateSettree_lbltree"><div class="grid_subtree archives alpha" id="treeYearMonth_PR"><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2026">2026</a></h2><div class="accordionContent month" id="2026"><ul class="accordionlist"><li><a href="#" id="20260" onclick='GetYearMonth("2026","0")'>All Months</a></li><li><a href="#" id="20261" onclick='GetYearMonth("2026","1")'>January</a></li><li><a href="#" id="20262" onclick='GetYearMonth("2026","2")'>February</a></li><li><a href="#" id="20263" onclick='GetYearMonth("2026","3")'>March</a></li><li><a href="#" id="20264" onclick='GetYearMonth("2026","4")'>April</a></li><li><a href="#" id="20265" onclick='GetYearMonth("2026","5")'>May</a></li><li><a href="#" id="20266" onclick='GetYearMonth("2026","6")'>June</a></li><li><a href="#" id="20267" onclick='GetYearMonth("2026","7")'>July</a></li><li><a href="#" id="20268" onclick='GetYearMonth("2026","8")'>August</a></li><li><a href="#" id="20269" onclick='GetYearMonth("2026","9")'>September</a></li><li><a href="#" id="202610" onclick='GetYearMonth("2026","10")'>October</a></li><li><a href="#" id="202611" onclick='GetYearMonth("2026","11")'>November</a></li><li><a href="#" id="202612" onclick='GetYearMonth("2026","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2025">2025</a></h2><div class="accordionContent month" id="2025"><ul class="accordionlist"><li><a href="#" id="20250" onclick='GetYearMonth("2025","0")'>All Months</a></li><li><a href="#" id="20251" onclick='GetYearMonth("2025","1")'>January</a></li><li><a href="#" id="20252" onclick='GetYearMonth("2025","2")'>February</a></li><li><a href="#" id="20253" onclick='GetYearMonth("2025","3")'>March</a></li><li><a href="#" id="20254" onclick='GetYearMonth("2025","4")'>April</a></li><li><a href="#" id="20255" onclick='GetYearMonth("2025","5")'>May</a></li><li><a href="#" id="20256" onclick='GetYearMonth("2025","6")'>June</a></li><li><a href="#" id="20257" onclick='GetYearMonth("2025","7")'>July</a></li><li><a href="#" id="20258" onclick='GetYearMonth("2025","8")'>August</a></li><li><a href="#" id="20259" onclick='GetYearMonth("2025","9")'>September</a></li><li><a href="#" id="202510" onclick='GetYearMonth("2025","10")'>October</a></li><li><a href="#" id="202511" onclick='GetYearMonth("2025","11")'>November</a></li><li><a href="#" id="202512" onclick='GetYearMonth("2025","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2024">2024</a></h2><div class="accordionContent month" id="2024"><ul class="accordionlist"><li><a href="#" id="20240" onclick='GetYearMonth("2024","0")'>All Months</a></li><li><a href="#" id="20241" onclick='GetYearMonth("2024","1")'>January</a></li><li><a href="#" id="20242" onclick='GetYearMonth("2024","2")'>February</a></li><li><a href="#" id="20243" onclick='GetYearMonth("2024","3")'>March</a></li><li><a href="#" id="20244" onclick='GetYearMonth("2024","4")'>April</a></li><li><a href="#" id="20245" onclick='GetYearMonth("2024","5")'>May</a></li><li><a href="#" id="20246" onclick='GetYearMonth("2024","6")'>June</a></li><li><a href="#" id="20247" onclick='GetYearMonth("2024","7")'>July</a></li><li><a href="#" id="20248" onclick='GetYearMonth("2024","8")'>August</a></li><li><a href="#" id="20249" onclick='GetYearMonth("2024","9")'>September</a></li><li><a href="#" id="202410" onclick='GetYearMonth("2024","10")'>October</a></li><li><a href="#" id="202411" onclick='GetYearMonth("2024","11")'>November</a></li><li><a href="#" id="202412" onclick='GetYearMonth("2024","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2023">2023</a></h2><div class="accordionContent month" id="2023"><ul class="accordionlist"><li><a href="#" id="20230" onclick='GetYearMonth("2023","0")'>All Months</a></li><li><a href="#" id="20231" onclick='GetYearMonth("2023","1")'>January</a></li><li><a href="#" id="20232" onclick='GetYearMonth("2023","2")'>February</a></li><li><a href="#" id="20233" onclick='GetYearMonth("2023","3")'>March</a></li><li><a href="#" id="20234" onclick='GetYearMonth("2023","4")'>April</a></li><li><a href="#" id="20235" onclick='GetYearMonth("2023","5")'>May</a></li><li><a href="#" id="20236" onclick='GetYearMonth("2023","6")'>June</a></li><li><a href="#" id="20237" onclick='GetYearMonth("2023","7")'>July</a></li><li><a href="#" id="20238" onclick='GetYearMonth("2023","8")'>August</a></li><li><a href="#" id="20239" onclick='GetYearMonth("2023","9")'>September</a></li><li><a href="#" id="202310" onclick='GetYearMonth("2023","10")'>October</a></li><li><a href="#" id="202311" onclick='GetYearMonth("2023","11")'>November</a></li><li><a href="#" id="202312" onclick='GetYearMonth("2023","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2022">2022</a></h2><div class="accordionContent month" id="2022"><ul class="accordionlist"><li><a href="#" id="20220" onclick='GetYearMonth("2022","0")'>All Months</a></li><li><a href="#" id="20221" onclick='GetYearMonth("2022","1")'>January</a></li><li><a href="#" id="20222" onclick='GetYearMonth("2022","2")'>February</a></li><li><a href="#" id="20223" onclick='GetYearMonth("2022","3")'>March</a></li><li><a href="#" id="20224" onclick='GetYearMonth("2022","4")'>April</a></li><li><a href="#" id="20225" onclick='GetYearMonth("2022","5")'>May</a></li><li><a href="#" id="20226" onclick='GetYearMonth("2022","6")'>June</a></li><li><a href="#" id="20227" onclick='GetYearMonth("2022","7")'>July</a></li><li><a href="#" id="20228" onclick='GetYearMonth("2022","8")'>August</a></li><li><a href="#" id="20229" onclick='GetYearMonth("2022","9")'>September</a></li><li><a href="#" id="202210" onclick='GetYearMonth("2022","10")'>October</a></li><li><a href="#" id="202211" onclick='GetYearMonth("2022","11")'>November</a></li><li><a href="#" id="202212" onclick='GetYearMonth("2022","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2021">2021</a></h2><div class="accordionContent month" id="2021"><ul class="accordionlist"><li><a href="#" id="20210" onclick='GetYearMonth("2021","0")'>All Months</a></li><li><a href="#" id="20211" onclick='GetYearMonth("2021","1")'>January</a></li><li><a href="#" id="20212" onclick='GetYearMonth("2021","2")'>February</a></li><li><a href="#" id="20213" onclick='GetYearMonth("2021","3")'>March</a></li><li><a href="#" id="20214" onclick='GetYearMonth("2021","4")'>April</a></li><li><a href="#" id="20215" onclick='GetYearMonth("2021","5")'>May</a></li><li><a href="#" id="20216" onclick='GetYearMonth("2021","6")'>June</a></li><li><a href="#" id="20217" onclick='GetYearMonth("2021","7")'>July</a></li><li><a href="#" id="20218" onclick='GetYearMonth("2021","8")'>August</a></li><li><a href="#" id="20219" onclick='GetYearMonth("2021","9")'>September</a></li><li><a href="#" id="202110" onclick='GetYearMonth("2021","10")'>October</a></li><li><a href="#" id="202111" onclick='GetYearMonth("2021","11")'>November</a></li><li><a href="#" id="202112" onclick='GetYearMonth("2021","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2020">2020</a></h2><div class="accordionContent month" id="2020"><ul class="accordionlist"><li><a href="#" id="20200" onclick='GetYearMonth("2020","0")'>All Months</a></li><li><a href="#" id="20201" onclick='GetYearMonth("2020","1")'>January</a></li><li><a href="#" id="20202" onclick='GetYearMonth("2020","2")'>February</a></li><li><a href="#" id="20203" onclick='GetYearMonth("2020","3")'>March</a></li><li><a href="#" id="20204" onclick='GetYearMonth("2020","4")'>April</a></li><li><a href="#" id="20205" onclick='GetYearMonth("2020","5")'>May</a></li><li><a href="#" id="20206" onclick='GetYearMonth("2020","6")'>June</a></li><li><a href="#" id="20207" onclick='GetYearMonth("2020","7")'>July</a></li><li><a href="#" id="20208" onclick='GetYearMonth("2020","8")'>August</a></li><li><a href="#" id="20209" onclick='GetYearMonth("2020","9")'>September</a></li><li><a href="#" id="202010" onclick='GetYearMonth("2020","10")'>October</a></li><li><a href="#" id="202011" onclick='GetYearMonth("2020","11")'>November</a></li><li><a href="#" id="202012" onclick='GetYearMonth("2020","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2019">2019</a></h2><div class="accordionContent month" id="2019"><ul class="accordionlist"><li><a href="#" id="20190" onclick='GetYearMonth("2019","0")'>All Months</a></li><li><a href="#" id="20191" onclick='GetYearMonth("2019","1")'>January</a></li><li><a href="#" id="20192" onclick='GetYearMonth("2019","2")'>February</a></li><li><a href="#" id="20193" onclick='GetYearMonth("2019","3")'>March</a></li><li><a href="#" id="20194" onclick='GetYearMonth("2019","4")'>April</a></li><li><a href="#" id="20195" onclick='GetYearMonth("2019","5")'>May</a></li><li><a href="#" id="20196" onclick='GetYearMonth("2019","6")'>June</a></li><li><a href="#" id="20197" onclick='GetYearMonth("2019","7")'>July</a></li><li><a href="#" id="20198" onclick='GetYearMonth("2019","8")'>August</a></li><li><a href="#" id="20199" onclick='GetYearMonth("2019","9")'>September</a></li><li><a href="#" id="201910" onclick='GetYearMonth("2019","10")'>October</a></li><li><a href="#" id="201911" onclick='GetYearMonth("2019","11")'>November</a></li><li><a href="#" id="201912" onclick='GetYearMonth("2019","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2018">2018</a></h2><div class="accordionContent month" id="2018"><ul class="accordionlist"><li><a href="#" id="20180" onclick='GetYearMonth("2018","0")'>All Months</a></li><li><a href="#" id="20181" onclick='GetYearMonth("2018","1")'>January</a></li><li><a href="#" id="20182" onclick='GetYearMonth("2018","2")'>February</a></li><li><a href="#" id="20183" onclick='GetYearMonth("2018","3")'>March</a></li><li><a href="#" id="20184" onclick='GetYearMonth("2018","4")'>April</a></li><li><a href="#" id="20185" onclick='GetYearMonth("2018","5")'>May</a></li><li><a href="#" id="20186" onclick='GetYearMonth("2018","6")'>June</a></li><li><a href="#" id="20187" onclick='GetYearMonth("2018","7")'>July</a></li><li><a href="#" id="20188" onclick='GetYearMonth("2018","8")'>August</a></li><li><a href="#" id="20189" onclick='GetYearMonth("2018","9")'>September</a></li><li><a href="#" id="201810" onclick='GetYearMonth("2018","10")'>October</a></li><li><a href="#" id="201811" onclick='GetYearMonth("2018","11")'>November</a></li><li><a href="#" id="201812" onclick='GetYearMonth("2018","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2017">2017</a></h2><div class="accordionContent month" id="2017"><ul class="accordionlist"><li><a href="#" id="20170" onclick='GetYearMonth("2017","0")'>All Months</a></li><li><a href="#" id="20171" onclick='GetYearMonth("2017","1")'>January</a></li><li><a href="#" id="20172" onclick='GetYearMonth("2017","2")'>February</a></li><li><a href="#" id="20173" onclick='GetYearMonth("2017","3")'>March</a></li><li><a href="#" id="20174" onclick='GetYearMonth("2017","4")'>April</a></li><li><a href="#" id="20175" onclick='GetYearMonth("2017","5")'>May</a></li><li><a href="#" id="20176" onclick='GetYearMonth("2017","6")'>June</a></li><li><a href="#" id="20177" onclick='GetYearMonth("2017","7")'>July</a></li><li><a href="#" id="20178" onclick='GetYearMonth("2017","8")'>August</a></li><li><a href="#" id="20179" onclick='GetYearMonth("2017","9")'>September</a></li><li><a href="#" id="201710" onclick='GetYearMonth("2017","10")'>October</a></li><li><a href="#" id="201711" onclick='GetYearMonth("2017","11")'>November</a></li><li><a href="#" id="201712" onclick='GetYearMonth("2017","12")'>December</a></li></ul></div><h2 class="year"><a href="javascript:void(0);" style="text-decoration:none;" id="divArchiveMain"  onclick="hideshow('divArchiveSub');" style="cursor: pointer;">Archives</a></h2><div  id="divArchiveSub" style="display: none;"><div class="grid_subtree archives alpha" id="treeYearMonth_PR"><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2016">2016</a></h2><div class="accordionContent month" id="2016"><ul class="accordionlist"><li><a href="#" id="20160" onclick='GetYearMonth("2016","0")'>All Months</a></li><li><a href="#" id="20161" onclick='GetYearMonth("2016","1")'>January</a></li><li><a href="#" id="20162" onclick='GetYearMonth("2016","2")'>February</a></li><li><a href="#" id="20163" onclick='GetYearMonth("2016","3")'>March</a></li><li><a href="#" id="20164" onclick='GetYearMonth("2016","4")'>April</a></li><li><a href="#" id="20165" onclick='GetYearMonth("2016","5")'>May</a></li><li><a href="#" id="20166" onclick='GetYearMonth("2016","6")'>June</a></li><li><a href="#" id="20167" onclick='GetYearMonth("2016","7")'>July</a></li><li><a href="#" id="20168" onclick='GetYearMonth("2016","8")'>August</a></li><li><a href="#" id="20169" onclick='GetYearMonth("2016","9")'>September</a></li><li><a href="#" id="201610" onclick='GetYearMonth("2016","10")'>October</a></li><li><a href="#" id="201611" onclick='GetYearMonth("2016","11")'>November</a></li><li><a href="#" id="201612" onclick='GetYearMonth("2016","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2015">2015</a></h2><div class="accordionContent month" id="2015"><ul class="accordionlist"><li><a href="#" id="20150" onclick='GetYearMonth("2015","0")'>All Months</a></li><li><a href="#" id="20151" onclick='GetYearMonth("2015","1")'>January</a></li><li><a href="#" id="20152" onclick='GetYearMonth("2015","2")'>February</a></li><li><a href="#" id="20153" onclick='GetYearMonth("2015","3")'>March</a></li><li><a href="#" id="20154" onclick='GetYearMonth("2015","4")'>April</a></li><li><a href="#" id="20155" onclick='GetYearMonth("2015","5")'>May</a></li><li><a href="#" id="20156" onclick='GetYearMonth("2015","6")'>June</a></li><li><a href="#" id="20157" onclick='GetYearMonth("2015","7")'>July</a></li><li><a href="#" id="20158" onclick='GetYearMonth("2015","8")'>August</a></li><li><a href="#" id="20159" onclick='GetYearMonth("2015","9")'>September</a></li><li><a href="#" id="201510" onclick='GetYearMonth("2015","10")'>October</a></li><li><a href="#" id="201511" onclick='GetYearMonth("2015","11")'>November</a></li><li><a href="#" id="201512" onclick='GetYearMonth("2015","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2014">2014</a></h2><div class="accordionContent month" id="2014"><ul class="accordionlist"><li><a href="#" id="20140" onclick='GetYearMonth("2014","0")'>All Months</a></li><li><a href="#" id="20141" onclick='GetYearMonth("2014","1")'>January</a></li><li><a href="#" id="20142" onclick='GetYearMonth("2014","2")'>February</a></li><li><a href="#" id="20143" onclick='GetYearMonth("2014","3")'>March</a></li><li><a href="#" id="20144" onclick='GetYearMonth("2014","4")'>April</a></li><li><a href="#" id="20145" onclick='GetYearMonth("2014","5")'>May</a></li><li><a href="#" id="20146" onclick='GetYearMonth("2014","6")'>June</a></li><li><a href="#" id="20147" onclick='GetYearMonth("2014","7")'>July</a></li><li><a href="#" id="20148" onclick='GetYearMonth("2014","8")'>August</a></li><li><a href="#" id="20149" onclick='GetYearMonth("2014","9")'>September</a></li><li><a href="#" id="201410" onclick='GetYearMonth("2014","10")'>October</a></li><li><a href="#" id="201411" onclick='GetYearMonth("2014","11")'>November</a></li><li><a href="#" id="201412" onclick='GetYearMonth("2014","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2013">2013</a></h2><div class="accordionContent month" id="2013"><ul class="accordionlist"><li><a href="#" id="20130" onclick='GetYearMonth("2013","0")'>All Months</a></li><li><a href="#" id="20131" onclick='GetYearMonth("2013","1")'>January</a></li><li><a href="#" id="20132" onclick='GetYearMonth("2013","2")'>February</a></li><li><a href="#" id="20133" onclick='GetYearMonth("2013","3")'>March</a></li><li><a href="#" id="20134" onclick='GetYearMonth("2013","4")'>April</a></li><li><a href="#" id="20135" onclick='GetYearMonth("2013","5")'>May</a></li><li><a href="#" id="20136" onclick='GetYearMonth("2013","6")'>June</a></li><li><a href="#" id="20137" onclick='GetYearMonth("2013","7")'>July</a></li><li><a href="#" id="20138" onclick='GetYearMonth("2013","8")'>August</a></li><li><a href="#" id="20139" onclick='GetYearMonth("2013","9")'>September</a></li><li><a href="#" id="201310" onclick='GetYearMonth("2013","10")'>October</a></li><li><a href="#" id="201311" onclick='GetYearMonth("2013","11")'>November</a></li><li><a href="#" id="201312" onclick='GetYearMonth("2013","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2012">2012</a></h2><div class="accordionContent month" id="2012"><ul class="accordionlist"><li><a href="#" id="20120" onclick='GetYearMonth("2012","0")'>All Months</a></li><li><a href="#" id="20121" onclick='GetYearMonth("2012","1")'>January</a></li><li><a href="#" id="20122" onclick='GetYearMonth("2012","2")'>February</a></li><li><a href="#" id="20123" onclick='GetYearMonth("2012","3")'>March</a></li><li><a href="#" id="20124" onclick='GetYearMonth("2012","4")'>April</a></li><li><a href="#" id="20125" onclick='GetYearMonth("2012","5")'>May</a></li><li><a href="#" id="20126" onclick='GetYearMonth("2012","6")'>June</a></li><li><a href="#" id="20127" onclick='GetYearMonth("2012","7")'>July</a></li><li><a href="#" id="20128" onclick='GetYearMonth("2012","8")'>August</a></li><li><a href="#" id="20129" onclick='GetYearMonth("2012","9")'>September</a></li><li><a href="#" id="201210" onclick='GetYearMonth("2012","10")'>October</a></li><li><a href="#" id="201211" onclick='GetYearMonth("2012","11")'>November</a></li><li><a href="#" id="201212" onclick='GetYearMonth("2012","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2011">2011</a></h2><div class="accordionContent month" id="2011"><ul class="accordionlist"><li><a href="#" id="20110" onclick='GetYearMonth("2011","0")'>All Months</a></li><li><a href="#" id="20111" onclick='GetYearMonth("2011","1")'>January</a></li><li><a href="#" id="20112" onclick='GetYearMonth("2011","2")'>February</a></li><li><a href="#" id="20113" onclick='GetYearMonth("2011","3")'>March</a></li><li><a href="#" id="20114" onclick='GetYearMonth("2011","4")'>April</a></li><li><a href="#" id="20115" onclick='GetYearMonth("2011","5")'>May</a></li><li><a href="#" id="20116" onclick='GetYearMonth("2011","6")'>June</a></li><li><a href="#" id="20117" onclick='GetYearMonth("2011","7")'>July</a></li><li><a href="#" id="20118" onclick='GetYearMonth("2011","8")'>August</a></li><li><a href="#" id="20119" onclick='GetYearMonth("2011","9")'>September</a></li><li><a href="#" id="201110" onclick='GetYearMonth("2011","10")'>October</a></li><li><a href="#" id="201111" onclick='GetYearMonth("2011","11")'>November</a></li><li><a href="#" id="201112" onclick='GetYearMonth("2011","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2010">2010</a></h2><div class="accordionContent month" id="2010"><ul class="accordionlist"><li><a href="#" id="20100" onclick='GetYearMonth("2010","0")'>All Months</a></li><li><a href="#" id="20101" onclick='GetYearMonth("2010","1")'>January</a></li><li><a href="#" id="20102" onclick='GetYearMonth("2010","2")'>February</a></li><li><a href="#" id="20103" onclick='GetYearMonth("2010","3")'>March</a></li><li><a href="#" id="20104" onclick='GetYearMonth("2010","4")'>April</a></li><li><a href="#" id="20105" onclick='GetYearMonth("2010","5")'>May</a></li><li><a href="#" id="20106" onclick='GetYearMonth("2010","6")'>June</a></li><li><a href="#" id="20107" onclick='GetYearMonth("2010","7")'>July</a></li><li><a href="#" id="20108" onclick='GetYearMonth("2010","8")'>August</a></li><li><a href="#" id="20109" onclick='GetYearMonth("2010","9")'>September</a></li><li><a href="#" id="201010" onclick='GetYearMonth("2010","10")'>October</a></li><li><a href="#" id="201011" onclick='GetYearMonth("2010","11")'>November</a></li><li><a href="#" id="201012" onclick='GetYearMonth("2010","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2009">2009</a></h2><div class="accordionContent month" id="2009"><ul class="accordionlist"><li><a href="#" id="20090" onclick='GetYearMonth("2009","0")'>All Months</a></li><li><a href="#" id="20091" onclick='GetYearMonth("2009","1")'>January</a></li><li><a href="#" id="20092" onclick='GetYearMonth("2009","2")'>February</a></li><li><a href="#" id="20093" onclick='GetYearMonth("2009","3")'>March</a></li><li><a href="#" id="20094" onclick='GetYearMonth("2009","4")'>April</a></li><li><a href="#" id="20095" onclick='GetYearMonth("2009","5")'>May</a></li><li><a href="#" id="20096" onclick='GetYearMonth("2009","6")'>June</a></li><li><a href="#" id="20097" onclick='GetYearMonth("2009","7")'>July</a></li><li><a href="#" id="20098" onclick='GetYearMonth("2009","8")'>August</a></li><li><a href="#" id="20099" onclick='GetYearMonth("2009","9")'>September</a></li><li><a href="#" id="200910" onclick='GetYearMonth("2009","10")'>October</a></li><li><a href="#" id="200911" onclick='GetYearMonth("2009","11")'>November</a></li><li><a href="#" id="200912" onclick='GetYearMonth("2009","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2008">2008</a></h2><div class="accordionContent month" id="2008"><ul class="accordionlist"><li><a href="#" id="20080" onclick='GetYearMonth("2008","0")'>All Months</a></li><li><a href="#" id="20081" onclick='GetYearMonth("2008","1")'>January</a></li><li><a href="#" id="20082" onclick='GetYearMonth("2008","2")'>February</a></li><li><a href="#" id="20083" onclick='GetYearMonth("2008","3")'>March</a></li><li><a href="#" id="20084" onclick='GetYearMonth("2008","4")'>April</a></li><li><a href="#" id="20085" onclick='GetYearMonth("2008","5")'>May</a></li><li><a href="#" id="20086" onclick='GetYearMonth("2008","6")'>June</a></li><li><a href="#" id="20087" onclick='GetYearMonth("2008","7")'>July</a></li><li><a href="#" id="20088" onclick='GetYearMonth("2008","8")'>August</a></li><li><a href="#" id="20089" onclick='GetYearMonth("2008","9")'>September</a></li><li><a href="#" id="200810" onclick='GetYearMonth("2008","10")'>October</a></li><li><a href="#" id="200811" onclick='GetYearMonth("2008","11")'>November</a></li><li><a href="#" id="200812" onclick='GetYearMonth("2008","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2007">2007</a></h2><div class="accordionContent month" id="2007"><ul class="accordionlist"><li><a href="#" id="20070" onclick='GetYearMonth("2007","0")'>All Months</a></li><li><a href="#" id="20071" onclick='GetYearMonth("2007","1")'>January</a></li><li><a href="#" id="20072" onclick='GetYearMonth("2007","2")'>February</a></li><li><a href="#" id="20073" onclick='GetYearMonth("2007","3")'>March</a></li><li><a href="#" id="20074" onclick='GetYearMonth("2007","4")'>April</a></li><li><a href="#" id="20075" onclick='GetYearMonth("2007","5")'>May</a></li><li><a href="#" id="20076" onclick='GetYearMonth("2007","6")'>June</a></li><li><a href="#" id="20077" onclick='GetYearMonth("2007","7")'>July</a></li><li><a href="#" id="20078" onclick='GetYearMonth("2007","8")'>August</a></li><li><a href="#" id="20079" onclick='GetYearMonth("2007","9")'>September</a></li><li><a href="#" id="200710" onclick='GetYearMonth("2007","10")'>October</a></li><li><a href="#" id="200711" onclick='GetYearMonth("2007","11")'>November</a></li><li><a href="#" id="200712" onclick='GetYearMonth("2007","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2006">2006</a></h2><div class="accordionContent month" id="2006"><ul class="accordionlist"><li><a href="#" id="20060" onclick='GetYearMonth("2006","0")'>All Months</a></li><li><a href="#" id="20061" onclick='GetYearMonth("2006","1")'>January</a></li><li><a href="#" id="20062" onclick='GetYearMonth("2006","2")'>February</a></li><li><a href="#" id="20063" onclick='GetYearMonth("2006","3")'>March</a></li><li><a href="#" id="20064" onclick='GetYearMonth("2006","4")'>April</a></li><li><a href="#" id="20065" onclick='GetYearMonth("2006","5")'>May</a></li><li><a href="#" id="20066" onclick='GetYearMonth("2006","6")'>June</a></li><li><a href="#" id="20067" onclick='GetYearMonth("2006","7")'>July</a></li><li><a href="#" id="20068" onclick='GetYearMonth("2006","8")'>August</a></li><li><a href="#" id="20069" onclick='GetYearMonth("2006","9")'>September</a></li><li><a href="#" id="200610" onclick='GetYearMonth("2006","10")'>October</a></li><li><a href="#" id="200611" onclick='GetYearMonth("2006","11")'>November</a></li><li><a href="#" id="200612" onclick='GetYearMonth("2006","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2005">2005</a></h2><div class="accordionContent month" id="2005"><ul class="accordionlist"><li><a href="#" id="20050" onclick='GetYearMonth("2005","0")'>All Months</a></li><li><a href="#" id="20051" onclick='GetYearMonth("2005","1")'>January</a></li><li><a href="#" id="20052" onclick='GetYearMonth("2005","2")'>February</a></li><li><a href="#" id="20053" onclick='GetYearMonth("2005","3")'>March</a></li><li><a href="#" id="20054" onclick='GetYearMonth("2005","4")'>April</a></li><li><a href="#" id="20055" onclick='GetYearMonth("2005","5")'>May</a></li><li><a href="#" id="20056" onclick='GetYearMonth("2005","6")'>June</a></li><li><a href="#" id="20057" onclick='GetYearMonth("2005","7")'>July</a></li><li><a href="#" id="20058" onclick='GetYearMonth("2005","8")'>August</a></li><li><a href="#" id="20059" onclick='GetYearMonth("2005","9")'>September</a></li><li><a href="#" id="200510" onclick='GetYearMonth("2005","10")'>October</a></li><li><a href="#" id="200511" onclick='GetYearMonth("2005","11")'>November</a></li><li><a href="#" id="200512" onclick='GetYearMonth("2005","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2004">2004</a></h2><div class="accordionContent month" id="2004"><ul class="accordionlist"><li><a href="#" id="20040" onclick='GetYearMonth("2004","0")'>All Months</a></li><li><a href="#" id="20041" onclick='GetYearMonth("2004","1")'>January</a></li><li><a href="#" id="20042" onclick='GetYearMonth("2004","2")'>February</a></li><li><a href="#" id="20043" onclick='GetYearMonth("2004","3")'>March</a></li><li><a href="#" id="20044" onclick='GetYearMonth("2004","4")'>April</a></li><li><a href="#" id="20045" onclick='GetYearMonth("2004","5")'>May</a></li><li><a href="#" id="20046" onclick='GetYearMonth("2004","6")'>June</a></li><li><a href="#" id="20047" onclick='GetYearMonth("2004","7")'>July</a></li><li><a href="#" id="20048" onclick='GetYearMonth("2004","8")'>August</a></li><li><a href="#" id="20049" onclick='GetYearMonth("2004","9")'>September</a></li><li><a href="#" id="200410" onclick='GetYearMonth("2004","10")'>October</a></li><li><a href="#" id="200411" onclick='GetYearMonth("2004","11")'>November</a></li><li><a href="#" id="200412" onclick='GetYearMonth("2004","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2003">2003</a></h2><div class="accordionContent month" id="2003"><ul class="accordionlist"><li><a href="#" id="20030" onclick='GetYearMonth("2003","0")'>All Months</a></li><li><a href="#" id="20031" onclick='GetYearMonth("2003","1")'>January</a></li><li><a href="#" id="20032" onclick='GetYearMonth("2003","2")'>February</a></li><li><a href="#" id="20033" onclick='GetYearMonth("2003","3")'>March</a></li><li><a href="#" id="20034" onclick='GetYearMonth("2003","4")'>April</a></li><li><a href="#" id="20035" onclick='GetYearMonth("2003","5")'>May</a></li><li><a href="#" id="20036" onclick='GetYearMonth("2003","6")'>June</a></li><li><a href="#" id="20037" onclick='GetYearMonth("2003","7")'>July</a></li><li><a href="#" id="20038" onclick='GetYearMonth("2003","8")'>August</a></li><li><a href="#" id="20039" onclick='GetYearMonth("2003","9")'>September</a></li><li><a href="#" id="200310" onclick='GetYearMonth("2003","10")'>October</a></li><li><a href="#" id="200311" onclick='GetYearMonth("2003","11")'>November</a></li><li><a href="#" id="200312" onclick='GetYearMonth("2003","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2002">2002</a></h2><div class="accordionContent month" id="2002"><ul class="accordionlist"><li><a href="#" id="20020" onclick='GetYearMonth("2002","0")'>All Months</a></li><li><a href="#" id="20021" onclick='GetYearMonth("2002","1")'>January</a></li><li><a href="#" id="20022" onclick='GetYearMonth("2002","2")'>February</a></li><li><a href="#" id="20023" onclick='GetYearMonth("2002","3")'>March</a></li><li><a href="#" id="20024" onclick='GetYearMonth("2002","4")'>April</a></li><li><a href="#" id="20025" onclick='GetYearMonth("2002","5")'>May</a></li><li><a href="#" id="20026" onclick='GetYearMonth("2002","6")'>June</a></li><li><a href="#" id="20027" onclick='GetYearMonth("2002","7")'>July</a></li><li><a href="#" id="20028" onclick='GetYearMonth("2002","8")'>August</a></li><li><a href="#" id="20029" onclick='GetYearMonth("2002","9")'>September</a></li><li><a href="#" id="200210" onclick='GetYearMonth("2002","10")'>October</a></li><li><a href="#" id="200211" onclick='GetYearMonth("2002","11")'>November</a></li><li><a href="#" id="200212" onclick='GetYearMonth("2002","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2001">2001</a></h2><div class="accordionContent month" id="2001"><ul class="accordionlist"><li><a href="#" id="20010" onclick='GetYearMonth("2001","0")'>All Months</a></li><li><a href="#" id="20011" onclick='GetYearMonth("2001","1")'>January</a></li><li><a href="#" id="20012" onclick='GetYearMonth("2001","2")'>February</a></li><li><a href="#" id="20013" onclick='GetYearMonth("2001","3")'>March</a></li><li><a href="#" id="20014" onclick='GetYearMonth("2001","4")'>April</a></li><li><a href="#" id="20015" onclick='GetYearMonth("2001","5")'>May</a></li><li><a href="#" id="20016" onclick='GetYearMonth("2001","6")'>June</a></li><li><a href="#" id="20017" onclick='GetYearMonth("2001","7")'>July</a></li><li><a href="#" id="20018" onclick='GetYearMonth("2001","8")'>August</a></li><li><a href="#" id="20019" onclick='GetYearMonth("2001","9")'>September</a></li><li><a href="#" id="200110" onclick='GetYearMonth("2001","10")'>October</a></li><li><a href="#" id="200111" onclick='GetYearMonth("2001","11")'>November</a></li><li><a href="#" id="200112" onclick='GetYearMonth("2001","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn2000">2000</a></h2><div class="accordionContent month" id="2000"><ul class="accordionlist"><li><a href="#" id="20000" onclick='GetYearMonth("2000","0")'>All Months</a></li><li><a href="#" id="20001" onclick='GetYearMonth("2000","1")'>January</a></li><li><a href="#" id="20002" onclick='GetYearMonth("2000","2")'>February</a></li><li><a href="#" id="20003" onclick='GetYearMonth("2000","3")'>March</a></li><li><a href="#" id="20004" onclick='GetYearMonth("2000","4")'>April</a></li><li><a href="#" id="20005" onclick='GetYearMonth("2000","5")'>May</a></li><li><a href="#" id="20006" onclick='GetYearMonth("2000","6")'>June</a></li><li><a href="#" id="20007" onclick='GetYearMonth("2000","7")'>July</a></li><li><a href="#" id="20008" onclick='GetYearMonth("2000","8")'>August</a></li><li><a href="#" id="20009" onclick='GetYearMonth("2000","9")'>September</a></li><li><a href="#" id="200010" onclick='GetYearMonth("2000","10")'>October</a></li><li><a href="#" id="200011" onclick='GetYearMonth("2000","11")'>November</a></li><li><a href="#" id="200012" onclick='GetYearMonth("2000","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1999">1999</a></h2><div class="accordionContent month" id="1999"><ul class="accordionlist"><li><a href="#" id="19990" onclick='GetYearMonth("1999","0")'>All Months</a></li><li><a href="#" id="19991" onclick='GetYearMonth("1999","1")'>January</a></li><li><a href="#" id="19992" onclick='GetYearMonth("1999","2")'>February</a></li><li><a href="#" id="19993" onclick='GetYearMonth("1999","3")'>March</a></li><li><a href="#" id="19994" onclick='GetYearMonth("1999","4")'>April</a></li><li><a href="#" id="19995" onclick='GetYearMonth("1999","5")'>May</a></li><li><a href="#" id="19996" onclick='GetYearMonth("1999","6")'>June</a></li><li><a href="#" id="19997" onclick='GetYearMonth("1999","7")'>July</a></li><li><a href="#" id="19998" onclick='GetYearMonth("1999","8")'>August</a></li><li><a href="#" id="19999" onclick='GetYearMonth("1999","9")'>September</a></li><li><a href="#" id="199910" onclick='GetYearMonth("1999","10")'>October</a></li><li><a href="#" id="199911" onclick='GetYearMonth("1999","11")'>November</a></li><li><a href="#" id="199912" onclick='GetYearMonth("1999","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1998">1998</a></h2><div class="accordionContent month" id="1998"><ul class="accordionlist"><li><a href="#" id="19980" onclick='GetYearMonth("1998","0")'>All Months</a></li><li><a href="#" id="19981" onclick='GetYearMonth("1998","1")'>January</a></li><li><a href="#" id="19982" onclick='GetYearMonth("1998","2")'>February</a></li><li><a href="#" id="19983" onclick='GetYearMonth("1998","3")'>March</a></li><li><a href="#" id="19984" onclick='GetYearMonth("1998","4")'>April</a></li><li><a href="#" id="19985" onclick='GetYearMonth("1998","5")'>May</a></li><li><a href="#" id="19986" onclick='GetYearMonth("1998","6")'>June</a></li><li><a href="#" id="19987" onclick='GetYearMonth("1998","7")'>July</a></li><li><a href="#" id="19988" onclick='GetYearMonth("1998","8")'>August</a></li><li><a href="#" id="19989" onclick='GetYearMonth("1998","9")'>September</a></li><li><a href="#" id="199810" onclick='GetYearMonth("1998","10")'>October</a></li><li><a href="#" id="199811" onclick='GetYearMonth("1998","11")'>November</a></li><li><a href="#" id="199812" onclick='GetYearMonth("1998","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1997">1997</a></h2><div class="accordionContent month" id="1997"><ul class="accordionlist"><li><a href="#" id="19970" onclick='GetYearMonth("1997","0")'>All Months</a></li><li><a href="#" id="19971" onclick='GetYearMonth("1997","1")'>January</a></li><li><a href="#" id="19972" onclick='GetYearMonth("1997","2")'>February</a></li><li><a href="#" id="19973" onclick='GetYearMonth("1997","3")'>March</a></li><li><a href="#" id="19974" onclick='GetYearMonth("1997","4")'>April</a></li><li><a href="#" id="19975" onclick='GetYearMonth("1997","5")'>May</a></li><li><a href="#" id="19976" onclick='GetYearMonth("1997","6")'>June</a></li><li><a href="#" id="19977" onclick='GetYearMonth("1997","7")'>July</a></li><li><a href="#" id="19978" onclick='GetYearMonth("1997","8")'>August</a></li><li><a href="#" id="19979" onclick='GetYearMonth("1997","9")'>September</a></li><li><a href="#" id="199710" onclick='GetYearMonth("1997","10")'>October</a></li><li><a href="#" id="199711" onclick='GetYearMonth("1997","11")'>November</a></li><li><a href="#" id="199712" onclick='GetYearMonth("1997","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1996">1996</a></h2><div class="accordionContent month" id="1996"><ul class="accordionlist"><li><a href="#" id="19960" onclick='GetYearMonth("1996","0")'>All Months</a></li><li><a href="#" id="19961" onclick='GetYearMonth("1996","1")'>January</a></li><li><a href="#" id="19962" onclick='GetYearMonth("1996","2")'>February</a></li><li><a href="#" id="19963" onclick='GetYearMonth("1996","3")'>March</a></li><li><a href="#" id="19964" onclick='GetYearMonth("1996","4")'>April</a></li><li><a href="#" id="19965" onclick='GetYearMonth("1996","5")'>May</a></li><li><a href="#" id="19966" onclick='GetYearMonth("1996","6")'>June</a></li><li><a href="#" id="19967" onclick='GetYearMonth("1996","7")'>July</a></li><li><a href="#" id="19968" onclick='GetYearMonth("1996","8")'>August</a></li><li><a href="#" id="19969" onclick='GetYearMonth("1996","9")'>September</a></li><li><a href="#" id="199610" onclick='GetYearMonth("1996","10")'>October</a></li><li><a href="#" id="199611" onclick='GetYearMonth("1996","11")'>November</a></li><li><a href="#" id="199612" onclick='GetYearMonth("1996","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1995">1995</a></h2><div class="accordionContent month" id="1995"><ul class="accordionlist"><li><a href="#" id="19950" onclick='GetYearMonth("1995","0")'>All Months</a></li><li><a href="#" id="19951" onclick='GetYearMonth("1995","1")'>January</a></li><li><a href="#" id="19952" onclick='GetYearMonth("1995","2")'>February</a></li><li><a href="#" id="19953" onclick='GetYearMonth("1995","3")'>March</a></li><li><a href="#" id="19954" onclick='GetYearMonth("1995","4")'>April</a></li><li><a href="#" id="19955" onclick='GetYearMonth("1995","5")'>May</a></li><li><a href="#" id="19956" onclick='GetYearMonth("1995","6")'>June</a></li><li><a href="#" id="19957" onclick='GetYearMonth("1995","7")'>July</a></li><li><a href="#" id="19958" onclick='GetYearMonth("1995","8")'>August</a></li><li><a href="#" id="19959" onclick='GetYearMonth("1995","9")'>September</a></li><li><a href="#" id="199510" onclick='GetYearMonth("1995","10")'>October</a></li><li><a href="#" id="199511" onclick='GetYearMonth("1995","11")'>November</a></li><li><a href="#" id="199512" onclick='GetYearMonth("1995","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1994">1994</a></h2><div class="accordionContent month" id="1994"><ul class="accordionlist"><li><a href="#" id="19940" onclick='GetYearMonth("1994","0")'>All Months</a></li><li><a href="#" id="19941" onclick='GetYearMonth("1994","1")'>January</a></li><li><a href="#" id="19942" onclick='GetYearMonth("1994","2")'>February</a></li><li><a href="#" id="19943" onclick='GetYearMonth("1994","3")'>March</a></li><li><a href="#" id="19944" onclick='GetYearMonth("1994","4")'>April</a></li><li><a href="#" id="19945" onclick='GetYearMonth("1994","5")'>May</a></li><li><a href="#" id="19946" onclick='GetYearMonth("1994","6")'>June</a></li><li><a href="#" id="19947" onclick='GetYearMonth("1994","7")'>July</a></li><li><a href="#" id="19948" onclick='GetYearMonth("1994","8")'>August</a></li><li><a href="#" id="19949" onclick='GetYearMonth("1994","9")'>September</a></li><li><a href="#" id="199410" onclick='GetYearMonth("1994","10")'>October</a></li><li><a href="#" id="199411" onclick='GetYearMonth("1994","11")'>November</a></li><li><a href="#" id="199412" onclick='GetYearMonth("1994","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1993">1993</a></h2><div class="accordionContent month" id="1993"><ul class="accordionlist"><li><a href="#" id="19930" onclick='GetYearMonth("1993","0")'>All Months</a></li><li><a href="#" id="19931" onclick='GetYearMonth("1993","1")'>January</a></li><li><a href="#" id="19932" onclick='GetYearMonth("1993","2")'>February</a></li><li><a href="#" id="19933" onclick='GetYearMonth("1993","3")'>March</a></li><li><a href="#" id="19934" onclick='GetYearMonth("1993","4")'>April</a></li><li><a href="#" id="19935" onclick='GetYearMonth("1993","5")'>May</a></li><li><a href="#" id="19936" onclick='GetYearMonth("1993","6")'>June</a></li><li><a href="#" id="19937" onclick='GetYearMonth("1993","7")'>July</a></li><li><a href="#" id="19938" onclick='GetYearMonth("1993","8")'>August</a></li><li><a href="#" id="19939" onclick='GetYearMonth("1993","9")'>September</a></li><li><a href="#" id="199310" onclick='GetYearMonth("1993","10")'>October</a></li><li><a href="#" id="199311" onclick='GetYearMonth("1993","11")'>November</a></li><li><a href="#" id="199312" onclick='GetYearMonth("1993","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1992">1992</a></h2><div class="accordionContent month" id="1992"><ul class="accordionlist"><li><a href="#" id="19920" onclick='GetYearMonth("1992","0")'>All Months</a></li><li><a href="#" id="19921" onclick='GetYearMonth("1992","1")'>January</a></li><li><a href="#" id="19922" onclick='GetYearMonth("1992","2")'>February</a></li><li><a href="#" id="19923" onclick='GetYearMonth("1992","3")'>March</a></li><li><a href="#" id="19924" onclick='GetYearMonth("1992","4")'>April</a></li><li><a href="#" id="19925" onclick='GetYearMonth("1992","5")'>May</a></li><li><a href="#" id="19926" onclick='GetYearMonth("1992","6")'>June</a></li><li><a href="#" id="19927" onclick='GetYearMonth("1992","7")'>July</a></li><li><a href="#" id="19928" onclick='GetYearMonth("1992","8")'>August</a></li><li><a href="#" id="19929" onclick='GetYearMonth("1992","9")'>September</a></li><li><a href="#" id="199210" onclick='GetYearMonth("1992","10")'>October</a></li><li><a href="#" id="199211" onclick='GetYearMonth("1992","11")'>November</a></li><li><a href="#" id="199212" onclick='GetYearMonth("1992","12")'>December</a></li></ul></div><h2 class="accordionButton year" ><a href="#" onclick="event.preventDefault()" style="text-decoration:none;" aria-expanded="false"  id="btn1991">1991</a></h2><div class="accordionContent month" id="1991"><ul class="accordionlist"><li><a href="#" id="19910" onclick='GetYearMonth("1991","0")'>All Months</a></li><li><a href="#" id="19911" onclick='GetYearMonth("1991","1")'>January</a></li><li><a href="#" id="19912" onclick='GetYearMonth("1991","2")'>February</a></li><li><a href="#" id="19913" onclick='GetYearMonth("1991","3")'>March</a></li><li><a href="#" id="19914" onclick='GetYearMonth("1991","4")'>April</a></li><li><a href="#" id="19915" onclick='GetYearMonth("1991","5")'>May</a></li><li><a href="#" id="19916" onclick='GetYearMonth("1991","6")'>June</a></li><li><a href="#" id="19917" onclick='GetYearMonth("1991","7")'>July</a></li><li><a href="#" id="19918" onclick='GetYearMonth("1991","8")'>August</a></li><li><a href="#" id="19919" onclick='GetYearMonth("1991","9")'>September</a></li><li><a href="#" id="199110" onclick='GetYearMonth("1991","10")'>October</a></li><li><a href="#" id="199111" onclick='GetYearMonth("1991","11")'>November</a></li><li><a href="#" id="199112" onclick='GetYearMonth("1991","12")'>December</a></li></ul></div></div></div></span>
+<style type="text/css"> /*added by ni*/
+.year a
+{
+    text-transform:none;
+    margin:0px;
+    /*color:Black;*/
+    font-size:12px;
+    text-decoration:none;
+    padding: 3px 4px 5px 2px;
+    }
+#DateSettree_lbltree h2
+{
+    margin-top:0px;
+}
+.month ul li a {
+    padding: 3px 4px 7px 2px;
+}
+
+.accordionContent ul.accordionlist li {
+    
+    min-height: 24px;
+}
+</style>
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="clearfix">
+        </div>
+        <div>
+            <a href="#top" class="scrollToTop" id="backToTop">Top</a>
+<div id="backDiv" style=" text-align:center;" >
+<a href="javascript:history.back()" class="paraheader">Back to previous page</a><br/>
+<span id="lblGetLastUpdateDate" class="paraheader"></span>
+</div>
+<footer class="footer">
+
+<div class="footer">
+  <div class="container_12">    
+      <div class="grid_9" style="width: 833px !important; ">
+          
+          <h2><span class="blue">More</span> Links :</h2>
+          
+		<ul class="footerlist" style="column-count:4">
+                  <li ><a href="/Scripts/HolidayMatrixDisplay.aspx">Bank Holidays</a></li>
+                  <li ><a href="https://shabdavali.rbi.org.in/">Banking Glossary</a></li>
+                  <li ><a href="/Scripts/CitiChart.aspx">Citizen's Charter</a></li>
+                  <li ><a href="/Scripts/Complaints.aspx">Complaints</a></li>
+                  <li ><a href="/Scripts/contactus.aspx">Contact Us</a></li>
+  		<li ><a href="https://www.rbi.org.in/scripts/bs_viewcontent.aspx?Id=3894">COVID-19 Measures</a></li>
+                  <li ><a target="_blank" href="https://ncfe.org.in/e-lms">E-LMS</a></li>
+                  <li ><a href="/Scripts/EventsDisplay.aspx">Events</a></li>
+                  <li ><a href="/Scripts/FAQDisplay.aspx">FAQs</a></li>
+                  <li ><a target="_blank" href="https://www.rbi.org.in/FinancialEducation/">Financial Education</a></li>
+		<li ><a href="/Scripts/BS_ViewForms.aspx">Forms</a></li>
+                  <li ><a href="/Scripts/IFSCMICRDetails.aspx">IFSC/MICR Codes</a></li>
+                  <li><a href="/Scripts/OtherLinks.aspx">Important Websites</a></li>
+                  <li><a target="_blank" href="https://opportunities.rbi.org.in/scripts/index.aspx">Opportunities<span>@</span>RBI</a></li>
+                  <li><a href="/Scripts/rbi_clarification.aspx">RBI Clarifications</a></li>
+ 		<li><a target="_blank" href="https://rbikehtahai.rbi.org.in/">RBI Kehta Hai</a></li>
+                  <li><a href="https://rbidocs.rbi.org.in/rdocs/content/pdfs/Utkarsh202910042026.pdf" target="_blank">RBI’s Vision and Values <img src="../Images/pdf.gif" alt="PDF document" style="padding-bottom: 4px; width:12px; border:0; vertical-align:middle;"> (652 KB)</a></li>
+                  <li><a href="/Scripts/Righttoinfoact.aspx">Right to Information Act</a></li>
+                  <li><a href="/Scripts/BS_ViewTenders.aspx">Tenders</a></li>
+                  
+              </ul>
+      </div>
+
+    <div class="grid_3" style="width:197px !important">
+      
+        <h2><span class="blue">Follow</span> RBI</h2>
+      <ul class="footerlist">
+        
+
+          <li style="float: left;background: url(/images/footer_list_arrow.gif) left 8px no-repeat;"><a href="/Scripts/rss.aspx"><img src="/images/rss-icon.png" alt="RSS Icon" class="rss">RSS</a></li>
+
+        
+          <li>
+              <a href="https://twitter.com/RBI" target="_blank" class="twitter">
+                  <img src="/images/Twitter_New.png" alt="Twitter Icon" class="videos" style="padding-left: 18%; width:14px;">Twitter
+              </a>
+          </li>
+
+        
+
+          <li style="float: left;"><a href="https://www.youtube.com/channel/UCIfCOl43tunZVNYafeC4RQA" class="videos" target="_blank"><img src="/images/youtube.png" alt="YouTube Icon" class="videos">YouTube</a></li>
+
+          <li>
+              <a href="https://instagram.com/reservebankofindia" class="videos" target="_blank">
+                  <img src="/images/Instagram.jpg" alt="Instagram Icon" class="videos" style="padding-left: 5%; width:14px;">Instagram
+              </a>
+          </li>
+          <li style="float: left;"><a href="https://www.facebook.com/RBIsays" class="videos" target="_blank"><img src="/images/Facebook.jpg" style="width:14px;" alt="Facebook Icon" class="videos">Facebook</a></li>
+          <li>
+              <a href="https://www.linkedin.com/company/reservebankofindia" class="videos" target="_blank">
+                  <img src="/images/LinkedinIcon1.png" alt="LinkedIn Icon" class="" style="padding-left: 4%;width: 17px;background: bottom no-repeat;display: block;float: left;margin: 2px 3px 0 1px;">LinkedIn
+              </a>
+          </li>
+      </ul>
+	<a href="https://www.india.gov.in" class="videos" target="_blank">
+                  <img src="/images/indiaGov.png" alt="National Portal of India logo" class="">
+              </a>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="copyright">
+    <div class="container_12">
+     <div class="grid_6 pull_left">&copy; Reserve Bank of India. All Rights Reserved. </div>
+        <div class="grid_5 pull_right"><a href="/Scripts/sitemap.aspx">Sitemap</a> <span aria-hidden="true">|</span> <a href="/Scripts/Disclaimer.aspx">Disclaimer</a></div>
+        <div class="clearfix"></div>
+
+        <div class="grid_6 pull_left">Website owned and managed by Reserve Bank of India. Contact us on helpdoc[at]rbi[dot]org[dot]in</div>
+        <div class="grid_5 pull_right">Website last updated date: Oct 30, 2026</div>
+        <div class="clearfix"></div>
+	<div class="grid_6 pull_left"><a href="https://www.rbi.org.in/scripts/wim.aspx">Web Information Manager</a></div>
+	<div class="grid_5 pull_right"><a href="https://rbidocs.rbi.org.in/rdocs/content/pdfs/Accessibility20012026.pdf" target="_blank">Accessibility Statement
+	<img alt="PDF - Accessibility Statement" style="padding: 1px; width:16px; border:0; vertical-align:middle;" src="../Images/pdf.gif" > (133 KB)
+	</a><span aria-hidden="true"> |</span><a href="/scripts/ScreenReader.aspx" title="Information related to screen reader">Screen Reader and Accessibility Help</a></div>
+	<div class="clearfix"></div>
+        <div class="grid_12 pull_left">Supports: Google Chrome 147+ | Firefox 150+ | Microsoft Edge Version 147+ | Safari 17+</div>
+        
+        <div class="clearfix"></div>
+    </div>
+  </div>
+  
+
+
+
+</div>
+
+</footer>
+
+<script src="/js/ReplaceURL.js" ></script>
+<script >
+
+
+    //this is for floating TOP link
+    
+    $(document).ready(function () {
+
+        var offset = 230;
+        var duration = 500;
+
+
+        jQuery(window).scroll(function () {
+            if (jQuery(this).scrollTop() > offset) {
+                jQuery('.scrollToTop').fadeIn(duration);
+                
+            } else {
+                jQuery('.scrollToTop').fadeOut(duration);
+                
+            }
+        });
+
+        
+	$('.page_title').attr('tabindex','-1');
+        $('.scrollToTop').click(function () {
+            $('html, body').animate({ scrollTop: 0 }, 800);
+		$('.page_title').focus(); 
+            return false;
+        });
+	
+
+
+	if(!window.location.href.includes("Home.aspx") && !window.location.href.includes("home.aspx"))
+{ 
+if( window.location.href.includes(".aspx")){
+var div= document.getElementById('backDiv');
+	div.removeAttribute("hidden");}
+else{
+var div1= document.getElementById('backDiv');
+	div1.setAttribute("hidden","true");}
+}
+else{
+
+
+	var div1= document.getElementById('backDiv');
+	div1.setAttribute("hidden","true");}
+    });
+
+
+  
+    $(window).scroll(function () {
+
+        if ($('div.banner2').length) {
+
+            if ($(window).scrollTop() >= 265) {
+                $('#menubar').css("position", "fixed");
+                $('#menubar').css("width", "240px");
+                $('#menubar').css("margin-top", "-281px");
+                $('.content_area').css("margin-left", "252px");
+
+                $('.sidebar_nav').css("position", "fixed");
+                $('.sidebar_nav').css("margin-top", "-200px");
+                $('.sidebar_nav').css("width", "236px");
+
+
+             
+
+            }
+
+            else {
+                $('#menubar').css("position", "");
+                $('#menubar').css("width", "");
+                $('#menubar').css("margin-top", "");
+                $('.content_area').css("margin-left", "");
+
+                $('.sidebar_nav').css("position", "");
+                $('.sidebar_nav').css("margin-top", "");
+                $('.sidebar_nav').css("width", "");
+
+
+
+         
+            }
+
+        }
+
+        else if ($(window).scrollTop() >= 185) {
+            $('#menubar').css("position", "fixed");
+            $('#menubar').css("width", "240px");
+            $('#menubar').css("margin-top", "-200px");
+            $('.content_area').css("margin-left", "252px");
+
+            $('.sidebar_nav').css("position", "fixed");
+            $('.sidebar_nav').css("margin-top", "-200px");
+            $('.sidebar_nav').css("width", "236px");
+
+
+          
+		var treeheight=0;
+		if($('#treeYear').height()>0){treeheight=$('#treeYear').height();}
+	    	if($(window).scrollTop() >= $('#example-min').height()-treeheight)
+		{			 
+			$('#menubar').css("position", "absolute");
+            		
+			$('#menubar').css("margin-top", "");
+			$('#menubar').css("top", $('#example-min').height()+100-treeheight +"px");
+		}
+		else{$('#menubar').css("position", "fixed"); $('#menubar').css("top", "");}
+		
+        }
+
+        else {
+            $('#menubar').css("position", "");
+            $('#menubar').css("width", "");
+            $('#menubar').css("margin-top", "");
+            $('.content_area').css("margin-left", "");
+
+            $('.sidebar_nav').css("position", "");
+            $('.sidebar_nav').css("margin-top", "");
+            $('.sidebar_nav').css("width", "");
+
+
+       
+        }
+     
+
+       
+    });
+	
+      
+    $(document).ready(function () {
+	
+	
+		  $('.window .close').click(function (e) {
+            //Cancel the link behavior
+            e.preventDefault();
+            $.cookie('feedback_Cookie', 'Yes', { expires: 365, path: '/' });
+            $('#maskWN').hide();
+            $('.window').hide();
+            var scroll = $(window).scrollTop();
+            $("html").scrollTop(scroll);
+        });
+		
+		 $('#maskWN').click(function () {
+            $(this).hide();
+            $.cookie('feedback_Cookie', 'Yes', { expires: 365, path: '/' });
+            $('.window').hide();
+
+        });
+
+        
+
+        //if close button is clicked
+        $('.window .close').click(function (e) {
+            //Cancel the link behavior
+            e.preventDefault();
+            $.cookie('feedback_Cookie', 'Yes', { expires: 365, path: '/' });
+            $('#mask').hide();
+            $('.window').hide();
+            var scroll = $(window).scrollTop();
+            $("html").scrollTop(scroll);
+        });
+
+        //if mask is clicked
+        $('#mask').click(function () {
+            $(this).hide();
+            $('.window').hide();
+        });
+        $('#feedbackbtn').click(function () {
+            var id = '#dialog';
+
+            //Get the screen height and width
+            var maskHeight = $(document).height();
+            var maskWidth = $(window).width();
+
+            //Set heigth and width to mask to fill up the whole screen
+            
+            $('#mask').css({ 'width': '100%', 'height': '100%', 'position': 'fixed' });
+
+            //transition effect
+            $('#mask').fadeIn(500);
+            $('#mask').fadeTo("slow", 0.9);
+
+            //Get the window height and width
+            var winH = $(window).height();
+            var winW = $(window).width();
+
+            //Set the popup window to center
+            $(id).css('top', winH / 2 - $(id).height() / 2);
+            $(id).css('left', winW / 2 - $(id).width() / 2);
+
+            //transition effect
+            $(id).fadeIn(2000);
+        });
+
+        $('.submit').click(function () {
+            var Name = $("[id*=txtFeedbackName]").val();
+            var Email = $("[id*=txtFeedbackEmail]").val();
+            var Comments = $("[id*=txtFeedbackComments]").val();
+            if (Name == "") {
+
+                alert("Please enter your name");
+                $("[id*=txtFeedbackName]").focus();
+                return false;
+            }
+            else if (Email == "") {
+                alert("Please enter your email");
+                $("[id*=txtFeedbackEmail]").focus();
+                return false;
+            }
+            else if (Email != "" && !ValidateEmail(Email)) {
+                alert("Please enter a valid email address");
+                $("[id*=txtFeedbackEmail]").focus();
+                return false;
+            }
+
+            else if (Comments == "") {
+
+                alert("Please enter some comments");
+                $("[id*=txtFeedbackComments]").focus();
+                return false;
+            }
+
+            else {
+                $('[id*=Button1]').attr('disabled', 'disabled');
+
+                var param = { Name: Name, EmailID: Email, Comments: Comments };
+                $.ajax({
+                    type: "POST",
+                    url: "../Home.aspx/SaveFeedback",
+                    data: JSON.stringify(param),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+
+                    success: function (response) {
+
+                        if (response.d == "0") {
+                            alert("Thank you for your feedback");
+                            $.cookie('feedback_Cookie', 'Yes', { expires: 365, path: '/' });
+                            $('#mask').hide();
+                            $('.window').hide();
+                            $('[id*=Button1]').removeAttr('disabled');
+                            $("[id*=txtFeedbackName]").val("");
+                            $("[id*=txtFeedbackEmail]").val("");
+                            $("[id*=txtFeedbackComments]").val("");
+                        }
+                        else {
+                            alert("Please try again");
+                            $('[id*=Button1]').removeAttr('disabled');
+
+
+                        }
+
+                    }
+                });
+            }
+
+        });
+
+        function ValidateEmail(email) {
+            var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+            return expr.test(email);
+        };
+
+       
+
+        $('a.style1').each(function () {
+
+            var $this = $(this);
+            var aHref = $this.attr('class');
+            $this.attr('class', aHref.replace('style1', 'links'));
+        });
+
+		
+   });
+
+  function isExternal(url) {
+	if(url){url=url.toLowerCase();
+       if(url=='#' || url=='javascript:void(0);' || url.includes('javascript')||url=='' )
+	{ return false;} 
+	else{//return (url.indexOf("rbi.org.in")==-1)
+	
+	if(url.indexOf("www.rbi.org.in")==-1 || url.indexOf("https://rbi.org.in")==-1)
+		{	
+			if(url.indexOf("rbi.org.in")==-1)		
+    				return "external";
+			else if(url.indexOf("www.rbi.org.in")==-1 && url.indexOf(".rbi.org.in")>0 && url.indexOf("rbidocs.rbi.org.in")==-1)
+				{return "subdomain";}
+			else if(url.indexOf("financialeducation")>0 || url.indexOf("commonperson")>0 || url.indexOf("/rekyc/")>0 || url.indexOf("rbi90years")>0 ){
+				return "subsite";}
+			
+		}
+	
+	}}
+    }
+    document.addEventListener("click", function () {
+	linkMessage();
+        
+    });
+function linkMessage(){
+	if (event.target.tagName.toLowerCase() === "a") {
+            if (isExternal(event.target.href)=="external") {
+
+                if (confirm("You are being redirected to an external website that opens in a new tab. Please note that Reserve Bank of India will not be held responsible for external websites content in any manner.")) {
+
+                    return;
+                }
+                else {
+                   
+                    event.preventDefault();
+                    return;
+                }
+            }
+	    if (isExternal(event.target.href)=="subdomain") {
+	    	 if (confirm("You are being redirected to a subdomain that will open in a new browser tab. The subdomain may have a different header, footer, and navigation structure from the main website. Continue?")) {
+                    return;
+                }
+                else {
+                   
+                    event.preventDefault();
+                    return;
+                }
+	    }
+		if (isExternal(event.target.href)=="subsite") {
+	    	 if (confirm("You are being redirected to a subsite that will open in a new browser tab. The subsite may have a different header, footer, and navigation structure from the main website. Some design elements and links may vary from the primary site experience. Continue?")) {
+                    return;
+                }
+                else {
+                   
+                    event.preventDefault();
+                    return;
+                }
+	    }
+        }
+	else if (event.target.tagName.toLowerCase() === "img") {
+		$(event.target).preventDefault;		
+		if($(event.target).parent('a').length){
+			 if (isExternal($(event.target).parent('a').prop('href'))==="external") {
+                		if (confirm("You are being redirected to an external website that opens in a new tab. Please note that Reserve Bank of India will not be held responsible for external websites content in any manner.")) {
+                    		return;
+               		 }
+
+                	else {                   
+                    		event.preventDefault();
+                    		return;
+                	}}
+			if (isExternal($(event.target).parent('a').prop('href'))==="subdomain") {
+                		if (confirm("You are being redirected to a subdomain that will open in a new browser tab. The subdomain may have a different header, footer, and navigation structure from the main website. Continue?")) {
+                    		return;
+               		 	}
+
+                		else {                   
+                    		event.preventDefault();
+                    		return;
+                		}
+			}
+			if (isExternal(event.target.href)=="subsite") {
+	    	 	if (confirm("You are being redirected to a subsite that will open in a new browser tab. The subsite may have a different header, footer, and navigation structure from the main website. Some design elements and links may vary from the primary site experience. Continue?")) {
+                    	return;
+                	}
+                	else {
+                   
+                    		event.preventDefault();
+                    	return;
+                	}
+	    		}
+	}}
+	const link = event.target.closest('a[target="_blank"]');
+	if(link){ 
+		event.preventDefault();
+		const docRegx = /\.(pdf|docx?|xlsx?|zip?|xls|doc)$/i;
+		if(docRegx.test(link)){
+			if(/\.pdf$/i.test(link))
+			{	
+				if(confirm("This PDF will open in a new browser tab. Do you want to continue?")){
+				window.open(link.href,"_blank");}
+			}
+			else if(/\.docx$/i.test(link))
+			{	
+				if(confirm("Are you sure you want to download this document?")){
+				window.open(link.href,"_blank");}
+			}
+			else if(/\.doc$/i.test(link))
+			{	
+				if(confirm("Are you sure you want to download this document?")){
+				window.open(link.href,"_blank");}
+			}
+			else if(/\.xlsx$/i.test(link))
+			{	
+				if(confirm("Are you sure you want to download this document?")){
+				window.open(link.href,"_blank");}
+			}
+			else if(/\.xls$/i.test(link))
+			{	
+				if(confirm("Are you sure you want to download this document?")){
+				window.open(link.href,"_blank");}
+			}
+			else if(/\.zip$/i.test(link))
+			{	
+				if(confirm("Are you sure you want to download this file?")){
+				window.open(link.href,"_blank");}
+			}
+		}
+
+		else 
+		if(confirm("This link will open in a new browser tab. Do you want to continue?")){
+			window.open(link.href,"_blank");
+		}
+	}
+		if (event.target.tagName.toLowerCase() === "button") {
+		if($(event.target).parent('a').length>0){
+			const link1 = event.target.closest('a[target="_blank"]');
+		if(link1){
+			event.preventDefault();
+			if(confirm("This link will open in a new browser tab. Do you want to continue?")){
+				window.open(link.href,"_blank");
+			}
+		}
+		}
+	}
+}
+
+</script>
+<script >
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-61369961-1', 'auto');
+  ga('send', 'pageview');
+
+document.querySelectorAll('table.tablebg').forEach(table => {
+    const anchors = table.querySelectorAll('a[href^="#"]:not([href="#"])');
+
+    const hasInPageAnchorsInThisTableOnly = Array.from(anchors).some(a => {
+        // Find the closest table ancestor of this anchor
+        const closestTable = a.closest('table');
+    
+        // Only count it if it belongs to the current table (not a nested one)
+        return closestTable === table;
+    });
+
+    if (!hasInPageAnchorsInThisTableOnly) {
+       // table.setAttribute('role', 'presentation');
+       //} else {
+       //    table.removeAttribute('role'); 
+	if(table.closest('td')){
+	if(table.querySelector('th'))
+	{	
+		table.removeAttribute('role');
+	}
+	else{
+        table.setAttribute('role', 'presentation');
+		}
+	}
+	else{
+        table.setAttribute('role', 'presentation');
+		}
+    }
+});
+$('.brd-ptable1').attr('role','presentation');
+$('html').attr('lang', 'en');
+document.querySelectorAll('br').forEach(br => {br.setAttribute('aria-hidden','true');});
+$('#doublescroll').children('table').filter(':first').attr("role", "presentation");
+$('.page_title').nextAll('table').first().attr("role", "presentation");
+
+
+
+document.addEventListener('DOMContentLoaded', function(){
+$('.tableheader b').each(function () {
+		var curEle= $(this);
+           $(curEle).replaceWith("<h2 class='dop_header'>"+$(curEle).html()+"</h2>")
+        });
+ });
+
+//  tooltip 
+var TooltipManager = {
+    _tip: null, // Create the tooltip element once 
+init: function() {
+    if (!this._tip) {
+    
+        this._tip = $('<div id="js-custom-tooltip"></div>').css({
+            "position": "absolute", "background": '#ffffca', "color":"#000", "padding": "2px 5px", "border-radius": "0px", "font-size": "11px","font-family":"Sans-serif", "z-index": "10000", "pointer-events": "none","border":"1px solid #767676", "box-shadow":"2px 2px 3px rgba(0,0,0,0.2)","white-space":"nowrap"
+        }).appendTo('body');
+        
+    }
+}, 
+show: function(element, text) {
+    this.init(); 
+var $el = $(element); // Update text and position 
+    
+this._tip.text(text).show();
+var pos = $el.offset(); 
+this._tip.css({
+    top: pos.top + this._tip.outerHeight()  + "px", // Show above 
+    left: pos.left + ($el.outerWidth() / 2) - (this._tip.outerWidth() / 2) + "px"
+});
+    }, hide: function() { if (this._tip) this._tip.hide(); }
+}; // Apply to all elements that have a ToolTip (ToolTip renders as 'title') 
+$(document).ready(function() {
+   
+    $('body').on('focusin', 'input, button, a, select, textarea, img', function() {
+        var title = $(this).attr('title'); if (title) {
+    
+            
+      
+            TooltipManager.show(this, title);
+        }
+    }).on('focusout', 'input, button, a, select, textarea, img', function() { 
+       
+            TooltipManager.hide();
+       
+    }); // Dismiss on Escape key
+    $(document).keyup(function(e) { if (e.key === "Escape") TooltipManager.hide(); });
+});
+
+//breadcrumb current page announce
+$(document).ready(function(){
+
+const breadcrumbList = document.querySelector('.breadcrumbs');
+
+    if (breadcrumbList) {
+        const listItems = breadcrumbList.querySelectorAll('li');
+    
+        if (listItems.length > 0) {
+            
+            const lastItem = $('.breadcrumbs li').filter(function(){ return $.trim($(this).text())!=="";}).last().attr('aria-current', 'page').css('background','none'); //remove extra icons from empty breadcrumbs
+            $('.breadcrumbs li').filter(function(){ return $.trim($(this).text())==="" && $(this).children().length===0;}).attr('role','presentation');
+	    
+       		$('.breadcrumbs li').filter(function(){
+			if($(this).children().length!==0)
+			{
+				if($(this).children().text() ===""){}
+			}
+		});
+            const lastLink =lastItem.find('a');
+            if (lastLink) {
+                lastLink.attr('aria-current', 'page');               
+                
+            }
+		if($('.breadcrumbs li').last().find('a').length>0)
+		{			
+			const $a = $('.breadcrumbs li').last().find('a');
+			$('<span>',{class: $a.attr('class'), text: $a.text()}).replaceAll($a).attr('aria-current', 'page').css('background','none');
+		}
+		
+		if($('.breadcrumbs li').last().find('span').length>0)
+		{
+			
+			if($('.breadcrumbs li').last().find('span')[0].innerText==='')
+			{
+				$('.breadcrumbs li').last().find('span').removeAttr('aria-current');				
+			}
+			else{
+				$('.breadcrumbs li').last().find('span').filter(function(){ return $(this).attr('role')!=='presentation';}).last().attr('aria-current', 'page').css('background','none');					
+			}		
+		}
+		$('.breadcrumbs li').filter(function(){ return $.trim($(this).text())!=="";}).removeAttr('role','presentation'); 
+		$('.breadcrumbs li').filter(function(){ return $.trim($(this).text())==="" }).css('background','none');//remove extra icons from empty breadcrumbs
+        }
+    }
+});
+
+//document.addEventListener("DOMContentLoaded", () => {
+//    document.querySelectorAll('img').forEach(img => {
+//      try {
+//        const url = new URL(img.src);
+//        img.crossOrigin = "anonymous";
+//        img.src = window.location.origin + url.pathname + url.search + url.hash;
+//      } catch (e) {}
+//    });
+//  });
+</script>
+        </div>
+        <style type="text/css">
+            .tablebg table, .tablebg table table {
+                background-color: transparent !important;
+                border-color: rgb(239, 209, 170) !important;
+                border-collapse: collapse;
+            }
+
+            table table table td {
+                background-color: transparent !important;
+            }
+
+            .table {
+                background-color: transparent !important;
+            }
+        </style>
+    
+
+<script type="text/javascript">
+//<![CDATA[
+setLetterSpace(false);//]]>
+</script>
+</form>
+</body>
+</html>
+<script type="text/javascript" src="/js/plugins.js"></script>
+<script type="text/javascript" src="/js/script.js"></script>
+<script type="text/javascript" src="/js/Scroll.js"></script>
+<script type="text/javascript" language="javascript">
+    DoubleScrollWithTree(document.getElementById('doublescroll'));
+
+function GetYearMonth(year, month) {
+    document.getElementById("hdnYear").value = year;
+    document.getElementById("hdnMonth").value = month;
+    document.getElementById("btn").click();
+}
+//Implemented onlick for 'archives' link in tree structure
+function hideshow(divArchive) {
+    if (!document.getElementById(divArchive))
+        return
+    if (document.getElementById(divArchive).style.display == "block")
+        document.getElementById(divArchive).style.display = "none"
+    else
+        document.getElementById(divArchive).style.display = "block"
+}
+function SetTreeStyles() {
+    var strYear = document.getElementById("hdnYear").value;
+    var strMonth = document.getElementById("hdnMonth").value
+    if (strYear != "") {
+        var toDay = new Date();
+        document.getElementById("btn" + strYear).setAttribute("class", "accordionButton year active_year");
+        document.getElementById(strYear).style.display = "block"
+        if (strMonth) document.getElementById(strYear + strMonth).setAttribute("class", "active");
+        if (toDay.getFullYear() - 9 > parseInt(strYear)) { document.getElementById("divArchiveSub").style.display = "block" }
+    }
+}
+
+$(document).ready(function() {
+    document.getElementById("2769").style.visibility = "hidden";
+});
+       
+</script>
+<script id="f5_cspm">(function(){var f5_cspm={f5_p:'PJCFMHMFCEHCALCBJPIJBHFIHNDKGEMEMAMPAOPAAPMFAHMMBFIAGIHFNIEOLBHEEPGBOACAAABFKCCGNPNAFGNJAAPELGBFDLOOLDJDKBDLBPOIGPIPGENNCHCJBACI',setCharAt:function(str,index,chr){if(index>str.length-1)return str;return str.substr(0,index)+chr+str.substr(index+1);},get_byte:function(str,i){var s=(i/16)|0;i=(i&15);s=s*32;return((str.charCodeAt(i+16+s)-65)<<4)|(str.charCodeAt(i+s)-65);},set_byte:function(str,i,b){var s=(i/16)|0;i=(i&15);s=s*32;str=f5_cspm.setCharAt(str,(i+16+s),String.fromCharCode((b>>4)+65));str=f5_cspm.setCharAt(str,(i+s),String.fromCharCode((b&15)+65));return str;},set_latency:function(str,latency){latency=latency&0xffff;str=f5_cspm.set_byte(str,40,(latency>>8));str=f5_cspm.set_byte(str,41,(latency&0xff));str=f5_cspm.set_byte(str,35,2);return str;},wait_perf_data:function(){try{var wp=window.performance.timing;if(wp.loadEventEnd>0){var res=wp.loadEventEnd-wp.navigationStart;if(res<60001){var cookie_val=f5_cspm.set_latency(f5_cspm.f5_p,res);window.document.cookie='f5avr0863824298aaaaaaaaaaaaaaaa_cspm_='+encodeURIComponent(cookie_val)+';path=/;'+'';}
+return;}}
+catch(err){return;}
+setTimeout(f5_cspm.wait_perf_data,100);return;},go:function(){var chunk=window.document.cookie.split(/\s*;\s*/);for(var i=0;i<chunk.length;++i){var pair=chunk[i].split(/\s*=\s*/);if(pair[0]=='f5_cspm'&&pair[1]=='1234')
+{var d=new Date();d.setTime(d.getTime()-1000);window.document.cookie='f5_cspm=;expires='+d.toUTCString()+';path=/;'+';';setTimeout(f5_cspm.wait_perf_data,100);}}}}
+f5_cspm.go();}());</script>

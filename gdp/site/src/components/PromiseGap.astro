@@ -1,0 +1,52 @@
+---
+import { link } from "../lib/url";
+// "Announced vs what happened": % difference of the later figure from the Budget Estimate, as diverging bars.
+// Blue = came in above the budget, red = below. Not good or bad by itself: the label says what it means.
+import { money, signedPct } from "../lib/format";
+
+export interface GapRow {
+  label: string;
+  be: number;
+  outcome: number;
+  outcomeKind: string; // "Actual" | "Revised Estimate"
+  href?: string;
+  note?: string;
+}
+interface Props { rows: GapRow[]; limit?: number }
+const { rows, limit } = Astro.props;
+const data = rows.map((r) => ({ ...r, gap: ((r.outcome - r.be) / Math.abs(r.be)) * 100 }));
+const span = limit ?? Math.max(10, ...data.map((d) => Math.abs(d.gap)));
+---
+<ul class="gaps">
+  {data.map((d) => {
+    const w = Math.min(50, (Math.abs(d.gap) / span) * 50);
+    return (
+      <li>
+        <div class="line">
+          {d.href ? <a href={link(d.href)}>{d.label}</a> : <span>{d.label}</span>}
+          <strong>{signedPct(d.gap)}</strong>
+        </div>
+        <div class="axis" aria-hidden="true">
+          <span class="mid" />
+          <span class={`bar ${d.gap >= 0 ? "pos" : "neg"}`} style={d.gap >= 0 ? `left:50%;width:${w}%` : `right:50%;width:${w}%`} />
+        </div>
+        <div class="sub small muted">Budget {money(d.be)} → {d.outcomeKind} {money(d.outcome)}</div>
+        {d.note && <details class="small row-note"><summary>Note on this figure</summary><p>{d.note}</p></details>}
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .gaps { list-style: none; margin: 0; padding: 0; }
+  .gaps li { padding: 8px 0; border-bottom: 1px solid var(--grid); }
+  .gaps li:last-child { border-bottom: 0; }
+  .line { display: flex; justify-content: space-between; gap: 12px; font-size: 0.92rem; }
+  .axis { position: relative; height: 10px; margin: 5px 0 3px; }
+  .mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 1px; background: var(--axis); }
+  .bar { position: absolute; top: 0; height: 10px; }
+  .bar.pos { background: var(--div-pos); border-radius: 0 4px 4px 0; }
+  .row-note summary { cursor: pointer; color: var(--link); }
+  .row-note p { margin: 4px 0 0; color: var(--ink-2); }
+  .bar.neg { background: var(--div-neg); border-radius: 4px 0 0 4px; }
+</style>

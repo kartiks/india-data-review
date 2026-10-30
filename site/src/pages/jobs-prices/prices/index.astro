@@ -5,11 +5,13 @@ import BarList from "../../../components/BarList.astro";
 import DotRows from "../../../components/DotRows.astro";
 import {
   cpiAllIndia, cpiState, CPI_KEYS, CPI_STATES, CPI_FIRST, CPI_LAST, GENERAL, FOOD, monthRange, monthLabel,
-  yearAverage, averageInflation, cpiLabel, CPIALRL, type CpiPoint, type CpiSector,
+  yearAverage, averageInflation, cpiLabel, CPIALRL, CPI24, CPI24_LATEST, CPI24_LINKING, CPI24_WEIGHTS, cfpi24, cpi24Rows, tidyState,
+  type CpiPoint, type CpiSector,
 } from "../../../lib/jobs-prices/data";
 import { axisPct, gpct } from "../../../lib/format";
 
 const SRC = "MoSPI, Consumer Price Index (base 2012 = 100), via MoSPI's data service.";
+const SRC24 = "MoSPI, Consumer Price Index (base 2024 = 100), monthly press releases on PIB.";
 const lastYear = CPI_LAST.slice(0, 4);
 const general = cpiAllIndia(GENERAL);
 const food = cpiAllIndia(FOOD);
@@ -19,11 +21,25 @@ const latestFood = at(food, CPI_LAST);
 const avg = averageInflation(general, lastYear)!;
 const since2012 = latest.index! - 100;
 
-// Monthly inflation since inflation is first published (January 2014)
+// Monthly inflation since inflation is first published (January 2014), old series to December 2025 and new from January 2026
 const firstInfl = general.find((p) => p.inflation != null)!.month;
-const months = monthRange(firstInfl, CPI_LAST);
+const months = monthRange(firstInfl, CPI24_LATEST > CPI_LAST ? CPI24_LATEST : CPI_LAST);
 const labels = months.map(monthLabel);
 const line = (pts: CpiPoint[]) => months.map((m) => ({ value: at(pts, m)?.inflation ?? null }));
+const new24 = (i: 0 | 1 | 2) => months.map((m) => {
+  const p = CPI24.find((x) => x.month === m);
+  return { value: p?.inflation[i] ?? null, kind: p?.provisional ? "Provisional" : "", estimate: p?.provisional };
+});
+const food24 = months.map((m) => ({ value: cfpi24(m)?.inflation?.[2] ?? null, kind: cfpi24(m)?.provisional ? "Provisional" : "", estimate: cfpi24(m)?.provisional }));
+const now24 = CPI24.find((x) => x.month === CPI24_LATEST)!;
+const food24Now = cfpi24(CPI24_LATEST);
+const m24 = CPI24.filter((x) => x.inflation[2] != null).map((x) => x.month);
+const SECT24: [0 | 1 | 2, string, number][] = [[2, "All India", 7], [0, "Rural", 3], [1, "Urban", 4]];
+const divRows = cpi24Rows("divisions").filter((d) => d.code !== "00" && d.inflation[2] != null)
+  .map((d) => ({ label: d.name, value: d.inflation[2]!, display: gpct(d.inflation[2]!), sub: `index ${d.index[2]}` }))
+  .sort((a, b) => b.value - a.value);
+const state24 = cpi24Rows("states").map((st) => ({ label: tidyState(st.name), values: [st.inflation[0], st.inflation[1]], sort: st.inflation[2] ?? -99 }))
+  .sort((a, b) => b.sort - a.sort);
 const SECT: [CpiSector, string, number][] = [["Combined", "All India", 7], ["Rural", "Rural", 3], ["Urban", "Urban", 4]];
 
 // Average inflation by fiscal year (April to March)
@@ -69,51 +85,124 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
 <Base title="Prices" section="prices" description="Consumer price inflation in India from MoSPI's Consumer Price Index: monthly since 2014, rural and urban, food and other groups, and by state.">
   <h1>Prices</h1>
   <p class="lede">
-    Consumer prices were <strong>{gpct(latest.inflation!)}</strong> higher in {monthLabel(CPI_LAST)} than a year
-    earlier, and <strong>{gpct(avg)}</strong> higher on average in {lastYear} than in {Number(lastYear) - 1}, by MoSPI's
-    Consumer Price Index. Prices are {since2012.toFixed(0)}% higher than in 2012.
+    Consumer prices were <strong>{gpct(now24.inflation[2]!, 2)}</strong> higher in {monthLabel(CPI24_LATEST)} than a year
+    earlier{now24.provisional ? " (provisional)" : ""}, by MoSPI's new Consumer Price Index on base 2024; food prices were{" "}
+    {food24Now?.inflation?.[2] != null ? <strong>{gpct(food24Now.inflation[2], 2)}</strong> : "–"} higher. On the old series, which ended
+    in December 2025, prices rose <strong>{gpct(avg)}</strong> on average in {lastYear}.
   </p>
 
   <div class="tiles">
-    <div class="tile"><div class="label">Inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latest.inflation!)}</div><div class="sub">on a year earlier, all India</div></div>
-    <div class="tile"><div class="label">Average inflation, {lastYear}</div><div class="value">{gpct(avg)}</div><div class="sub">average index on the year before</div></div>
-    {latestFood?.inflation != null && <div class="tile"><div class="label">Food inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latestFood.inflation)}</div><div class="sub">Consumer Food Price Index</div></div>}
-    <div class="tile"><div class="label">Prices since 2012</div><div class="value">+{since2012.toFixed(0)}%</div><div class="sub">index {latest.index} ({monthLabel(CPI_LAST)}; 2012 = 100)</div></div>
+    <div class="tile"><div class="label">Inflation, {monthLabel(CPI24_LATEST)}</div><div class="value">{gpct(now24.inflation[2]!, 2)}</div><div class="sub">on a year earlier, all India; base 2024{now24.provisional ? ", provisional" : ""}</div></div>
+    {food24Now?.inflation?.[2] != null && <div class="tile"><div class="label">Food inflation, {monthLabel(CPI24_LATEST)}</div><div class="value">{gpct(food24Now.inflation[2], 2)}</div><div class="sub">Consumer Food Price Index, base 2024</div></div>}
+    <div class="tile"><div class="label">Average inflation, {lastYear}</div><div class="value">{gpct(avg)}</div><div class="sub">old series (base 2012), average index on the year before</div></div>
+    <div class="tile"><div class="label">Prices, 2012 to {lastYear}</div><div class="value">+{since2012.toFixed(0)}%</div><div class="sub">old series: index {latest.index} in {monthLabel(CPI_LAST)} (2012 = 100)</div></div>
   </div>
 
   <section class="card note-card">
-    <h2>One series, ending in December 2025</h2>
+    <h2>Two series</h2>
     <p class="small">
-      This is MoSPI's Consumer Price Index on base 2012, from {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}. From
-      January 2026 MoSPI publishes a new series on base 2024, with a new basket of goods and services; its figures are
-      not yet in MoSPI's data service and are not shown here. Since 2016 the RBI's target has been 4% inflation, with a
-      band of 2% to 6%.
+      MoSPI replaced its Consumer Price Index from January 2026. The old series (base 2012) runs from{" "}
+      {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)} and comes from MoSPI's data service. The new series (base 2024)
+      uses a new basket and weights from the 2023-24 household spending survey (food and beverages fall from 42.6% to
+      36.8% of the combined index) and is read here from MoSPI's monthly press releases, as its figures are not yet in
+      the data service. The two are shown side by side, never joined into one line. Since 2016 the RBI's target has
+      been 4% inflation, with a band of 2% to 6%.
     </p>
   </section>
 
   <section class="card">
     <LineChart
       title="Consumer price inflation, month by month"
-      subtitle={`Change in the index on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}.`}
+      subtitle={`All India, change on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}. Hollow marker: provisional.`}
       years={labels}
-      series={SECT.map(([s, name, slot]) => ({ name, slot, points: line(cpiAllIndia(GENERAL, s)) }))}
+      series={[
+        { name: "Old series (base 2012)", slot: 7, points: line(general) },
+        { name: "New series (base 2024)", slot: 1, points: new24(2) },
+      ]}
       format={axisPct}
       tableFormat={(v) => gpct(v, 2)}
-      source={SRC}
+      estimateLabel="Provisional"
+      source={`${SRC} ${SRC24}`}
     />
   </section>
 
   <section class="card">
     <LineChart
       title="Food and all items"
-      subtitle="Inflation in the Consumer Food Price Index and in the general index, all India."
+      subtitle="Inflation in the Consumer Food Price Index and in the general index, all India, on both series."
       years={labels}
-      series={[{ name: "All items", slot: 7, points: line(general) }, { name: "Food", slot: 2, points: line(food) }]}
+      series={[
+        { name: "All items, base 2012", slot: 7, points: line(general) },
+        { name: "Food, base 2012", slot: 2, points: line(food) },
+        { name: "All items, base 2024", slot: 1, points: new24(2) },
+        { name: "Food, base 2024", slot: 8, points: food24 },
+      ]}
       format={axisPct}
       tableFormat={(v) => gpct(v, 2)}
-      source={SRC}
+      estimateLabel="Provisional"
+      source={`${SRC} ${SRC24}`}
     />
   </section>
+
+  <h2 class="section-h">The new series, base 2024</h2>
+  <section class="card">
+    <LineChart
+      title="Inflation since January 2026, rural and urban"
+      subtitle={`All India, base 2024, on the same month a year earlier. ${monthLabel(CPI24_LATEST)} is provisional; earlier months are final.`}
+      years={m24.map(monthLabel)}
+      series={SECT24.map(([i, name, slot]) => ({ name, slot, points: m24.map((m) => {
+        const p = CPI24.find((x) => x.month === m)!;
+        return { value: p.inflation[i], kind: p.provisional ? "Provisional" : "", estimate: p.provisional };
+      }) }))}
+      format={axisPct}
+      tableFormat={(v) => gpct(v, 2)}
+      estimateLabel="Provisional"
+      source={SRC24}
+    />
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <h3>Inflation by division, {monthLabel(CPI24_LATEST)}</h3>
+      <p class="muted small">All India, rural and urban combined, base 2024{now24.provisional ? ", provisional" : ""}. The new series groups spending into 12 divisions (an international classification, COICOP 2018).</p>
+      <BarList rows={divRows} tone={1} label={`Inflation by division, ${monthLabel(CPI24_LATEST)}`} />
+      <p class="source">{SRC24} Annexure I.</p>
+    </section>
+    <section class="card">
+      <DotRows
+        title={`Inflation by state, ${monthLabel(CPI24_LATEST)}`}
+        subtitle={`Base 2024, on the same month a year earlier${now24.provisional ? ", provisional" : ""}. Sorted by the combined figure. Chandigarh has no rural market.`}
+        series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
+        rows={state24}
+        format={(v) => gpct(v)}
+        zero={false}
+        source={`${SRC24} Annexure III.`}
+      />
+    </section>
+  </div>
+
+  <section class="card">
+    <h3>What the new basket weighs</h3>
+    <p class="muted small">Share of each division in the index, old series (2012) and new (2024), rural, urban and combined, as published with the first release of the new series.</p>
+    <div class="table-scroll">
+      <table class="weights">
+        <thead><tr><th>Division</th><th>Rural 2012</th><th>Rural 2024</th><th>Urban 2012</th><th>Urban 2024</th><th>Combined 2012</th><th>Combined 2024</th></tr></thead>
+        <tbody>
+          {CPI24_WEIGHTS.map((w) => (
+            <tr><td>{w.division}</td><td>{w.rural_2012.toFixed(2)}</td><td>{w.rural_2024.toFixed(2)}</td><td>{w.urban_2012.toFixed(2)}</td><td>{w.urban_2024.toFixed(2)}</td><td>{w.combined_2012.toFixed(2)}</td><td>{w.combined_2024.toFixed(2)}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">
+      MoSPI also publishes linking factors to put old-series indices on the new base (rural {CPI24_LINKING.Rural},
+      urban {CPI24_LINKING.Urban}, combined {CPI24_LINKING.Combined}): each is the 2025 average of the new index divided
+      by the 2025 average of the old, which the checks confirm. The site does not use them to join the series.
+    </p>
+    <p class="source">{SRC24} First release (January 2026).</p>
+  </section>
+
+  <h2 class="section-h">The old series, base 2012 (2013 to 2025)</h2>
 
   <section class="card">
     <LineChart
@@ -178,4 +267,6 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   .lede { font-size: 1.08rem; max-width: 46em; }
   .note-card p { margin: 0; }
   .sub-h { margin-top: 18px; }
+  .section-h { margin: 28px 0 12px; }
+  .weights td:not(:first-child), .weights th:not(:first-child) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 </style>

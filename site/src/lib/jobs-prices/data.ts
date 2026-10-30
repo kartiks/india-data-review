@@ -15,6 +15,17 @@ interface Dataset {
   cpi: { all_india: Record<string, Record<string, [string, Num, Num][]>>; states: Record<string, Record<string, [string, Num, Num][]>> };
   cpialrl: Table;
   hces: Table;
+  cpi2024: {
+    latest: string;
+    series: [string, number, number, number, Num, Num, Num, boolean][];
+    cfpi: Record<string, { index: (Num)[] | null; inflation: (Num)[] | null; provisional: boolean }>;
+    divisions: Record<string, [string, string, ...Num[]][]>;
+    groups: Record<string, [string, string, ...Num[]][]>;
+    states: Record<string, [string, string, ...Num[]][]>;
+    releases: Record<string, { page: string; pdf: string | null }>;
+    linking: Record<string, number>;
+    weights: { division: string; rural_2012: number; rural_2024: number; urban_2012: number; urban_2024: number; combined_2012: number; combined_2024: number }[];
+  };
   source_problems: string[];
 }
 
@@ -155,6 +166,26 @@ export const cpiLabel = (key: string) => {
   const [group, sub] = key.split("|");
   return sub.endsWith("-Overall") ? group : sub;
 };
+
+// ---- consumer prices, new series (base 2024 = 100), from MoSPI's monthly press releases --------------
+
+const C24 = DS.cpi2024;
+export interface Cpi24Point { month: string; index: [number, number, number]; inflation: [Num, Num, Num]; provisional: boolean }
+/** All-India general index, rural / urban / combined, January 2025 to the latest month; inflation from January 2026. */
+export const CPI24: Cpi24Point[] = C24.series.map(([month, r, u, c, ir, iu, ic, provisional]) => ({ month, index: [r, u, c], inflation: [ir, iu, ic], provisional }));
+export const CPI24_LATEST = C24.latest;
+export const CPI24_RELEASES = C24.releases;
+export const CPI24_LINKING = C24.linking;
+export const CPI24_WEIGHTS = C24.weights;
+/** Consumer Food Price Index inflation, [rural, urban, combined], by month (final where a later release gives it). */
+export const cfpi24 = (month: string) => C24.cfpi[month];
+export interface Cpi24Row { code: string; name: string; index: Num[]; inflation: Num[] }
+/** Divisions, groups or states as published in that month's release (provisional). */
+export function cpi24Rows(kind: "divisions" | "groups" | "states", month = C24.latest): Cpi24Row[] {
+  return (C24[kind][month] ?? []).map(([code, name, ...v]) => ({ code, name, index: v.slice(0, 3), inflation: v.slice(3, 6) }));
+}
+/** "Andaman And Nicobar Islands" -> "Andaman & Nicobar Islands"; the releases spell names differently from MoSPI's API. */
+export const tidyState = (s: string) => s.replace(/ And /g, " & ").replace(/^The /, "").replace("NCT of Delhi", "Delhi");
 
 // ---- farm and rural labourers (CPI-AL/RL) and household spending (HCES) -------------------------------
 

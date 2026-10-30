@@ -4,6 +4,7 @@ import Base from "../../layouts/Base.astro";
 import LineChart from "../../components/LineChart.astro";
 import {
   rate, PLFS_LATEST, cpiAllIndia, GENERAL, CPI_LAST, monthRange, monthLabel, averageInflation, hcesValue, HCES_LATEST, NOT_IMPUTED,
+  CPI24, CPI24_LATEST,
 } from "../../lib/jobs-prices/data";
 import { axisPct, gpct, pct } from "../../lib/format";
 
@@ -11,15 +12,15 @@ const Y = PLFS_LATEST;
 const all = rate({ year: Y })!;
 const women = rate({ year: Y, gender: "female" })!;
 const general = cpiAllIndia(GENERAL);
-const latest = general.find((p) => p.month === CPI_LAST)!;
+const now24 = CPI24.find((p) => p.month === CPI24_LATEST)!;
 const lastYear = CPI_LAST.slice(0, 4);
 const avg = averageInflation(general, lastYear)!;
 const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
 const m = (sector: "Rural" | "Urban") => hcesValue({ indicator: "mpce", year: HCES_LATEST, state: "All India", sector, imputation_type: NOT_IMPUTED })!;
 
 const firstInfl = general.find((p) => p.inflation != null)!.month;
-const months = monthRange(firstInfl, CPI_LAST);
-const peak = months.reduce((a, b) => ((general.find((p) => p.month === b)?.inflation ?? -99) > (general.find((p) => p.month === a)?.inflation ?? -99) ? b : a));
+const months = monthRange(firstInfl, CPI24_LATEST > CPI_LAST ? CPI24_LATEST : CPI_LAST);
+const peak = months.filter((mm) => mm <= CPI_LAST).reduce((a, b) => ((general.find((p) => p.month === b)?.inflation ?? -99) > (general.find((p) => p.month === a)?.inflation ?? -99) ? b : a));
 ---
 <Base title="Jobs & prices" section="overview" description="Jobs, consumer prices and household spending in India from MoSPI's official surveys, rural and urban, by state, checked automatically.">
   <h1>Jobs, prices and household spending</h1>
@@ -32,19 +33,26 @@ const peak = months.reduce((a, b) => ((general.find((p) => p.month === b)?.infla
   <div class="tiles">
     <div class="tile"><div class="label">Unemployment rate, {Y}</div><div class="value">{pct(all.ur!)}</div><div class="sub">aged 15+, usual status</div></div>
     <div class="tile"><div class="label">Women in the labour force, {Y}</div><div class="value">{pct(women.lfpr!)}</div><div class="sub">aged 15+; everyone {pct(all.lfpr!)}</div></div>
-    <div class="tile"><div class="label">Consumer inflation, {monthLabel(CPI_LAST)}</div><div class="value">{gpct(latest.inflation!)}</div><div class="sub">{lastYear} average {gpct(avg)}</div></div>
+    <div class="tile"><div class="label">Consumer inflation, {monthLabel(CPI24_LATEST)}</div><div class="value">{gpct(now24.inflation[2]!, 2)}</div><div class="sub">new series (base 2024){now24.provisional ? ", provisional" : ""}; {lastYear} average {gpct(avg)}</div></div>
     <div class="tile"><div class="label">Spending per person, {HCES_LATEST}</div><div class="value">{rupees(m("Rural"))} <span class="unit">rural</span></div><div class="sub">{rupees(m("Urban"))} urban, a month</div></div>
   </div>
 
   <section class="card">
     <LineChart
       title="Consumer price inflation"
-      subtitle={`All India, on the same month a year earlier. Highest: ${gpct(general.find((p) => p.month === peak)!.inflation!)} in ${monthLabel(peak)}.`}
+      subtitle={`All India, on the same month a year earlier. The old series (base 2012) ends in December 2025; the new one (base 2024) starts in January 2026. Highest on the old series: ${gpct(general.find((p) => p.month === peak)!.inflation!)} in ${monthLabel(peak)}.`}
       years={months.map(monthLabel)}
-      series={[{ name: "All India", slot: 7, points: months.map((mm) => ({ value: general.find((p) => p.month === mm)?.inflation ?? null })) }]}
+      series={[
+        { name: "Old series (base 2012)", slot: 7, points: months.map((mm) => ({ value: general.find((p) => p.month === mm)?.inflation ?? null })) },
+        { name: "New series (base 2024)", slot: 1, points: months.map((mm) => {
+          const p = CPI24.find((x) => x.month === mm);
+          return { value: p?.inflation[2] ?? null, kind: p?.provisional ? "Provisional" : "", estimate: p?.provisional };
+        }) },
+      ]}
       format={axisPct}
       tableFormat={(v) => gpct(v, 2)}
-      source="MoSPI, Consumer Price Index (base 2012), via MoSPI's data service."
+      estimateLabel="Provisional"
+      source="MoSPI, Consumer Price Index: base 2012 from MoSPI's data service; base 2024 from MoSPI's monthly press releases."
     />
   </section>
 

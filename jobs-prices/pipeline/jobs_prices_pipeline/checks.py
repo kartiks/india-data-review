@@ -438,6 +438,132 @@ def check_hces(ds: dict, report: Report) -> None:
     report.add("Household spending (HCES): classes and categories add up", checked, failures, allowed.notes() + notes)
 
 
+# ---- consumer prices, base 2024 ------------------------------------------------------------------
+
+BACKTICK = (
+    "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). The next "
+    "month's release repeats it as final, and that figure is used."
+)
+
+
+def check_cpi2024(ds: dict, report: Report) -> None:
+    from collections import Counter
+
+    from .cpi2024 import pdf_numbers
+
+    c = ds["cpi2024"]
+    rel = c["releases"]
+    failures, notes, allowed, checked = [], [], Allowed(), 0
+    if not rel:
+        report.add("Prices, new series (base 2024): releases read", 0, ["no releases"], [])
+        return
+
+    # 1. every release read in full
+    for m, r in sorted(rel.items()):
+        checked += 1
+        n = (len([d for d in r["divisions"] if d["code"] != "00"]), len(r["groups"]), len(r["states"]))
+        if n != (12, 43, 36):
+            failures.append(f"{m}: read {n[0]} divisions, {n[1]} groups, {n[2]} states (expected 12, 43, 36)")
+        if not (r["series"] or r["series_combined"]):
+            failures.append(f"{m}: no All-India series")
+        for prob in r["problems"]:
+            (allowed.add(BACKTICK, prob) if "`" in prob else failures.append(prob))
+    report.add("Prices, new series (base 2024): every release read in full", checked, failures, allowed.notes())
+
+    # 2. the headline sentence, the summary table and the annexures agree
+    failures, checked = [], 0
+    for m, r in sorted(rel.items()):
+        h = r.get("headline", {})
+        cur = r["summary"].get("current", {}).get("general_inflation")
+        allrow = next((d["values"] for d in r["divisions"] if d["code"] == "00"), None)
+        last = next((x["values"] for x in r["series"] if x["month"] == m), None)
+        figures = {"headline sentence": [h.get("rural"), h.get("urban"), h.get("combined")], "summary table": cur,
+                   "Annexure I, All India row": allrow[3:] if allrow else None, "Annexure IV": last[3:] if last else None}
+        present = {k: v for k, v in figures.items() if v and None not in v}
+        checked += 1
+        ref = next(iter(present.values()), None)
+        if len(present) < 2:
+            failures.append(f"{m}: inflation found in only {list(present)}")
+        elif any(v != ref for v in present.values()):
+            failures.append(f"{m}: inflation (rural, urban, combined) differs: {present}")
+    report.add("Prices, new series: headline, summary and annexures agree", checked, failures, [])
+
+    # 3. inflation reproduced from the index a year earlier; 4. combined index between rural and urban
+    failures, checked = [], 0
+    for m, r in sorted(rel.items()):
+        idx = {x["month"]: x["values"] for x in r["series"]}
+        for month, v in idx.items():
+            before = idx.get(f"{int(month[:4]) - 1}{month[4:]}")
+            if before is None:
+                continue
+            for i, sec in enumerate(("rural", "urban", "combined")):
+                if v[i + 3] is None:
+                    continue
+                checked += 1
+                calc = (v[i] / before[i] - 1) * 100
+                if abs(calc - v[i + 3]) > 0.03:
+                    failures.append(f"release {m}, {month} {sec}: index {v[i]} vs {before[i]} gives {calc:.2f}%, published {v[i + 3]}%")
+    report.add("Prices, new series: inflation reproduced from the index a year earlier", checked, failures,
+               ["Indices are printed to two decimals but compiled unrounded, so a difference of up to 0.03 points is allowed."])
+
+    failures, checked = [], 0
+    for m, r in sorted(rel.items()):
+        for table, rows in (("division", r["divisions"]), ("group", r["groups"]), ("state", r["states"]), ("series", r["series"])):
+            for x in rows:
+                v = x["values"]
+                if None in v[:3]:
+                    continue  # Chandigarh has no rural market
+                checked += 1
+                if not (min(v[0], v[1]) - 0.011 <= v[2] <= max(v[0], v[1]) + 0.011):
+                    failures.append(f"{m} {table} {x.get('name', x.get('month'))}: combined {v[2]} outside rural {v[0]} and urban {v[1]}")
+    report.add("Prices, new series: combined index lies between rural and urban", checked, failures, [])
+
+    # 5. later releases revise only the previous month (provisional to final)
+    failures, notes, checked = [], [], 0
+    final = {x["month"]: x["values"] for x in c["series"]}
+    for m, r in sorted(rel.items()):
+        for x in r["series"]:
+            if x["month"] not in final or m == c["latest"]:
+                continue
+            checked += 1
+            if x["values"] != final[x["month"]]:
+                diff = f"{x['month']} in the {m} release {x['values']} vs latest {final[x['month']]}"
+                (notes.append(f"Provisional figure revised: {diff}") if x["month"] == m else failures.append(f"Final figure changed: {diff}"))
+    report.add("Prices, new series: only provisional figures are revised", checked, failures, notes)
+
+    # 6. linking factor = average 2025 index on the new base / on the old base (MoSPI's API)
+    failures, checked = [], 0
+    old = {(r["sector"], r["month"]): r["index"] for r in ds["cpi"] if r["state"] == "All India" and r["subgroup"] == "General-Overall"}
+    for i, sec in enumerate(("Rural", "Urban", "Combined")):
+        f = c["linking"].get(sec)
+        news = [final[m][i] for m in final if m.startswith("2025")]
+        olds = [old.get((sec, m)) for m in final if m.startswith("2025")]
+        if f is None or len(news) != 12 or None in olds:
+            failures.append(f"linking factor {sec}: cannot check (factor {f}, {len(news)} months)")
+            continue
+        checked += 1
+        calc = (sum(news) / 12) / (sum(olds) / 12)
+        if abs(calc - f) > 0.00006:
+            failures.append(f"linking factor {sec}: published {f}, 2025 averages give {calc:.4f}")
+    report.add("Prices, new series: linking factor = 2025 average, new base ÷ old base", checked, failures,
+               [f"Published factors {c['linking']}; old-base indices from MoSPI's data service, new-base from the press releases."])
+
+    # 7. the release page's tables match its PDF
+    failures, notes, checked = [], [], 0
+    for m, r in sorted(rel.items()):
+        if not r["pdf"]:
+            notes.append(f"{m}: no PDF attached to the release; page only")
+            continue
+        have = Counter(pdf_numbers(ROOT / r["pdf"]))
+        want = Counter(f"{v:.2f}" for rows in (r["divisions"], r["groups"], r["states"]) for x in rows for v in x["values"] if v is not None)
+        want += Counter(f"{v:.2f}" for x in r["series"] for v in x["values"][:6] if v is not None)
+        checked += 1
+        missing = want - have
+        if missing:
+            failures.append(f"{m}: {sum(missing.values())} figures on the release page not found in its PDF: {sorted(missing)[:10]}")
+    report.add("Prices, new series: release page tables match the PDF", checked, failures, notes)
+
+
 def main(ds: dict | None = None) -> int:
     if ds is None:
         from .build import assemble
@@ -451,6 +577,7 @@ def main(ds: dict | None = None) -> int:
     check_cpi(ds, report)
     check_cpialrl(ds, report)
     check_hces(ds, report)
+    check_cpi2024(ds, report)
     (DATA / "validation_report.md").write_text(report.markdown())
     for title, checked, failures, _ in report.sections:
         print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")

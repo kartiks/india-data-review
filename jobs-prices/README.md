@@ -14,7 +14,12 @@ All from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mosp
   - workers by type of work, industry, employer and occupation; job conditions of regular employees (July–June
     years from 2017-18); average earnings (regular, casual, self-employed).
 - **Consumer Price Index**, base 2012, `/api/cpi/getCPIIndex`: January 2013 to December 2025. Every group and item
-  group for All India; the general index for every state. The new base-2024 series is not in the API yet.
+  group for All India; the general index for every state.
+- **Consumer Price Index, base 2024** (from January 2026), from MoSPI's monthly press releases on PIB, listed by hand
+  in `sources.CPI2024_RELEASES` (add each new month's page). The API lists base-2024 filters but returns no figures
+  yet. The pipeline keeps each release's content (title to end, without the page's visitor counter) and its PDF where
+  one is attached, and reads the HTML tables (`cpi2024.py`): 12 divisions, 43 groups, 36 states, and the All-India
+  series from January 2025. The first release also gives the linking factors and old vs new weights.
 - **CPI for agricultural and rural labourers** (Labour Bureau), `/api/cpialrl/getCpialrlRecords`: base 1986-87 and,
   from June 2025, base 2019.
 - **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`.
@@ -40,6 +45,7 @@ re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 | `plfs_rates.csv` | Participation, worker ratio and unemployment; `left_out` gives the reason where a combination is not shown |
 | `plfs_workers.csv`, `plfs_conditions.csv`, `plfs_earnings.csv` | Workers by breakdown, job conditions, earnings |
 | `cpi.csv`, `cpialrl.csv` | Price indices and inflation |
+| `cpi2024.csv` | Every figure read from the base-2024 releases, with the release it came from |
 | `hces.csv` | Household spending; `left_out` as above |
 | `sources.csv` | Every downloaded file: key, URL, SHA-256, date. Each CSV row names its source key |
 | `validation_report.md` | Every check and the reason for every allowed exception |
@@ -52,6 +58,8 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   women, rural + urban between rural and urban; shares of workers add up to 100%.
 - **Prices**: every inflation rate reproduced from the index a year earlier; combined between rural and urban;
   no missing months.
+- **New price series**: headline sentence, summary table and annexures agree; page tables match the PDF; later
+  releases revise only the previous month's provisional figures; linking factor = 2025 average new ÷ old.
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food
   totals, and those to the average.
 
@@ -66,3 +74,4 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 - HCES 2022-23 rural spending by item category for six states (Goa, Gujarat, Haryana, Himachal Pradesh,
   Jharkhand, Karnataka) that adds up to other states' averages.
 - Delhi's farm labourers' index (base 2019) published as 0.00.
+- The July 2026 CPI release page prints one food index as `109.\`39`; the next release's final figure is used.

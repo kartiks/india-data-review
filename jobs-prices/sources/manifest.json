@@ -207,6 +207,139 @@
   "fetched_at": "2026-10-30T15:15:52+00:00",
   "records": 1332
  },
+ "cpi2024/2026-01": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227012&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-01.html",
+  "sha256": "f99ac4d5ef329bd1e97fae2618dfc9a5400c75a9c786da748f2dddc00f0234a6",
+  "bytes": 1133375,
+  "fetched_at": "2026-10-30T16:05:13+00:00"
+ },
+ "cpi2024/2026-01/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/feb/doc2026212787501.pdf",
+  "file": "sources/raw/cpi2024/2026-01.pdf",
+  "sha256": "e24736867399c4af992d176ac5e6cff36d99c1401e1a6f2503e4d7eedcfd3f3f",
+  "bytes": 715069,
+  "fetched_at": "2026-10-30T16:05:13+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227012&reg=3&lang=1"
+ },
+ "cpi2024/2026-02": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2238889&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-02.html",
+  "sha256": "4ab47067e8bfe614da050b5d1ee91d8dfe7004c32d23cb6134c963ae22943394",
+  "bytes": 893139,
+  "fetched_at": "2026-10-30T16:05:14+00:00"
+ },
+ "cpi2024/2026-02/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/mar/doc2026312822001.pdf",
+  "file": "sources/raw/cpi2024/2026-02.pdf",
+  "sha256": "c387772556959010d91cf46bad5b916718cbee86a53a6bd6324f535d7c61890b",
+  "bytes": 576244,
+  "fetched_at": "2026-10-30T16:05:15+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2238889&reg=3&lang=1"
+ },
+ "cpi2024/2026-03": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2251519&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-03.html",
+  "sha256": "4dddf0e54df8f5353de27a28f3e8cd697a8e019f7821ae62bed6308ff82cab0a",
+  "bytes": 860213,
+  "fetched_at": "2026-10-30T16:05:16+00:00"
+ },
+ "cpi2024/2026-03/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/apr/doc2026413845701.pdf",
+  "file": "sources/raw/cpi2024/2026-03.pdf",
+  "sha256": "06349001b89a0246fc927501847fde7d02457180f0959d5bcc82881e8f6290c1",
+  "bytes": 388600,
+  "fetched_at": "2026-10-30T16:05:17+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2251519&reg=3&lang=1"
+ },
+ "cpi2024/2026-04": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2260251&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-04.html",
+  "sha256": "edaada9f438c537f5b09a12550e6067cc25d87e89be825a1d0ffaf31b61d1fd4",
+  "bytes": 963788,
+  "fetched_at": "2026-10-30T16:05:18+00:00"
+ },
+ "cpi2024/2026-04/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/may/doc2026512869001.pdf",
+  "file": "sources/raw/cpi2024/2026-04.pdf",
+  "sha256": "da2387569f1b91531ab45bec9c36cb3d771546fa340b9ac074c0e31b413c414b",
+  "bytes": 543645,
+  "fetched_at": "2026-10-30T16:05:19+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2260251&reg=3&lang=1"
+ },
+ "cpi2024/2026-05": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2272112&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-05.html",
+  "sha256": "ee38ccf0688dea9d3f01aab7b882f0eafdd04c7173356823f4c87ddf1e8b980d",
+  "bytes": 967981,
+  "fetched_at": "2026-10-30T16:05:20+00:00"
+ },
+ "cpi2024/2026-05/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/jun/doc2026612891101.pdf",
+  "file": "sources/raw/cpi2024/2026-05.pdf",
+  "sha256": "963701834de3fdd838a757182487c561cbcfc9f2f558155b3da1407ad4254f6d",
+  "bytes": 654579,
+  "fetched_at": "2026-10-30T16:05:21+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2272112&reg=3&lang=1"
+ },
+ "cpi2024/2026-06": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2284125&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-06.html",
+  "sha256": "21f94b076384c44d15895192a9035b27d5e881783a7767a47b6d8e8708fc0366",
+  "bytes": 976903,
+  "fetched_at": "2026-10-30T16:05:22+00:00"
+ },
+ "cpi2024/2026-06/pdf": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2284125&reg=3&lang=1",
+  "empty": true,
+  "note": "no PDF attached to this release",
+  "checked_at": "2026-10-30T16:05:22+00:00"
+ },
+ "cpi2024/2026-07": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2298247&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-07.html",
+  "sha256": "67df7d57cfe00906ac56d523f63db2b33f003aa4e1c50cc1b4cd3a0a85a565c6",
+  "bytes": 855520,
+  "fetched_at": "2026-10-30T16:05:24+00:00"
+ },
+ "cpi2024/2026-07/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/aug/doc2026812951801.pdf",
+  "file": "sources/raw/cpi2024/2026-07.pdf",
+  "sha256": "19a992c5939fe7d57bb5dfdd5a7de427c76c3b2a64529808703e48b6bcd4e85a",
+  "bytes": 604480,
+  "fetched_at": "2026-10-30T16:05:25+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2298247&reg=3&lang=1"
+ },
+ "cpi2024/2026-08": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2310058&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-08.html",
+  "sha256": "331b9f984b8185e9d9304c5b19774c116ebfff7008be08c2080a267936544252",
+  "bytes": 905997,
+  "fetched_at": "2026-10-30T16:05:27+00:00"
+ },
+ "cpi2024/2026-08/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/sep/doc_9863_20260914_15551001.pdf",
+  "file": "sources/raw/cpi2024/2026-08.pdf",
+  "sha256": "d76f2066c1f355596c9e454029f1dcb515ef99ef01f5d567b7d028ac3ca6d1f2",
+  "bytes": 658634,
+  "fetched_at": "2026-10-30T16:05:27+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2310058&reg=3&lang=1"
+ },
+ "cpi2024/2026-09": {
+  "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2322244&reg=3&lang=1",
+  "file": "sources/raw/cpi2024/2026-09.html",
+  "sha256": "1ab9a26d4d4b65f9f2c129b25e9d26e5b0deb98be6e5be34cd78148ea8b8ef15",
+  "bytes": 867976,
+  "fetched_at": "2026-10-30T16:05:29+00:00"
+ },
+ "cpi2024/2026-09/pdf": {
+  "url": "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2026/oct/doc_10157_20261012_15535501.pdf",
+  "file": "sources/raw/cpi2024/2026-09.pdf",
+  "sha256": "4248cb6037436653473197c78f728254cc877e9612fde4b3264a163cf8382402",
+  "bytes": 620397,
+  "fetched_at": "2026-10-30T16:05:29+00:00",
+  "release_page": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2322244&reg=3&lang=1"
+ },
  "cpialrl/general_index": {
   "url": "https://api.mospi.gov.in/api/cpialrl/getCpialrlRecords?indicator_code=General+Index&Format=JSON",
   "file": "sources/raw/cpialrl/general_index.json",

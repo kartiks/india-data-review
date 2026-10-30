@@ -2,6 +2,7 @@
 import Base from "../../../layouts/Base.astro";
 import {
   rate, PLFS_LATEST, PLFS_STATES, WORKERS, cpiState, averageInflation, CPI_LAST, hcesValue, HCES_LATEST, NOT_IMPUTED,
+  cpi24Rows, tidyState, CPI24_LATEST, CPI24, monthLabel,
 } from "../../../lib/jobs-prices/data";
 import { gpct, pct } from "../../../lib/format";
 
@@ -16,6 +17,8 @@ const cpiOf = (st: string) => {
   if (CPI_NAME[st]) return undefined; // two separate indices in the CPI; no combined figure
   return averageInflation(cpiState(st, "Combined"), lastYear) ?? averageInflation(cpiState(st, "Urban"), lastYear);
 };
+const new24 = new Map(cpi24Rows("states").map((r) => [tidyState(r.name), r.inflation[2]]));
+const now24 = CPI24.find((p) => p.month === CPI24_LATEST)!;
 const mpce = (st: string, sector: "Rural" | "Urban") => hcesValue({ indicator: "mpce", year: HCES_LATEST, state: st, sector, imputation_type: NOT_IMPUTED });
 const rows = PLFS_STATES.map((st) => ({
   st,
@@ -23,12 +26,13 @@ const rows = PLFS_STATES.map((st) => ({
   women: rate({ year: Y, state: st, gender: "female" })?.lfpr ?? null,
   regular: regular(st),
   infl: cpiOf(st),
+  infl24: new24.get(st) ?? null,
   rural: mpce(st, "Rural"),
   urban: mpce(st, "Urban"),
 }));
 const india = {
   ur: rate({ year: Y })?.ur, women: rate({ year: Y, gender: "female" })?.lfpr,
-  infl: averageInflation(cpiState("All India", "Combined"), lastYear), rural: mpce("All India", "Rural"), urban: mpce("All India", "Urban"),
+  infl: averageInflation(cpiState("All India", "Combined"), lastYear), infl24: now24.inflation[2], rural: mpce("All India", "Rural"), urban: mpce("All India", "Urban"),
 };
 const f = (v: number | null | undefined, fmt: (v: number) => string) => (v == null ? "–" : fmt(v));
 ---
@@ -46,17 +50,18 @@ const f = (v: number | null | undefined, fmt: (v: number) => string) => (v == nu
             <th>Women in labour force, {Y}</th>
             <th>Regular salaried jobs, {Y}</th>
             <th>Inflation, {lastYear}</th>
+            <th>Inflation, {monthLabel(CPI24_LATEST)}</th>
             <th>Spending per person, rural, {HCES_LATEST}</th>
             <th>Spending per person, urban, {HCES_LATEST}</th>
           </tr>
         </thead>
         <tbody>
           <tr class="india">
-            <td>All India</td><td>{f(india.ur, pct)}</td><td>{f(india.women, pct)}</td><td>–</td><td>{f(india.infl, gpct)}</td><td>{f(india.rural, rupees)}</td><td>{f(india.urban, rupees)}</td>
+            <td>All India</td><td>{f(india.ur, pct)}</td><td>{f(india.women, pct)}</td><td>–</td><td>{f(india.infl, gpct)}</td><td>{f(india.infl24, gpct)}</td><td>{f(india.rural, rupees)}</td><td>{f(india.urban, rupees)}</td>
           </tr>
           {rows.map((r) => (
             <tr>
-              <td>{r.st}</td><td>{f(r.ur, pct)}</td><td>{f(r.women, pct)}</td><td>{f(r.regular, pct)}</td><td>{f(r.infl, gpct)}</td><td>{f(r.rural, rupees)}</td><td>{f(r.urban, rupees)}</td>
+              <td>{r.st}</td><td>{f(r.ur, pct)}</td><td>{f(r.women, pct)}</td><td>{f(r.regular, pct)}</td><td>{f(r.infl, gpct)}</td><td>{f(r.infl24, gpct)}</td><td>{f(r.rural, rupees)}</td><td>{f(r.urban, rupees)}</td>
             </tr>
           ))}
         </tbody>
@@ -65,7 +70,8 @@ const f = (v: number | null | undefined, fmt: (v: number) => string) => (v == nu
     <ul class="small muted notes">
       <li><strong>Unemployment</strong> and <strong>women in the labour force</strong>: aged 15 and over, usual status (PLFS).</li>
       <li><strong>Regular salaried jobs</strong>: share of workers with a regular wage or salary (PLFS). MoSPI's All-India figure for this breakdown does not add up, so it is not shown.</li>
-      <li><strong>Inflation</strong>: average Consumer Price Index for {lastYear} on {Number(lastYear) - 1}, rural and urban combined (urban where MoSPI publishes no combined index). The CPI keeps Dadra & Nagar Haveli and Daman & Diu separate and has no index for Ladakh.</li>
+      <li><strong>Inflation, {lastYear}</strong>: old series (base 2012), average Consumer Price Index for {lastYear} on {Number(lastYear) - 1}, rural and urban combined (urban where MoSPI publishes no combined index). The CPI keeps Dadra & Nagar Haveli and Daman & Diu separate and has no index for Ladakh.</li>
+      <li><strong>Inflation, {monthLabel(CPI24_LATEST)}</strong>: new Consumer Price Index (base 2024), on the same month a year earlier, combined{now24.provisional ? ", provisional" : ""}, from MoSPI's press release.</li>
       <li><strong>Spending per person</strong>: average monthly consumption spending, excluding items received free (HCES).</li>
       <li>A dash means MoSPI publishes no figure, or the figure failed the checks (see Sources).</li>
     </ul>

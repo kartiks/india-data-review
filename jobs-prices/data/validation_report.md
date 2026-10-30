@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service. Every allowed exception lists its reason.
 
-**Result: PASSED** (589585 checks, 0 failures)
+**Result: PASSED** (590795 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -213,3 +213,38 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 1888 checks, 0 failures.
 
 - Allowed (6): In MoSPI's data service, the spending by item category filed under these states (rural, 2022-23, without imputation) does not add up to the state's own average spending; it appears to be other states' figures (Goa's categories add up to Andhra Pradesh's average, Haryana's to Assam's, Himachal Pradesh's to Bihar's, Jharkhand's to Chhattisgarh's). The category breakdown (rupees and shares) for these cells is left out of the site; the average itself is shown. Cases: 2022-23, Goa, Rural, Without Imputation: spending by category adds up to ₹4,870, but average spending for this cell is ₹7,367; 2022-23, Gujarat, Rural, Without Imputation: spending by category adds up to ₹5,276, but average spending for this cell is ₹3,798; 2022-23, Haryana, Rural, Without Imputation: spending by category adds up to ₹3,432, but average spending for this cell is ₹4,859; 2022-23, Himachal Pradesh, Rural, Without Imputation: spending by category adds up to ₹3,384, but average spending for this cell is ₹5,561; 2022-23, Jharkhand, Rural, Without Imputation: spending by category adds up to ₹2,466, but average spending for this cell is ₹2,763; 2022-23, Karnataka, Rural, Without Imputation: spending by category adds up to ₹6,576, but average spending for this cell is ₹4,397
+
+## ✅ Prices, new series (base 2024): every release read in full
+9 checks, 0 failures.
+
+- Allowed (1): MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). The next month's release repeats it as final, and that figure is used. Cases: 2026-07: summary table, cfpi index: not a number as printed: ['109.`39']
+
+## ✅ Prices, new series: headline, summary and annexures agree
+9 checks, 0 failures.
+
+
+## ✅ Prices, new series: inflation reproduced from the index a year earlier
+120 checks, 0 failures.
+
+- Indices are printed to two decimals but compiled unrounded, so a difference of up to 0.03 points is allowed.
+
+## ✅ Prices, new series: combined index lies between rural and urban
+946 checks, 0 failures.
+
+
+## ✅ Prices, new series: only provisional figures are revised
+115 checks, 0 failures.
+
+- Provisional figure revised: 2026-02 in the 2026-02 release [104.74, 104.37, 104.57, 3.37, 3.02, 3.21] vs latest [104.74, 104.36, 104.57, 3.37, 3.02, 3.21]
+- Provisional figure revised: 2026-03 in the 2026-03 release [105.01, 104.62, 104.84, 3.63, 3.11, 3.4] vs latest [105.02, 104.62, 104.84, 3.63, 3.11, 3.4]
+- Provisional figure revised: 2026-08 in the 2026-08 release [109.27, 108.07, 108.74, 5.23, 4.31, 4.82] vs latest [109.28, 108.07, 108.74, 5.24, 4.31, 4.83]
+
+## ✅ Prices, new series: linking factor = 2025 average, new base ÷ old base
+3 checks, 0 failures.
+
+- Published factors {'Rural': 0.5222, 'Urban': 0.532, 'Combined': 0.5267}; old-base indices from MoSPI's data service, new-base from the press releases.
+
+## ✅ Prices, new series: release page tables match the PDF
+8 checks, 0 failures.
+
+- 2026-06: no PDF attached to the release; page only

@@ -18,6 +18,11 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
    /api/cpialrl/getCpialrlRecords.
 4. Household spending: Household Consumption Expenditure Survey (HCES)
    2022-23 and 2023-24, /api/hces/getHcesRecords.
+5. Consumer prices, new series (base 2024 = 100), from January 2026: MoSPI's
+   monthly press releases on PIB. MoSPI's data service lists the base-2024
+   filters but returns no data for them, so the figures are read from each
+   release's PDF (annexures: divisions, groups, states, and the All-India
+   series from January 2025). Add each new month's release page below.
 """
 
 API = "https://api.mospi.gov.in/api"
@@ -42,6 +47,20 @@ HCES_INDICATORS = {  # file name -> MoSPI's indicator code (as the API spells it
     "mpce_household_type": "Average Monthly Per Capita Consumption Expenditure (MPCE) across different Household Type",
     "mpce_social_group": "Average Monthly Per Capita Consumption Expenditure (MPCE) across different Social Group",
     "gini": "Gini Coefficient for Per Capita Consumption Expenditure",
+}
+
+
+# Month of the index -> PIB page of MoSPI's press release for it (English).
+CPI2024_RELEASES = {
+    "2026-01": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227012&reg=3&lang=1",
+    "2026-02": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2238889&reg=3&lang=1",
+    "2026-03": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2251519&reg=3&lang=1",
+    "2026-04": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2260251&reg=3&lang=1",
+    "2026-05": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2272112&reg=3&lang=1",
+    "2026-06": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2284125&reg=3&lang=1",
+    "2026-07": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2298247&reg=3&lang=1",
+    "2026-08": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2310058&reg=3&lang=1",
+    "2026-09": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2322244&reg=3&lang=1",
 }
 
 

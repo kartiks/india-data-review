@@ -23,7 +23,8 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .sources import queries
+from . import cpi2024 as c24
+from .sources import CPI2024_RELEASES, queries
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -259,6 +260,63 @@ def cpialrl(manifest: dict, problems: list[str]) -> list[dict]:
     return out
 
 
+# ---- consumer prices, base 2024 (press releases) -------------------------------------------------
+
+def cpi2024(manifest: dict) -> dict:
+    """Every monthly release read in full, plus the series the site uses:
+    - All-India general index and inflation from the latest release's Annexure IV (each month final except the latest);
+    - the food price index (CFPI) from the release summaries (final where a later release gives it);
+    - divisions, groups and states for each month as first published (provisional; later releases do not repeat them).
+    """
+    releases: dict[str, dict] = {}
+    for month in CPI2024_RELEASES:
+        e = manifest.get(f"cpi2024/{month}")
+        if not e or e.get("empty"):
+            continue
+        r = c24.parse((ROOT / e["file"]).read_text(), month)
+        r["source"], r["url"] = f"cpi2024/{month}", e["url"]
+        pdf = manifest.get(f"cpi2024/{month}/pdf")
+        r["pdf"] = pdf["file"] if pdf and not pdf.get("empty") else None
+        r["pdf_url"] = pdf["url"] if r["pdf"] else None
+        releases[month] = r
+    latest = max(releases) if releases else None
+    series = [{**s, "source": f"cpi2024/{latest}"} for s in releases[latest]["series"]] if latest else []
+    cfpi: dict[str, dict] = {}
+    for month, r in sorted(releases.items()):
+        cur, prev = r["summary"].get("current", {}), r["summary"].get("previous", {})
+        if "cfpi_index" in cur or "cfpi_inflation" in cur:
+            cfpi.setdefault(month, {"index": cur.get("cfpi_index"), "inflation": cur.get("cfpi_inflation"), "provisional": True,
+                                    "source": r["source"]})
+        if prev:
+            pm = f"{int(month[:4]) - (month[5:] == '01')}-{(int(month[5:]) - 2) % 12 + 1:02d}"
+            if pm in cfpi:
+                cfpi[pm] = {"index": prev.get("cfpi_index") or cfpi[pm]["index"], "inflation": prev.get("cfpi_inflation") or cfpi[pm]["inflation"],
+                            "provisional": False, "source": r["source"]}
+    jan = releases.get(min(releases)) if releases else None
+    return {"releases": releases, "latest": latest, "series": series, "cfpi": cfpi,
+            "linking": jan["linking"] if jan else {}, "weights": jan["weights"] if jan else []}
+
+
+def cpi2024_rows(c: dict) -> list[dict]:
+    """Every figure read from the releases, one line each, for cpi2024.csv."""
+    out = []
+    for month, r in sorted(c["releases"].items()):
+        base = {"release_month": month, "source": r["source"]}
+        for table, rows in (("division", r["divisions"]), ("group", r["groups"]), ("state", r["states"])):
+            for x in rows:
+                for i, sec in enumerate(c24.SECTORS):
+                    out.append({**base, "table": table, "month": month, "code": x.get("code", ""), "name": x["name"], "sector": sec,
+                                "index": x["values"][i], "inflation": x["values"][i + 3], "status": "provisional"})
+        for x in r["series"]:
+            for i, sec in enumerate(c24.SECTORS):
+                out.append({**base, "table": "all_india_series", "month": x["month"], "code": "", "name": "All India", "sector": sec,
+                            "index": x["values"][i], "inflation": x["values"][i + 3], "status": "provisional" if x["provisional"] else "final"})
+        for x in r["series_combined"]:
+            out.append({**base, "table": "all_india_series", "month": x["month"], "code": "", "name": "All India", "sector": "Combined",
+                        "index": x["cpi"], "inflation": None, "status": "provisional" if x["month"] == month else "final"})
+    return out
+
+
 # ---- household spending -------------------------------------------------------------------------
 
 HCES_MPCE = "Average monthly per capita consumption expenditure (MPCE)"
@@ -364,7 +422,26 @@ def site_json(ds: dict) -> dict:
                                        if r.get("indicator") == "General Index"]),
         "hces": table(HCES_SITE_FIELDS, [[HCES_SITE[r["indicator"]]] + [r.get(f) for f in HCES_SITE_FIELDS[1:]]
                                          for r in ds["hces"] if r["indicator"] in HCES_SITE and not r["left_out"]]),
+        "cpi2024": cpi2024_site(ds["cpi2024"]),
         "source_problems": ds["source_problems"],
+    }
+
+
+def cpi2024_site(c: dict) -> dict:
+    rel = c["releases"]
+    return {
+        "latest": c["latest"],
+        "series_fields": ["month", "index_rural", "index_urban", "index_combined", "inflation_rural", "inflation_urban",
+                          "inflation_combined", "provisional"],
+        "series": [[x["month"], *x["values"], x["provisional"]] for x in c["series"]],
+        "cfpi": {m: v for m, v in sorted(c["cfpi"].items())},
+        "fields": ["code", "name", "index_rural", "index_urban", "index_combined", "inflation_rural", "inflation_urban", "inflation_combined"],
+        "divisions": {m: [[x["code"], x["name"], *x["values"]] for x in r["divisions"]] for m, r in sorted(rel.items())},
+        "groups": {m: [[x["code"], x["name"], *x["values"]] for x in r["groups"]] for m, r in sorted(rel.items())},
+        "states": {m: [["", x["name"], *x["values"]] for x in r["states"]] for m, r in sorted(rel.items())},
+        "releases": {m: {"page": r["url"], "pdf": r["pdf_url"]} for m, r in sorted(rel.items())},
+        "linking": c["linking"],
+        "weights": c["weights"],
     }
 
 
@@ -382,6 +459,7 @@ def assemble() -> dict:
     ds["cpi"] = cpi(manifest, problems)
     ds["cpialrl"] = cpialrl(manifest, problems)
     ds["hces"] = hces(manifest, problems)
+    ds["cpi2024"] = cpi2024(manifest)
     ds["source_problems"] = problems
     return ds
 
@@ -401,6 +479,7 @@ def main() -> dict:
         "cpi.csv": (ds["cpi"], ["month", "state", "sector", "group", "subgroup", "index", "inflation"]),
         "cpialrl.csv": (ds["cpialrl"], ["month"]),
         "hces.csv": (ds["hces"], ["year", "state", "sector", "indicator"]),
+        "cpi2024.csv": (cpi2024_rows(ds["cpi2024"]), ["table", "month", "code", "name", "sector", "index", "inflation", "status", "release_month"]),
     }
     for name, (rows, first) in outputs.items():
         fields = fields_of(rows, first)

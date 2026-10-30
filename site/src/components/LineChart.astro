@@ -24,8 +24,9 @@ interface Props {
   annotations?: { year: string; label: string }[];
   zero?: boolean; // include zero in the y range (default true)
   source?: string;
+  estimateLabel?: string; // legend text for hollow markers
 }
-const { title, subtitle, years, series, format, tableFormat = format, tipFormat = tableFormat, annotations = [], zero = true, source } = Astro.props;
+const { title, subtitle, years, series, format, tableFormat = format, tipFormat = tableFormat, annotations = [], zero = true, source, estimateLabel = "Estimate (no actual yet)" } = Astro.props;
 
 const values = series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v != null);
 let lo = Math.min(...values);
@@ -92,7 +93,7 @@ const tooltipData = JSON.stringify({
         <li><svg width="16" height="10" aria-hidden="true"><line x1="1" y1="5" x2="15" y2="5" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linecap="round" /></svg>{s.name}</li>
       ))}
       {hasEstimates && (
-        <li><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" /></svg>Estimate (no actual yet)</li>
+        <li><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" /></svg>{estimateLabel}</li>
       )}
     </ul>
   )}

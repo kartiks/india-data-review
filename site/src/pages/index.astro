@@ -96,9 +96,9 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       <div class="sub">of GDP, Budget Estimate</div>
     </a>
     <a class="tile tile-link" href={link("/jobs-prices/prices/")}>
-      <div class="label">Consumer inflation, {J.monthLabel(J.CPI_LAST)}</div>
-      <div class="value">{gpct(cpiGeneral.find((p) => p.month === J.CPI_LAST)!.inflation!)}</div>
-      <div class="sub">on a year earlier; unemployment {J.PLFS_LATEST}: {pct(ur!.ur!)}</div>
+      <div class="label">Consumer inflation, {J.monthLabel(J.CPI24_LATEST)}</div>
+      <div class="value">{gpct(J.CPI24.find((p) => p.month === J.CPI24_LATEST)!.inflation[2]!, 2)}</div>
+      <div class="sub">on a year earlier (new series); unemployment {J.PLFS_LATEST}: {pct(ur!.ur!)}</div>
     </a>
     <a class="tile tile-link" href="#share">
       <div class="label">Centre's spending, {lastActual}</div>

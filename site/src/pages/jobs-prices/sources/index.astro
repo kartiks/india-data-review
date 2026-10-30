@@ -3,7 +3,7 @@ import { link } from "../../../lib/url";
 import fs from "node:fs";
 import path from "node:path";
 import Base from "../../../layouts/Base.astro";
-import { GENERATED, SOURCES, CPI_FIRST, CPI_LAST, monthLabel, PLFS_YEARS, HCES_YEARS } from "../../../lib/jobs-prices/data";
+import { GENERATED, SOURCES, CPI_FIRST, CPI_LAST, monthLabel, PLFS_YEARS, HCES_YEARS, CPI24_LATEST, CPI24_RELEASES } from "../../../lib/jobs-prices/data";
 
 const report = fs.readFileSync(path.resolve(process.cwd(), "..", "jobs-prices", "data", "validation_report.md"), "utf8");
 const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
@@ -21,6 +21,7 @@ const files = [
   ["plfs_conditions.csv", "Regular employees without a written contract, paid leave or social security"],
   ["plfs_earnings.csv", "Average earnings from regular, casual and self-employed work"],
   ["cpi.csv", "Consumer Price Index (base 2012): all groups for All India, the general index for every state"],
+  ["cpi2024.csv", "Consumer Price Index, base 2024: every figure read from MoSPI's monthly press releases (divisions, groups, states, All-India series)"],
   ["cpialrl.csv", "Consumer Price Index for agricultural and rural labourers"],
   ["hces.csv", "Household consumption spending"],
   ["sources.csv", "Every downloaded file: address, fingerprint (SHA-256) and date"],
@@ -32,9 +33,10 @@ const nFiles = Object.keys(SOURCES).length;
 <Base title="Sources and checks" section="about" description="Where every jobs, prices and spending figure on India Data Review comes from, how it is checked, and the errors found in the official data.">
   <h1>Sources and checks</h1>
   <p>
-    All figures in this section come from the Ministry of Statistics and Programme Implementation (MoSPI), through its
-    official data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in).
-    A program downloads {nFiles} files, keeps a copy of each with its fingerprint (SHA-256), builds the data and checks
+    All figures in this section come from the Ministry of Statistics and Programme Implementation (MoSPI): through its
+    official data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in),
+    and, for the new Consumer Price Index, from MoSPI's monthly press releases on the Press Information Bureau's site
+    (pib.gov.in). A program downloads {nFiles} files, keeps a copy of each with its fingerprint (SHA-256), builds the data and checks
     it. Data last built {updated}.
   </p>
 
@@ -42,7 +44,8 @@ const nFiles = Object.keys(SOURCES).length;
     <h2>What is covered</h2>
     <ul>
       <li><strong>Jobs</strong>: Periodic Labour Force Survey (PLFS). Annual figures for calendar years {PLFS_YEARS[0]} to {PLFS_YEARS[PLFS_YEARS.length - 1]} (MoSPI's data service does not have the earlier July–June annual figures, except job conditions from 2017-18); quarterly figures for towns and cities from April–June 2018, and for villages too from 2025; monthly figures from January 2025.</li>
-      <li><strong>Consumer prices</strong>: Consumer Price Index, base 2012, {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}: every group and item group for All India, the general index for every state. The new base-2024 series (from January 2026) is not yet in MoSPI's data service.</li>
+      <li><strong>Consumer prices, old series</strong>: Consumer Price Index, base 2012, {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}, from MoSPI's data service: every group and item group for All India, the general index for every state.</li>
+      <li><strong>Consumer prices, new series</strong>: Consumer Price Index, base 2024, January 2026 to {monthLabel(CPI24_LATEST)}, read from MoSPI's monthly press releases ({Object.keys(CPI24_RELEASES).length} so far): the All-India index from January 2025 and inflation from January 2026, and each month's 12 divisions, 43 groups and 36 states. MoSPI's data service lists the base-2024 series but does not yet return its figures. Each release's tables are read from its web page and checked against its PDF; the June 2026 release has no PDF. Divisions, groups and states are as first published (provisional); the All-India series is final except for the latest month.</li>
       <li><strong>Prices for farm and rural labourers</strong>: the Labour Bureau's CPI-AL and CPI-RL, base 1986-87 and, from June 2025, base 2019.</li>
       <li><strong>Household spending</strong>: Household Consumption Expenditure Survey, {HCES_YEARS.join(" and ")}.</li>
     </ul>
@@ -57,6 +60,7 @@ const nFiles = Object.keys(SOURCES).length;
     <ul>
       <li><strong>Jobs</strong>: the three rates are tied together (worker ratio = participation × (1 − unemployment rate)), and every published combination is tested; the figure for everyone must lie between women's and men's, and the rural + urban figure between rural and urban; shares of workers by industry, type of work or employer must add up to 100%.</li>
       <li><strong>Prices</strong>: every published inflation rate is worked out again from the index a year earlier; the combined index must lie between the rural and urban index; no month may be missing.</li>
+      <li><strong>New price series</strong>: each release's headline sentence, summary table and annexures must give the same inflation; every table on the release page must match the release PDF; a later release may revise only the previous month's provisional figures; and the linking factors MoSPI published must equal the 2025 average of the new index divided by that of the old.</li>
       <li><strong>Spending</strong>: the twelve spending classes, weighted by the share of people in each, must give the average; item categories must add up to the food and non-food totals, and those to the average.</li>
     </ul>
     <ul class="checklist small">
@@ -75,7 +79,7 @@ const nFiles = Object.keys(SOURCES).length;
       <li>For 2025 in current weekly status, the "all self-employed" share is not the sum of its parts; the site uses usual-status figures.</li>
       <li><strong>Household spending by item category</strong> filed under six states (rural, 2022-23) does not add up to those states' own average and appears to be other states' figures (Goa's adds up to Andhra Pradesh's average, Haryana's to Assam's). Those breakdowns are left out.</li>
       <li>The farm labourers' index for Delhi (new series) is published as 0.00; it is treated as not compiled.</li>
-      <li>{count("MoSPI's data service returns characters")} other figures are published as stray characters (such as a backtick) instead of numbers.</li>
+      <li>{count("MoSPI's data service returns characters")} other figures are published as stray characters (such as a backtick) instead of numbers. The July 2026 price release prints one food index as "109.`39"; the next release's final figure is used.</li>
     </ul>
   </section>
 
@@ -92,7 +96,7 @@ const nFiles = Object.keys(SOURCES).length;
   <section class="card">
     <h2>Not here yet</h2>
     <ul>
-      <li>The new Consumer Price Index on base 2024, and the new bases of industrial production and wholesale prices, when MoSPI's data service carries them.</li>
+      <li>The new bases of industrial production and wholesale prices, when MoSPI's data service carries them. The new Consumer Price Index will switch to the data service once it returns figures.</li>
       <li>Annual PLFS figures for the July–June years 2017-18 to 2023-24, from MoSPI's annual reports.</li>
       <li>State comparisons from the RBI's Handbook of Statistics on Indian States (income per person, wage rates).</li>
       <li>The Time Use Survey and the Multiple Indicator Survey (MoSPI's data service did not return them when tried).</li>

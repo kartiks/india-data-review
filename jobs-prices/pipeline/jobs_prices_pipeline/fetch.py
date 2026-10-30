@@ -24,7 +24,9 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .sources import API, PAGE_LIMIT, queries
+import re
+
+from .sources import API, CPI2024_RELEASES, PAGE_LIMIT, queries
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
@@ -121,6 +123,44 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
     return True
 
 
+def release_content(html: str) -> str:
+    """The press release itself, cut from the PIB page: from its title to just before the page's visitor counter
+    and language links, which change on every visit. Keeping only this makes an unchanged release give the
+    same file (and SHA-256)."""
+    i = html.find("CONSUMER PRICE INDEX ON BASE 2024")
+    if i < 0:
+        raise RuntimeError("release title not found")
+    start = html.rfind("<", 0, i)
+    end = html.find('<div id="reel_pic">', i)
+    if end < 0:
+        raise RuntimeError("end of release not found")
+    return html[start:end].strip() + "\n"
+
+
+def fetch_cpi2024(manifest: dict, force: bool) -> None:
+    """Each month's CPI (base 2024) press release on PIB: the release's text and tables, and its PDF where it has one."""
+    for month, page in CPI2024_RELEASES.items():
+        key = f"cpi2024/{month}"
+        if key in manifest and not force:
+            continue
+        html = get(page).decode("utf-8", "ignore")
+        content = release_content(html).encode()
+        changed = save(manifest, key, RAW / f"{key}.html", content, page)
+        print(f"{key}: release page, {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
+        links = sorted(set(re.findall(r"https://static\.pib\.gov\.in/WriteReadData/specificdocs/documents/[^\"'&\s]+\.pdf", html)))
+        if len(links) > 1:
+            raise RuntimeError(f"{key}: more than one PDF on {page}: {links}")
+        if links:
+            pdf = get(links[0])
+            if not pdf.startswith(b"%PDF"):
+                raise RuntimeError(f"{key}: {links[0]} is not a PDF")
+            save(manifest, f"{key}/pdf", RAW / f"{key}.pdf", pdf, links[0], {"release_page": page})
+            print(f"{key}: PDF {len(pdf):,} bytes", flush=True)
+        else:
+            manifest[f"{key}/pdf"] = {"url": page, "empty": True, "note": "no PDF attached to this release", "checked_at": now()}
+        time.sleep(1)
+
+
 def load_manifest() -> dict:
     return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
 
@@ -146,6 +186,7 @@ def main(force: bool = False) -> None:
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}", flush=True)
             write_manifest(manifest)
             time.sleep(0.3)
+        fetch_cpi2024(manifest, force)
     finally:
         write_manifest(manifest)
 

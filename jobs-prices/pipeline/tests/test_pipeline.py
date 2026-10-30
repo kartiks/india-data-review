@@ -61,3 +61,25 @@ def test_compact_table_round_trip():
 @pytest.mark.skipif(not (ROOT / "sources" / "manifest.json").exists(), reason="sources not downloaded")
 def test_checks_pass_on_saved_data():
     assert checks.main() == 0
+
+
+def test_release_table_reader():
+    from jobs_prices_pipeline import cpi2024
+
+    html = """<h2>PRESS RELEASE OF CONSUMER PRICE INDEX ON BASE 2024=100 FOR MAY, 2026</h2>
+    <p>Year-on-year inflation rate based on All India Consumer Price Index (CPI) with base year 2024 for the month of May,
+    2026 over May, 2025 is 3.93%(Provisional). Corresponding inflation rates for rural and urban are 4.25% and 3.53%, respectively.</p>
+    <table><tr><td></td><td>May, 2026 (Provisional)</td><td>April, 2026 (Final)</td></tr>
+    <tr><td>Inflation (%)</td><td>CPI (General)</td><td>4.25</td><td>3.53</td><td>3.93</td><td>3.74</td><td>3.16</td><td>3.48</td></tr>
+    <tr><td>CFPI</td><td>4.85</td><td>4.66</td><td>4.78</td><td>4.26</td><td>4.1`0</td><td>4.20</td></tr></table>
+    <table><tr><td>S.No.</td><td>State/UT</td><td>CPI</td><td>Inflation</td><td></td></tr>
+    <tr><td></td><td>Andhra Pradesh</td><td>106.04</td><td>106.10</td><td>106.06</td><td>5.09</td><td>4.80</td><td>4.97</td><td></td></tr>
+    <tr><td></td><td>Uttar Pradesh</td><td>106.24</td><td>105.58</td><td>106.03</td><td>4.30</td><td>4.10</td><td>4.20</td><td></td></tr>
+    <tr><td></td><td>Chandigarh*</td><td>-</td><td>104.98</td><td>104.98</td><td>-</td><td>3.10</td><td>3.10</td></tr></table>"""
+    r = cpi2024.parse(html, "2026-05")
+    assert r["headline"]["combined"] == 3.93 and r["headline"]["rural"] == 4.25
+    assert r["summary"]["current"]["general_inflation"] == [4.25, 3.53, 3.93]  # column order read from the header
+    assert r["summary"]["previous"]["general_inflation"] == [3.74, 3.16, 3.48]
+    assert any("`" in p for p in r["problems"])  # the stray backtick is reported, not read as a number
+    assert [s["name"] for s in r["states"]] == ["Andhra Pradesh", "Uttar Pradesh", "Chandigarh"]  # trailing empty cells dropped
+    assert r["states"][2]["values"][0] is None

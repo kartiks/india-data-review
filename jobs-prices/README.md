@@ -22,7 +22,11 @@ All from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mosp
   series from January 2025. The first release also gives the linking factors and old vs new weights.
 - **CPI for agricultural and rural labourers** (Labour Bureau), `/api/cpialrl/getCpialrlRecords`: base 1986-87 and,
   from June 2025, base 2019.
-- **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`.
+- **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`. MoSPI publishes
+  rural and urban figures only; for an overall (rural + urban) average the pipeline also downloads Table A2 of MoSPI's
+  full 2023-24 report (`sources.HCES_REPORT_TABLES`), the survey's estimated number of persons in each state's rural and
+  urban areas, and weights the two averages by it (`build.hces_overall`). The 2022-23 report's tables are not online
+  as files, so overall figures are for 2023-24.
 
 ## Run it
 
@@ -86,6 +90,7 @@ in `data/validation_report.md`, compare the figure with MoSPI's own publication,
 | `cpi.csv`, `cpialrl.csv` | Price indices and inflation |
 | `cpi2024.csv` | Every figure read from the base-2024 releases, with the release it came from |
 | `hces.csv` | Household spending; `left_out` as above |
+| `hces_overall.csv` | Rural + urban spending per person and food share, with the persons used as weights |
 | `sources.csv` | Every downloaded file: key, URL, SHA-256, date. Each CSV row names its source key |
 | `validation_report.md` | Every check and the reason for every allowed exception |
 
@@ -100,7 +105,8 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 - **New price series**: headline sentence, summary table and annexures agree; page tables match the PDF; later
   releases revise only the previous month's provisional figures; linking factor = 2025 average new ÷ old.
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food
-  totals, and those to the average.
+  totals, and those to the average. Table A2's averages match the data service's; its states' persons add up to All
+  India; every overall average lies between the rural and urban averages.
 
 ### Problems found in MoSPI's data (each left out and listed in the report)
 

@@ -428,6 +428,13 @@
   "fetched_at": "2026-10-30T15:22:15+00:00",
   "records": 1480
  },
+ "hces_report/2023-24/TableA2": {
+  "url": "https://mospi.gov.in/sites/default/files/publication_reports/HCES-23-24/TableA2.xlsx",
+  "file": "sources/raw/hces_report/2023-24/TableA2.xlsx",
+  "sha256": "5e87cc21db8424b7bb7e60681393183b01f1ded67dfb70d0a12270e5e72da12a",
+  "bytes": 96452,
+  "fetched_at": "2026-11-01T16:54:57+00:00"
+ },
  "plfs/annual/ind01": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=1&Format=JSON",
   "file": "sources/raw/plfs/annual/ind01.json",

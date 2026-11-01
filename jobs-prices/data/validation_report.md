@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service. Every allowed exception lists its reason.
 
-**Result: PASSED** (590795 checks, 0 failures)
+**Result: PASSED** (590945 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -213,6 +213,11 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 1888 checks, 0 failures.
 
 - Allowed (6): In MoSPI's data service, the spending by item category filed under these states (rural, 2022-23, without imputation) does not add up to the state's own average spending; it appears to be other states' figures (Goa's categories add up to Andhra Pradesh's average, Haryana's to Assam's, Himachal Pradesh's to Bihar's, Jharkhand's to Chhattisgarh's). The category breakdown (rupees and shares) for these cells is left out of the site; the average itself is shown. Cases: 2022-23, Goa, Rural, Without Imputation: spending by category adds up to ₹4,870, but average spending for this cell is ₹7,367; 2022-23, Gujarat, Rural, Without Imputation: spending by category adds up to ₹5,276, but average spending for this cell is ₹3,798; 2022-23, Haryana, Rural, Without Imputation: spending by category adds up to ₹3,432, but average spending for this cell is ₹4,859; 2022-23, Himachal Pradesh, Rural, Without Imputation: spending by category adds up to ₹3,384, but average spending for this cell is ₹5,561; 2022-23, Jharkhand, Rural, Without Imputation: spending by category adds up to ₹2,466, but average spending for this cell is ₹2,763; 2022-23, Karnataka, Rural, Without Imputation: spending by category adds up to ₹6,576, but average spending for this cell is ₹4,397
+
+## ✅ Household spending: overall (rural + urban) averages
+150 checks, 0 failures.
+
+- Overall average = (rural persons × rural average + urban persons × urban average) ÷ all persons, with persons from Table A2 of MoSPI's HCES report; food's share is weighted by each area's total spending.
 
 ## ✅ Prices, new series (base 2024): every release read in full
 9 checks, 0 failures.

@@ -31,13 +31,15 @@ npm run check    # type check
 | `/jobs-prices/` | Unemployment, women in work, inflation, spending per person; monthly inflation |
 | `/jobs-prices/jobs/`, `/jobs-prices/work/` | PLFS: participation and unemployment by sex, age, area, education, group, state; industry, type of work, job conditions, earnings |
 | `/jobs-prices/prices/`, `/jobs-prices/spending/` | CPI inflation on both series (base 2012 to Dec 2025, base 2024 from Jan 2026) by month, year, group, division and state; CPI-AL/RL; HCES spending by state, class, item, group |
-| `/jobs-prices/states/`, `/jobs-prices/sources/` | All states side by side; sources, checks, problems found, downloads |
+| `/jobs-prices/states/`, `/jobs-prices/sources/` | India map coloured by a chosen measure, with the full table below; sources, checks, problems found, downloads |
 | `/about/` | What the site is, principles, every area's check results |
 
 Code layout: `src/lib/budget/`, `src/lib/gdp/` and `src/lib/jobs-prices/` read each area's data; `src/components/` holds the shared
 charts (`components/budget/` the budget-only ones; `DotRows.astro` compares two or three values per row, such as
 rural vs urban by state); `src/layouts/Base.astro` has the tabs and sub-navigation, and works out the area from
-the URL. A new area also needs adding to `AREAS` in `scripts/copy-data.mjs`, which copies each area's checked
+the URL. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
+(CC BY 4.0, following the Survey of India's map) simplified by `scripts/make-india-map.py`, whose header says how to
+redo it; the page must credit DataMeet. A new area also needs adding to `AREAS` in `scripts/copy-data.mjs`, which copies each area's checked
 data into `public/data/<area>/` for download and stops the build if a validation report does not say PASSED.
 
 ## How numbers are chosen

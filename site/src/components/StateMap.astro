@@ -1,0 +1,179 @@
+---
+// India map coloured by one metric at a time, with buttons to switch metric.
+// Outlines: src/data/india-states.json (DataMeet, CC BY 4.0, following the Survey of India map; see
+// scripts/make-india-map.py). Drawn at build time; the first metric is coloured without JavaScript, and a small
+// script swaps metrics, shows the legend and gives a hover/tap readout. Colour is one hue, light to dark, in five
+// steps that each hold about the same number of states (quantiles); a state with no figure is grey.
+import fs from "node:fs";
+import path from "node:path";
+import { stateKey } from "../lib/jobs-prices/data";
+
+export interface MapMetric {
+  id: string;
+  label: string; // button text
+  title: string; // shown above the map when selected
+  note?: string;
+  values: Record<string, number | null>; // keyed by stateKey() from lib/jobs-prices/data
+  format: (v: number) => string;
+}
+interface Props {
+  metrics: MapMetric[];
+  names: Record<string, string>; // stateKey -> display name
+  source?: string;
+}
+const { metrics, names, source } = Astro.props;
+
+const geo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), "src", "data", "india-states.json"), "utf8")) as {
+  source: string; states: { name: string; rings: [number, number][][] }[];
+};
+// Equirectangular projection with longitude scaled by cos(22°), India's middle latitude.
+const K = Math.cos((22 * Math.PI) / 180);
+const all = geo.states.flatMap((s) => s.rings.flat());
+const minX = Math.min(...all.map(([x]) => x)), maxX = Math.max(...all.map(([x]) => x));
+const minY = Math.min(...all.map(([, y]) => y)), maxY = Math.max(...all.map(([, y]) => y));
+const S = 20; // units per degree
+const W = (maxX - minX) * K * S, H = (maxY - minY) * S;
+const px = (x: number) => ((x - minX) * K * S).toFixed(1);
+const py = (y: number) => ((maxY - y) * S).toFixed(1);
+const shapes = geo.states.map((s) => ({
+  key: stateKey(s.name),
+  d: s.rings.map((r) => "M" + r.map(([x, y]) => `${px(x)},${py(y)}`).join("L") + "Z").join(""),
+}));
+
+// Five quantile classes per metric.
+const STEPS = 5;
+const prepared = metrics.map((m) => {
+  const vals = Object.values(m.values).filter((v): v is number => v != null).sort((a, b) => a - b);
+  const cuts = Array.from({ length: STEPS - 1 }, (_, i) => vals[Math.floor(((i + 1) * vals.length) / STEPS)]);
+  const cls = (v: number) => cuts.filter((c) => v >= c).length;
+  const legend = Array.from({ length: STEPS }, (_, i) => {
+    const inClass = vals.filter((v) => cls(v) === i);
+    return inClass.length ? `${m.format(inClass[0])} – ${m.format(inClass[inClass.length - 1])}` : "";
+  });
+  const states: Record<string, { c: number; t: string }> = {};
+  for (const [k, v] of Object.entries(m.values)) states[k] = v == null ? { c: -1, t: "no figure" } : { c: cls(v), t: m.format(v) };
+  return { id: m.id, label: m.label, title: m.title, note: m.note ?? "", legend, states };
+});
+const first = prepared[0];
+const SMALL = ["chandigarh", "delhi", "dadraandnagarhavelianddamananddiu", "goa", "lakshadweep", "puducherry"];
+const payload = JSON.stringify({ metrics: prepared, names });
+const id = "m" + Math.random().toString(36).slice(2, 9);
+---
+<figure class="state-map" id={id}>
+  <div class="controls" role="group" aria-label="Choose what the map shows">
+    {prepared.map((m, i) => (
+      <button type="button" class="metric" data-metric={m.id} aria-pressed={i === 0 ? "true" : "false"}>{m.label}</button>
+    ))}
+  </div>
+  <figcaption>
+    <h3 class="map-title">{first.title}</h3>
+    <p class="muted small map-note">{first.note}</p>
+  </figcaption>
+  <div class="map-wrap">
+    <svg viewBox={`0 0 ${W.toFixed(0)} ${H.toFixed(0)}`} role="img" aria-label={`Map of India's states and union territories, coloured by the chosen measure. Every value is in the table below.`}>
+      {shapes.map((s) => (
+        <path d={s.d} data-key={s.key} data-cls={String(first.states[s.key]?.c ?? -1)} tabindex="0" aria-label={`${names[s.key] ?? s.key}: ${first.states[s.key]?.t ?? "no figure"}`} />
+      ))}
+    </svg>
+    <div class="side">
+      <p class="legend-head muted small">Stronger colour = higher value</p>
+      <ol class="legend small" aria-label="Legend">
+        {first.legend.map((l, i) => (
+          <li><span class="sw" data-cls={String(i)} aria-hidden="true" /><span class="lg">{l}</span></li>
+        ))}
+        <li><span class="sw" data-cls="-1" aria-hidden="true" />No figure</li>
+      </ol>
+      <p class="readout" aria-live="polite"><span class="muted small">Hover over or tap a state.</span></p>
+      <div class="small-uts small">
+        <p class="muted">Small states and UTs</p>
+        <ul>
+          {SMALL.map((k) => (
+            <li data-key={k}><span class="sw" data-cls={String(first.states[k]?.c ?? -1)} aria-hidden="true" /><span>{names[k] ?? k}</span><strong class="v">{first.states[k]?.t ?? "no figure"}</strong></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {source && <p class="source">{source}</p>}
+  <script type="application/json" class="map-data" set:html={payload} />
+</figure>
+
+<script>
+  function setup(fig: HTMLElement) {
+    const data = JSON.parse(fig.querySelector(".map-data")!.textContent!) as {
+      metrics: { id: string; title: string; note: string; legend: string[]; states: Record<string, { c: number; t: string }> }[];
+      names: Record<string, string>;
+    };
+    let current = data.metrics[0];
+    const readout = fig.querySelector<HTMLElement>(".readout")!;
+    const show = (key: string | null) => {
+      if (!key) return;
+      const st = current.states[key];
+      readout.innerHTML = "";
+      const name = document.createElement("strong");
+      name.textContent = data.names[key] ?? key;
+      const val = document.createElement("span");
+      val.textContent = ` ${st ? st.t : "no figure"}`;
+      readout.append(name, val);
+      fig.querySelectorAll("path.on").forEach((p) => p.classList.remove("on"));
+      fig.querySelector(`path[data-key="${key}"]`)?.classList.add("on");
+    };
+    const paint = () => {
+      fig.querySelector(".map-title")!.textContent = current.title;
+      fig.querySelector(".map-note")!.textContent = current.note;
+      fig.querySelectorAll<SVGPathElement>("path[data-key]").forEach((p) => {
+        const st = current.states[p.dataset.key!];
+        p.dataset.cls = String(st ? st.c : -1);
+        p.setAttribute("aria-label", `${data.names[p.dataset.key!] ?? p.dataset.key}: ${st ? st.t : "no figure"}`);
+      });
+      fig.querySelectorAll<HTMLElement>(".legend .lg").forEach((el, i) => (el.textContent = current.legend[i] ?? ""));
+      fig.querySelectorAll<HTMLElement>(".small-uts li").forEach((li) => {
+        const st = current.states[li.dataset.key!];
+        li.querySelector<HTMLElement>(".sw")!.dataset.cls = String(st ? st.c : -1);
+        li.querySelector(".v")!.textContent = st ? st.t : "no figure";
+      });
+      const on = fig.querySelector<SVGPathElement>("path.on");
+      if (on) show(on.dataset.key!);
+    };
+    fig.querySelectorAll<HTMLButtonElement>("button.metric").forEach((b) =>
+      b.addEventListener("click", () => {
+        current = data.metrics.find((m) => m.id === b.dataset.metric)!;
+        fig.querySelectorAll("button.metric").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        paint();
+      }),
+    );
+    const svg = fig.querySelector("svg")!;
+    svg.addEventListener("pointerover", (e) => show((e.target as SVGElement).dataset?.key ?? null));
+    svg.addEventListener("click", (e) => show((e.target as SVGElement).dataset?.key ?? null));
+    svg.addEventListener("focusin", (e) => show((e.target as SVGElement).dataset?.key ?? null));
+  }
+  document.querySelectorAll<HTMLElement>("figure.state-map").forEach(setup);
+</script>
+
+<style>
+  .state-map { margin: 0; }
+  .controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .metric { font: inherit; font-size: 0.85rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+  .metric[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+  .map-title { margin-bottom: 2px; }
+  .map-wrap { display: grid; gap: 16px; align-items: start; }
+  @media (min-width: 760px) { .map-wrap { grid-template-columns: minmax(0, 3fr) minmax(200px, 2fr); } }
+  svg { width: 100%; height: auto; display: block; max-height: 640px; }
+  path { stroke: var(--surface); stroke-width: 0.6; stroke-linejoin: round; cursor: pointer; outline: none; }
+  path.on, path:focus-visible { stroke: var(--ink); stroke-width: 1.4; }
+  /* one hue, light to dark (five steps); grey = no figure */
+  [data-cls="0"] { fill: color-mix(in oklab, var(--s1) 26%, var(--surface)); background: color-mix(in oklab, var(--s1) 26%, var(--surface)); }
+  [data-cls="1"] { fill: color-mix(in oklab, var(--s1) 45%, var(--surface)); background: color-mix(in oklab, var(--s1) 45%, var(--surface)); }
+  [data-cls="2"] { fill: color-mix(in oklab, var(--s1) 64%, var(--surface)); background: color-mix(in oklab, var(--s1) 64%, var(--surface)); }
+  [data-cls="3"] { fill: color-mix(in oklab, var(--s1) 82%, var(--surface)); background: color-mix(in oklab, var(--s1) 82%, var(--surface)); }
+  [data-cls="4"] { fill: var(--s1); background: var(--s1); }
+  [data-cls="-1"] { fill: var(--grid); background: var(--grid); }
+  .legend-head { margin: 0 0 6px; }
+  .legend { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 4px; color: var(--ink-2); }
+  .legend li, .small-uts li { display: flex; align-items: center; gap: 8px; }
+  .sw { width: 14px; height: 14px; border-radius: 3px; flex: none; }
+  .readout { min-height: 2.6em; margin: 0 0 12px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; }
+  .small-uts p { margin: 0 0 4px; }
+  .small-uts ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+  .small-uts .v { margin-left: auto; font-weight: 600; font-variant-numeric: tabular-nums; }
+</style>

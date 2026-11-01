@@ -26,6 +26,8 @@ interface Dataset {
     linking: Record<string, number>;
     weights: { division: string; rural_2012: number; rural_2024: number; urban_2012: number; urban_2024: number; combined_2012: number; combined_2024: number }[];
   };
+  hces_overall: { year: string; state: string; imputation_type: string; persons_rural_00: number; persons_urban_00: number;
+    mpce_rural: number; mpce_urban: number; mpce: number; food_share?: number }[];
   source_problems: string[];
 }
 
@@ -184,6 +186,10 @@ export interface Cpi24Row { code: string; name: string; index: Num[]; inflation:
 export function cpi24Rows(kind: "divisions" | "groups" | "states", month = C24.latest): Cpi24Row[] {
   return (C24[kind][month] ?? []).map(([code, name, ...v]) => ({ code, name, index: v.slice(0, 3), inflation: v.slice(3, 6) }));
 }
+/** One key for a state however a source spells it: "The Dadra And Nagar Haveli And Daman And Diu",
+ * "Dadra & Nagar Haveli & Daman & Diu" and "Dadra and Nagar Haveli and Daman and Diu" all give the same key. */
+export const stateKey = (s: string) =>
+  s.toLowerCase().replace(/&/g, "and").replace(/^the |^nct of |\bislands?\b/g, "").replace(/[^a-z]/g, "");
 /** "Andaman And Nicobar Islands" -> "Andaman & Nicobar Islands"; the releases spell names differently from MoSPI's API. */
 export const tidyState = (s: string) => s.replace(/ And /g, " & ").replace(/^The /, "").replace("NCT of Delhi", "Delhi");
 
@@ -206,6 +212,12 @@ export function hces(q: Partial<HcesRow>): HcesRow[] {
   return HCES.filter((r) => Object.entries(q).every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v));
 }
 export const hcesValue = (q: Partial<HcesRow>) => hces(q)[0]?.value ?? undefined;
+/** Rural + urban average, weighted by the survey's estimated persons (MoSPI's report, Table A2); worked out by the pipeline. */
+export const hcesOverall = (state: string, year: string, imputation = NOT_IMPUTED) =>
+  DS.hces_overall.find((r) => stateKey(r.state) === stateKey(state) && r.year === year && r.imputation_type === imputation);
+/** Like hcesValue, but matching the state however it is spelt (the surveys spell some UTs differently). */
+export const hcesValueFor = (state: string, q: Partial<HcesRow>) =>
+  HCES.find((r) => stateKey(r.state) === stateKey(state) && Object.entries(q).every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v))?.value ?? undefined;
 
 // ---- states ---------------------------------------------------------------------------------------
 

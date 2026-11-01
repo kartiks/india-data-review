@@ -26,7 +26,7 @@ from pathlib import Path
 
 import re
 
-from .sources import API, CPI2024_RELEASES, PAGE_LIMIT, queries
+from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, queries
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
@@ -161,6 +161,19 @@ def fetch_cpi2024(manifest: dict, force: bool) -> None:
         time.sleep(1)
 
 
+def fetch_hces_tables(manifest: dict, force: bool) -> None:
+    """Excel tables from MoSPI's full HCES report."""
+    for name, url in HCES_REPORT_TABLES.items():
+        key = f"hces_report/{name}"
+        if key in manifest and not force:
+            continue
+        content = get(url)
+        if not content.startswith(b"PK"):
+            raise RuntimeError(f"{key}: {url} is not an Excel file")
+        changed = save(manifest, key, RAW / f"{key}.xlsx", content, url)
+        print(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
+
+
 def load_manifest() -> dict:
     return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
 
@@ -187,6 +200,7 @@ def main(force: bool = False) -> None:
             write_manifest(manifest)
             time.sleep(0.3)
         fetch_cpi2024(manifest, force)
+        fetch_hces_tables(manifest, force)
     finally:
         write_manifest(manifest)
 

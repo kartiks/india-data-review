@@ -51,6 +51,13 @@ HCES_INDICATORS = {  # file name -> MoSPI's indicator code (as the API spells it
 }
 
 
+# HCES report tables (Excel), from MoSPI's full survey report. Table A2 gives the survey's estimated number of
+# households and persons in each state's rural and urban areas, used to weight rural and urban averages into an
+# overall average (MoSPI publishes rural and urban only). The 2022-23 report's tables are not online as files.
+HCES_REPORT_TABLES = {
+    "2023-24/TableA2": "https://mospi.gov.in/sites/default/files/publication_reports/HCES-23-24/TableA2.xlsx",
+}
+
 # Month of the index -> PIB page of MoSPI's press release for it (English).
 CPI2024_RELEASES = {
     "2026-01": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227012&reg=3&lang=1",

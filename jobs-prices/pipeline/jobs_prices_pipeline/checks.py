@@ -564,6 +564,43 @@ def check_cpi2024(ds: dict, report: Report) -> None:
     report.add("Prices, new series: release page tables match the PDF", checked, failures, notes)
 
 
+def check_hces_overall(ds: dict, report: Report) -> None:
+    """Table A2 (the full report) agrees with MoSPI's data service, and the overall averages are sound."""
+    failures, notes, checked = [], [], 0
+    pop = ds["hces_population"]
+    if not pop:
+        report.add("Household spending: overall (rural + urban) averages", 0, ["Table A2 not read"], [])
+        return
+    mpce = {(r["year"], r["state"], r["sector"]): r["value"] for r in ds["hces"]
+            if r["indicator"] == "Average monthly per capita consumption expenditure (MPCE)" and r["imputation_type"] == "Without Imputation"}
+    for p in pop:
+        checked += 1
+        api = mpce.get((p["year"], p["state"], p["sector"]))
+        if api is None:
+            failures.append(f"Table A2 {p['year']} {p['state']} {p['sector']}: no matching average in MoSPI's data service")
+        elif abs(p["mpce_a2"] - api) > 0.51:
+            failures.append(f"Table A2 {p['year']} {p['state']} {p['sector']}: average ₹{p['mpce_a2']} vs data service ₹{api}")
+    for year in sorted({p["year"] for p in pop}):
+        for sector in ("Rural", "Urban"):
+            states = [p["persons_00"] for p in pop if p["year"] == year and p["sector"] == sector and p["state"] != "All India"]
+            india = next((p["persons_00"] for p in pop if p["year"] == year and p["sector"] == sector and p["state"] == "All India"), None)
+            checked += 1
+            if india is None or abs(sum(states) - india) > max(50, india * 0.0005):
+                failures.append(f"Table A2 {year} {sector}: states' persons add up to {sum(states):,} (hundreds), All India {india}")
+    for r in ds["hces_overall"]:
+        checked += 1
+        lo, hi = sorted((r["mpce_rural"], r["mpce_urban"]))
+        if not (lo <= r["mpce"] <= hi):
+            failures.append(f"{r['year']} {r['state']} {r['imputation_type']}: overall ₹{r['mpce']:.0f} outside rural and urban")
+    matched = {(r["year"], r["state"]) for r in ds["hces_overall"]}
+    missing = sorted({(p["year"], p["state"]) for p in pop} - matched)
+    if missing:
+        notes.append(f"No overall figure (rural or urban average missing): {missing}")
+    notes.append("Overall average = (rural persons × rural average + urban persons × urban average) ÷ all persons, "
+                 "with persons from Table A2 of MoSPI's HCES report; food's share is weighted by each area's total spending.")
+    report.add("Household spending: overall (rural + urban) averages", checked, failures, notes)
+
+
 def main(ds: dict | None = None) -> int:
     if ds is None:
         from .build import assemble
@@ -577,6 +614,7 @@ def main(ds: dict | None = None) -> int:
     check_cpi(ds, report)
     check_cpialrl(ds, report)
     check_hces(ds, report)
+    check_hces_overall(ds, report)
     check_cpi2024(ds, report)
     (DATA / "validation_report.md").write_text(report.markdown())
     for title, checked, failures, _ in report.sections:

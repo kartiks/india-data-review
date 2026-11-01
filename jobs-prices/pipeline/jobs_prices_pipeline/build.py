@@ -351,6 +351,68 @@ def hces(manifest: dict, problems: list[str]) -> list[dict]:
     return out
 
 
+HCES_FOOD_ITEMS = {"Cereal", "Cereal Substitutes", "Gram", "Pulses and Pulse Products", "Milk and Milk Products", "Salt",
+                   "Sugar", "Edible Oil", "Egg, Fish & Meat", "Vegetables", "Fruits (fresh)", "Fruits (dry)", "Spices",
+                   "Beverages, Processed Food, etc."}
+
+
+# Table A2 spellings -> the names MoSPI's data service uses for the same state or UT
+A2_NAMES = {"All-India": "All India", "Dadra and Nagar Haveli & Daman and Diu": "Dadra & Nagar Haveli and Daman & Diu"}
+
+
+def hces_population(manifest: dict) -> list[dict]:
+    """Table A2 of MoSPI's HCES report: estimated households and persons (adults + children), and average MPCE, for
+    each state's rural and urban areas ('All classes' rows). Estimated numbers are printed in hundreds."""
+    import openpyxl
+
+    out = []
+    for key, e in sorted(manifest.items()):
+        if not key.startswith("hces_report/") or not key.endswith("/TableA2") or e.get("empty"):
+            continue
+        year = key.split("/")[1]
+        ws = openpyxl.load_workbook(ROOT / e["file"], data_only=True, read_only=True).worksheets[0]
+        sector = state = None
+        for r in ws.iter_rows(min_row=6, values_only=True):
+            if r[0] in ("Rural", "Urban"):
+                sector = r[0]
+            if r[1]:
+                state = str(r[1]).strip()
+            if r[2] == "All classes":
+                name = A2_NAMES.get(state, state)
+                out.append({"year": year, "state": name, "sector": sector,
+                            "households_00": r[3], "persons_00": (r[6] or 0) + (r[9] or 0), "mpce_a2": r[10],
+                            "source": key})
+    return out
+
+
+def hces_overall(population: list[dict], rows: list[dict]) -> list[dict]:
+    """Rural + urban averages, weighting MoSPI's rural and urban figures by the survey's own estimated persons
+    (Table A2). Average spending per person is a person-weighted mean, so this is the all-area average. Food's share
+    of spending weights each area's share by its total spending (persons x average spending)."""
+    pop = {(p["year"], p["state"], p["sector"]): p for p in population}
+    mpce = {(r["year"], r["state"], r["sector"], r["imputation_type"]): r["value"] for r in rows
+            if r["indicator"] == HCES_MPCE and not r["left_out"]}
+    food = {(r["year"], r["state"], r["sector"], r["imputation_type"]): r["value"] for r in rows
+            if r["indicator"] == HCES_CATEGORIES[1] and r.get("item_category") == "Food Total" and not r["left_out"]}
+    out = []
+    for (year, state, sector), p in sorted(pop.items()):
+        if sector != "Rural":
+            continue
+        u = pop.get((year, state, "Urban"))
+        for imp in ("Without Imputation", "With Imputation"):
+            mr, mu = mpce.get((year, state, "Rural", imp)), mpce.get((year, state, "Urban", imp))
+            pr, pu = p["persons_00"], (u or {}).get("persons_00")
+            if None in (mr, mu, pr, pu) or not (pr + pu):
+                continue
+            rec = {"year": year, "state": state, "imputation_type": imp, "persons_rural_00": pr, "persons_urban_00": pu,
+                   "mpce_rural": mr, "mpce_urban": mu, "mpce": (pr * mr + pu * mu) / (pr + pu), "source": p["source"]}
+            fr, fu = food.get((year, state, "Rural", imp)), food.get((year, state, "Urban", imp))
+            if fr is not None and fu is not None:
+                rec["food_share"] = (pr * mr * fr + pu * mu * fu) / (pr * mr + pu * mu)
+            out.append(rec)
+    return out
+
+
 # ---- outputs ------------------------------------------------------------------------------------
 
 def fields_of(rows: list[dict], first: list[str]) -> list[str]:
@@ -423,6 +485,7 @@ def site_json(ds: dict) -> dict:
         "hces": table(HCES_SITE_FIELDS, [[HCES_SITE[r["indicator"]]] + [r.get(f) for f in HCES_SITE_FIELDS[1:]]
                                          for r in ds["hces"] if r["indicator"] in HCES_SITE and not r["left_out"]]),
         "cpi2024": cpi2024_site(ds["cpi2024"]),
+        "hces_overall": [{k: (round(v, 2) if isinstance(v, float) else v) for k, v in r.items() if k != "source"} for r in ds["hces_overall"]],
         "source_problems": ds["source_problems"],
     }
 
@@ -459,6 +522,8 @@ def assemble() -> dict:
     ds["cpi"] = cpi(manifest, problems)
     ds["cpialrl"] = cpialrl(manifest, problems)
     ds["hces"] = hces(manifest, problems)
+    ds["hces_population"] = hces_population(manifest)
+    ds["hces_overall"] = hces_overall(ds["hces_population"], ds["hces"])
     ds["cpi2024"] = cpi2024(manifest)
     ds["source_problems"] = problems
     return ds
@@ -479,6 +544,8 @@ def main() -> dict:
         "cpi.csv": (ds["cpi"], ["month", "state", "sector", "group", "subgroup", "index", "inflation"]),
         "cpialrl.csv": (ds["cpialrl"], ["month"]),
         "hces.csv": (ds["hces"], ["year", "state", "sector", "indicator"]),
+        "hces_overall.csv": (ds["hces_overall"], ["year", "state", "imputation_type", "persons_rural_00", "persons_urban_00",
+                                                  "mpce_rural", "mpce_urban", "mpce", "food_share"]),
         "cpi2024.csv": (cpi2024_rows(ds["cpi2024"]), ["table", "month", "code", "name", "sector", "index", "inflation", "status", "release_month"]),
     }
     for name, (rows, first) in outputs.items():

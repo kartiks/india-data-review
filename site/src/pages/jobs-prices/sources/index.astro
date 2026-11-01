@@ -24,6 +24,7 @@ const files = [
   ["cpi2024.csv", "Consumer Price Index, base 2024: every figure read from MoSPI's monthly press releases (divisions, groups, states, All-India series)"],
   ["cpialrl.csv", "Consumer Price Index for agricultural and rural labourers"],
   ["hces.csv", "Household consumption spending"],
+  ["hces_overall.csv", "Rural + urban spending per person and food share, with the estimated persons used as weights"],
   ["sources.csv", "Every downloaded file: address, fingerprint (SHA-256) and date"],
   ["validation_report.md", "Every check and every documented exception"],
 ];
@@ -47,7 +48,7 @@ const nFiles = Object.keys(SOURCES).length;
       <li><strong>Consumer prices, old series</strong>: Consumer Price Index, base 2012, {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}, from MoSPI's data service: every group and item group for All India, the general index for every state.</li>
       <li><strong>Consumer prices, new series</strong>: Consumer Price Index, base 2024, January 2026 to {monthLabel(CPI24_LATEST)}, read from MoSPI's monthly press releases ({Object.keys(CPI24_RELEASES).length} so far): the All-India index from January 2025 and inflation from January 2026, and each month's 12 divisions, 43 groups and 36 states. MoSPI's data service lists the base-2024 series but does not yet return its figures. Each release's tables are read from its web page and checked against its PDF; the June 2026 release has no PDF. Divisions, groups and states are as first published (provisional); the All-India series is final except for the latest month.</li>
       <li><strong>Prices for farm and rural labourers</strong>: the Labour Bureau's CPI-AL and CPI-RL, base 1986-87 and, from June 2025, base 2019.</li>
-      <li><strong>Household spending</strong>: Household Consumption Expenditure Survey, {HCES_YEARS.join(" and ")}.</li>
+      <li><strong>Household spending</strong>: Household Consumption Expenditure Survey, {HCES_YEARS.join(" and ")}. MoSPI publishes rural and urban figures; the overall (rural + urban) figures for 2023-24 weight them by the survey's estimated persons in each area, from Table A2 of MoSPI's full survey report (an Excel file on mospi.gov.in). The checks confirm that table's averages match the data service's.</li>
     </ul>
   </section>
 

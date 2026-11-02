@@ -2,7 +2,7 @@
 
 The handbook's page lists every table of the latest edition with its Excel file. The pipeline finds the tables in
 RBI_STATE_TABLES by their number, checks each title, and keeps the Excel files. When RBI publishes a new edition
-(usually in December), `--refresh` picks it up; changed files are kept in sources/snapshots/.
+(usually in December), the weekly refresh (`--refresh-api`) picks it up; changed files are kept in sources/snapshots/.
 
 Each sheet has a title, an optional sub-title ("(Rural Male)"), a unit ("(₹ Lakh)", "(Per Thousands)"), a header
 row starting "State/Union Territory" with the years (on that row or the next), one row per state and often an

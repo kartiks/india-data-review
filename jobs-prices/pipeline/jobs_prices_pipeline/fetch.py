@@ -9,7 +9,7 @@ MoSPI's API keeps only the latest figures. When a re-download differs from the
 saved file, the old file is kept under sources/snapshots/<date it was fetched>/
 before being replaced, so revisions build up over time.
 
-Run: uv run python -m jobs_prices_pipeline.fetch [--force]
+Run: uv run python -m jobs_prices_pipeline.fetch [--force | --force-api]
 """
 
 import hashlib
@@ -208,14 +208,24 @@ def write_manifest(manifest: dict) -> None:
     MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=1, ensure_ascii=False) + "\n")
 
 
-def main(force: bool = False) -> None:
+def main(force: bool = False, force_api: bool = False) -> None:
+    """force: re-download everything. force_api: re-download only what is published as data and revised in place
+    (MoSPI's API and the RBI handbook tables), and anything else that is missing. Press releases and report tables
+    are fixed documents."""
     manifest = load_manifest()
+    vanished = []
     try:
         for key, path, params in queries():
-            if key in manifest and not force:
+            if key in manifest and not (force or force_api):
                 continue
             result = fetch_query(path, params)
             if not result["rows"]:
+                if manifest.get(key, {}).get("sha256"):
+                    # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
+                    # Keep the saved file, fetch the rest, and fail at the end.
+                    print(f"{key}: NO ROWS, but it had data before; keeping the saved file", flush=True)
+                    vanished.append(key)
+                    continue
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 print(f"{key}: no data")
                 continue
@@ -226,10 +236,12 @@ def main(force: bool = False) -> None:
             time.sleep(0.3)
         fetch_cpi2024(manifest, force)
         fetch_hces_tables(manifest, force)
-        fetch_rbi(manifest, force)
+        fetch_rbi(manifest, force or force_api)
     finally:
         write_manifest(manifest)
+    if vanished:
+        raise RuntimeError(f"MoSPI returned no rows for queries that had data: {', '.join(vanished)}")
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv)
+    main(force="--force" in sys.argv, force_api="--force-api" in sys.argv)

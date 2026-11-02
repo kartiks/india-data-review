@@ -4,6 +4,8 @@
     uv run python -m jobs_prices_pipeline --fetch    # download anything missing
     uv run python -m jobs_prices_pipeline --refresh  # re-download everything (after a MoSPI release);
                                                      # changed files are kept in sources/snapshots/
+    uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and the RBI handbook
+                                                         # tables (what the weekly refresh runs)
 
 Exits non-zero if any check fails, so it can gate a website build.
 """
@@ -14,8 +16,8 @@ from . import build, checks, fetch
 
 
 def main() -> int:
-    if "--fetch" in sys.argv or "--refresh" in sys.argv:
-        fetch.main(force="--refresh" in sys.argv)
+    if {"--fetch", "--refresh", "--refresh-api"} & set(sys.argv):
+        fetch.main(force="--refresh" in sys.argv, force_api="--refresh-api" in sys.argv)
     return checks.main(build.main())
 
 

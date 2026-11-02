@@ -39,7 +39,8 @@ All from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mosp
 cd pipeline
 uv run python -m jobs_prices_pipeline             # build data from saved sources and run all checks
 uv run python -m jobs_prices_pipeline --fetch     # also download anything missing
-uv run python -m jobs_prices_pipeline --refresh   # re-download everything (after a MoSPI release)
+uv run python -m jobs_prices_pipeline --refresh   # re-download everything, including press releases and report tables
+uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and RBI's tables (what the weekly refresh runs)
 uv run pytest
 ```
 
@@ -48,9 +49,25 @@ re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 
 ## Keeping it up to date
 
+Most of this area refreshes itself every week. One source still needs a person each month: the base-2024 consumer
+price index. The full list for the site is in [Keeping the data up to date](../README.md#keeping-the-data-up-to-date).
+
+### Every week, automatically
+
+A GitHub Action runs `--refresh-api` every Sunday at 02:00 IST. It re-downloads everything from MoSPI's data service
+(PLFS, CPI base 2012, CPI for farm and rural labourers, HCES) and the RBI handbook tables, rebuilds `data/`, runs every
+check, and commits and pushes what changed once the local CI passes. Files that changed are kept in
+`sources/snapshots/`. Nothing needs doing unless a run fails; then see
+[When it fails](../README.md#the-weekly-refresh).
+
+It does **not** download the base-2024 CPI press releases or the HCES report tables again: those are fixed
+documents. A release listed in `CPI2024_RELEASES` but not yet downloaded is downloaded by the next run, but add new
+releases by hand as below, so that you see the checks.
+
 ### Each month
 
-**Consumer prices (12th of the month).** MoSPI's data service does not yet return the base-2024 index, so:
+**Consumer prices, base 2024 (12th of the month), by hand.** MoSPI's data service does not yet return the base-2024
+index, so:
 
 1. Find the release on PIB: search pib.gov.in for "Press Release of Consumer Price Index on Base 2024=100 for
    <Month>, <year>", and copy the address of the English page
@@ -60,16 +77,17 @@ re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 3. Run `uv run python -m jobs_prices_pipeline --fetch`. It downloads only the new release (page content and PDF),
    reads it, and checks it against its PDF and the earlier releases. The previous month's figures move from
    provisional to final.
+4. Commit `sources/` and `data/`, run the local CI (`scripts/ci.sh`) and push.
 
-**Jobs (PLFS monthly bulletin, mid-month; quarterly bulletin each quarter) and farm and rural labourers' prices
-(end of the month).** Run `--refresh`. It re-downloads everything (about 40 minutes); files that changed are kept in
-`sources/snapshots/`.
+Jobs (PLFS monthly bulletin mid-month, quarterly bulletin each quarter) and farm and rural labourers' prices (end of
+the month) need nothing: the weekly refresh brings them in.
 
 ### Each December: a new RBI handbook edition
 
-RBI publishes the Handbook of Statistics on Indian States each year, usually in December. Run `--refresh` (or delete
-the `rbi/…` entries from `sources/manifest.json` and run `--fetch`): the pipeline reads the new edition's page, finds
-the same table numbers and checks their titles; if RBI renumbers a table, update `RBI_STATE_TABLES` in `rbi.py`.
+RBI publishes the Handbook of Statistics on Indian States each year, usually in December. The weekly refresh picks
+it up: it reads the handbook page, finds the same table numbers in the new edition and checks their titles; the old
+edition's files are kept in `sources/snapshots/`. If RBI renumbers or renames a table, that run fails with the table
+number; update `RBI_STATE_TABLES` in `rbi.py` and run `--refresh-api`.
 
 ### When MoSPI's data service carries the base-2024 index
 
@@ -80,7 +98,7 @@ the press-release figures before switching the site over; the release reader can
 
 ### New survey rounds
 
-New PLFS years, CPI months and HCES rounds arrive through `--refresh` with no code change. A new indicator, a new
+New PLFS years, CPI months and HCES rounds arrive through the weekly refresh with no code change. A new indicator, a new
 breakdown or a renamed field needs code: the field names are listed in `build.py` (`PLFS_FIELDS`, `HCES_SITE`) and the
 checks will fail on anything they cannot read.
 

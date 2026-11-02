@@ -29,56 +29,118 @@ URL and SHA-256). The site refuses to build unless every area's `data/validation
 
 ```bash
 (cd budget/pipeline && uv run python -m budget_pipeline)   # ~3 min; --fetch downloads anything missing
-(cd gdp/pipeline && uv run python -m gdp_pipeline)         # --refresh after each MoSPI release
-(cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # --refresh after each MoSPI release
+(cd gdp/pipeline && uv run python -m gdp_pipeline)         # refreshed weekly; see below
+(cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # refreshed weekly; see below
 (cd site && npm install && npm run build)                  # or: npm run dev
 ```
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
 `--fetch` downloads anything missing first, and `--refresh` (GDP, jobs and prices) re-downloads everything.
+`--refresh-nas` (GDP) and `--refresh-api` (jobs and prices) re-download only the sources that are revised in place;
+the weekly refresh runs them.
 Tests: `uv run pytest` in each `pipeline/` folder, and `npm run check` (type check) in `site/`.
 
-## Updating the data
+## Keeping the data up to date
 
 Vercel only builds the site. It never runs a pipeline: it reads the `data/` folders committed to this repository.
-MoSPI's GDP data is refreshed by a daily job on the maintainer's Mac ([GDP README](gdp/README.md#run-it)); every
-other update is done by hand:
+Data reaches the site in two ways: a **weekly GitHub Action** re-downloads the sources that are published as data and
+revised in place, and everything else is **updated by hand** when it is released.
 
-1. Make any hand edits the release needs (see the calendar below and each area's README).
-2. Run that area's pipeline with `--fetch` or `--refresh`. It must end with every check passing; if a check fails,
-   look at the failure in `data/validation_report.md` before allowing anything (each area's README says where
-   exceptions are written down, always with a reason).
+### What refreshes itself, and what doesn't
+
+| Data on the site | Source | How it is kept up to date | Source changes |
+|---|---|---|---|
+| GDP and national accounts (base 2011-12 and 2022-23; annual and quarterly) | MoSPI national accounts API | **Weekly refresh** | Early January, end of February, May, August, November |
+| Jobs: PLFS participation, worker ratio, unemployment, workers, job conditions, earnings | MoSPI API | **Weekly refresh** | Monthly bulletin mid-month; quarterly bulletin each quarter |
+| Consumer prices, base 2012 (to December 2025) | MoSPI API | **Weekly refresh** (the series has ended, so it no longer changes) | No longer |
+| CPI for farm and rural labourers | Labour Bureau, through MoSPI API | **Weekly refresh** | End of each month |
+| Household spending (HCES): new rounds with the same indicators | MoSPI API | **Weekly refresh**; a new indicator or breakdown needs code ([Jobs and prices README](jobs-prices/README.md#new-survey-rounds)) | When a survey is published |
+| States: unemployment, income per person, state GDP, state inflation, rural wages | RBI Handbook of Statistics on Indian States (tables 8–9, 19–22, 108, 112–115) | **Weekly refresh**: a new edition is picked up from RBI's page automatically; if RBI renumbers a table, it needs code ([Jobs and prices README](jobs-prices/README.md#each-december-a-new-rbi-handbook-edition)) | Each December |
+| Consumer prices, base 2024 (from January 2026) | MoSPI monthly press releases on PIB | **By hand**: add the release's address, then `--fetch`; MoSPI's API does not serve this series yet ([Jobs and prices README](jobs-prices/README.md#each-month)) | 12th of each month |
+| Union Budget: headline figures, taxes, ministries, schemes | Budget documents on indiabudget.gov.in | **By hand**: move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)) | 1 February, or the full budget after an election |
+| The Budget's GDP assumption (GDP pages) | Budget at a Glance | **By hand**, with the new budget (step 5 of the Budget README) | 1 February |
+| Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Late January |
+| RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Every two months |
+| Overall (rural + urban) household spending 2023-24 | MoSPI's HCES 2023-24 report, Table A2 | Fixed: a published report | Never |
+| Budget cross-checks | RBI Handbook of Statistics on Indian Economy; PRS budget analysis | **By hand**, with the new budget (step 4 of the Budget README) | Yearly |
+| India map | DataMeet state boundaries | Fixed | Never |
+
+The release dates are MoSPI's and the Finance Ministry's usual pattern; MoSPI's advance release calendar on
+mospi.gov.in has the exact dates.
+
+### The weekly refresh
+
+[`.github/workflows/data-refresh.yml`](.github/workflows/data-refresh.yml) runs every **Sunday at 02:00 IST**
+(Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about 50 minutes, most of it the
+1,100 pages of MoSPI's jobs and prices data. It:
+
+1. Re-downloads the GDP sources (`gdp_pipeline --refresh-nas`) and the jobs and prices sources
+   (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Fixed documents
+   (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
+   listed in the code but missing is downloaded.
+2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
+   pipeline keeps the old file under `<area>/sources/snapshots/<date it was fetched>/` and records it in the
+   manifest's `history`. This is how the revision history of each release builds up.
+3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
+   no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
+4. Runs the local CI (`scripts/ci.sh`, below) on that commit, and pushes it to `main` only if it passes. Vercel then
+   deploys the live site.
+5. If anything failed, the run fails and GitHub emails the repository owner. Downloads that were not pushed are kept
+   as the run's artifact (`data-refresh-<run id>`) for 90 days.
+
+**When it passes**, nothing is needed. Look over the `Data refresh` commit on `main` now and then: the
+"Large revisions to growth" section of `gdp/data/validation_report.md` lists big revisions for review.
+
+**When it fails:**
+
+1. Open the run from the email (or the Actions tab) and read the failed step's log. The artifact has each area's
+   `data/validation_report.md` and the new downloads.
+2. Reproduce it locally: run the same command in the area's `pipeline/` folder (`--refresh-nas` for GDP,
+   `--refresh-api` for jobs and prices). It downloads the same files.
+3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
+   with its reason (each area's README says where). A message saying a query returned no rows although it had data
+   before usually means the source is having trouble; the saved file is kept, so wait and run again.
+4. Commit the area's `sources/` and `data/` with the fix, run `scripts/ci.sh`, and push (or open a pull request).
+
+Nothing is lost while a failure waits, unless a source publishes twice before it is fixed: the previous version is
+still on `main`, and the next successful download keeps it as a snapshot. The artifact holds anything in between.
+
+**Run it now:** "Run workflow" on the workflow's page in the Actions tab, or `gh workflow run data-refresh.yml`.
+
+**If it stops running:** GitHub turns off scheduled workflows in a public repository after 60 days with no activity in
+it. If that happens, turn it back on from the workflow's page in the Actions tab.
+
+### Updating by hand
+
+For everything marked "by hand" above, or to refresh a source outside the schedule:
+
+1. Make the edits the release needs (see the table above and each area's README).
+2. Run that area's pipeline with `--fetch` (download what is missing) or `--refresh` (download everything again). It
+   must end with every check passing; if a check fails, look at the failure in `data/validation_report.md` before
+   allowing anything (each area's README says where exceptions are written down, always with a reason).
 3. Build the site (`npm run build` in `site/`) and look at the pages that changed.
-4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes,
-   and push. A branch gets a Vercel preview; `main` deploys the live site.
+4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes.
+   Open a pull request and run the local CI on it before merging. A branch gets a Vercel preview; `main` deploys the
+   live site.
 
 ## Local CI
 
-There is no hosted CI. Before merging a pull request, run the local CI on its branch:
+Pull requests have no hosted CI. Before merging one, run the local CI on its branch:
 
 ```bash
 scripts/ci.sh <branch>
 ```
 
-It checks out that commit in a temporary folder (your working folder is not touched) and passes only if every
-area's pipeline rebuilds `data/` from the committed sources with every check passing, the rebuilt `data/` matches what
-is committed (apart from the build time), every area's tests pass, and the site type-checks and builds. It downloads
-no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
+It checks out that commit in a temporary folder (your working folder is not touched) and passes only if:
 
-| When | Release | Area | What to do |
-|---|---|---|---|
-| Late January | Economic Survey | GDP | Add the survey's growth projection to `forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) |
-| 1 February (or after an election) | Union Budget | Budget, GDP | Move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)) |
-| Every two months | RBI monetary policy statement | GDP | Add the RBI's growth projection to `forecast_sources/rbi.json` |
-| Early January, end of February, May, August, November | MoSPI GDP estimates | GDP | Automatic (daily `scripts/gdp-refresh.sh`); check the commit it makes |
-| 12th of every month | MoSPI Consumer Price Index | Jobs and prices | Add the release page, then `--fetch` ([Jobs and prices README](jobs-prices/README.md#each-month)) |
-| Mid-month, and each quarter | MoSPI Periodic Labour Force Survey bulletins | Jobs and prices | `--refresh` |
-| End of each month | Labour Bureau CPI for farm and rural labourers | Jobs and prices | `--refresh` |
-| When published | MoSPI household spending survey, new survey rounds | Jobs and prices | `--refresh`; new indicators may need code |
-| December | RBI Handbook of Statistics on Indian States, new edition | Jobs and prices | `--refresh` ([Jobs and prices README](jobs-prices/README.md#each-december-a-new-rbi-handbook-edition)) |
+- every area's pipeline rebuilds `data/` from the committed sources with every check passing;
+- the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
+- the build changes no committed file in `sources/` and writes no new files;
+- every area's tests pass;
+- the site type-checks and builds.
 
-The dates are MoSPI's and the Finance Ministry's usual pattern; MoSPI's advance release calendar on mospi.gov.in has
-the exact dates.
+It downloads no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
+The weekly refresh runs the same script on its own commit before pushing.
 
 ## Adding a new area
 

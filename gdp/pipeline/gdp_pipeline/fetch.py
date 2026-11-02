@@ -94,11 +94,11 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
     """Write the file and its manifest entry. Keeps the previous version if it changed. Returns True if new/changed."""
     sha = hashlib.sha256(content).hexdigest()
     old = manifest.get(key)
-    if old and old["sha256"] == sha and dest.exists():
+    if old and old.get("sha256") == sha and dest.exists():
         old["checked_at"] = now()
         return False
     history = old.get("history", []) if old else []
-    if old and dest.exists():
+    if old and old.get("sha256") and dest.exists():
         snap = SNAPSHOTS / old["fetched_at"][:10] / dest.relative_to(RAW)
         snap.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest, snap)
@@ -125,6 +125,9 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
                 continue
             result = fetch_nas(base, series, freq, code)
             if not result["rows"]:
+                if manifest.get(key, {}).get("sha256"):
+                    # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
+                    raise RuntimeError(f"{key}: MoSPI returned no rows for an indicator that had data; keeping the saved file")
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 print(f"{key}: no data")
                 continue

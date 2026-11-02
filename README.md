@@ -63,7 +63,7 @@ scripts/ci.sh <branch>
 It checks out that commit in a temporary folder (your working folder is not touched) and passes only if every
 area's pipeline rebuilds `data/` from the committed sources with every check passing, the rebuilt `data/` matches what
 is committed (apart from the build time), every area's tests pass, and the site type-checks and builds. It downloads
-nothing and takes a few minutes.
+no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
 
 | When | Release | Area | What to do |
 |---|---|---|---|

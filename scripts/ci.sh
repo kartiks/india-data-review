@@ -7,7 +7,7 @@
 #
 # It passes only if, for every area, the pipeline rebuilds data/ from the committed sources with every check
 # passing, the rebuilt data/ matches what is committed (apart from the build time), and the tests pass; and the
-# site type-checks and builds. It downloads nothing.
+# site type-checks and builds. It downloads no data (npm and uv may download packages).
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
@@ -40,12 +40,28 @@ done
 step "Committed data matches the sources (build time aside)"
 DATA=() SOURCES=()
 for area in "${AREAS[@]}"; do DATA+=("$area/data"); SOURCES+=("$area/sources"); done
-if ! git -C "$WORK" diff --exit-code --stat -I '"generated_at": ' -- "${DATA[@]}"; then
-  echo "data/ differs from what the pipelines build: run the pipelines and commit their data/." >&2
+# Each build writes its time into "generated_at" (some files are one line of compact JSON), so compare every
+# rebuilt file with the committed one after removing that field from both.
+STRIP='s/"generated_at": ?"[^"]*"//'
+DIFFERS=""
+for f in $(git -C "$WORK" diff --name-only -- "${DATA[@]}"); do
+  if ! cmp -s <(git -C "$WORK" show "HEAD:$f" | sed -E "$STRIP") <(sed -E "$STRIP" "$WORK/$f"); then
+    DIFFERS="$DIFFERS $f"
+  fi
+done
+if [ -n "$DIFFERS" ]; then
+  git -C "$WORK" diff --stat -- $DIFFERS >&2
+  echo "data/ differs from what the pipelines build:$DIFFERS. Run the pipelines and commit their data/." >&2
   exit 1
 fi
-if [ -n "$(git -C "$WORK" status --porcelain --untracked-files=all -- "${DATA[@]}" "${SOURCES[@]}")" ]; then
-  git -C "$WORK" status --short -- "${DATA[@]}" "${SOURCES[@]}" >&2
+if ! git -C "$WORK" diff --quiet -- "${SOURCES[@]}"; then
+  git -C "$WORK" diff --stat -- "${SOURCES[@]}" >&2
+  echo "Building changed committed files in sources/; the pipelines must not change their sources offline." >&2
+  exit 1
+fi
+NEW="$(git -C "$WORK" ls-files --others --exclude-standard -- "${DATA[@]}" "${SOURCES[@]}")"
+if [ -n "$NEW" ]; then
+  echo "$NEW" >&2
   echo "The pipelines wrote files that are not committed." >&2
   exit 1
 fi

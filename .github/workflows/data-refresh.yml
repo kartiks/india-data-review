@@ -1,0 +1,134 @@
+# Weekly data refresh: re-downloads the sources that are published as data and revised in place, and commits
+# what changed to main. What this covers and what still needs a person is in the README ("Keeping the data
+# up to date").
+#
+#   GDP              MoSPI national accounts API                        gdp_pipeline --refresh-nas
+#   Jobs and prices  MoSPI API (PLFS, CPI, CPI-AL/RL, HCES)             jobs_prices_pipeline --refresh-api
+#                    and the RBI Handbook of Statistics on Indian States tables
+#
+# These sources keep only their latest figures, so when a download differs from the saved file the pipeline keeps
+# the old one under <area>/sources/snapshots/. Committing both is what builds up the revision history.
+#
+# An area is committed only if its download finished and every one of its checks passed. Then the local CI
+# (scripts/ci.sh) must pass on the commit before it is pushed; Vercel deploys main. If anything fails, the run
+# fails (GitHub emails the repository owner) and the downloads that were not committed are kept as a run artifact
+# for 90 days.
+
+name: Weekly data refresh
+
+on:
+  schedule:
+    - cron: "30 20 * * 6" # Saturday 20:30 UTC = Sunday 02:00 IST. GitHub may start scheduled runs late.
+  workflow_dispatch: # "Run workflow" on the Actions tab, or: gh workflow run data-refresh.yml
+  push: # TEMPORARY: test run from the PR branch, without pushing. Remove before merging.
+    branches: [weekly-data-refresh]
+    paths: [.github/workflows/data-refresh.yml]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: "GDP: download MoSPI national accounts, rebuild, check"
+        id: gdp
+        continue-on-error: true
+        working-directory: gdp/pipeline
+        run: uv run --locked python -m gdp_pipeline --refresh-nas
+
+      - name: "Jobs and prices: download MoSPI API and RBI tables, rebuild, check"
+        id: jobs
+        continue-on-error: true
+        working-directory: jobs-prices/pipeline
+        run: uv run --locked python -m jobs_prices_pipeline --refresh-api
+
+      - name: Commit the areas whose sources changed and whose checks passed
+        id: commit
+        env:
+          GDP: ${{ steps.gdp.outcome }}
+          JOBS: ${{ steps.jobs.outcome }}
+        run: |
+          set -euo pipefail
+          committed=""
+          held=""
+          for pair in "gdp:$GDP" "jobs-prices:$JOBS"; do
+            area="${pair%%:*}"
+            outcome="${pair#*:}"
+            if [ -z "$(git status --porcelain -- "$area/sources/raw" "$area/sources/snapshots")" ]; then
+              echo "$area: no change in its sources ($outcome)"
+            elif [ "$outcome" = success ]; then
+              echo "$area: sources changed and every check passed"
+              git status --short -- "$area/sources"
+              git add "$area/sources" "$area/data"
+              committed="$committed $area"
+            else
+              echo "::warning::$area: sources changed but the refresh failed; not committed (see the artifact)"
+              held="$held $area"
+            fi
+          done
+          echo "committed=${committed# }" >> "$GITHUB_OUTPUT"
+          echo "held=${held# }" >> "$GITHUB_OUTPUT"
+          if [ -n "$committed" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit --quiet -m "Data refresh $(date -u +%Y-%m-%d): ${committed# }"
+            git show --stat --format='%h %s' HEAD | head -40
+          fi
+
+      - name: Local CI on the commit
+        if: steps.commit.outputs.committed != ''
+        run: scripts/ci.sh HEAD
+
+      - name: Push to main
+        if: steps.commit.outputs.committed != '' && github.event_name != 'push'
+        run: |
+          set -euo pipefail
+          base="$(git rev-parse HEAD~1)"
+          if ! git push origin HEAD:main; then
+            # main moved while this ran: replay the commit on top, check again, push.
+            git fetch origin main
+            [ "$(git rev-parse origin/main)" != "$base" ] || exit 1
+            git rebase origin/main
+            scripts/ci.sh HEAD
+            git push origin HEAD:main
+          fi
+
+      - name: Keep downloads that were not pushed
+        if: failure() || steps.commit.outputs.held != ''
+        run: |
+          mkdir -p refresh-artifact
+          git ls-files --modified --others --exclude-standard -- '*/sources' '*/data' |
+            xargs -r cp --parents -t refresh-artifact
+          # and anything committed here but not pushed
+          git diff --name-only "${{ github.sha }}" HEAD -- '*/sources' '*/data' |
+            xargs -r cp --parents -t refresh-artifact
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || steps.commit.outputs.held != ''
+        with:
+          name: data-refresh-${{ github.run_id }}
+          path: refresh-artifact
+          if-no-files-found: ignore
+          retention-days: 90
+
+      - name: Fail if any refresh failed
+        if: steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
+        run: |
+          echo "::error::GDP: ${{ steps.gdp.outcome }}, jobs and prices: ${{ steps.jobs.outcome }}. Read that step's log and the area's data/validation_report.md in the artifact."
+          exit 1

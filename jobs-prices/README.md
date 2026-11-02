@@ -28,6 +28,11 @@ All from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mosp
   urban areas, and weights the two averages by it (`build.hces_overall`). The 2022-23 report's tables are not online
   as files, so overall figures are for 2023-24.
 
+- **RBI Handbook of Statistics on Indian States** (latest edition, `rbi.py`): tables 8–9 (unemployment by state, rural and
+  urban, 1993-94 to 2023-24, compiled from MoSPI's NSS and PLFS surveys), 19–20 (income per person), 21–22 (state
+  GDP), 108 (average CPI inflation by state) and 112–115 (rural daily wages of men, from the Labour Bureau). The
+  pipeline finds each table's Excel file on the handbook page by its number and checks its title.
+
 ## Run it
 
 ```bash
@@ -60,6 +65,12 @@ re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 (end of the month).** Run `--refresh`. It re-downloads everything (about 40 minutes); files that changed are kept in
 `sources/snapshots/`.
 
+### Each December: a new RBI handbook edition
+
+RBI publishes the Handbook of Statistics on Indian States each year, usually in December. Run `--refresh` (or delete
+the `rbi/…` entries from `sources/manifest.json` and run `--fetch`): the pipeline reads the new edition's page, finds
+the same table numbers and checks their titles; if RBI renumbers a table, update `RBI_STATE_TABLES` in `rbi.py`.
+
 ### When MoSPI's data service carries the base-2024 index
 
 Check now and then with `https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2024&series=Current&year=2026&Format=JSON&limit=5`
@@ -90,6 +101,7 @@ in `data/validation_report.md`, compare the figure with MoSPI's own publication,
 | `cpi.csv`, `cpialrl.csv` | Price indices and inflation |
 | `cpi2024.csv` | Every figure read from the base-2024 releases, with the release it came from |
 | `hces.csv` | Household spending; `left_out` as above |
+| `rbi_states.csv` | Every value read from the RBI handbook tables, with the table, unit and any footnote flag |
 | `hces_overall.csv` | Rural + urban spending per person and food share, with the persons used as weights |
 | `sources.csv` | Every downloaded file: key, URL, SHA-256, date. Each CSV row names its source key |
 | `validation_report.md` | Every check and the reason for every allowed exception |
@@ -102,6 +114,10 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   women, rural + urban between rural and urban; shares of workers add up to 100%.
 - **Prices**: every inflation rate reproduced from the index a year earlier; combined between rural and urban;
   no missing months.
+- **RBI handbook**: every table read with at least 30 states (18 for wage tables); the handbook's state inflation for
+  every year equals the average inflation worked out from MoSPI's own monthly indices (within 0.15 points; years
+  with missing months, such as 2020-21, not compared); overall unemployment lies between men's and women's; the
+  All-India rural wage lies within the states' range.
 - **New price series**: headline sentence, summary table and annexures agree; page tables match the PDF; later
   releases revise only the previous month's provisional figures; linking factor = 2025 average new ÷ old.
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food

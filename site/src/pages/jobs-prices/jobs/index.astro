@@ -4,7 +4,7 @@ import LineChart from "../../../components/LineChart.astro";
 import BarList from "../../../components/BarList.astro";
 import DotRows from "../../../components/DotRows.astro";
 import {
-  rate, periods, periodLabel, distinct, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel,
+  rate, periods, periodLabel, distinct, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel, RBI, RBI_EDITION,
   type Gender, type Sector,
 } from "../../../lib/jobs-prices/data";
 import { axisPct, pct } from "../../../lib/format";
@@ -72,6 +72,12 @@ const stateRows = (field: "ur" | "lfpr") => PLFS_STATES.map((st) => ({
   sort: rate({ year: Y, state: st })?.[field] ?? -1,
 })).filter((r) => r.values.some((v) => v != null)).sort((a, b) => b.sort - a.sort);
 const SRC = "MoSPI, Periodic Labour Force Survey (PLFS), via MoSPI's data service.";
+// Unemployment since 1993-94: the RBI handbook's compilation of MoSPI's surveys (NSS employment surveys to 2011-12,
+// PLFS July-June years from 2017-18), usual status (adjusted), all ages, published per thousand of the labour force.
+const longRun = (variant: string) => Object.fromEntries(RBI.filter((r) => r.state === "All India" && r.variant === variant).map((r) => [r.year, r.value]));
+const rUr = longRun("Rural Overall"), uUr = longRun("Urban Overall");
+const LONG_YEARS = [...new Set([...Object.keys(rUr), ...Object.keys(uUr)])].sort();
+const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rUr[y]! / 10 : null, uUr[y] != null ? uUr[y]! / 10 : null] }));
 ---
 <Base title="Jobs" section="jobs" description="Who works in India and who is looking for work: participation, unemployment and the worker ratio from MoSPI's Periodic Labour Force Survey, by sex, age, area, education and state.">
   <h1>Jobs</h1>
@@ -143,6 +149,17 @@ const SRC = "MoSPI, Periodic Labour Force Survey (PLFS), via MoSPI's data servic
       />
     </section>
   )}
+
+  <section class="card">
+    <DotRows
+      title="Unemployment since 1993-94, rural and urban"
+      subtitle="All India, all ages, usual status. Survey years are uneven: MoSPI's employment surveys every five years or so to 2011-12, then the yearly PLFS (July–June) from 2017-18. The two surveys differ in design, so compare across the 2011-12 to 2017-18 break with care."
+      series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
+      rows={longRows}
+      format={(v) => pct(v)}
+      source={`MoSPI's NSS and PLFS surveys, as compiled in the RBI Handbook of Statistics on Indian States (${RBI_EDITION}), Tables 8 and 9 (published per thousand; shown here per cent).`}
+    />
+  </section>
 
   <div class="grid-2">
     <section class="card">

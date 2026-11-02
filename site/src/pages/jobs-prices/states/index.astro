@@ -3,7 +3,7 @@ import Base from "../../../layouts/Base.astro";
 import StateMap, { type MapMetric } from "../../../components/StateMap.astro";
 import {
   rate, PLFS_LATEST, PLFS_STATES, WORKERS, cpiState, averageInflation, CPI_LAST, hcesValueFor, hcesOverall, HCES_LATEST, NOT_IMPUTED,
-  cpi24Rows, CPI24_LATEST, CPI24, monthLabel, stateKey,
+  cpi24Rows, CPI24_LATEST, CPI24, monthLabel, stateKey, rbiValue, rbiLatestYear, RBI_EDITION,
 } from "../../../lib/jobs-prices/data";
 import { gpct, pct } from "../../../lib/format";
 
@@ -19,6 +19,16 @@ const cpiOf = (st: string) =>
 const new24 = new Map(cpi24Rows("states").map((r) => [stateKey(r.name), r.inflation[2]]));
 const now24 = CPI24.find((p) => p.month === CPI24_LATEST)!;
 const mpce = (st: string, sector: "Rural" | "Urban") => hcesValueFor(st, { indicator: "mpce", year: HCES_LATEST, sector, imputation_type: NOT_IMPUTED });
+// RBI Handbook of Statistics on Indian States: income per person (Table 19), state GDP at constant prices (Table 22),
+// rural daily wage of men in farm work (Table 113). Each uses the latest year most states have.
+const YI = rbiLatestYear("nsdp_per_capita_current");
+const YG = rbiLatestYear("gsdp_constant");
+const YG0 = `${Number(YG.slice(0, 4)) - 1}-${YG.slice(2, 4)}`;
+const YW = rbiLatestYear("wage_agriculture");
+const growth = (st: string) => {
+  const a = rbiValue("gsdp_constant", st, YG), b = rbiValue("gsdp_constant", st, YG0);
+  return a != null && b ? (a / b - 1) * 100 : null;
+};
 const rows = PLFS_STATES.map((st) => ({
   st,
   key: stateKey(st),
@@ -30,15 +40,20 @@ const rows = PLFS_STATES.map((st) => ({
   overall: hcesOverall(st, HCES_LATEST)?.mpce ?? null,
   rural: mpce(st, "Rural") ?? null,
   urban: mpce(st, "Urban") ?? null,
+  income: rbiValue("nsdp_per_capita_current", st, YI),
+  growth: growth(st),
+  wage: rbiValue("wage_agriculture", st, YW),
 }));
 const india = {
   ur: rate({ year: Y })?.ur, women: rate({ year: Y, gender: "female" })?.lfpr,
   infl: averageInflation(cpiState("All India", "Combined"), lastYear), infl24: now24.inflation[2],
   overall: hcesOverall("All India", HCES_LATEST)?.mpce, rural: mpce("All India", "Rural"), urban: mpce("All India", "Urban"),
+  wage: rbiValue("wage_agriculture", "All India", YW),
 };
 const f = (v: number | null | undefined, fmt: (v: number) => string) => (v == null ? "–" : fmt(v));
 
-type Field = "ur" | "women" | "regular" | "infl24" | "infl" | "overall" | "rural" | "urban";
+type Field = "ur" | "women" | "regular" | "infl24" | "infl" | "overall" | "rural" | "urban" | "income" | "growth" | "wage";
+const wage = (v: number) => `₹${v.toFixed(0)}`;
 const metric = (id: Field, label: string, title: string, fmt: (v: number) => string, note: string): MapMetric => ({
   id, label, title, note, format: fmt,
   values: Object.fromEntries(rows.map((r) => [r.key, r[id]])),
@@ -55,6 +70,12 @@ const metrics: MapMetric[] = [
     `Average consumption spending per person, rural and urban together. All India: ${f(india.overall, rupees)}.`),
   metric("rural", "Spending, rural", `Spending per person a month, rural, ${HCES_LATEST}`, rupees, `All India: ${f(india.rural, rupees)}.`),
   metric("urban", "Spending, urban", `Spending per person a month, urban, ${HCES_LATEST}`, rupees, `All India: ${f(india.urban, rupees)}.`),
+  metric("income", "Income per person", `Income per person, ${YI}`, rupees,
+    "Net state domestic product per person, current prices (2011-12 base), from the RBI's Handbook of Statistics on Indian States."),
+  metric("growth", "Economic growth", `Growth of the state economy, ${YG}`, (v) => gpct(v),
+    `Real gross state domestic product, ${YG} on ${YG0} (constant 2011-12 prices), worked out from the RBI handbook's levels.`),
+  metric("wage", "Rural farm wage", `Daily wage of men in farm work, rural, ${YW}`, wage,
+    `General agricultural labourers, average daily wage (Labour Bureau, via the RBI handbook). All India: ${f(india.wage, wage)}. Grey: smaller states the survey does not cover.`),
 ];
 const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
 ---
@@ -66,7 +87,7 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
     <StateMap
       metrics={metrics}
       names={names}
-      source="MoSPI: Periodic Labour Force Survey, Consumer Price Index, Household Consumption Expenditure Survey. State boundaries: DataMeet India community (CC BY 4.0), following the Survey of India's map, simplified for display; for the authoritative map, see the Survey of India."
+      source="MoSPI: Periodic Labour Force Survey, Consumer Price Index, Household Consumption Expenditure Survey. RBI: Handbook of Statistics on Indian States (income, state GDP, rural wages). State boundaries: DataMeet India community (CC BY 4.0), following the Survey of India's map, simplified for display; for the authoritative map, see the Survey of India."
     />
   </section>
 
@@ -86,15 +107,18 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
               <th>Spending per person, {HCES_LATEST}</th>
               <th>Rural</th>
               <th>Urban</th>
+              <th>Income per person, {YI}</th>
+              <th>Growth, {YG}</th>
+              <th>Rural farm wage, {YW}</th>
             </tr>
           </thead>
           <tbody>
             <tr class="india">
-              <td>All India</td><td>{f(india.ur, pct)}</td><td>{f(india.women, pct)}</td><td>–</td><td>{f(india.infl24, (v) => gpct(v, 2))}</td><td>{f(india.infl, gpct)}</td><td>{f(india.overall, rupees)}</td><td>{f(india.rural, rupees)}</td><td>{f(india.urban, rupees)}</td>
+              <td>All India</td><td>{f(india.ur, pct)}</td><td>{f(india.women, pct)}</td><td>–</td><td>{f(india.infl24, (v) => gpct(v, 2))}</td><td>{f(india.infl, gpct)}</td><td>{f(india.overall, rupees)}</td><td>{f(india.rural, rupees)}</td><td>{f(india.urban, rupees)}</td><td>–</td><td>–</td><td>{f(india.wage, wage)}</td>
             </tr>
             {rows.map((r) => (
               <tr>
-                <td>{r.st}</td><td>{f(r.ur, pct)}</td><td>{f(r.women, pct)}</td><td>{f(r.regular, pct)}</td><td>{f(r.infl24, (v) => gpct(v, 2))}</td><td>{f(r.infl, gpct)}</td><td>{f(r.overall, rupees)}</td><td>{f(r.rural, rupees)}</td><td>{f(r.urban, rupees)}</td>
+                <td>{r.st}</td><td>{f(r.ur, pct)}</td><td>{f(r.women, pct)}</td><td>{f(r.regular, pct)}</td><td>{f(r.infl24, (v) => gpct(v, 2))}</td><td>{f(r.infl, gpct)}</td><td>{f(r.overall, rupees)}</td><td>{f(r.rural, rupees)}</td><td>{f(r.urban, rupees)}</td><td>{f(r.income, rupees)}</td><td>{f(r.growth, gpct)}</td><td>{f(r.wage, wage)}</td>
               </tr>
             ))}
           </tbody>
@@ -106,6 +130,7 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
       <li><strong>Regular salaried jobs</strong>: share of workers with a regular wage or salary (PLFS). MoSPI's All-India figure for this breakdown does not add up, so it is not shown.</li>
       <li><strong>Inflation, {monthLabel(CPI24_LATEST)}</strong>: new Consumer Price Index (base 2024), on the same month a year earlier, rural and urban combined{now24.provisional ? ", provisional" : ""}, from MoSPI's press release.</li>
       <li><strong>Inflation, {lastYear}</strong>: old series (base 2012), average Consumer Price Index for {lastYear} on {Number(lastYear) - 1}, rural and urban combined (urban where MoSPI publishes no combined index). The old CPI keeps Dadra & Nagar Haveli and Daman & Diu separate, has no index for Ladakh, and has only a rural index for Arunachal Pradesh.</li>
+      <li><strong>Income per person</strong>, <strong>growth</strong> and <strong>rural farm wage</strong>: RBI Handbook of Statistics on Indian States ({RBI_EDITION} edition), Tables 19, 22 and 113, compiled from MoSPI's state accounts and the Labour Bureau's wage survey. Growth is worked out here from constant-price state GDP. The handbook gives no All-India row for state income or state GDP.</li>
       <li><strong>Spending per person</strong>: average monthly consumption spending, excluding items received free (HCES). MoSPI publishes rural and urban figures; the overall figure weights them by the survey's estimated persons in each area (MoSPI's report, Table A2).</li>
       <li>A dash, or grey on the map, means MoSPI publishes no figure, or the figure failed the checks (see Sources).</li>
     </ul>

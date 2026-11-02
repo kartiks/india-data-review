@@ -83,3 +83,24 @@ def test_release_table_reader():
     assert any("`" in p for p in r["problems"])  # the stray backtick is reported, not read as a number
     assert [s["name"] for s in r["states"]] == ["Andhra Pradesh", "Uttar Pradesh", "Chandigarh"]  # trailing empty cells dropped
     assert r["states"][2]["values"][0] is None
+
+
+def test_rbi_cells():
+    from jobs_prices_pipeline import rbi
+
+    assert rbi.cell(61) == (61.0, "61", "")
+    assert rbi.cell("81*") == (81.0, "81*", "footnote")
+    assert rbi.cell("-")[2] == "not available"
+    assert rbi.cell(".")[2] == "not applicable"
+    assert rbi.cell("n/a")[2] == "unreadable"
+
+
+def test_rbi_table_links():
+    from jobs_prices_pipeline import rbi
+
+    page = ("<h2>Handbook of Statistics on Indian States 2024-25</h2><tr><td><a class='link2' href=PublicationsView.aspx?id=23470>"
+            "Table 21: Gross State Domestic Product (Current Prices)</a></td><td><a href='https://rbidocs.rbi.org.in/rdocs/"
+            "Publications/DOCs/21T_1112.XLSX'>x</a></td></tr>")
+    edition, links = rbi.table_links(page)
+    assert edition == "2024-25"
+    assert links[21] == ("Table 21: Gross State Domestic Product (Current Prices)", "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_1112.XLSX")

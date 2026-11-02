@@ -61,6 +61,7 @@ So every update is done locally:
 | Mid-month, and each quarter | MoSPI Periodic Labour Force Survey bulletins | Jobs and prices | `--refresh` |
 | End of each month | Labour Bureau CPI for farm and rural labourers | Jobs and prices | `--refresh` |
 | When published | MoSPI household spending survey, new survey rounds | Jobs and prices | `--refresh`; new indicators may need code |
+| December | RBI Handbook of Statistics on Indian States, new edition | Jobs and prices | `--refresh` ([Jobs and prices README](jobs-prices/README.md#each-december-a-new-rbi-handbook-edition)) |
 
 The dates are MoSPI's and the Finance Ministry's usual pattern; MoSPI's advance release calendar on mospi.gov.in has
 the exact dates.

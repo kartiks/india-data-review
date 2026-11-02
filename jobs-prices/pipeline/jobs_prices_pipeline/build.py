@@ -413,6 +413,27 @@ def hces_overall(population: list[dict], rows: list[dict]) -> list[dict]:
     return out
 
 
+# ---- RBI Handbook of Statistics on Indian States ----------------------------------------------------
+
+def rbi_states(manifest: dict) -> tuple[list[dict], list[str], dict]:
+    """Every value of the chosen handbook tables, the reader's problems, and {table number: edition}."""
+    from . import rbi
+
+    out, problems, editions = [], [], {}
+    for n, (table_id, _) in rbi.RBI_STATE_TABLES.items():
+        e = manifest.get(f"rbi/table{n:03d}")
+        if not e or e.get("empty"):
+            problems.append(f"RBI table {n} not downloaded")
+            continue
+        recs, probs = rbi.read_table(ROOT / e["file"], n, table_id)
+        for r in recs:
+            r["source"] = f"rbi/table{n:03d}"
+        out += recs
+        problems += probs
+        editions[n] = e.get("edition", "")
+    return out, problems, editions
+
+
 # ---- outputs ------------------------------------------------------------------------------------
 
 def fields_of(rows: list[dict], first: list[str]) -> list[str]:
@@ -485,6 +506,13 @@ def site_json(ds: dict) -> dict:
         "hces": table(HCES_SITE_FIELDS, [[HCES_SITE[r["indicator"]]] + [r.get(f) for f in HCES_SITE_FIELDS[1:]]
                                          for r in ds["hces"] if r["indicator"] in HCES_SITE and not r["left_out"]]),
         "cpi2024": cpi2024_site(ds["cpi2024"]),
+        "rbi": {
+            "editions": sorted(set(ds["rbi_editions"].values())),
+            "titles": {r["table_id"]: r["title"] for r in ds["rbi"]},
+            "units": {r["table_id"]: r["unit"] for r in ds["rbi"]},
+            **table(["table_id", "variant", "state", "year", "value"],
+                    [[r["table_id"], r["variant"], r["state"], r["year"], r["value"]] for r in ds["rbi"]]),
+        },
         "hces_overall": [{k: (round(v, 2) if isinstance(v, float) else v) for k, v in r.items() if k != "source"} for r in ds["hces_overall"]],
         "source_problems": ds["source_problems"],
     }
@@ -524,6 +552,7 @@ def assemble() -> dict:
     ds["hces"] = hces(manifest, problems)
     ds["hces_population"] = hces_population(manifest)
     ds["hces_overall"] = hces_overall(ds["hces_population"], ds["hces"])
+    ds["rbi"], ds["rbi_problems"], ds["rbi_editions"] = rbi_states(manifest)
     ds["cpi2024"] = cpi2024(manifest)
     ds["source_problems"] = problems
     return ds
@@ -544,6 +573,8 @@ def main() -> dict:
         "cpi.csv": (ds["cpi"], ["month", "state", "sector", "group", "subgroup", "index", "inflation"]),
         "cpialrl.csv": (ds["cpialrl"], ["month"]),
         "hces.csv": (ds["hces"], ["year", "state", "sector", "indicator"]),
+        "rbi_states.csv": (ds["rbi"], ["table", "table_id", "title", "variant", "unit", "state", "year", "value",
+                                        "value_as_printed", "flag"]),
         "hces_overall.csv": (ds["hces_overall"], ["year", "state", "imputation_type", "persons_rural_00", "persons_urban_00",
                                                   "mpce_rural", "mpce_urban", "mpce", "food_share"]),
         "cpi2024.csv": (cpi2024_rows(ds["cpi2024"]), ["table", "month", "code", "name", "sector", "index", "inflation", "status", "release_month"]),

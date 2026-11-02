@@ -599,5 +599,115 @@
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=8&frequency_code=2&Format=JSON",
   "empty": true,
   "checked_at": "2026-10-30T15:12:55+00:00"
+ },
+ "rbi/table008": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/8T_111220254070338D01844B439710F4990CDAF4DF.XLSX",
+  "file": "sources/raw/rbi/table008.xlsx",
+  "sha256": "2e943a3b61d540183d08f31b087b7d41fa6f546677a49eccbdfc417a7a09bce0",
+  "bytes": 19755,
+  "fetched_at": "2026-11-02T15:32:29+00:00",
+  "edition": "2024-25",
+  "title": "Table 8: State-wise Unemployment Rate: Usual Status (Adjusted) (Rural)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table009": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/9T_11122025FD98FA2EE6704C18AB8D5EC9966548B6.XLSX",
+  "file": "sources/raw/rbi/table009.xlsx",
+  "sha256": "4eef6c00459585c12e2f5f7e1686b9cfd5b24dd7493b9b3cfae145f876a56958",
+  "bytes": 20998,
+  "fetched_at": "2026-11-02T15:32:30+00:00",
+  "edition": "2024-25",
+  "title": "Table 9: State-wise Unemployment Rate: Usual Status (Adjusted) (Urban)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table019": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/19T_11122025B8CC230E4A34431999B4D6A107707BCA.XLSX",
+  "file": "sources/raw/rbi/table019.xlsx",
+  "sha256": "1f90818b79f1e53bfcaf90f76ef66e1db6e810ef22076791b049d429a184be15",
+  "bytes": 15059,
+  "fetched_at": "2026-11-02T15:32:30+00:00",
+  "edition": "2024-25",
+  "title": "Table 19: Per Capita Net State Domestic Product (Current Prices)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table020": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/20T_111220252B6EE27737FD4931A99C5A448B7CEC68.XLSX",
+  "file": "sources/raw/rbi/table020.xlsx",
+  "sha256": "0861a3b6a0df2b41f21918b5108a9de0d93cb18d3808f625ef8bb0da24603a71",
+  "bytes": 15953,
+  "fetched_at": "2026-11-02T15:32:31+00:00",
+  "edition": "2024-25",
+  "title": "Table 20: Per Capita Net State Domestic Product (Constant Prices)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table021": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_11122025D994949B48C44B68B4465FBB9ADDFF3D.XLSX",
+  "file": "sources/raw/rbi/table021.xlsx",
+  "sha256": "307860e934baa7ce60c76ef9b0086b0007a55d78730e5a77677ff49142bf8f00",
+  "bytes": 15890,
+  "fetched_at": "2026-11-02T15:32:32+00:00",
+  "edition": "2024-25",
+  "title": "Table 21: Gross State Domestic Product (Current Prices)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table022": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/22T_11122025E6BC0CB35180406EAB6E0D49DE51C8E8.XLSX",
+  "file": "sources/raw/rbi/table022.xlsx",
+  "sha256": "e7afa1d2a2a227bd68a92614dcf03298da53f4d4e7acaa4b4aa1e5388f74644c",
+  "bytes": 15621,
+  "fetched_at": "2026-11-02T15:32:33+00:00",
+  "edition": "2024-25",
+  "title": "Table 22: Gross State Domestic Product (Constant Prices)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table108": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/108T_111220251942D16B3BED4D73BE851D15D2329168.XLSX",
+  "file": "sources/raw/rbi/table108.xlsx",
+  "sha256": "1dd5a612f16c49f95530589072a14fdf64250aa35ac0fbf4c5a73290915e05da",
+  "bytes": 12648,
+  "fetched_at": "2026-11-02T15:32:33+00:00",
+  "edition": "2024-25",
+  "title": "Table 108: State-wise Average Inflation (CPI) - General",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table112": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/112T_11122025771E55EB688044CE8A85E52A901B5D22.XLSX",
+  "file": "sources/raw/rbi/table112.xlsx",
+  "sha256": "39b408a62c02889a5dac9c6a2345312b44ad8b6ce15669732f06804e45dbd5dc",
+  "bytes": 12653,
+  "fetched_at": "2026-11-02T15:32:34+00:00",
+  "edition": "2024-25",
+  "title": "Table 112: State-wise Average Daily Wage Rates in Rural India (Men - Construction Workers)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table113": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/113T_111220256FEBCC253D4A47419892925F897E2537.XLSX",
+  "file": "sources/raw/rbi/table113.xlsx",
+  "sha256": "6f4995aec2fa6dd904028a1d5918569823c68c15b7667d7a027cf700f6965ebf",
+  "bytes": 12097,
+  "fetched_at": "2026-11-02T15:32:35+00:00",
+  "edition": "2024-25",
+  "title": "Table 113: State-wise Average Daily Wage Rates in Rural India (Men - General Agricultural Labourers)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table114": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/114T_111220259CA566982E7F4BF38B3FDAC0D7587F2E.XLSX",
+  "file": "sources/raw/rbi/table114.xlsx",
+  "sha256": "2d792c922fc23ba8c3a42c669325c231a6004e25f37446c6e5a00db9a2fd92bc",
+  "bytes": 11729,
+  "fetched_at": "2026-11-02T15:32:35+00:00",
+  "edition": "2024-25",
+  "title": "Table 114: State-wise Average Daily Wage Rates in Rural India (Men - Horticulture Workers)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
+ },
+ "rbi/table115": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/115T_1112202585CF99F21E654CED8990A734A043B3DA.XLSX",
+  "file": "sources/raw/rbi/table115.xlsx",
+  "sha256": "4b7a58fadda4aa50cd04a8cbc5d79f95d11a1c35217b0b9502ce5a1325be99b2",
+  "bytes": 12071,
+  "fetched_at": "2026-11-02T15:32:36+00:00",
+  "edition": "2024-25",
+  "title": "Table 115: State-wise Average Daily Wage Rates in Rural India (Men - Non-Agricultural Labourers)",
+  "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
  }
 }

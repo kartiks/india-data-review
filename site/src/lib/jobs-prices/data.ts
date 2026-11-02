@@ -26,6 +26,7 @@ interface Dataset {
     linking: Record<string, number>;
     weights: { division: string; rural_2012: number; rural_2024: number; urban_2012: number; urban_2024: number; combined_2012: number; combined_2024: number }[];
   };
+  rbi: Table & { editions: string[]; titles: Record<string, string>; units: Record<string, string> };
   hces_overall: { year: string; state: string; imputation_type: string; persons_rural_00: number; persons_urban_00: number;
     mpce_rural: number; mpce_urban: number; mpce: number; food_share?: number }[];
   source_problems: string[];
@@ -223,3 +224,24 @@ export const hcesValueFor = (state: string, q: Partial<HcesRow>) =>
 
 /** PLFS state names (36 states and UTs; Dadra & Nagar Haveli and Daman & Diu as one UT, Ladakh separate). */
 export const PLFS_STATES = distinct("state", { frequency: "annual", year: PLFS_LATEST }).filter((s) => s !== "All India");
+
+// ---- RBI Handbook of Statistics on Indian States (state income, state GDP, rural wages, older unemployment) ---------
+
+export interface RbiRow { table_id: string; variant: string; state: string; year: string; value: Num }
+export const RBI = objects<RbiRow>(DS.rbi as unknown as Table);
+export const RBI_EDITION = DS.rbi.editions.join(", ");
+export const RBI_TITLES = DS.rbi.titles;
+/** A handbook value for a state (matched however it is spelt), table and year; variant e.g. "Rural Overall". */
+export function rbiValue(tableId: string, state: string, year: string, variant = ""): number | null {
+  const k = stateKey(state);
+  return RBI.find((r) => r.table_id === tableId && r.year === year && r.variant === variant && stateKey(r.state) === k)?.value ?? null;
+}
+export const rbiYears = (tableId: string) => [...new Set(RBI.filter((r) => r.table_id === tableId).map((r) => r.year))].sort();
+/** The latest year in which nearly all states have a figure (at least 90% of the best-covered year): the newest
+ * year in the handbook is often missing many states. */
+export function rbiLatestYear(tableId: string, variant = ""): string {
+  const count = (y: string) => RBI.filter((r) => r.table_id === tableId && r.year === y && r.variant === variant && r.value != null && r.state !== "All India").length;
+  const years = rbiYears(tableId);
+  const best = Math.max(...years.map(count));
+  return [...years].reverse().find((y) => count(y) >= 0.9 * best) ?? years[years.length - 1];
+}

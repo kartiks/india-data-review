@@ -6,7 +6,7 @@ import DotRows from "../../../components/DotRows.astro";
 import StackedColumns from "../../../components/StackedColumns.astro";
 import {
   WORKERS, CONDITIONS, EARNINGS, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel, cpiAllIndia, yearAverage, GENERAL,
-  type Gender, type Sector, type CpiSector,
+  RBI, rbiLatestYear, RBI_EDITION, type Gender, type Sector, type CpiSector,
 } from "../../../lib/jobs-prices/data";
 import { axisPct, gpct, pct } from "../../../lib/format";
 
@@ -81,6 +81,16 @@ const realGrowth = (kind: string, sector: Sector, cs: CpiSector) => {
   return { nominal: (b / a - 1) * 100, real: ((b / pb) / (a / pa) - 1) * 100, prices: (pb / pa - 1) * 100 };
 };
 const cpiCovers = yearAverage(cpiAllIndia(GENERAL), Y) !== undefined;
+// Rural daily wages of men by state and occupation (Labour Bureau, via the RBI Handbook of Statistics on Indian States).
+const YW = rbiLatestYear("wage_agriculture");
+const WAGE_KINDS = [
+  { id: "wage_agriculture", name: "Farm labour", slot: 6 }, { id: "wage_non_agriculture", name: "Non-farm labour", slot: 1 },
+  { id: "wage_construction", name: "Construction", slot: 4 },
+];
+const wageOf = (id: string, state: string) => RBI.find((r) => r.table_id === id && r.year === YW && r.state === state)?.value ?? null;
+const wageStates = [...new Set(RBI.filter((r) => r.table_id === "wage_agriculture" && r.year === YW).map((r) => r.state))];
+const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India", values: WAGE_KINDS.map((k) => wageOf(k.id, st)) }))
+  .sort((a, b) => (a.strong ? -1 : b.strong ? 1 : (b.values[0] ?? 0) - (a.values[0] ?? 0)));
 ---
 <Base title="Work and earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
   <h1>Work and earnings</h1>
@@ -174,6 +184,17 @@ const cpiCovers = yearAverage(cpiAllIndia(GENERAL), Y) !== undefined;
       </section>
     ))}
   </div>
+
+  <section class="card">
+    <DotRows
+      title={`Rural daily wages of men by state, ${YW}`}
+      subtitle="Average daily wage in villages for three kinds of work. Sorted by the farm-labour wage. The survey covers the 20 larger states."
+      series={WAGE_KINDS.map(({ name, slot }) => ({ name, slot }))}
+      rows={wageRows}
+      format={(v) => `₹${v.toFixed(0)}`}
+      source={`Labour Bureau, Wage Rates in Rural India, via the RBI Handbook of Statistics on Indian States (${RBI_EDITION}), Tables 112, 113 and 115.`}
+    />
+  </section>
 
   {cpiCovers && (
     <section class="card">

@@ -601,6 +601,93 @@ def check_hces_overall(ds: dict, report: Report) -> None:
     report.add("Household spending: overall (rural + urban) averages", checked, failures, notes)
 
 
+# ---- RBI Handbook of Statistics on Indian States -----------------------------------------------------
+
+def state_key(s: str) -> str:
+    """One key for a state however a source spells it ('Andaman & Nicobar Islands', 'NCT of Delhi' ...)."""
+    s = s.lower().replace("&", "and")
+    s = re.sub(r"^the |^nct of |\bislands?\b", "", s)
+    return re.sub(r"[^a-z]", "", s)
+
+
+def check_rbi(ds: dict, report: Report) -> None:
+    from .rbi import RBI_STATE_TABLES
+
+    recs = ds["rbi"]
+    # 1. read in full
+    failures, notes, checked = list(ds["rbi_problems"]), [], 0
+    editions = set(ds["rbi_editions"].values())
+    for n, (table_id, _) in RBI_STATE_TABLES.items():
+        checked += 1
+        rows = [r for r in recs if r["table"] == n]
+        states = {r["state"] for r in rows}
+        minimum = 18 if table_id.startswith("wage") else 30
+        if len(states) < minimum:
+            failures.append(f"RBI table {n} ({table_id}): {len(states)} states read, expected at least {minimum}")
+    if len(editions) > 1:
+        failures.append(f"RBI tables come from different editions: {sorted(editions)}")
+    notes.append(f"Edition: {', '.join(sorted(editions))}. Tables {', '.join(str(n) for n in RBI_STATE_TABLES)}.")
+    report.add("RBI state tables: every table read", checked, failures, notes)
+
+    # 2. state inflation agrees with MoSPI's indices
+    failures, notes, checked = [], [], 0
+    idx: dict[str, dict[str, float]] = defaultdict(dict)
+    for r in ds["cpi"]:
+        if r["subgroup"] == "General-Overall" and r["sector"] == "Combined" and r["index"] is not None:
+            idx[state_key(r["state"])][r["month"]] = r["index"]
+
+    def fy_avg(k: str, fy: str) -> float | None:
+        y = int(fy[:4])
+        months = [f"{y}-{m:02d}" for m in range(4, 13)] + [f"{y + 1}-{m:02d}" for m in range(1, 4)]
+        vals = [idx[k].get(m) for m in months]
+        return None if None in vals else sum(vals) / 12
+
+    skipped = defaultdict(int)
+    for r in recs:
+        if r["table"] != 108 or r["value"] is None:
+            continue
+        k, fy = state_key(r["state"]), r["year"]
+        prev = f"{int(fy[:4]) - 1}-{fy[2:4]}"
+        a, b = fy_avg(k, fy), fy_avg(k, prev)
+        if a is None or b is None:
+            skipped[fy] += 1
+            continue
+        checked += 1
+        calc = (a / b - 1) * 100
+        if abs(calc - r["value"]) > 0.15:
+            failures.append(f"{r['state']} {fy}: RBI {r['value']}%, MoSPI's indices give {calc:.2f}%")
+    if skipped:
+        notes.append("Not compared (a year without all 12 monthly indices in MoSPI's data, such as the April-May 2020 "
+                     f"lockdown; RBI's notes say it used fewer months for those years): {dict(sorted(skipped.items()))}.")
+    report.add("RBI state inflation agrees with MoSPI's consumer price indices", checked, failures, notes)
+
+    # 3. unemployment: overall between male and female; 4. All-India wage within the states' range
+    failures, checked = [], 0
+    by = {(r["table"], r["variant"], r["state"], r["year"]): r["value"] for r in recs if r["table"] in (8, 9)}
+    for (n, variant, state, year), v in by.items():
+        if not variant.endswith("Overall") or v is None:
+            continue
+        area = variant.split()[0]
+        m, f = by.get((n, f"{area} Male", state, year)), by.get((n, f"{area} Female", state, year))
+        if m is None or f is None:
+            continue
+        checked += 1
+        if not (min(m, f) - 1 <= v <= max(m, f) + 1):
+            failures.append(f"RBI table {n} {state} {year}: overall {v} outside male {m} and female {f} (per thousand)")
+    for n in (112, 113, 114, 115):
+        for year in sorted({r["year"] for r in recs if r["table"] == n}):
+            vals = [r["value"] for r in recs if r["table"] == n and r["year"] == year and r["state"] != "All India" and r["value"] is not None]
+            india = next((r["value"] for r in recs if r["table"] == n and r["year"] == year and r["state"] == "All India"), None)
+            if india is None or not vals:
+                continue
+            checked += 1
+            if not (min(vals) <= india <= max(vals)):
+                failures.append(f"RBI table {n} {year}: All India ₹{india} outside the states' ₹{min(vals)}–₹{max(vals)}")
+    report.add("RBI state tables: totals lie within their parts", checked, failures,
+               ["Unemployment: the overall rate lies between men's and women's (published per thousand, so within 1). "
+                "Rural wages: the All-India average lies within the range of the states' averages."])
+
+
 def main(ds: dict | None = None) -> int:
     if ds is None:
         from .build import assemble
@@ -615,6 +702,7 @@ def main(ds: dict | None = None) -> int:
     check_cpialrl(ds, report)
     check_hces(ds, report)
     check_hces_overall(ds, report)
+    check_rbi(ds, report)
     check_cpi2024(ds, report)
     (DATA / "validation_report.md").write_text(report.markdown())
     for title, checked, failures, _ in report.sections:

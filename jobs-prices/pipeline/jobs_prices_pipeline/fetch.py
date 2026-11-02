@@ -174,6 +174,31 @@ def fetch_hces_tables(manifest: dict, force: bool) -> None:
         print(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
 
 
+def fetch_rbi(manifest: dict, force: bool) -> None:
+    """The RBI Handbook of Statistics on Indian States: the tables in rbi.RBI_STATE_TABLES, from the latest edition."""
+    from . import rbi
+
+    if not force and all(f"rbi/table{n:03d}" in manifest for n in rbi.RBI_STATE_TABLES):
+        return
+    edition, links = rbi.table_links(get(rbi.HANDBOOK_PAGE).decode("utf-8", "ignore"))
+    for n, (table_id, words) in rbi.RBI_STATE_TABLES.items():
+        key = f"rbi/table{n:03d}"
+        if key in manifest and not force:
+            continue
+        if n not in links:
+            raise RuntimeError(f"{key}: table {n} not on the handbook page")
+        title, url = links[n]
+        if words not in title.upper():
+            raise RuntimeError(f"{key}: expected a title with {words!r}, found {title!r}")
+        content = get(url)
+        if not content.startswith(b"PK"):
+            raise RuntimeError(f"{key}: {url} is not an Excel file")
+        changed = save(manifest, key, RAW / f"{key}.xlsx", content, url,
+                       {"edition": edition, "title": title, "page": rbi.HANDBOOK_PAGE})
+        print(f"{key}: {title} ({edition}){' (changed)' if changed else ''}", flush=True)
+        time.sleep(0.5)
+
+
 def load_manifest() -> dict:
     return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
 
@@ -201,6 +226,7 @@ def main(force: bool = False) -> None:
             time.sleep(0.3)
         fetch_cpi2024(manifest, force)
         fetch_hces_tables(manifest, force)
+        fetch_rbi(manifest, force)
     finally:
         write_manifest(manifest)
 

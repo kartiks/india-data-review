@@ -3,7 +3,7 @@ import { link } from "../../../lib/url";
 import fs from "node:fs";
 import path from "node:path";
 import Base from "../../../layouts/Base.astro";
-import { GENERATED, SOURCES, CPI_FIRST, CPI_LAST, monthLabel, PLFS_YEARS, HCES_YEARS, CPI24_LATEST, CPI24_RELEASES } from "../../../lib/jobs-prices/data";
+import { GENERATED, SOURCES, CPI_FIRST, CPI_LAST, monthLabel, PLFS_YEARS, HCES_YEARS, CPI24_LATEST, CPI24_RELEASES, RBI_EDITION } from "../../../lib/jobs-prices/data";
 
 const report = fs.readFileSync(path.resolve(process.cwd(), "..", "jobs-prices", "data", "validation_report.md"), "utf8");
 const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
@@ -24,6 +24,7 @@ const files = [
   ["cpi2024.csv", "Consumer Price Index, base 2024: every figure read from MoSPI's monthly press releases (divisions, groups, states, All-India series)"],
   ["cpialrl.csv", "Consumer Price Index for agricultural and rural labourers"],
   ["hces.csv", "Household consumption spending"],
+  ["rbi_states.csv", "RBI Handbook of Statistics on Indian States: state income, state GDP, unemployment since 1993-94, state inflation and rural wages, as published"],
   ["hces_overall.csv", "Rural + urban spending per person and food share, with the estimated persons used as weights"],
   ["sources.csv", "Every downloaded file: address, fingerprint (SHA-256) and date"],
   ["validation_report.md", "Every check and every documented exception"],
@@ -48,6 +49,7 @@ const nFiles = Object.keys(SOURCES).length;
       <li><strong>Consumer prices, old series</strong>: Consumer Price Index, base 2012, {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}, from MoSPI's data service: every group and item group for All India, the general index for every state.</li>
       <li><strong>Consumer prices, new series</strong>: Consumer Price Index, base 2024, January 2026 to {monthLabel(CPI24_LATEST)}, read from MoSPI's monthly press releases ({Object.keys(CPI24_RELEASES).length} so far): the All-India index from January 2025 and inflation from January 2026, and each month's 12 divisions, 43 groups and 36 states. MoSPI's data service lists the base-2024 series but does not yet return its figures. Each release's tables are read from its web page and checked against its PDF; the June 2026 release has no PDF. Divisions, groups and states are as first published (provisional); the All-India series is final except for the latest month.</li>
       <li><strong>Prices for farm and rural labourers</strong>: the Labour Bureau's CPI-AL and CPI-RL, base 1986-87 and, from June 2025, base 2019.</li>
+      <li><strong>State comparisons</strong>: the Reserve Bank of India's Handbook of Statistics on Indian States ({RBI_EDITION} edition): income per person and state GDP (compiled from MoSPI's state accounts), unemployment by state since 1993-94 (from MoSPI's NSS and PLFS surveys), average inflation by state, and rural daily wages (from the Labour Bureau). The pipeline finds each table on RBI's handbook page and checks its title.</li>
       <li><strong>Household spending</strong>: Household Consumption Expenditure Survey, {HCES_YEARS.join(" and ")}. MoSPI publishes rural and urban figures; the overall (rural + urban) figures for 2023-24 weight them by the survey's estimated persons in each area, from Table A2 of MoSPI's full survey report (an Excel file on mospi.gov.in). The checks confirm that table's averages match the data service's.</li>
     </ul>
   </section>
@@ -61,6 +63,7 @@ const nFiles = Object.keys(SOURCES).length;
     <ul>
       <li><strong>Jobs</strong>: the three rates are tied together (worker ratio = participation × (1 − unemployment rate)), and every published combination is tested; the figure for everyone must lie between women's and men's, and the rural + urban figure between rural and urban; shares of workers by industry, type of work or employer must add up to 100%.</li>
       <li><strong>Prices</strong>: every published inflation rate is worked out again from the index a year earlier; the combined index must lie between the rural and urban index; no month may be missing.</li>
+      <li><strong>RBI handbook</strong>: the handbook's average inflation for every state and year must equal the figure worked out from MoSPI's own monthly indices; overall unemployment must lie between men's and women's; the All-India rural wage must lie within the states' range.</li>
       <li><strong>New price series</strong>: each release's headline sentence, summary table and annexures must give the same inflation; every table on the release page must match the release PDF; a later release may revise only the previous month's provisional figures; and the linking factors MoSPI published must equal the 2025 average of the new index divided by that of the old.</li>
       <li><strong>Spending</strong>: the twelve spending classes, weighted by the share of people in each, must give the average; item categories must add up to the food and non-food totals, and those to the average.</li>
     </ul>

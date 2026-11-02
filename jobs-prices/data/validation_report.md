@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service. Every allowed exception lists its reason.
 
-**Result: PASSED** (590945 checks, 0 failures)
+**Result: PASSED** (592165 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -218,6 +218,21 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 150 checks, 0 failures.
 
 - Overall average = (rural persons × rural average + urban persons × urban average) ÷ all persons, with persons from Table A2 of MoSPI's HCES report; food's share is weighted by each area's total spending.
+
+## ✅ RBI state tables: every table read
+11 checks, 0 failures.
+
+- Edition: 2024-25. Tables 8, 9, 19, 20, 21, 22, 108, 112, 113, 114, 115.
+
+## ✅ RBI state inflation agrees with MoSPI's consumer price indices
+326 checks, 0 failures.
+
+- Not compared (a year without all 12 monthly indices in MoSPI's data, such as the April-May 2020 lockdown; RBI's notes say it used fewer months for those years): {'2020-21': 35, '2021-22': 35}.
+
+## ✅ RBI state tables: totals lie within their parts
+883 checks, 0 failures.
+
+- Unemployment: the overall rate lies between men's and women's (published per thousand, so within 1). Rural wages: the All-India average lies within the range of the states' averages.
 
 ## ✅ Prices, new series (base 2024): every release read in full
 9 checks, 0 failures.

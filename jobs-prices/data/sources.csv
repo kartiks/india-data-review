@@ -69,3 +69,14 @@ plfs/quarterly/ind01,https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&
 plfs/quarterly/ind02,https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=2&Format=JSON,17e8db366e67e45ba56b717bdb01a6c777b38f9e71b841b0e0660ed2e5868427,2026-10-30T15:10:41+00:00,8694
 plfs/quarterly/ind03,https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=2&Format=JSON,c6dd18ba951773a8a2becbbd721dab14e34520c8ddbe85e778726b850706f3bf,2026-10-30T15:11:35+00:00,8694
 plfs/quarterly/ind04,https://api.mospi.gov.in/api/plfs/getData?indicator_code=4&frequency_code=2&Format=JSON,64fa240a8c9d83d9d59c9b0929398765bf41424d852c3fcb82e6198790d2cdff,2026-10-30T15:12:53+00:00,11500
+rbi/table008,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/8T_111220254070338D01844B439710F4990CDAF4DF.XLSX,2e943a3b61d540183d08f31b087b7d41fa6f546677a49eccbdfc417a7a09bce0,2026-11-02T15:32:29+00:00,
+rbi/table009,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/9T_11122025FD98FA2EE6704C18AB8D5EC9966548B6.XLSX,4eef6c00459585c12e2f5f7e1686b9cfd5b24dd7493b9b3cfae145f876a56958,2026-11-02T15:32:30+00:00,
+rbi/table019,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/19T_11122025B8CC230E4A34431999B4D6A107707BCA.XLSX,1f90818b79f1e53bfcaf90f76ef66e1db6e810ef22076791b049d429a184be15,2026-11-02T15:32:30+00:00,
+rbi/table020,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/20T_111220252B6EE27737FD4931A99C5A448B7CEC68.XLSX,0861a3b6a0df2b41f21918b5108a9de0d93cb18d3808f625ef8bb0da24603a71,2026-11-02T15:32:31+00:00,
+rbi/table021,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_11122025D994949B48C44B68B4465FBB9ADDFF3D.XLSX,307860e934baa7ce60c76ef9b0086b0007a55d78730e5a77677ff49142bf8f00,2026-11-02T15:32:32+00:00,
+rbi/table022,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/22T_11122025E6BC0CB35180406EAB6E0D49DE51C8E8.XLSX,e7afa1d2a2a227bd68a92614dcf03298da53f4d4e7acaa4b4aa1e5388f74644c,2026-11-02T15:32:33+00:00,
+rbi/table108,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/108T_111220251942D16B3BED4D73BE851D15D2329168.XLSX,1dd5a612f16c49f95530589072a14fdf64250aa35ac0fbf4c5a73290915e05da,2026-11-02T15:32:33+00:00,
+rbi/table112,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/112T_11122025771E55EB688044CE8A85E52A901B5D22.XLSX,39b408a62c02889a5dac9c6a2345312b44ad8b6ce15669732f06804e45dbd5dc,2026-11-02T15:32:34+00:00,
+rbi/table113,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/113T_111220256FEBCC253D4A47419892925F897E2537.XLSX,6f4995aec2fa6dd904028a1d5918569823c68c15b7667d7a027cf700f6965ebf,2026-11-02T15:32:35+00:00,
+rbi/table114,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/114T_111220259CA566982E7F4BF38B3FDAC0D7587F2E.XLSX,2d792c922fc23ba8c3a42c669325c231a6004e25f37446c6e5a00db9a2fd92bc,2026-11-02T15:32:35+00:00,
+rbi/table115,https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/115T_1112202585CF99F21E654CED8990A734A043B3DA.XLSX,4b7a58fadda4aa50cd04a8cbc5d79f95d11a1c35217b0b9502ce5a1325be99b2,2026-11-02T15:32:36+00:00,

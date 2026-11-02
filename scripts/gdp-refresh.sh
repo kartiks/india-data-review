@@ -18,6 +18,7 @@ REPO="${1:-$(cd "$(dirname "$0")/.." && pwd)}"
 LOG_HINT="See ~/Library/Logs/india-data-review/gdp-refresh.log"
 WORK=""
 LOCK=""
+KEEP_DIR="$HOME/Library/Application Support/india-data-review/kept"
 
 notify() {
   echo "$1"
@@ -68,11 +69,19 @@ fi
 
 git -C "$WORK" status --short -- gdp/sources
 git -C "$WORK" add gdp/sources gdp/data
-if ! git -C "$WORK" commit --quiet -m "GDP: MoSPI data refreshed $(date +%Y-%m-%d)"; then
+# Copies the new downloads out of the temporary folder (macOS clears old temporary files) and fails.
+save_downloads() {
+  local dest kept
+  dest="$KEEP_DIR/gdp-sources-$(date +%Y-%m-%d-%H%M)"
+  if mkdir -p "$dest" && cp -R "$WORK/gdp/sources" "$dest/"; then
+    fail "MoSPI data changed but $1. The downloads are in $dest."
+  fi
   kept="$WORK"
-  WORK="" # keep the folder: it holds the only copy of the new downloads
-  fail "MoSPI data changed but could not be committed. The downloads are in $kept."
-fi
+  WORK="" # copying failed: leave the temporary folder in place instead
+  fail "MoSPI data changed but $1. The downloads are in $kept."
+}
+
+git -C "$WORK" commit --quiet -m "GDP: MoSPI data refreshed $(date +%Y-%m-%d)" || save_downloads "could not be committed"
 
 keep() {
   local branch
@@ -80,9 +89,7 @@ keep() {
   if git -C "$REPO" branch "$branch" "$(git -C "$WORK" rev-parse HEAD)"; then
     fail "MoSPI data changed but $1. Kept on local branch $branch."
   fi
-  kept="$WORK"
-  WORK=""
-  fail "MoSPI data changed but $1, and branch $branch could not be made. The downloads are in $kept."
+  save_downloads "$1, and branch $branch could not be made"
 }
 
 [ "$refresh" -eq 0 ] || keep "a GDP check failed"

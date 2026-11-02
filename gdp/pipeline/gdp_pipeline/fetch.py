@@ -118,6 +118,7 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
 
 
 def fetch_all_nas(manifest: dict, force: bool) -> None:
+    vanished = []
     for base, series, freq in NAS_SERIES:
         for code in NAS_INDICATORS:
             key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
@@ -127,7 +128,10 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
             if not result["rows"]:
                 if manifest.get(key, {}).get("sha256"):
                     # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
-                    raise RuntimeError(f"{key}: MoSPI returned no rows for an indicator that had data; keeping the saved file")
+                    # Keep the saved file, fetch the rest, and fail at the end.
+                    print(f"{key}: NO ROWS, but it had data before; keeping the saved file")
+                    vanished.append(key)
+                    continue
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 print(f"{key}: no data")
                 continue
@@ -135,6 +139,8 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
             changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
             time.sleep(0.3)
+    if vanished:
+        raise RuntimeError(f"MoSPI returned no rows for indicators that had data: {', '.join(vanished)}")
 
 
 def fetch_budgets(manifest: dict, force: bool) -> None:

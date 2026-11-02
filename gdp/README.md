@@ -37,9 +37,10 @@ The command exits with an error if any check fails, and the website (`../site/`)
 latest estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
 `sources/snapshots/<date>/`, so the revision history of the new series builds up over time. The job works in a clean
 copy of `main` and pushes to `main` only when MoSPI's files changed and the local CI (`scripts/ci.sh`) passes; Vercel
-then deploys. If a check fails, nothing is pushed: the commit is kept on a local branch `gdp-refresh-<date>` and a
-notification says so. Log: `~/Library/Logs/india-data-review/gdp-refresh.log`. To run it now:
-`scripts/gdp-refresh.sh`.
+then deploys. If a check fails, nothing is pushed: the commit is kept on a local branch `gdp-refresh-<date>-<time>`
+and a notification says so. Log: `~/Library/Logs/india-data-review/gdp-refresh.log`. To run it now:
+`scripts/gdp-refresh.sh`. The schedule runs the script as it is on `origin/main`, so install it only once this
+script is on `main`; run the install again after moving the repository.
 
 ## What's in `data/`
 

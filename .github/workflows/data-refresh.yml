@@ -11,8 +11,8 @@
 #
 # An area is committed only if its download finished and every one of its checks passed. Then the local CI
 # (scripts/ci.sh) must pass on the commit before it is pushed; Vercel deploys main. If anything fails, the run
-# fails (GitHub emails the repository owner) and the downloads that were not committed are kept as a run artifact
-# for 90 days.
+# fails (GitHub emails whoever last changed this schedule, or started the run by hand), and the downloads that were
+# not pushed are kept as a run artifact for 90 days.
 
 name: Weekly data refresh
 
@@ -34,6 +34,10 @@ jobs:
     timeout-minutes: 240 # backstop; each area has its own limit below
     steps:
       - uses: actions/checkout@v5
+        with:
+          # Keep the write token out of .git/config, where the package installs and builds below could read it.
+          # Only the push step gets it.
+          persist-credentials: false
 
       - uses: astral-sh/setup-uv@v6
 
@@ -94,31 +98,46 @@ jobs:
         run: scripts/ci.sh HEAD
 
       - name: Push to main
+        id: push
         # Only from main: a run started by hand on another branch must not push that branch.
         if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main'
+        env:
+          TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          authgit() { git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" "$@"; }
           base="$(git rev-parse HEAD~1)"
-          if ! git push origin HEAD:main; then
-            # main moved while this ran: replay the commit on top, check again, push.
-            git fetch origin main
-            [ "$(git rev-parse origin/main)" != "$base" ] || exit 1
-            git rebase origin/main || { git rebase --abort; exit 1; }
+          if ! authgit push origin HEAD:main; then
+            authgit fetch origin main
+            if [ "$(git rev-parse origin/main)" = "$base" ]; then
+              echo "::error::The push was refused although main has not moved. Main must let github-actions[bot] push (no branch protection or ruleset that requires a pull request)."
+              exit 1
+            fi
+            # main moved while this ran: replay the commit on top, check again, push. --autostash sets aside the
+            # files of an area that was not committed (its rebuilt data and manifest, or downloads held back).
+            git rebase --autostash origin/main || { git rebase --abort || true; exit 1; }
             scripts/ci.sh HEAD
-            git push origin HEAD:main
+            authgit push origin HEAD:main
           fi
 
       - name: Keep downloads that were not pushed
         # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
         if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
           steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
+        env:
+          COMMITTED: ${{ steps.commit.outputs.committed }}
+          PUSHED: ${{ steps.push.outcome }}
         run: |
           mkdir -p refresh-artifact
           paths="gdp/sources gdp/data jobs-prices/sources jobs-prices/data"
           # Downloads not committed (an area whose checks failed), with each area's validation report ...
           git ls-files --modified --others --exclude-standard -- $paths | xargs -r cp --parents -t refresh-artifact
-          # ... and everything this run committed (it may not have been pushed).
-          git diff --name-only "${{ github.sha }}" HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
+          # ... and the refresh commit (always the last one), if it was made but not pushed.
+          if [ -n "$COMMITTED" ] && [ "$PUSHED" != success ]; then
+            git diff --name-only HEAD~1 HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
+          fi
           cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md
           find refresh-artifact -type f | sed -n 1,60p
 

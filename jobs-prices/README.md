@@ -101,7 +101,8 @@ the press-release figures before switching the site over; the release reader can
 
 ### New survey rounds
 
-New PLFS years, CPI months and HCES rounds arrive through the weekly refresh with no code change. A new indicator, a new
+New PLFS releases, CPI-AL/RL months and HCES rounds arrive through the weekly refresh with no code change
+(the base-2012 CPI ended with 2025, and base-2024 months are added by hand, above). A new indicator, a new
 breakdown or a renamed field needs code: the field names are listed in `build.py` (`PLFS_FIELDS`, `HCES_SITE`) and the
 checks will fail on anything they cannot read.
 

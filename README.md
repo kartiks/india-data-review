@@ -86,12 +86,15 @@ changed. It:
 3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
    no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
 4. Runs the local CI (`scripts/ci.sh`, below) on that commit, and pushes it to `main` only if it passes. Vercel then
-   deploys the live site. If both areas changed, they go in one commit, so a CI failure holds back both.
-5. If anything failed, the run fails and GitHub emails the repository owner. The run then keeps an artifact
-   (`data-refresh-<run id>`, for 90 days) with each area's validation report and every download that was not pushed.
+   deploys the live site. If both areas changed, they go in one commit, so a CI failure holds back both. If `main`
+   moved during the run (a PR was merged), the commit is replayed on top of it and checked again before the push.
+5. If anything failed, the run fails and GitHub emails whoever last changed the workflow's schedule (or started the
+   run by hand). The run then keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation
+   report and every changed file that was not pushed.
 
 Only a run on `main` pushes. A run started by hand on another branch does everything else and keeps its downloads
-as an artifact.
+as an artifact. The push is made as `github-actions[bot]` straight to `main`, so `main` must not get branch
+protection or a ruleset that requires a pull request; if it does, every refresh with new data fails at the push.
 
 **When it passes**, nothing is needed. Look over the `Data refresh` commit on `main` now and then: the
 "Large revisions to growth" section of `gdp/data/validation_report.md` lists big revisions for review.

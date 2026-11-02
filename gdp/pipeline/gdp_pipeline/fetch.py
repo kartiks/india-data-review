@@ -10,7 +10,7 @@ quarters. So when a re-download differs from the saved file, the old file is
 kept under sources/snapshots/<date it was fetched>/ before being replaced: run
 after every release and the revision history builds up.
 
-Run: uv run python -m gdp_pipeline.fetch [--force]
+Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]
 """
 
 import hashlib
@@ -94,11 +94,11 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
     """Write the file and its manifest entry. Keeps the previous version if it changed. Returns True if new/changed."""
     sha = hashlib.sha256(content).hexdigest()
     old = manifest.get(key)
-    if old and old["sha256"] == sha and dest.exists():
+    if old and old.get("sha256") == sha and dest.exists():
         old["checked_at"] = now()
         return False
     history = old.get("history", []) if old else []
-    if old and dest.exists():
+    if old and old.get("sha256") and dest.exists():
         snap = SNAPSHOTS / old["fetched_at"][:10] / dest.relative_to(RAW)
         snap.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest, snap)
@@ -118,6 +118,7 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
 
 
 def fetch_all_nas(manifest: dict, force: bool) -> None:
+    vanished = []
     for base, series, freq in NAS_SERIES:
         for code in NAS_INDICATORS:
             key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
@@ -125,6 +126,12 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
                 continue
             result = fetch_nas(base, series, freq, code)
             if not result["rows"]:
+                if manifest.get(key, {}).get("sha256"):
+                    # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
+                    # Keep the saved file, fetch the rest, and fail at the end.
+                    print(f"{key}: NO ROWS, but it had data before; keeping the saved file")
+                    vanished.append(key)
+                    continue
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 print(f"{key}: no data")
                 continue
@@ -132,6 +139,8 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
             changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
             time.sleep(0.3)
+    if vanished:
+        raise RuntimeError(f"MoSPI returned no rows for indicators that had data: {', '.join(vanished)}")
 
 
 def fetch_budgets(manifest: dict, force: bool) -> None:
@@ -165,10 +174,12 @@ def write_manifest(manifest: dict) -> None:
     MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=1, ensure_ascii=False) + "\n")
 
 
-def main(force: bool = False) -> None:
+def main(force: bool = False, force_nas: bool = False) -> None:
+    """force: re-download everything. force_nas: re-download only the MoSPI API files (they are the ones that
+    change after a release; budget and forecast documents are fixed), and anything else that is missing."""
     manifest = load_manifest()
     try:
-        fetch_all_nas(manifest, force)
+        fetch_all_nas(manifest, force or force_nas)
         fetch_budgets(manifest, force)
         from . import forecasts
 
@@ -178,4 +189,4 @@ def main(force: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv)
+    main(force="--force" in sys.argv, force_nas="--force-nas" in sys.argv)

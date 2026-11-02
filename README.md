@@ -41,7 +41,8 @@ Tests: `uv run pytest` in each `pipeline/` folder, and `npm run check` (type che
 ## Updating the data
 
 Vercel only builds the site. It never runs a pipeline: it reads the `data/` folders committed to this repository.
-So every update is done locally:
+MoSPI's GDP data is refreshed by a daily GitHub Action ([GDP README](gdp/README.md#run-it)); every other update
+is done locally:
 
 1. Make any hand edits the release needs (see the calendar below and each area's README).
 2. Run that area's pipeline with `--fetch` or `--refresh`. It must end with every check passing; if a check fails,
@@ -56,7 +57,7 @@ So every update is done locally:
 | Late January | Economic Survey | GDP | Add the survey's growth projection to `forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) |
 | 1 February (or after an election) | Union Budget | Budget, GDP | Move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)) |
 | Every two months | RBI monetary policy statement | GDP | Add the RBI's growth projection to `forecast_sources/rbi.json` |
-| Early January, end of February, May, August, November | MoSPI GDP estimates | GDP | `--refresh` |
+| Early January, end of February, May, August, November | MoSPI GDP estimates | GDP | Automatic (daily GitHub Action); check the commit it makes |
 | 12th of every month | MoSPI Consumer Price Index | Jobs and prices | Add the release page, then `--fetch` ([Jobs and prices README](jobs-prices/README.md#each-month)) |
 | Mid-month, and each quarter | MoSPI Periodic Labour Force Survey bulletins | Jobs and prices | `--refresh` |
 | End of each month | Labour Bureau CPI for farm and rural labourers | Jobs and prices | `--refresh` |

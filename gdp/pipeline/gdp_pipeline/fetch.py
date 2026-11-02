@@ -10,7 +10,7 @@ quarters. So when a re-download differs from the saved file, the old file is
 kept under sources/snapshots/<date it was fetched>/ before being replaced: run
 after every release and the revision history builds up.
 
-Run: uv run python -m gdp_pipeline.fetch [--force]
+Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]
 """
 
 import hashlib
@@ -165,10 +165,12 @@ def write_manifest(manifest: dict) -> None:
     MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=1, ensure_ascii=False) + "\n")
 
 
-def main(force: bool = False) -> None:
+def main(force: bool = False, force_nas: bool = False) -> None:
+    """force: re-download everything. force_nas: re-download only the MoSPI API files (they are the ones that
+    change after a release; budget and forecast documents are fixed), and anything else that is missing."""
     manifest = load_manifest()
     try:
-        fetch_all_nas(manifest, force)
+        fetch_all_nas(manifest, force or force_nas)
         fetch_budgets(manifest, force)
         from . import forecasts
 
@@ -178,4 +180,4 @@ def main(force: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv)
+    main(force="--force" in sys.argv, force_nas="--force-nas" in sys.argv)

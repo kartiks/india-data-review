@@ -1,0 +1,87 @@
+# Re-downloads MoSPI's national accounts every day and commits them to main when they change.
+#
+# MoSPI's API keeps only the latest estimate for the 2022-23 series and for quarters, so each release
+# overwrites the one before. When a downloaded file differs, the pipeline keeps the old one under
+# gdp/sources/snapshots/; committing it here is what builds up the revision history.
+#
+# Nothing is pushed unless every GDP check passes, the GDP tests pass and the site builds.
+# If a check fails, the run fails (GitHub emails a notice) and the downloads are kept as a run artifact.
+
+name: GDP refresh
+
+on:
+  schedule:
+    - cron: "30 13 * * *" # 19:00 IST, after MoSPI's usual 16:00 IST release time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gdp-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Download MoSPI national accounts, rebuild and check
+        working-directory: gdp/pipeline
+        run: uv run python -m gdp_pipeline --refresh-nas
+
+      - name: Did MoSPI's data change?
+        id: changed
+        run: |
+          if [ -n "$(git status --porcelain -- gdp/sources/raw gdp/sources/snapshots)" ]; then
+            echo "yes=true" >> "$GITHUB_OUTPUT"
+            git status --short -- gdp/sources
+          else
+            echo "No change in MoSPI's files."
+          fi
+
+      - name: Run the GDP tests
+        if: steps.changed.outputs.yes == 'true'
+        working-directory: gdp/pipeline
+        run: uv run pytest -q
+
+      - uses: actions/setup-node@v5
+        if: steps.changed.outputs.yes == 'true'
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Build the site
+        if: steps.changed.outputs.yes == 'true'
+        working-directory: site
+        run: |
+          npm ci
+          npm run build
+
+      - name: Commit and push
+        if: steps.changed.outputs.yes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gdp/sources gdp/data
+          git commit -m "GDP: MoSPI data refreshed $(date -u +%Y-%m-%d)"
+          git pull --rebase
+          git push
+
+      - name: Keep the downloads if something failed
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdp-refresh-${{ github.run_id }}
+          path: |
+            gdp/sources/raw/nas
+            gdp/sources/snapshots
+            gdp/sources/manifest.json
+            gdp/data/validation_report.md
+          if-no-files-found: ignore
+          retention-days: 90

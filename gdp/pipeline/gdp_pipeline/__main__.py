@@ -4,6 +4,7 @@
     uv run python -m gdp_pipeline --fetch    # download anything missing
     uv run python -m gdp_pipeline --refresh  # re-download everything (after a MoSPI release);
                                              # changed files are kept in sources/snapshots/
+    uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (the scheduled job)
 
 Exits non-zero if any check fails, so it can gate a website build.
 """
@@ -14,8 +15,8 @@ from . import build, checks, fetch
 
 
 def main() -> int:
-    if "--fetch" in sys.argv or "--refresh" in sys.argv:
-        fetch.main(force="--refresh" in sys.argv)
+    if {"--fetch", "--refresh", "--refresh-nas"} & set(sys.argv):
+        fetch.main(force="--refresh" in sys.argv, force_nas="--refresh-nas" in sys.argv)
     return checks.main(build.main())
 
 

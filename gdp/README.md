@@ -24,15 +24,20 @@ cd pipeline
 uv run python -m gdp_pipeline             # build data from saved sources and run all checks
 uv run python -m gdp_pipeline --fetch     # also download anything missing
 uv run python -m gdp_pipeline --refresh   # re-download everything (run after each MoSPI release)
+uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (what the daily job runs)
 uv run pytest
 ```
 
 The command exits with an error if any check fails, and the website (`../site/`) refuses to build unless
 `data/validation_report.md` says PASSED.
 
-**Run `--refresh` after every MoSPI release.** MoSPI's data service keeps only the latest estimate for the
-new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<date>/`, so the revision history of the new series builds up over time.
+**MoSPI's files are re-downloaded every day by a GitHub Action** ([`gdp-refresh.yml`](../.github/workflows/gdp-refresh.yml),
+19:00 IST). MoSPI's data service keeps only the latest estimate for the new 2022-23 series and for quarters. When a
+re-download differs, the old file is kept in `sources/snapshots/<date>/`, so the revision history of the new series
+builds up over time. The job commits to `main` only when MoSPI's files changed, every check and test passes and the
+site builds; Vercel then deploys. If a check fails, the run fails (GitHub emails a notice), nothing is pushed and
+the downloads are kept as an artifact of that run for 90 days: fix the check locally with `--refresh-nas`, then
+commit. To run it now, use "Run workflow" on the action's page.
 
 ## What's in `data/`
 

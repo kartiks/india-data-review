@@ -62,7 +62,7 @@ revised in place, and everything else is **updated by hand** when it is released
 | Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Late January |
 | RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Every two months |
 | Overall (rural + urban) household spending 2023-24 | MoSPI's HCES 2023-24 report, Table A2 | Fixed: a published report | Never |
-| Budget cross-checks | RBI Handbook of Statistics on Indian Economy; PRS budget analysis | **By hand**, with the new budget (step 4 of the Budget README) | Yearly |
+| Budget cross-checks (used by the checks, described in the Budget pages' notes) | RBI Handbook of Statistics on Indian Economy; PRS budget analysis | **By hand** (step 4 of the Budget README) | RBI: yearly, second half of the year; PRS: after each budget |
 | India map | DataMeet state boundaries | Fixed | Never |
 
 The release dates are MoSPI's and the Finance Ministry's usual pattern; MoSPI's advance release calendar on
@@ -71,11 +71,12 @@ mospi.gov.in has the exact dates.
 ### The weekly refresh
 
 [`.github/workflows/data-refresh.yml`](.github/workflows/data-refresh.yml) runs every **Sunday at 02:00 IST**
-(Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about 50 minutes, most of it the
-1,100 pages of MoSPI's jobs and prices data. It:
+(Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about an hour, most of it the
+1,400 pages of MoSPI's jobs and prices data. It:
 
 1. Re-downloads the GDP sources (`gdp_pipeline --refresh-nas`) and the jobs and prices sources
-   (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Fixed documents
+   (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Each area has its
+   own time limit (30 and 100 minutes), so a slow source fails only its own area. Fixed documents
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
    listed in the code but missing is downloaded.
 2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
@@ -84,9 +85,12 @@ mospi.gov.in has the exact dates.
 3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
    no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
 4. Runs the local CI (`scripts/ci.sh`, below) on that commit, and pushes it to `main` only if it passes. Vercel then
-   deploys the live site.
-5. If anything failed, the run fails and GitHub emails the repository owner. Downloads that were not pushed are kept
-   as the run's artifact (`data-refresh-<run id>`) for 90 days.
+   deploys the live site. If both areas changed, they go in one commit, so a CI failure holds back both.
+5. If anything failed, the run fails and GitHub emails the repository owner. The run then keeps an artifact
+   (`data-refresh-<run id>`, for 90 days) with each area's validation report and every download that was not pushed.
+
+Only a run on `main` pushes. A run started by hand on another branch does everything else and keeps its downloads
+as an artifact.
 
 **When it passes**, nothing is needed. Look over the `Data refresh` commit on `main` now and then: the
 "Large revisions to growth" section of `gdp/data/validation_report.md` lists big revisions for review.
@@ -94,7 +98,7 @@ mospi.gov.in has the exact dates.
 **When it fails:**
 
 1. Open the run from the email (or the Actions tab) and read the failed step's log. The artifact has each area's
-   `data/validation_report.md` and the new downloads.
+   `data/validation_report.md` and any new downloads.
 2. Reproduce it locally: run the same command in the area's `pipeline/` folder (`--refresh-nas` for GDP,
    `--refresh-api` for jobs and prices). It downloads the same files.
 3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
@@ -149,6 +153,10 @@ The weekly refresh runs the same script on its own commit before pushing.
 2. Add the area to `AREAS` in `site/scripts/copy-data.mjs`, a data module in `site/src/lib/<area>/`, pages in
    `site/src/pages/<area>/`, and a tab and sub-navigation in `site/src/layouts/Base.astro`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
+4. Add the area to `AREAS` in `scripts/ci.sh`. If its sources are revised in place, give its pipeline an option that
+   re-downloads only those, add a step for it to `.github/workflows/data-refresh.yml` (and to the commit step's list
+   of areas and the artifact paths), and add its datasets to the table in
+   [What refreshes itself](#what-refreshes-itself-and-what-doesnt).
 
 ## Deployment
 

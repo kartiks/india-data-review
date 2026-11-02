@@ -50,13 +50,14 @@ jobs:
         id: gdp
         continue-on-error: true
         working-directory: gdp/pipeline
-        run: uv run --locked python -m gdp_pipeline --refresh-nas
+        # A time limit per area: a slow source fails its own step rather than cancelling the whole run.
+        run: timeout 30m uv run --locked python -m gdp_pipeline --refresh-nas
 
       - name: "Jobs and prices: download MoSPI API and RBI tables, rebuild, check"
         id: jobs
         continue-on-error: true
         working-directory: jobs-prices/pipeline
-        run: uv run --locked python -m jobs_prices_pipeline --refresh-api
+        run: timeout 100m uv run --locked python -m jobs_prices_pipeline --refresh-api
 
       - name: Commit the areas whose sources changed and whose checks passed
         id: commit
@@ -87,8 +88,8 @@ jobs:
           if [ -n "$committed" ]; then
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit --quiet -m "Data refresh $(date -u +%Y-%m-%d): ${committed# }"
-            git show --stat --format='%h %s' HEAD | head -40
+            git commit --quiet -m "Data refresh $(TZ=Asia/Kolkata date +%Y-%m-%d): ${committed# }"
+            git show --stat --format='%h %s' HEAD | sed -n 1,40p
           fi
 
       - name: Local CI on the commit
@@ -96,7 +97,8 @@ jobs:
         run: scripts/ci.sh HEAD
 
       - name: Push to main
-        if: steps.commit.outputs.committed != '' && github.event_name != 'push'
+        # Only from main: a run started by hand on another branch must not push that branch.
+        if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main' && github.event_name != 'push'
         run: |
           set -euo pipefail
           base="$(git rev-parse HEAD~1)"
@@ -104,31 +106,37 @@ jobs:
             # main moved while this ran: replay the commit on top, check again, push.
             git fetch origin main
             [ "$(git rev-parse origin/main)" != "$base" ] || exit 1
-            git rebase origin/main
+            git rebase origin/main || { git rebase --abort; exit 1; }
             scripts/ci.sh HEAD
             git push origin HEAD:main
           fi
 
+      - name: "TEMPORARY test: local CI on Linux even when nothing changed"
+        if: github.event_name == 'push' && steps.commit.outputs.committed == ''
+        run: scripts/ci.sh HEAD
+
       - name: Keep downloads that were not pushed
-        if: failure() || steps.commit.outputs.held != ''
+        if: failure() || steps.commit.outputs.held != '' || github.event_name == 'push'
         run: |
           mkdir -p refresh-artifact
-          git ls-files --modified --others --exclude-standard -- '*/sources' '*/data' |
-            xargs -r cp --parents -t refresh-artifact
-          # and anything committed here but not pushed
-          git diff --name-only "${{ github.sha }}" HEAD -- '*/sources' '*/data' |
-            xargs -r cp --parents -t refresh-artifact
+          paths="gdp/sources gdp/data jobs-prices/sources jobs-prices/data"
+          # Downloads not committed (an area whose checks failed), with each area's validation report ...
+          git ls-files --modified --others --exclude-standard -- $paths | xargs -r cp --parents -t refresh-artifact
+          # ... and everything this run committed (it may not have been pushed).
+          git diff --name-only "${{ github.sha }}" HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
+          cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md
+          find refresh-artifact -type f | sed -n 1,60p
 
       - uses: actions/upload-artifact@v4
-        if: failure() || steps.commit.outputs.held != ''
+        if: failure() || steps.commit.outputs.held != '' || github.event_name == 'push'
         with:
           name: data-refresh-${{ github.run_id }}
           path: refresh-artifact
-          if-no-files-found: ignore
+          if-no-files-found: warn
           retention-days: 90
 
       - name: Fail if any refresh failed
         if: steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
         run: |
-          echo "::error::GDP: ${{ steps.gdp.outcome }}, jobs and prices: ${{ steps.jobs.outcome }}. Read that step's log and the area's data/validation_report.md in the artifact."
+          echo "::error::GDP: ${{ steps.gdp.outcome }}, jobs and prices: ${{ steps.jobs.outcome }}. Read that step's log; the run's artifact has each area's validation report and any downloads not pushed."
           exit 1

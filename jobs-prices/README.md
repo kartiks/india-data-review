@@ -44,7 +44,7 @@ uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's 
 uv run pytest
 ```
 
-A full download is about 1,100 API pages (some 40 minutes). The API keeps only the latest figures, so when a
+A full download is about 1,400 API pages (some 40 minutes). The API keeps only the latest figures, so when a
 re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 
 ## Keeping it up to date
@@ -86,8 +86,11 @@ the month) need nothing: the weekly refresh brings them in.
 
 RBI publishes the Handbook of Statistics on Indian States each year, usually in December. The weekly refresh picks
 it up: it reads the handbook page, finds the same table numbers in the new edition and checks their titles; the old
-edition's files are kept in `sources/snapshots/`. If RBI renumbers or renames a table, that run fails with the table
-number; update `RBI_STATE_TABLES` in `rbi.py` and run `--refresh-api`.
+edition's files are kept in `sources/snapshots/`. If RBI drops a table number or retitles it, that run fails with the
+table number. The title check looks for words a pair of tables share (both unemployment tables, both state GDP
+tables), so if RBI swaps the members of a pair (rural and urban, current and constant prices) the fetch still
+passes: when a new edition arrives, look over the `Data refresh` commit and the States page. To fix a numbering
+change, update `RBI_STATE_TABLES` in `rbi.py` and run `--refresh-api`.
 
 ### When MoSPI's data service carries the base-2024 index
 

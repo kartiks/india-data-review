@@ -97,6 +97,8 @@ jobs:
         if: steps.commit.outputs.committed != ''
         run: scripts/ci.sh HEAD
 
+      # The write token is given only to the two steps that push, which run nothing but git. The replay in between,
+      # which runs the local CI (package installs and builds), does not get it.
       - name: Push to main
         id: push
         # Only from main: a run started by hand on another branch must not push that branch.
@@ -107,20 +109,37 @@ jobs:
           set -euo pipefail
           auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
           echo "::add-mask::$auth"
-          authgit() { git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" "$@"; }
-          base="$(git rev-parse HEAD~1)"
-          if ! authgit push origin HEAD:main; then
-            authgit fetch origin main
-            if [ "$(git rev-parse origin/main)" = "$base" ]; then
-              echo "::error::The push was refused although main has not moved. Main must let github-actions[bot] push (no branch protection or ruleset that requires a pull request)."
-              exit 1
-            fi
-            # main moved while this ran: replay the commit on top, check again, push. --autostash sets aside the
-            # files of an area that was not committed (its rebuilt data and manifest, or downloads held back).
-            git rebase --autostash origin/main || { git rebase --abort || true; exit 1; }
-            scripts/ci.sh HEAD
-            authgit push origin HEAD:main
+          if git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:main; then
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          git fetch origin main
+          if [ "$(git rev-parse origin/main)" = "$(git rev-parse HEAD~1)" ]; then
+            echo "::error::The push was refused or failed although main has not moved. Either main does not let github-actions[bot] push (branch protection or a ruleset that requires a pull request), or it was a network error: re-run the workflow."
+            exit 1
+          fi
+          echo "main moved while this ran"
+          echo "moved=true" >> "$GITHUB_OUTPUT"
+
+      - name: "main moved: replay the commit on top of it and check again"
+        if: steps.push.outputs.moved == 'true'
+        run: |
+          set -euo pipefail
+          # --autostash sets aside the files of an area that was not committed (its rebuilt data and manifest, or
+          # downloads held back).
+          git rebase --autostash origin/main || { git rebase --abort || true; exit 1; }
+          scripts/ci.sh HEAD
+
+      - name: Push the replayed commit
+        id: push_replayed
+        if: steps.push.outputs.moved == 'true'
+        env:
+          TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          echo "::add-mask::$auth"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:main
 
       - name: Keep downloads that were not pushed
         # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
@@ -128,14 +147,14 @@ jobs:
           steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
         env:
           COMMITTED: ${{ steps.commit.outputs.committed }}
-          PUSHED: ${{ steps.push.outcome }}
+          PUSHED: ${{ steps.push.outputs.pushed == 'true' || steps.push_replayed.outcome == 'success' }}
         run: |
           mkdir -p refresh-artifact
           paths="gdp/sources gdp/data jobs-prices/sources jobs-prices/data"
           # Downloads not committed (an area whose checks failed), with each area's validation report ...
           git ls-files --modified --others --exclude-standard -- $paths | xargs -r cp --parents -t refresh-artifact
           # ... and the refresh commit (always the last one), if it was made but not pushed.
-          if [ -n "$COMMITTED" ] && [ "$PUSHED" != success ]; then
+          if [ -n "$COMMITTED" ] && [ "$PUSHED" != true ]; then
             git diff --name-only HEAD~1 HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
           fi
           cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md

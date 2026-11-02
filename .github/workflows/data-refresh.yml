@@ -34,7 +34,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 180 # backstop; each area has its own limit below
     steps:
       - uses: actions/checkout@v5
 
@@ -116,7 +116,9 @@ jobs:
         run: scripts/ci.sh HEAD
 
       - name: Keep downloads that were not pushed
-        if: failure() || steps.commit.outputs.held != '' || github.event_name == 'push'
+        # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
+        if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
+          steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
         run: |
           mkdir -p refresh-artifact
           paths="gdp/sources gdp/data jobs-prices/sources jobs-prices/data"
@@ -128,7 +130,9 @@ jobs:
           find refresh-artifact -type f | sed -n 1,60p
 
       - uses: actions/upload-artifact@v4
-        if: failure() || steps.commit.outputs.held != '' || github.event_name == 'push'
+        # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
+        if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
+          steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
         with:
           name: data-refresh-${{ github.run_id }}
           path: refresh-artifact

@@ -154,8 +154,9 @@ The weekly refresh runs the same script on its own commit before pushing.
    `site/src/pages/<area>/`, and a tab and sub-navigation in `site/src/layouts/Base.astro`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
 4. Add the area to `AREAS` in `scripts/ci.sh`. If its sources are revised in place, give its pipeline an option that
-   re-downloads only those, add a step for it to `.github/workflows/data-refresh.yml` (and to the commit step's list
-   of areas and the artifact paths), and add its datasets to the table in
+   re-downloads only those, add a step for it to `.github/workflows/data-refresh.yml` and add the area wherever the
+   workflow names `gdp` and `jobs-prices` (the commit step's `env` and list of areas, the artifact paths and
+   conditions, the final failure check), and add its datasets to the table in
    [What refreshes itself](#what-refreshes-itself-and-what-doesnt).
 
 ## Deployment

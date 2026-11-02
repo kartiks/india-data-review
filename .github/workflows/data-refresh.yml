@@ -20,9 +20,6 @@ on:
   schedule:
     - cron: "30 20 * * 6" # Saturday 20:30 UTC = Sunday 02:00 IST. GitHub may start scheduled runs late.
   workflow_dispatch: # "Run workflow" on the Actions tab, or: gh workflow run data-refresh.yml
-  push: # TEMPORARY: test run from the PR branch, without pushing. Remove before merging.
-    branches: [weekly-data-refresh]
-    paths: [.github/workflows/data-refresh.yml]
 
 permissions:
   contents: write
@@ -34,7 +31,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    timeout-minutes: 180 # backstop; each area has its own limit below
+    timeout-minutes: 240 # backstop; each area has its own limit below
     steps:
       - uses: actions/checkout@v5
 
@@ -57,7 +54,7 @@ jobs:
         id: jobs
         continue-on-error: true
         working-directory: jobs-prices/pipeline
-        run: timeout 100m uv run --locked python -m jobs_prices_pipeline --refresh-api
+        run: timeout 150m uv run --locked python -m jobs_prices_pipeline --refresh-api
 
       - name: Commit the areas whose sources changed and whose checks passed
         id: commit
@@ -98,7 +95,7 @@ jobs:
 
       - name: Push to main
         # Only from main: a run started by hand on another branch must not push that branch.
-        if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main' && github.event_name != 'push'
+        if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main'
         run: |
           set -euo pipefail
           base="$(git rev-parse HEAD~1)"
@@ -110,10 +107,6 @@ jobs:
             scripts/ci.sh HEAD
             git push origin HEAD:main
           fi
-
-      - name: "TEMPORARY test: local CI on Linux even when nothing changed"
-        if: github.event_name == 'push' && steps.commit.outputs.committed == ''
-        run: scripts/ci.sh HEAD
 
       - name: Keep downloads that were not pushed
         # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).

@@ -44,7 +44,7 @@ uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's 
 uv run pytest
 ```
 
-A full download is about 1,400 API pages (some 40 minutes). The API keeps only the latest figures, so when a
+A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
 re-download differs, the old file is kept in `sources/snapshots/<date>/`.
 
 ## Keeping it up to date

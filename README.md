@@ -71,12 +71,13 @@ mospi.gov.in has the exact dates.
 ### The weekly refresh
 
 [`.github/workflows/data-refresh.yml`](.github/workflows/data-refresh.yml) runs every **Sunday at 02:00 IST**
-(Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about an hour, most of it the
-1,400 pages of MoSPI's jobs and prices data. It:
+(Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about 65 minutes, most of it the
+1,400 pages of MoSPI's jobs and prices data (about an hour from GitHub's servers), plus the local CI when something
+changed. It:
 
 1. Re-downloads the GDP sources (`gdp_pipeline --refresh-nas`) and the jobs and prices sources
    (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Each area has its
-   own time limit (30 and 100 minutes), so a slow source fails only its own area. Fixed documents
+   own time limit (30 and 150 minutes), so a slow source fails only its own area. Fixed documents
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
    listed in the code but missing is downloaded.
 2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the

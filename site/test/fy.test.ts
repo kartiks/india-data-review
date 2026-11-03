@@ -45,3 +45,14 @@ describe("fiscal years", () => {
     expect(completeFys(2022, "2022-12")).toEqual([]);
   });
 });
+
+describe("mismatched halves", () => {
+  it("are not fiscal years", () => {
+    for (const y of ["2024-99", "1999-2001", "2024-24"]) {
+      expect(isFy(y)).toBe(false);
+      expect(() => fyStart(y)).toThrow();
+    }
+    expect(isFy("1999-2000")).toBe(true);
+    expect(isFy("1999-00")).toBe(true);
+  });
+});

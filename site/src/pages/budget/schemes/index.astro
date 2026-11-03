@@ -27,7 +27,7 @@ const top = SCHEMES.map((s) => ({ s, v: schemeValue(latest, s.key, "be") }))
     </select>
   </div>
   <section class="card" id="results" hidden>
-    <h2 id="results-title">Results</h2>
+    <h2 id="results-title" aria-live="polite">Results</h2>
     <ol class="results" id="results-list"></ol>
   </section>
   <section class="card" id="top">

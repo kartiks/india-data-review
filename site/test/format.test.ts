@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  axisPct, decimal, exact, fyPrefix, gpct, money, moneyParts, moneyShort, orDash, pct, pts, rupees, rupeesAxis, signedPct,
+  axisPct, decimal, exact, gpct, money, moneyParts, moneyShort, orDash, pct, pts, rupees, rupeesAxis, signedPct,
 } from "../src/lib/format";
 
 describe("money", () => {
@@ -133,8 +133,5 @@ describe("plain numbers and rupees", () => {
     expect(orDash(null, gpct)).toBe("–");
     expect(orDash(undefined, gpct)).toBe("–");
     expect(orDash(0, gpct)).toBe("0.0%");
-  });
-  it("fyPrefix", () => {
-    expect(fyPrefix("2026-27")).toBe("FY 2026-27");
   });
 });

@@ -48,7 +48,6 @@ export const signedPct = (v: number, digits = 1) =>
   `${shown(v, digits) === 0 ? "" : v > 0 ? "+" : "−"}${Math.abs(v).toFixed(digits)}%`;
 
 /** "2026-27" -> "FY 2026-27" (for fiscal-year arithmetic, see fy.ts). */
-export const fyPrefix = (y: string) => `FY ${y}`;
 
 /** Split for display: { num: "₹53.47", unit: "lakh crore" }. */
 export function moneyParts(crore: number): { num: string; unit: string } {

@@ -33,7 +33,8 @@ export function setupSchemeSearch(doc: Document = document, load: () => Promise<
   // One request however fast the reader types; after a failure the next search tries again.
   let pending: Promise<SchemeIndex> | null = null;
   const index = () => (pending ??= load().catch((e) => { pending = null; throw e; }));
-  // Only the latest search may change the page: an earlier one finishing late is ignored.
+  // Only the latest search may change the page. Every search waits on the same cached index, so they finish in
+  // order; the guard matters when the box was cleared, or a newer search started, before the index arrived or failed.
   let latest = 0;
 
   async function run() {

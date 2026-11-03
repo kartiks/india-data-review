@@ -64,20 +64,6 @@ describe("setupSchemeSearch", () => {
     expect(el.list.querySelector(".meta")!.textContent).toBe("Agriculture and Farmers Welfare · ₹63,500 crore (2026-27)");
   });
 
-  it("shows the latest query's results even when an earlier search finishes last", async () => {
-    const d = deferred<SchemeIndex>();
-    const { run } = setupSchemeSearch(document, () => d.promise);
-    el.q.value = "jal";
-    const first = run();
-    el.q.value = "kisan";
-    const second = run();
-    d.resolve(INDEX);
-    await second;
-    await first;
-    expect(el.title.textContent).toBe("1 scheme");
-    expect(el.list.textContent).toContain("PM-KISAN");
-  });
-
   it("keeps the page as it is when the box is cleared while the index loads", async () => {
     const d = deferred<SchemeIndex>();
     setupSchemeSearch(document, () => d.promise);

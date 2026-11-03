@@ -118,7 +118,7 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
         // Navigation rows scroll sideways on narrow screens. Fade the edge where more items are hidden,
         // and start with the current page's item in view. Runs before first paint, so nothing jumps.
         for (const ul of document.querySelectorAll(".site-header nav ul")) {
-          const cur = ul.querySelector('[aria-current="page"]');
+          const cur = ul.querySelector("[aria-current]");
           if (cur && ul.scrollWidth > ul.clientWidth) {
             const a = cur.getBoundingClientRect(), u = ul.getBoundingClientRect();
             if (a.left < u.left || a.right > u.right) ul.scrollLeft += a.left - u.left - (u.width - a.width) / 2;
@@ -200,6 +200,7 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
      only uses alpha, so it works on any background in either theme. */
   nav ul {
     --fade-l: 0px; --fade-r: 0px;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
     mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
   }
   nav ul[data-more-left] { --fade-l: 32px; }

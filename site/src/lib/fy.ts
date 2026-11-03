@@ -5,13 +5,23 @@
 const FY = /^(\d{4})-(\d{2}|\d{4})$/;
 
 /** Is this a fiscal year ("2024-25" or "1999-2000"), rather than a calendar year ("2025")? */
-export const isFy = (y: string) => FY.test(y);
+export function isFy(y: string): boolean {
+  try {
+    fyStart(y);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /** First calendar year of a fiscal year: "2024-25" -> 2024, "1999-2000" -> 1999. */
 export function fyStart(y: string): number {
   const m = FY.exec(y);
-  if (!m) throw new Error(`Not a fiscal year: "${y}"`);
-  return Number(m[1]);
+  const start = Number(m?.[1]);
+  if (!m || (m[2].length === 2 ? m[2] !== String(start + 1).slice(-2) : Number(m[2]) !== start + 1)) {
+    throw new Error(`Not a fiscal year: "${y}"`);
+  }
+  return start;
 }
 
 /** The fiscal year that starts in a calendar year: 2024 -> "2024-25", 1999 -> "1999-00". */

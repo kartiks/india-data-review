@@ -16,7 +16,8 @@ type of data, and a shared home page with charts that use more than one area.
 Each data area is self-contained: its own `pipeline/` (a Python package run with uv), `data/` (the verified
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
 URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for people and
-`data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED. Code
+`data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED and
+records the SHA-256 of every data file as it is now (so data changed after its checks ran cannot deploy). Code
 the pipelines share (the validation report, downloading, reading Budget at a Glance) is in `shared/pipeline/`
 (package `pipeline_common`).
 
@@ -35,7 +36,7 @@ the pipelines share (the validation report, downloading, reading Budget at a Gla
 (cd budget/pipeline && uv run python -m budget_pipeline)   # ~3 min; --fetch downloads anything missing
 (cd gdp/pipeline && uv run python -m gdp_pipeline)         # refreshed weekly; see below
 (cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # refreshed weekly; see below
-(cd site && npm install && npm run build)                  # or: npm run dev
+(cd site && npm ci && npm run build)                       # or: npm run dev
 ```
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
@@ -142,7 +143,8 @@ For everything marked "by hand" above, or to refresh a source outside the schedu
 
 ## Local CI
 
-Pull requests have no hosted CI. Before merging one, run the local CI on its branch:
+GitHub Actions runs `scripts/ci.sh` on every pull request and every push to `main`
+(`.github/workflows/ci.yml`, read-only token). To run it yourself on a branch first:
 
 ```bash
 scripts/ci.sh <branch>
@@ -154,10 +156,22 @@ It checks out that commit in a temporary folder (your working folder is not touc
 - the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
 - the build changes no committed file in `sources/` and writes no new files;
 - every area's tests pass, and the shared pipeline code's;
-- the site type-checks and builds.
+- the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds. The build's own
+  gate (`site/scripts/copy-data.mjs`) also checks every area's `validation_summary.json`: it must say PASSED, and
+  each data file's SHA-256, with its `generated_at` left out, must match the one the checks recorded.
 
-It downloads no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
-The weekly refresh runs the same script on its own commit before pushing.
+Running a pipeline's tests rewrites its `data/` files with only a new `generated_at`; discard those changes rather
+than committing them (the hashes leave `generated_at` out, so they never trip the gate).
+
+It downloads no data (npm and uv may download packages) and takes about 10 to 15 minutes on a laptop (about 6 on
+GitHub's runners), most of it the budget tests. The weekly refresh runs the same script on its own commit before
+pushing.
+
+Don't make the "CI / ci" check required for `main` in branch protection as things stand: the weekly refresh pushes
+straight to `main` with the workflow's own token, and pushes made with that token don't start other workflows, so
+its commits would never get that check and the push would be refused. To require it, first let the refresh bypass
+the rule (a ruleset with GitHub Actions as a bypass actor) or have it open a pull request with a token that does
+trigger workflows.
 
 ## Adding data
 
@@ -192,10 +206,15 @@ which takes about an hour on GitHub) and 240 minutes in all.
    `gdp/pipeline/pyproject.toml`), and write the checks with its `Report`, which writes `data/validation_report.md`
    and the `data/validation_summary.json` the site reads. Code that more than one area needs goes in
    `shared/pipeline/pipeline_common/`, with tests in `shared/pipeline/tests/`; area-specific code stays in the area.
-2. Add the area to `AREAS` in `site/scripts/copy-data.mjs`, a data module in `site/src/lib/<area>/`, pages in
-   `site/src/pages/<area>/`, and a tab and sub-navigation in `site/src/layouts/Base.astro`.
+2. In the site: add the area to `AREAS` in `site/scripts/copy-data.mjs`; a data module in `site/src/lib/<area>/`;
+   pages in `site/src/pages/<area>/`, including a sources page listing its downloads and check results (copy
+   `site/src/pages/gdp/sources/index.astro`). In `site/src/layouts/Base.astro`, add it to the `AREAS` list that
+   works out the area from the URL, to `tabs` and `subnav`, to `AREA_LABEL`, and give it a footer paragraph like
+   the other areas'. Add it to the `areas` list in `site/src/pages/about/index.astro` (its check results), to the
+   links on `site/src/pages/404.astro` and the home page's area sections (`site/src/pages/index.astro`), to the
+   default page description in `Base.astro`, and to the Pages table and data folders in `site/README.md`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
-4. Add the area to `AREAS` in `scripts/ci.sh`.
+4. Add the area to `AREAS` in `scripts/ci.sh`, and to the folder table at the top of this README.
 5. If any of its sources are refreshed weekly, give its pipeline an option that re-downloads only those (with tests in
    `tests/test_fetch.py`), add a step for it to `.github/workflows/data-refresh.yml` with its own `timeout`, and add
    the area wherever the workflow names `gdp` and `jobs-prices` (the commit step's `env` and list of areas, the

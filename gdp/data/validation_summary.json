@@ -123,5 +123,12 @@
    "allowed": 0,
    "allowed_reasons": []
   }
- ]
+ ],
+ "files": {
+  "gdp.json": "3ba5a3f2494c4d702b349e169d88f44b87e94cb7349fa8d3ad76d7e325282bc0",
+  "national_accounts.csv": "8c37001fb8abfb2b47b9f39648a3fd71885f4964a6065417c99d181eb1e6b115",
+  "per_person.csv": "b9be391fb51e043b516a5981810bbf652c60d8b724f5906a89fa3717d5a3f783",
+  "state_accounts.csv": "b05b1b1d8db20713532cedfbd9f2daabad92450c1b052bfcc7c2f941bbfa4dbd",
+  "states.json": "aed8f08eec6b244603be1c44f9a6abe27496035bee702dba2c3883684955b5bc"
+ }
 }

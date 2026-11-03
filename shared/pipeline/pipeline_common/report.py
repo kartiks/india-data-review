@@ -9,13 +9,23 @@ Two files in the area's data/ folder:
 
       {"result": "PASSED" | "FAILED", "checks": N, "failures": M, "allowed": K,
        "sections": [{"title": ..., "checks": n, "failures": m, "allowed": k,
-                     "allowed_reasons": [{"reason": ..., "cases": c}, ...]}, ...]}
+                     "allowed_reasons": [{"reason": ..., "cases": c}, ...]}, ...],
+       "files": {"<name>": "<sha256>", ...}}
 
   "allowed" counts the exceptions recorded with Allowed (grouped by reason). Exceptions an area writes as plain notes
   are in the Markdown only.
+
+  "files" holds a SHA-256 of every data file the checks just validated: each .json, .csv and .md file in data/ apart
+  from the report and the summary. The site's build (site/scripts/copy-data.mjs, via site/src/lib/validation.ts)
+  works the hashes out again and refuses to build if any file differs, is missing or is not listed, so data changed
+  after its checks ran cannot go live with an old PASSED. Each hash is of the file with every "generated_at" field
+  (the build time, written by every build) removed, as scripts/ci.sh compares files: rebuilding the same data, which
+  the tests also do, changes no hash.
 """
 
+import hashlib
 import json
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -23,6 +33,21 @@ from pathlib import Path
 REPORT_FILE = "validation_report.md"
 SUMMARY_FILE = "validation_summary.json"
 FAILURE_MARK = "- FAIL: "
+DATA_SUFFIXES = (".json", ".csv", ".md")
+# The build time, '"generated_at": "..."' (or without the space, in compact JSON). Keep in step with
+# site/src/lib/validation.ts and the STRIP in scripts/ci.sh.
+GENERATED_AT = re.compile(rb'"generated_at": ?"[^"]*"')
+
+
+def data_hash(path: Path) -> str:
+    """SHA-256 of a data file with its build time removed."""
+    return hashlib.sha256(GENERATED_AT.sub(b"", path.read_bytes())).hexdigest()
+
+
+def data_hashes(data_dir: Path) -> dict[str, str]:
+    """The hash of every data file in data_dir (not the report or the summary), by file name."""
+    return {p.name: data_hash(p) for p in sorted(data_dir.iterdir())
+            if p.is_file() and p.suffix in DATA_SUFFIXES and p.name not in (REPORT_FILE, SUMMARY_FILE)}
 
 
 class Allowed:
@@ -89,18 +114,25 @@ class Report:
             out.append("")
         return "\n".join(out)
 
-    def summary(self) -> dict:
+    def summary(self, files: dict[str, str] | None = None) -> dict:
+        """The summary; `files` (data_hashes) is added when given."""
         sections = [{"title": s.title, "checks": s.checks, "failures": len(s.failures),
                      "allowed": sum(a["cases"] for a in s.allowed), "allowed_reasons": s.allowed}
                     for s in self.sections]
-        return {"result": "FAILED" if self.failed else "PASSED", "checks": self.checks, "failures": self.failures,
-                "allowed": sum(s["allowed"] for s in sections), "sections": sections}
+        out = {"result": "FAILED" if self.failed else "PASSED", "checks": self.checks, "failures": self.failures,
+               "allowed": sum(s["allowed"] for s in sections), "sections": sections}
+        if files is not None:
+            out["files"] = files
+        return out
 
     def write(self, data_dir: Path) -> int:
-        """Write both files, print one line per group of checks, and return the exit code (1 if anything failed)."""
+        """Write both files, print one line per group of checks, and return the exit code (1 if anything failed).
+
+        Call it after every data file is written: the summary records their hashes as they are now."""
         data_dir.mkdir(parents=True, exist_ok=True)
         (data_dir / REPORT_FILE).write_text(self.markdown())
-        (data_dir / SUMMARY_FILE).write_text(json.dumps(self.summary(), indent=1, ensure_ascii=False) + "\n")
+        summary = self.summary(data_hashes(data_dir))
+        (data_dir / SUMMARY_FILE).write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
         for s in self.sections:
             print(f"{'FAIL' if s.failures else 'ok  '} {s.title}: {s.checks} checks, {len(s.failures)} failures")
         return 1 if self.failed else 0

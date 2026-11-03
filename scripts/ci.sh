@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Local CI: checks one commit (default HEAD) in a clean temporary copy, so your working folder is never touched.
-# Run it on a PR's branch before merging:
+# GitHub Actions runs it on every pull request and push to main (.github/workflows/ci.yml); run it yourself on a
+# branch before pushing:
 #
-#   scripts/ci.sh                         # the current commit
-#   scripts/ci.sh gdp-scheduled-refresh   # a branch, tag or commit
+#   scripts/ci.sh              # the current commit
+#   scripts/ci.sh my-branch    # a branch, tag or commit (e.g. origin/main)
 #
 # It passes only if, for every area, the pipeline rebuilds data/ from the committed sources with every check
 # passing, the rebuilt data/ matches what is committed (apart from the build time), and the tests pass; and the
-# site type-checks and builds. It downloads no data (npm and uv may download packages).
+# site type-checks, passes its tests (if it has an npm test script) and builds. It downloads no data (npm and uv may download packages).
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
@@ -45,7 +46,7 @@ DATA=() SOURCES=()
 for area in "${AREAS[@]}"; do DATA+=("$area/data"); SOURCES+=("$area/sources"); done
 # Each build writes its time into "generated_at" (some files are one line of compact JSON), so compare every
 # rebuilt file with the committed one after removing that field from both.
-STRIP='s/"generated_at": ?"[^"]*"//'
+STRIP='s/"generated_at": ?"[^"]*"//g'
 DIFFERS=""
 for f in $(git -C "$WORK" diff --name-only -- "${DATA[@]}"); do
   if ! cmp -s <(git -C "$WORK" show "HEAD:$f" | sed -E "$STRIP") <(sed -E "$STRIP" "$WORK/$f"); then
@@ -69,7 +70,18 @@ if [ -n "$NEW" ]; then
   exit 1
 fi
 
-step "site: install, type check, build"
-(cd "$WORK/site" && npm ci --no-audit --no-fund --loglevel=error && npm run check && npm run build)
+step "site: install, type check, tests, build"
+(
+  cd "$WORK/site"
+  npm ci --no-audit --no-fund --loglevel=error
+  npm run check
+  if node -e 'process.exit(require("./package.json").scripts?.test ? 0 : 1)'; then
+    # CI=true: run the tests once, never in watch mode, even from a terminal.
+    CI=true npm test
+  else
+    echo "(no npm test script)"
+  fi
+  npm run build
+)
 
 printf '\nLocal CI PASSED for %s (%s)\n' "$REF" "$(git -C "$REPO" rev-parse --short "$SHA")"

@@ -5,6 +5,7 @@
 // - differences between two published figures.
 import fs from "node:fs";
 import path from "node:path";
+import { fyMonths, isFy, prevFy } from "../fy";
 
 type Num = number | null;
 interface Table { fields: string[]; labels: Record<string, string[]>; rows: (number | null)[][] }
@@ -149,8 +150,8 @@ export function monthRange(a: string, b: string): string[] {
 
 /** Average of the 12 monthly indices of a calendar year ("2025") or fiscal year ("2024-25", April to March). */
 export function yearAverage(points: CpiPoint[], year: string): number | undefined {
-  const months = year.includes("-")
-    ? monthRange(`${year.slice(0, 4)}-04`, `${Number(year.slice(0, 4)) + 1}-03`)
+  const months = isFy(year)
+    ? monthRange(...fyMonths(year))
     : monthRange(`${year}-01`, `${year}-12`);
   const byMonth = new Map(points.map((p) => [p.month, p.index]));
   const vals = months.map((m) => byMonth.get(m));
@@ -159,8 +160,8 @@ export function yearAverage(points: CpiPoint[], year: string): number | undefine
 }
 /** Change in the yearly average index on the year before (how RBI and MoSPI state average inflation). */
 export function averageInflation(points: CpiPoint[], year: string): number | undefined {
-  const prev = year.includes("-")
-    ? `${Number(year.slice(0, 4)) - 1}-${year.slice(2, 4)}`
+  const prev = isFy(year)
+    ? prevFy(year)
     : String(Number(year) - 1);
   const a = yearAverage(points, year), b = yearAverage(points, prev);
   return a !== undefined && b !== undefined ? (a / b - 1) * 100 : undefined;

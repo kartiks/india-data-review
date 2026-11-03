@@ -7,6 +7,7 @@ import {
 } from "../../../lib/jobs-prices/data";
 import { gpct, orDash, pct, rupees } from "../../../lib/format";
 import { link } from "../../../lib/url";
+import { prevFy } from "../../../lib/fy";
 
 const Y = PLFS_LATEST;
 const lastYear = CPI_LAST.slice(0, 4);
@@ -23,7 +24,7 @@ const mpce = (st: string, sector: "Rural" | "Urban") => hcesValueFor(st, { indic
 // rural daily wage of men in farm work (Table 113). Each uses the latest year most states have.
 const YI = rbiLatestYear("nsdp_per_capita_current");
 const YG = rbiLatestYear("gsdp_constant");
-const YG0 = `${Number(YG.slice(0, 4)) - 1}-${YG.slice(2, 4)}`;
+const YG0 = prevFy(YG);
 const YW = rbiLatestYear("wage_agriculture");
 const growth = (st: string) => {
   const a = rbiValue("gsdp_constant", st, YG), b = rbiValue("gsdp_constant", st, YG0);

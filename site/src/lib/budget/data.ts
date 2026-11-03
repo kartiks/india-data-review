@@ -285,10 +285,6 @@ export const SCHEME_YEARS = YEARS.filter((y) => Object.keys(schemes.years[y] ?? 
 
 // ---------- helpers ----------
 export const yearIndex = (y: string) => YEARS.indexOf(y);
-export const nextYear = (y: string) => {
-  const s = Number(y.slice(0, 4)) + 1;
-  return `${s}-${String(s + 1).slice(2)}`;
-};
 
 // ---------- series over years ----------
 export interface SeriesPoint { value: number | null; kind?: string; estimate?: boolean }

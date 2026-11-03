@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { OLD, annual, industrySum, latestStage, STAGE_LABEL } from "./data";
 import { stateKey } from "../jobs-prices/data";
+import { fyGap, prevFy } from "../fy";
 
 export interface SPair { cur?: number; con?: number; derived?: boolean }
 export interface SGrowth { real?: number; nominal?: number; published?: boolean }
@@ -40,11 +41,9 @@ export const SECTOR_LABEL = SDS.sector_labels;
 
 export const sNode = (state: string, year: string): SNode | undefined => DATA[state]?.[year];
 
-const prevYear = (y: string) => { const s = Number(y.slice(0, 4)) - 1; return `${s}-${String(s + 1).slice(-2)}`; };
-
 /** Share of all states' GSDP the year before that the states reporting `year` made up (as in the pipeline's checks). */
 export function coverage(year: string): number {
-  const before = STATES.map((s) => [s, sNode(s, prevYear(year))?.gsdp?.cur] as const).filter(([, v]) => v != null);
+  const before = STATES.map((s) => [s, sNode(s, prevFy(year))?.gsdp?.cur] as const).filter(([, v]) => v != null);
   const total = before.reduce((a, [, v]) => a + v!, 0);
   const now = new Set(STATES.filter((s) => sNode(s, year)?.gsdp?.cur != null));
   return total ? before.filter(([s]) => now.has(s)).reduce((a, [, v]) => a + v!, 0) / total : 0;
@@ -76,7 +75,7 @@ export function sectorShares(n: SNode | undefined): Record<string, number> | und
 /** Average annual real growth between two years, from constant-price GSDP. */
 export function averageGrowth(state: string, from: string, to: string): number | undefined {
   const a = sNode(state, from)?.gsdp?.con, b = sNode(state, to)?.gsdp?.con;
-  const years = Number(to.slice(0, 4)) - Number(from.slice(0, 4));
+  const years = fyGap(from, to);
   return a && b && years > 0 ? (Math.pow(b / a, 1 / years) - 1) * 100 : undefined;
 }
 
@@ -119,6 +118,6 @@ export function india(year: string) {
 
 export function indiaAverageGrowth(from: string, to: string): number | undefined {
   const a = india(from)?.gdpCon, b = india(to)?.gdpCon;
-  const years = Number(to.slice(0, 4)) - Number(from.slice(0, 4));
+  const years = fyGap(from, to);
   return a && b && years > 0 ? (Math.pow(b / a, 1 / years) - 1) * 100 : undefined;
 }

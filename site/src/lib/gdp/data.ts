@@ -3,6 +3,7 @@
 // The only arithmetic: shares (part ÷ whole, same year, same estimate) and differences between two published figures.
 import fs from "node:fs";
 import path from "node:path";
+import { fyStart, prevFy } from "../fy";
 
 export interface Pair { cur?: number; con?: number; summed?: boolean }
 export interface Growth { real?: number; nominal?: number; published?: boolean }
@@ -74,10 +75,6 @@ export const INDUSTRY = DS.industries;
 export const BROAD = DS.broad_industries;
 export const SECTOR = DS.sectors;
 
-export const fyStart = (y: string) => Number(y.slice(0, 4));
-export const fy = (start: number) => `${start}-${String(start + 1).slice(-2)}`;
-export const prevYear = (y: string) => fy(fyStart(y) - 1);
-
 export function annual(series: string): Record<string, Stages> {
   return DS.data[series]?.annual ?? {};
 }
@@ -85,11 +82,6 @@ export function quarterly(series: string): Record<string, Stages> {
   return DS.data[series]?.quarterly ?? {};
 }
 export const yearsOf = (series: string) => Object.keys(annual(series)).sort();
-export const range = (from: string, to: string) => {
-  const out: string[] = [];
-  for (let s = fyStart(from); s <= fyStart(to); s++) out.push(fy(s));
-  return out;
-};
 
 /** Stages for a year, in publication order. */
 export function stagesOf(series: string, year: string): string[] {
@@ -216,6 +208,6 @@ export const PP_YEAR = [...NEW_YEARS].reverse().find((y) => {
  *  press notes, for the years they cover). */
 export function perPersonGrowth(series: string, year: string, measure: PerPersonMeasure = "gdp"): number | undefined {
   const get = (n: Node) => n.per_person?.[measure]?.con;
-  const [a] = bestOf(series, [prevYear(year)], get), [b] = bestOf(series, [year], get);
+  const [a] = bestOf(series, [prevFy(year)], get), [b] = bestOf(series, [year], get);
   return a && b ? (b.value / a.value - 1) * 100 : undefined;
 }

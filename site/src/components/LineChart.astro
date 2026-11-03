@@ -1,7 +1,8 @@
 ---
 // Line chart over fiscal years, drawn at build time.
 // Hollow markers = estimates (Budget or Revised); the line itself is the best figure available each year.
-import { SIZES, estimate, estimateLayout, niceTicks, scale, xTickIndices } from "../lib/chart";
+import { estimate, estimateLayout } from "../lib/chart";
+import { linePlots } from "../lib/line-plot";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
 
@@ -32,50 +33,18 @@ interface Props {
 const { title, subtitle, years, series, format, tableFormat = format, tipFormat = tableFormat, annotations = [], zero = true, source, estimateLabel = "Estimate (no actual yet)", headingLevel = 2 } = Astro.props;
 const Heading = `h${headingLevel}` as "h2" | "h3";
 
-const values = series.flatMap((s) => s.points.map((p) => p.value)).filter((v): v is number => v != null);
-let lo = Math.min(...values);
-let hi = Math.max(...values);
-if (zero) { lo = Math.min(0, lo); hi = Math.max(0, hi); }
-const ticks = niceTicks(lo, hi, 4);
 const hasEstimates = series.some((s) => s.points.some((p) => p.estimate && p.value != null));
 const id = "c" + Math.random().toString(36).slice(2, 9);
 
-const charts = SIZES.map((sz) => {
-  // Right margin holds the end label; with 2+ series end labels are dropped (legend + hover instead).
-  const right = series.length === 1 ? sz.right : sz.rightMulti;
-  const x = scale(0, years.length - 1, sz.left, sz.width - right);
-  const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
-  const xs = years.map((_, i) => x(i));
-  // Label the latest year, then every fifth year back from it, so labels never collide.
-  const xTicks = xTickIndices(years.length, sz.xLabels).map((i) => ({ yr: years[i], i }));
-  const paths = series.map((s) => {
-    let d = "";
-    let pen = false;
-    s.points.forEach((p, i) => {
-      if (p.value == null) { pen = false; return; }
-      d += `${pen ? "L" : "M"}${xs[i].toFixed(1)},${y(p.value).toFixed(1)}`;
-      pen = true;
-    });
-    const last = [...s.points.keys()].reverse().find((i) => s.points[i].value != null);
-    return { s, d, last };
-  });
-  // Annotation labels: put a label on a second row if it would overlap the previous one.
-  const charW = sz.font * 0.58;
-  const placed: { x0: number; x1: number; row: number }[] = [];
-  const notes = annotations.map((a) => {
-    const i = years.indexOf(a.year);
-    if (i < 0) return null;
-    const w = a.label.length * charW;
-    const left = xs[i] > sz.left + (sz.width - sz.left) * 0.55;
-    const x0 = left ? xs[i] - 4 - w : xs[i] + 4;
-    const x1 = x0 + w;
-    let row = 0;
-    while (placed.some((p) => p.row === row && x0 < p.x1 + 6 && x1 > p.x0 - 6)) row++;
-    placed.push({ x0, x1, row });
-    return { i, label: a.label, left, ty: sz.top + 2 + row * sz.font * 1.3 };
-  }).filter((n): n is NonNullable<typeof n> => !!n);
-  return { sz, xs, y, xTicks, paths, right, notes };
-});
+// Drawn by lib/line-plot (the same drawing as PickLines), with estimate markers, annotations and, for one series,
+// an end label where the size leaves room (with 2+ series: legend and hover instead).
+const plots = linePlots(
+  years,
+  series.map((s) => ({ name: s.name, color: `var(--s${s.slot})`, values: s.points.map((p) => p.value), estimates: s.points.map((p) => !!p.estimate) })),
+  format,
+  `${title}. Values are listed in the table below.`,
+  { zero, endLabel: true, annotations },
+);
 
 // Estimate labels in short form; left out when every figure has the same one (said once under the table).
 const est = series.map((s) => s.points.map((p) => (p.value == null ? null : estimate(p.kind))));
@@ -107,55 +76,7 @@ const tooltipData = safeJson({
       )}
     </ul>
   )}
-  {charts.map(({ sz, xs, y, xTicks, paths, right, notes }) => (
-    <svg
-      class={`plot plot-${sz.name}`}
-      viewBox={`0 0 ${sz.width} ${sz.height}`}
-      role="img"
-      aria-label={`${title}. Values are listed in the table below.`}
-      data-xs={xs.map((v) => v.toFixed(1)).join(",")}
-      data-top={sz.top}
-      data-bottom={sz.height - sz.bottom}
-      style={`font-size:${sz.font}px`}
-    >
-      {ticks.map((t) => (
-        <g>
-          <line x1={sz.left} x2={sz.width - right} y1={y(t)} y2={y(t)} class={t === 0 ? "baseline" : "gridline"} />
-          <text x={sz.left - 6} y={y(t)} dy="0.32em" text-anchor="end" class="tick">{format(t)}</text>
-        </g>
-      ))}
-      {xTicks.map(({ yr, i }) => (
-        <text x={xs[i]} y={sz.height - 8} text-anchor={i === years.length - 1 && right < 30 ? "end" : "middle"} class="tick">{yr}</text>
-      ))}
-      {notes.map((n) => (
-        <g class="annotation">
-          <line x1={xs[n.i]} x2={xs[n.i]} y1={sz.top} y2={sz.height - sz.bottom} />
-          <text x={n.left ? xs[n.i] - 4 : xs[n.i] + 4} y={n.ty} dy="0.8em" text-anchor={n.left ? "end" : "start"} class="tick">{n.label}</text>
-        </g>
-      ))}
-      {paths.map(({ s, d }) => (
-        <path d={d} fill="none" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-      ))}
-      {paths.map(({ s, last }) =>
-        s.points.map((p, i) =>
-          p.value == null ? null : p.estimate ? (
-            <circle cx={xs[i]} cy={y(p.value)} r="4" fill="var(--surface)" stroke={`var(--s${s.slot})`} stroke-width="2" />
-          ) : i === last ? (
-            <circle cx={xs[i]} cy={y(p.value)} r="4" fill={`var(--s${s.slot})`} stroke="var(--surface)" stroke-width="2" />
-          ) : null,
-        ),
-      )}
-      {right > 40 && series.length === 1 && paths.map(({ s, last }) =>
-        last == null ? null : (
-          <text x={xs[last] + 9} y={y(s.points[last].value!)} dy="0.32em" class="end-label">
-            {format(s.points[last].value!)}
-          </text>
-        ),
-      )}
-      <line class="crosshair" x1="0" x2="0" y1={sz.top} y2={sz.height - sz.bottom} visibility="hidden" />
-      <rect class="hit" x={sz.left - 6} y="0" width={sz.width - right - sz.left + 12} height={sz.height} fill="transparent" />
-    </svg>
-  ))}
+  <Fragment set:html={plots} />
   <script type="application/json" class="chart-data" set:html={tooltipData} />
   <details class="table-view">
     <summary>Show as table</summary>
@@ -186,13 +107,13 @@ const tooltipData = safeJson({
   .chart figcaption .chart-title { font-size: 1.05rem; margin-bottom: 2px; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
-  .plot { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
-  .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
-  .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
-  .plot :global(.tick) { fill: var(--muted); }
-  .plot :global(.end-label) { fill: var(--ink-2); font-weight: 600; }
-  .plot :global(.annotation line) { stroke: var(--axis); stroke-width: 1; }
-  .plot :global(.crosshair) { stroke: var(--ink-2); stroke-width: 1; }
+  .chart :global(.plot) { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
+  .chart :global(.plot .gridline) { stroke: var(--grid); stroke-width: 1; }
+  .chart :global(.plot .baseline) { stroke: var(--axis); stroke-width: 1; }
+  .chart :global(.plot .tick) { fill: var(--muted); }
+  .chart :global(.plot .end-label) { fill: var(--ink-2); font-weight: 600; }
+  .chart :global(.plot .annotation line) { stroke: var(--axis); stroke-width: 1; }
+  .chart :global(.plot .crosshair) { stroke: var(--ink-2); stroke-width: 1; }
   .est { color: var(--ink-2); font-size: 0.85em; margin-right: 6px; }
   .est-col { text-align: left; }
   .est-col .est { margin-right: 0; }

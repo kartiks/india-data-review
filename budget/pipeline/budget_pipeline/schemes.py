@@ -927,8 +927,26 @@ GT_2025_CSS = (
     "Demand subtotals add to 5,41,826.78 revenue. The printed revenue figure is 5,000 crore short; shown as printed."
 )
 
+PMKSY_2023 = (
+    "Budget 2024-25 Statement 4A prints the Watershed Development Component of PMKSY (Department of Land "
+    "Resources, BE 2023-24 2,200.00) as a row of its own; Budget 2023-24 counted it in PMKSY. 10,787.23 - "
+    "2,200.00 = 8,587.23, and the Grand Total for BE 2023-24 is the same in both budgets (4,76,104.59)."
+)
+PMKSY_2024 = (
+    "Budget 2025-26 Statement 4A restates BE 2024-25 with PMKSY split up: Flood Management and Border Areas "
+    "Programme (449.57) and Irrigation Census (40.00) become rows of their own, and 600.00 moves to 'Others "
+    "(including amount met from & transfer to various funds)', -8,634.42 becoming -8,034.42. 9,339.37 - 449.57 "
+    "- 40.00 - 600.00 = 8,249.80; no other row changes and the Grand Total for BE 2024-25 is the same in both "
+    "budgets (5,05,978.07)."
+)
+
+# A BE reprinted in the next budget may be restated. A difference above both limits fails unless listed below.
+RESTATED_REL = 0.02
+RESTATED_CRORE = 500
+
 # (budget, scheme_type, check, key) -> reason. Keys: rct "<level> <number>|<kind> <year>",
 # group "<level> <number>|<kind> <year>" or "<level> <number>|*", grand "<kind> <year>|<part>".
+# A figure that differs between the two budgets printing it: ("cross", scheme_type, item_id, "<kind> <year>").
 # Each entry was verified by hand (page images, other columns, other budgets).
 KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
     ("2017-18", "central_sector", "group", "demand_subtotal 80|*"): RAILWAYS_2017,
@@ -942,6 +960,9 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
     ("2024-25", "central_sector", "group", "demand_subtotal 86|BE 2024-25"): FUNDS_2024,
     ("2025-26", "css", "rct", "grand_total|BE 2025-26"): GT_2025_CSS,
     ("2025-26", "css", "grand", "BE 2025-26|revenue"): GT_2025_CSS,
+    ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2023-24"): PMKSY_2023,
+    ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2024-25"): PMKSY_2024,
+    ("cross", "css", "css:others_including_amount_met_from_transfer_to_various_funds", "BE 2024-25"): PMKSY_2024,
 }
 
 # (budget, scheme_type, ext) -> why a secondary copy differs from the PDF (the PDF is used).
@@ -1097,14 +1118,14 @@ def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple[str
         if len(vals) > 1:
             (a_year, a, lab), (b_year, b, _) = obs[0], obs[1]
             rel = abs(a - b) / max(abs(a), abs(b), 1)
-            msg = (f"{t} {lab[:50]!r} {pk[1]} {pk[0]}: {a:,.2f} in budget {a_year} vs {b:,.2f} in budget {b_year}")
+            msg = (f"{t} {lab[:50]!r} {pk[1]} {pk[0]}: {a:,.2f} in budget {a_year} vs {b:,.2f} in budget {b_year} "
+                   f"({b - a:+,.2f}, {rel:.1%})")
             reason = _exc("cross", t, iid, _per(pk))
             if reason:
                 notes.append(msg + f". Explained: {reason}")
-            elif pk[1] == "BE" and (rel <= 0.02 or abs(a - b) <= 5):
+            elif pk[1] == "BE" and (rel <= RESTATED_REL or abs(a - b) <= RESTATED_CRORE):
+                # The next budget may restate a BE (reclassification); a small change is only noted.
                 notes.append("Restated: " + msg)
-            elif pk[1] == "BE":
-                notes.append("Restated (reorganised schemes): " + msg)
             else:
                 fails.append(msg)
     notes.insert(0, f"{ambiguous} scheme rows not compared: the same name appears twice under one department "

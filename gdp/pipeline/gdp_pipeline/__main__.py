@@ -13,10 +13,19 @@ import sys
 
 from . import build, checks, fetch
 
+OPTIONS = {"--fetch", "--refresh", "--refresh-nas"}
+
 
 def main() -> int:
-    if {"--fetch", "--refresh", "--refresh-nas"} & set(sys.argv):
-        fetch.main(force="--refresh" in sys.argv, force_nas="--refresh-nas" in sys.argv)
+    args = sys.argv[1:]
+    if {"-h", "--help"} & set(args):
+        print(__doc__)
+        return 0
+    if unknown := [a for a in args if a not in OPTIONS]:
+        print(f"unknown option: {' '.join(unknown)} (options: {', '.join(sorted(OPTIONS))}; --help for more)", file=sys.stderr)
+        return 2
+    if OPTIONS & set(args):
+        fetch.main(force="--refresh" in args, force_nas="--refresh-nas" in args)
     return checks.main(build.main())
 
 

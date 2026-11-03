@@ -35,9 +35,10 @@ URL and SHA-256). The site refuses to build unless every area's `data/validation
 ```
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
-`--fetch` downloads anything missing first, and `--refresh` (GDP, jobs and prices) re-downloads everything.
+`--fetch` downloads anything missing first, and `--refresh` re-downloads everything (GDP and jobs and prices keep
+changed files in `sources/snapshots/`; the budget overwrites its files, so compare them with the committed copies).
 `--refresh-nas` (GDP) and `--refresh-api` (jobs and prices) re-download only the sources that are revised in place;
-the weekly refresh runs them.
+the weekly refresh runs them. `--help` lists an area's options; any other option is refused.
 Tests: `uv run pytest` in each `pipeline/` folder, and `npm run check` (type check) in `site/`.
 
 ## Keeping the data up to date

@@ -14,6 +14,8 @@ the checks).
 import re
 from typing import NamedTuple
 
+from .common import ROOT
+
 HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
 
 class Table(NamedTuple):
@@ -121,3 +123,20 @@ def read_table(path, number: int, spec: Table) -> tuple[list[dict], list[str]]:
                             "state": "All India" if state.upper() == "ALL INDIA" else state, "year": year, "value": v,
                             "value_as_printed": printed, "flag": flag, "sheet": ws.title})
     return out, problems
+
+
+def read_all(manifest: dict) -> tuple[list[dict], list[str], dict]:
+    """Every value of the chosen handbook tables, the reader's problems, and {table number: edition}."""
+    out, problems, editions = [], [], {}
+    for n, spec in RBI_STATE_TABLES.items():
+        e = manifest.get(f"rbi/table{n:03d}")
+        if not e or e.get("empty"):
+            problems.append(f"RBI table {n} not downloaded")
+            continue
+        recs, probs = read_table(ROOT / e["file"], n, spec)
+        for r in recs:
+            r["source"] = f"rbi/table{n:03d}"
+        out += recs
+        problems += probs
+        editions[n] = e.get("edition", "")
+    return out, problems, editions

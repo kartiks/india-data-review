@@ -28,7 +28,7 @@ mospi.gov.in; and state comparisons from the RBI's handbook:
 - **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`. MoSPI publishes
   rural and urban figures only; for an overall (rural + urban) average the pipeline also downloads Table A2 of MoSPI's
   full 2023-24 report (`sources.HCES_REPORT_TABLES`), the survey's estimated number of persons in each state's rural and
-  urban areas, and weights the two averages by it (`build.hces_overall`). The 2022-23 report's tables are not online
+  urban areas, and weights the two averages by it (`hces.overall`). The 2022-23 report's tables are not online
   as files, so overall figures are for 2023-24.
 
 - **RBI Handbook of Statistics on Indian States** (latest edition, `rbi.py`): tables 8–9 (unemployment by state, rural and
@@ -46,6 +46,10 @@ uv run python -m jobs_prices_pipeline --refresh   # re-download everything, incl
 uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and RBI's tables (what the weekly refresh runs)
 uv run pytest                                     # tests write to temporary folders, never to data/
 ```
+
+The code, in `pipeline/jobs_prices_pipeline/`: `sources.py` (what is downloaded) and `fetch.py`; one reader per
+source (`plfs.py`, `prices.py`, `hces.py`, `cpi2024.py`, `rbi.py`, sharing `common.py`); `build.py`, which writes
+`data/`; and `checks/`, one module per topic, which writes the validation report.
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
 re-download differs, the old file is kept in `sources/snapshots/<date>/`.
@@ -106,21 +110,22 @@ change, update `RBI_STATE_TABLES` in `rbi.py` and run `--refresh-api`.
 
 Check now and then with `https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2024&series=Current&year=2026&Format=JSON&limit=5`
 (the base-2024 series numbers states differently: All India is `state_code=1`). When it returns rows, add base-2024
-queries to `queries()` in `sources.py`, read them in `build.py` beside the base-2012 ones, and compare them with
+queries to `queries()` in `sources.py`, read them in `prices.py` beside the base-2012 ones, and compare them with
 the press-release figures before switching the site over; the release reader can then be retired.
 
 ### New survey rounds
 
 New PLFS releases, CPI-AL/RL months and HCES rounds arrive through the weekly refresh with no code change
 (the base-2012 CPI ended with 2025, and base-2024 months are added by hand, above). A new indicator, a new
-breakdown or a renamed field needs code: the field names are listed in `build.py` (`PLFS_FIELDS`, `HCES_SITE`) and the
+breakdown or a renamed field needs code: the field names are listed in `plfs.py` (`PLFS_FIELDS`) and `build.py` (`HCES_SITE`) and the
 checks will fail on anything they cannot read.
 
 ### When a check fails
 
-Every allowed exception is in `pipeline/jobs_prices_pipeline/checks.py`, as a reason (`LEFT_OUT`, `ALL_INDIA_STATUS`,
-`HCES_MISMATCH`, `BACKTICK` …) and the rule that applies it. Figures the site must not show are flagged in `build.py`
-(`flag_rates` for jobs, `hces` for spending), with the reason kept in the CSV's `left_out` column. Read the failure
+Every allowed exception is in `pipeline/jobs_prices_pipeline/checks/` (one module per topic), as a reason
+(`LEFT_OUT`, `ALL_INDIA_STATUS`, `HCES_MISMATCH`, `BACKTICK` …) and the rule that applies it. Figures the site must
+not show are flagged by the readers (`plfs.flag_rates` for jobs, `hces.read` for spending), with the reason kept in
+the CSV's `left_out` column. Read the failure
 in `data/validation_report.md`, compare the figure with MoSPI's own publication, and only then add a rule.
 
 ## What's in `data/`
@@ -164,7 +169,7 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 
 - PLFS figures with transcription errors, mostly quarterly: letters for digits (`l0.8`, `IN.4`, `20J`) and
   combinations that break the identities above (April–June 2019 urban unemployment shows 21.6%; the bulletin says 8.9%).
-  The build leaves such combinations out whole (`build.flag_rates`).
+  The build leaves such combinations out whole (`plfs.flag_rates`).
 - All-India shares of workers by type of work do not add up to 100%; states' do.
 - About 6,000 "distribution of workers" rows with no breakdown named.
 - 2025 current-weekly-status self-employment shares whose parts do not add up.

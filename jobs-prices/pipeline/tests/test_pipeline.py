@@ -4,32 +4,33 @@ from pathlib import Path
 
 import pytest
 
-from jobs_prices_pipeline import build, checks
+from jobs_prices_pipeline import build, checks, common, cpi2024, plfs, prices
+from jobs_prices_pipeline.checks.spending import order_fractiles
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_month_of_agricultural_year():
     # The Labour Bureau's CPI-AL/RL years run July to June.
-    assert build.ym({"year": "2024-2025", "month": "July"}) == "2024-07"
-    assert build.ym({"year": "2024-2025", "month": "March"}) == "2025-03"
-    assert build.ym({"year": 2025, "month": "December"}) == "2025-12"
+    assert prices.ym({"year": "2024-2025", "month": "July"}) == "2024-07"
+    assert prices.ym({"year": "2024-2025", "month": "March"}) == "2025-03"
+    assert prices.ym({"year": 2025, "month": "December"}) == "2025-12"
 
 
 def test_numbers_and_missing_markers():
-    assert build.number("12.5") == 12.5
-    assert build.number("NaN") is None
-    assert build.number("l0.8") is None  # transcription error in MoSPI's data
-    assert "**" in build.MISSING and "-" in build.MISSING
+    assert common.number("12.5") == 12.5
+    assert common.number("NaN") is None
+    assert common.number("l0.8") is None  # transcription error in MoSPI's data
+    assert "**" in plfs.MISSING and "-" in plfs.MISSING
 
 
 def test_worker_ratio_identity():
     ok = {"lfpr": 59.3, "wpr": 57.4, "ur": 3.1}
-    gap, tol = build.identity_gap(ok)
+    gap, tol = plfs.identity_gap(ok)
     assert gap <= tol
     bad = {"lfpr": 46.5, "wpr": 42.4, "ur": 21.6}  # Apr-Jun 2019 urban, as in MoSPI's data service
-    gap, _ = build.identity_gap(bad)
-    assert gap > build.SMALL_GAP
+    gap, _ = plfs.identity_gap(bad)
+    assert gap > plfs.SMALL_GAP
 
 
 def test_flag_rates_leaves_out_inconsistent_combinations():
@@ -40,7 +41,7 @@ def test_flag_rates_leaves_out_inconsistent_combinations():
         {**base, "gender": "male", "lfpr": 70.0, "wpr": 60.0, "ur": 5.0, "lfpr_as_printed": "70", "wpr_as_printed": "60", "ur_as_printed": "5"},
         {**base, "gender": "female", "lfpr": None, "wpr": 20.0, "ur": 5.0, "lfpr_as_printed": "2O", "wpr_as_printed": "20", "ur_as_printed": "5"},
     ]
-    build.flag_rates(rows)
+    plfs.flag_rates(rows)
     assert rows[0]["left_out"] == ""
     assert rows[1]["left_out"].startswith("inconsistent")  # 70 x 0.95 = 66.5, published 60
     assert rows[2]["left_out"].startswith("not a number")
@@ -49,7 +50,7 @@ def test_flag_rates_leaves_out_inconsistent_combinations():
 def test_fractile_order_skips_all():
     classes = {"0-5": 1, " 5-10": 2, "10-20": 3, "20-30": 4, "30-40": 5, "40-50": 6, "50-60": 7, "60-70": 8, "70-80": 9,
                "80-90": 10, "90-95": 11, "95-100": 12, "All": 99}
-    assert checks.order_fractiles(classes) == list(range(1, 13))
+    assert order_fractiles(classes) == list(range(1, 13))
 
 
 def test_compact_table_round_trip():
@@ -68,8 +69,6 @@ def test_checks_pass_on_saved_data(data_dir):
 
 
 def test_release_table_reader():
-    from jobs_prices_pipeline import cpi2024
-
     html = """<h2>PRESS RELEASE OF CONSUMER PRICE INDEX ON BASE 2024=100 FOR MAY, 2026</h2>
     <p>Year-on-year inflation rate based on All India Consumer Price Index (CPI) with base year 2024 for the month of May,
     2026 over May, 2025 is 3.93%(Provisional). Corresponding inflation rates for rural and urban are 4.25% and 3.53%, respectively.</p>
@@ -120,7 +119,7 @@ def test_cfpi_final_figures_replace_provisional_ones_figure_by_figure():
             summary["previous"] = {"cfpi_index": previous}
         return {"summary": summary, "source": f"cpi2024/{month}"}
 
-    cfpi = build.cfpi_by_month({
+    cfpi = cpi2024.cfpi_by_month({
         "2026-05": release("2026-05", [105.0, 105.8, 105.3]),
         "2026-06": release("2026-06", [106.8, 107.7, 107.1], previous=[105.1, 105.8, 105.4]),
         "2026-07": release("2026-07", [109.2, 109.7, None], previous=[106.9, None, 107.2]),  # a figure not printed as a number
@@ -137,7 +136,7 @@ def test_cfpi_complete_final_figures_are_final():
     rel = {"2026-01": {"summary": {"current": {"cfpi_index": [1.0, 2.0, 3.0], "cfpi_inflation": [4.0, 5.0, 6.0]}}, "source": "a"},
            "2026-02": {"summary": {"current": {}, "previous": {"cfpi_index": [1.1, 2.1, 3.1], "cfpi_inflation": [4.1, 5.1, 6.1]}},
                        "source": "b"}}
-    assert build.cfpi_by_month(rel)["2026-01"] == {"index": [1.1, 2.1, 3.1], "inflation": [4.1, 5.1, 6.1], "provisional": False, "source": "b"}
+    assert cpi2024.cfpi_by_month(rel)["2026-01"] == {"index": [1.1, 2.1, 3.1], "inflation": [4.1, 5.1, 6.1], "provisional": False, "source": "b"}
 
 
 def test_site_json_shows_annual_job_conditions_and_earnings_only():

@@ -83,7 +83,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
   {(pending || !newChecked) && (
     <p class="muted small status">
       {pending && <>MoSPI's {STAGE_LABEL[latestStage(NEW, pending)!].toLowerCase()} for {pending} is out, but its population has not been added here yet, so per-person figures stop at {Y}. </>}
-      {!newChecked && <>None of MoSPI's per-person figures for {Y} quoted here is for its latest totals, so the {Y} figures divide those totals by the population MoSPI used{yPopDoc ? `, from its ${yPopDoc.replace(/^Press note/, "press note").replace(/ \(.*\)$/, "")},` : ""} and are not checked against MoSPI's own. {newCheckedYears.length > 0 && `The new series' figures for ${span(newCheckedYears)} reproduce MoSPI's. `}{oldCheckedYears.length > 0 && `The 2011-12 series' figures for ${span(oldCheckedYears)} reproduce MoSPI's too.`}</>}
+      {!newChecked && <>None of MoSPI's per-person figures for {Y} quoted here is for its latest totals, so the {Y} figures divide those totals by the population MoSPI used{yPopDoc ? `, from its ${yPopDoc.replace(/^MoSPI, /, "").replace(/^Press note/, "press note").replace(/ \(.*\)$/, "")},` : ""} and are not checked against MoSPI's own. {newCheckedYears.length > 0 && `The new series' figures for ${span(newCheckedYears)} reproduce MoSPI's. `}{oldCheckedYears.length > 0 && `The 2011-12 series' figures for ${span(oldCheckedYears)} reproduce MoSPI's too.`}</>}
     </p>
   )}
 

@@ -285,6 +285,16 @@ def test_documents_that_disagree_on_a_population_fail(monkeypatch):
     assert any("give different populations" in f for f in report.sections[0][2])
 
 
+def test_a_press_note_total_far_from_the_api_is_a_revision_not_a_failure(monkeypatch):
+    note = {"document": "Press note", "statement": "S1", "base": "2022-23", "prices": "con", "years": ["2023-24"],
+            "figures": {"gdp": {"2023-24": 1_00_000.0}, "pc_gdp": {"2023-24": 1000.0}}}  # since revised by 100%
+    fake_sources(monkeypatch, notes=[note])
+    ds = {"data": {"2022-23": {"annual": {"2023-24": {"FINAL": {"gdp": {"con": 2_00_000.0}, "per_person": {"gdp": {"con": 2000}}}}}}}}
+    report = Report()
+    pop.check(ds, report, manifest={})
+    assert not any("misread" in f for f in report.sections[0][2])
+
+
 def test_a_published_total_far_from_the_api_is_a_misread_not_a_revision(monkeypatch):
     table = {"document": "NAS", "statement": "", "base": "2022-23", "prices": "con", "years": ["2023-24"],
              "exact_population": True, "figures": {"population": {"2023-24": 1000.0}, "pc_gdp": {"2023-24": 6.3}}}

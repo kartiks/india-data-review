@@ -192,7 +192,8 @@ new series), add its per-capita statement, which makes the check cover the revis
 
 The statement is read by its English labels, and a changed layout is reported rather than misread: a section
 heading not understood, a unit other than million or ₹, a row read twice, or a figure whose total (per person ×
-population) is more than 10% from MoSPI's API is a check failure. `--add` puts the file under the last entry of
+population) is more than 25% from MoSPI's API is a check failure (press-note totals are not tested this way: they
+are quoted and found in the PDF, and a large real revision of one must not stop the weekly refresh). `--add` puts the file under the last entry of
 `NAS_STATEMENTS` and refuses to replace a different file already there unless given `--replace`, so add the new
 edition's entry first. MoSPI divided by the printed population in NAS 2026; the match to the API allows for a
 population rounded to the thousand in case a later edition does not.

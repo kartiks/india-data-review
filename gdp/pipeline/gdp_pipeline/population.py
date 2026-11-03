@@ -81,8 +81,10 @@ SAME_ESTIMATE_TOL = 2  # ₹ crore: a published total and the API's total are th
 # A statement that prints population to the thousand but no totals is matched by per person × population; if MoSPI
 # divided by an unrounded population, that total is off by up to half a thousand people's worth (about ₹12 crore).
 POPULATION_ROUNDING = 0.0005  # million
-# A published total further than this from the API's is not a revision but a misread (wrong row, unit or section).
-MISREAD_GAP = 0.10
+# For a statement with no printed totals (NAS), a total (per person × population) further than this from the API's
+# is not a revision but a misread (wrong row, unit or section). Press-note totals are quoted and found in the PDF, so
+# they are not tested this way: a large real revision of one (7.5% has happened) must not stop the weekly refresh.
+MISREAD_GAP = 0.25
 PER_PERSON_TOL = 2  # ₹: a per-person figure here and MoSPI's printed one
 LAKH_TOL = 0.501  # lakh: population against the RBI's figure, printed to the nearest lakh
 PROJECTION_TOL = 1e-4  # MoSPI's population (as implied) against the projection, 2011-12 to 2021-22
@@ -411,7 +413,8 @@ def population(manifest: dict) -> tuple[dict, dict]:
             continue
         for y in t["years"]:
             exact, chosen = table_population(t, y), out[t["base"]].get(y)
-            if exact and chosen and chosen["document"] != t["document"] and abs(chosen["million"] / exact - 1) <= IMPLIED_TOL:
+            from_exact = chosen and any(x["document"] == chosen["document"] and x.get("exact_population") for x in notes)
+            if exact and chosen and not from_exact and abs(chosen["million"] / exact - 1) <= IMPLIED_TOL:
                 out[t["base"]][y] = {"million": round(exact, 3), "source": "mospi", "document": t["document"]}
     sources = {"projections": proj, "notes": notes, "rbi": rbi, "note_checked": note_checked,
                "problems": proj_problems + note_problems + rbi_problems + nas_problems}
@@ -482,7 +485,7 @@ def comparisons(data: dict, src: dict):
                     continue
                 ours_total = totals(node, t["prices"]).get(m)
                 same = ours_total is not None and abs(ours_total - pub_total) <= tol
-                if ours_total and not same and abs(pub_total / ours_total - 1) > MISREAD_GAP:
+                if t.get("exact_population") and ours_total and not same and abs(pub_total / ours_total - 1) > MISREAD_GAP:
                     same = None  # not a revision: a misread (reported by the check)
                 ours = node.get("per_person", {}).get(m, {}).get(t["prices"])
                 yield series, y, stage, m, t["prices"], ours, pub_pp, t["document"], same

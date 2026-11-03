@@ -20,9 +20,9 @@ figure on the site can be traced to an official source.
    reproduces from the two numbers printed with it.
 8. Forecasts: every quoted forecast sentence is found in the official document.
 9. Population and figures per person: population read cleanly from its sources,
-   and per-person figures reproduce MoSPI's published ones (see population.py).
+   and per-person figures reproduce MoSPI's published ones (see population_checks.py).
 10. State accounts: identities, growth, per-person figures and the sum of states
-   against India's GDP (see states.py).
+   against India's GDP (see states_checks.py).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS, each with a reason.
 Writes gdp/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
@@ -35,8 +35,8 @@ from pathlib import Path
 
 from pipeline_common.report import Report
 
-from . import population, states
-from .build import BROAD, GROUPS, STAGE_ORDER
+from . import population_checks, states_checks
+from .ids import BROAD, GROUPS, STAGE_ORDER
 from .forecasts import verify_quotes
 from .sources import BUDGETS, fy
 
@@ -479,8 +479,8 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
     check_forecasts(ds, report)
     check_expenditure(ds, report)
     check_revisions(ds, report)
-    population.check(ds, report)
-    states.check(ds, report)
+    population_checks.check(ds, report)
+    states_checks.check(ds, report)
     return report.write(out or DATA)
 
 

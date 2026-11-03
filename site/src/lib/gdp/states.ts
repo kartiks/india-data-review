@@ -1,4 +1,4 @@
-// Read-only access to the verified state accounts in ../data/states.json (built and checked by ../pipeline, states.py).
+// Read-only access to the verified state accounts in ../data/states.json (built and checked by ../pipeline, states.py and states_checks.py).
 // This file only picks and labels published figures. The only arithmetic: shares of a state's own value added, and
 // average annual growth between two published constant-price levels.
 import fs from "node:fs";

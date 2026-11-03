@@ -1,6 +1,9 @@
 """Population and figures per person: reading the sources, working out per-person figures, and the checks."""
 
+from gdp_pipeline import fetch as F
 from gdp_pipeline import population as pop
+from gdp_pipeline import population_checks as pchecks
+from gdp_pipeline import population_read as read
 
 
 class Report:
@@ -12,9 +15,9 @@ class Report:
 
 
 def test_numbers_are_read_from_a_quoted_row_without_its_row_number():
-    assert pop.numbers("25 Population (in million) 1383 1395 1408 1421") == [1383, 1395, 1408, 1421]
-    assert pop.numbers("3 Gross Domestic Product (GDP) @ 1,76,50,591 1,87,96,955") == [17650591, 18796955]
-    assert pop.numbers("27 Per Capita GDP (₹) 2,15,935") == [215935]
+    assert read.numbers("25 Population (in million) 1383 1395 1408 1421") == [1383, 1395, 1408, 1421]
+    assert read.numbers("3 Gross Domestic Product (GDP) @ 1,76,50,591 1,87,96,955") == [17650591, 18796955]
+    assert read.numbers("27 Per Capita GDP (₹) 2,15,935") == [215935]
 
 
 def test_net_national_income_is_ndp_plus_gni_minus_gdp():
@@ -39,7 +42,7 @@ def test_population_is_implied_by_a_total_and_its_per_person_figure():
 
 def fake_sources(monkeypatch, projections=None, notes=None, rbi=None, population=None):
     # 1,000 million in 2021 (thousands), rising a million a year; male and female half each.
-    proj = projections or {pop.fy(y): {"persons": 990_000.0 + (y - 2011) * 1000, "male": 495_000.0 + (y - 2011) * 500,
+    proj = projections or {read.fy(y): {"persons": 990_000.0 + (y - 2011) * 1000, "male": 495_000.0 + (y - 2011) * 500,
                                        "female": 495_000.0 + (y - 2011) * 500} for y in range(2011, 2037)}
     by_series = population or {"2011-12": {"2021-22": {"million": 1000.0, "source": "projections"}}, "2022-23": {}}
     sources = {"projections": proj, "notes": notes or [], "rbi": rbi or [], "note_checked": 0, "problems": []}
@@ -56,14 +59,14 @@ def test_check_reproduces_published_per_person_figures_of_the_same_estimate(monk
     fake_sources(monkeypatch, notes=[note])
     node = {"gdp": {"cur": 2_00_000.0}, "per_person": {"gdp": {"cur": 2000}}}
     report = Report()
-    pop.check(ds_with(node), report, manifest={})
+    pchecks.check(ds_with(node), report, manifest={})
     _, checked, failures, notes = report.sections[0]
     assert failures == []
     assert any("2011-12 series: 1 published per-person figures reproduced" in n for n in notes)
 
     node["per_person"]["gdp"]["cur"] = 2010
     report = Report()
-    pop.check(ds_with(node), report, manifest={})
+    pchecks.check(ds_with(node), report, manifest={})
     assert any("GDP per person" in f and "2010 here" in f for f in report.sections[0][2])
 
 
@@ -73,7 +76,7 @@ def test_check_skips_published_figures_for_an_earlier_estimate(monkeypatch):
     fake_sources(monkeypatch, notes=[note])
     node = {"gdp": {"cur": 2_00_000.0}, "per_person": {"gdp": {"cur": 2000}}}  # revised since the press note
     report = Report()
-    pop.check(ds_with(node), report, manifest={})
+    pchecks.check(ds_with(node), report, manifest={})
     assert report.sections[0][2] == []
     assert any("2011-12 series: 0 published per-person figures reproduced" in n and "1 are for an earlier estimate" in n
                for n in report.sections[0][3])
@@ -85,16 +88,16 @@ def test_check_fails_when_one_table_implies_two_populations(monkeypatch):
                         "nni": {"2025-26": 1_80_000.0}, "pc_nni": {"2025-26": 1900.0}}}  # 1,000 and 947 million
     fake_sources(monkeypatch, notes=[note])
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert any("imply different populations" in f for f in report.sections[0][2])
 
 
 def test_check_fails_when_the_projections_do_not_add_up(monkeypatch):
-    proj = {pop.fy(y): {"persons": 1_000_000.0 + y, "male": 500_000.0 + y, "female": 500_000.0} for y in range(2011, 2037)}
+    proj = {read.fy(y): {"persons": 1_000_000.0 + y, "male": 500_000.0 + y, "female": 500_000.0} for y in range(2011, 2037)}
     proj["2015-16"]["male"] += 10
     fake_sources(monkeypatch, projections=proj)
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert any("projections 2015-16: male + female" in f for f in report.sections[0][2])
 
 
@@ -102,7 +105,7 @@ def test_years_without_population_are_listed_not_failed(monkeypatch):
     fake_sources(monkeypatch)
     ds = {"data": {"2022-23": {"annual": {"2026-27": {"AE1": {"gdp": {"cur": 1.0}}}}}}}
     report = Report()
-    pop.check(ds, report, manifest={})
+    pchecks.check(ds, report, manifest={})
     _, _, failures, notes = report.sections[0]
     assert failures == []
     assert any("2022-23 series: no population for 2026-27" in n for n in notes)
@@ -130,21 +133,21 @@ def test_check_fails_when_a_quoted_row_is_under_the_wrong_year(monkeypatch):
             "figures": {"gdp": {"2025-26": 1_01_400.0}, "pc_gdp": {"2025-26": 1000.0}}}
     fake_sources(monkeypatch, notes=[note])
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert any("check the years of the quoted statement" in f for f in report.sections[0][2])
 
 
 def test_population_prefers_projections_then_the_newest_note_then_the_rbi(monkeypatch):
-    proj = {pop.fy(y): {"persons": 1_000_000.0 + (y - 2021) * 10_000, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
+    proj = {read.fy(y): {"persons": 1_000_000.0 + (y - 2021) * 10_000, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
     older = {"document": "January note", "date": "2026-01-07", "base": "2011-12", "prices": "con", "years": ["2021-22", "2023-24"],
              "statement": "", "figures": {"gdp": {"2021-22": 99_900.0, "2023-24": 1_02_000.0}, "pc_gdp": {"2021-22": 1000.0, "2023-24": 1000.0}}}
     newer = {**older, "document": "June note", "date": "2026-06-05", "years": ["2023-24"],
              "figures": {"gdp": {"2023-24": 1_02_100.0}, "pc_gdp": {"2023-24": 1000.0}}}
     rbi = {**older, "document": "RBI", "date": None, "years": ["2022-23"],
            "figures": {"gdp": {"2022-23": 1_01_100.0}, "pc_gdp": {"2022-23": 1000.0}}}
-    monkeypatch.setattr(pop, "read_projections", lambda m: (proj, []))
-    monkeypatch.setattr(pop, "read_notes", lambda m: ([older, newer], [], 0))
-    monkeypatch.setattr(pop, "read_rbi", lambda m: ([rbi], []))
+    monkeypatch.setattr(read, "read_projections", lambda m: (proj, []))
+    monkeypatch.setattr(read, "read_notes", lambda m: ([older, newer], [], 0))
+    monkeypatch.setattr(read, "read_rbi", lambda m: ([rbi], []))
     by_series, _ = pop.population({})
     old = by_series["2011-12"]
     assert old["2021-22"] == {"million": 1000.0, "source": "projections"}  # projection, not the note's 999
@@ -154,9 +157,9 @@ def test_population_prefers_projections_then_the_newest_note_then_the_rbi(monkey
 
 def test_a_year_read_twice_from_the_projections_table_is_a_problem(monkeypatch, tmp_path):
     page = "Projected Total Population by Sex as on 1st October INDIA\n2011 12,20,116 6,27,946 5,92,170 1\n2011 12,20,116 6,27,946 5,92,170 1\n"
-    monkeypatch.setattr(pop, "path_of", lambda m, k: tmp_path)
-    monkeypatch.setattr(pop, "page_text", lambda path, n: page)
-    proj, problems = pop.read_projections({})
+    monkeypatch.setattr(read, "path_of", lambda m, k: tmp_path)
+    monkeypatch.setattr(read, "page_text", lambda path, n: page)
+    proj, problems = read.read_projections({})
     assert proj["2011-12"] == {"persons": 1220116, "male": 627946, "female": 592170}
     assert problems == ["projections: year 2011 read twice on page 125"]
 
@@ -192,8 +195,8 @@ def nas_workbook(path):
 
 def test_the_nas_statement_is_read_by_its_english_labels(monkeypatch, tmp_path):
     nas_workbook(tmp_path / "s.xlsx")
-    monkeypatch.setattr(pop, "path_of", lambda m, k: tmp_path / "s.xlsx")
-    tables, problems = pop.read_nas({})
+    monkeypatch.setattr(read, "path_of", lambda m, k: tmp_path / "s.xlsx")
+    tables, problems = read.read_nas({})
     assert problems == []
     cur, con = tables
     assert cur["prices"] == "cur" and con["prices"] == "con" and cur["years"] == ["2023-24", "2024-25"]
@@ -216,23 +219,21 @@ def test_a_statement_without_totals_is_compared_through_per_person_times_populat
 
 
 def test_the_newest_mospi_document_gives_the_population(monkeypatch):
-    proj = {pop.fy(y): {"persons": 1_000_000.0, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
+    proj = {read.fy(y): {"persons": 1_000_000.0, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
     june = {"document": "June note", "date": "2026-06-05", "base": "2022-23", "prices": "con", "years": ["2023-24"],
             "statement": "", "figures": {"gdp": {"2023-24": 1_00_000.0}, "pc_gdp": {"2023-24": 1000.0}}}
     nas = {"document": "NAS", "date": "2026-08-31", "base": "2022-23", "prices": "cur", "years": ["2023-24"],
            "statement": "", "exact_population": True, "figures": {"population": {"2023-24": 1000.004}}}
-    monkeypatch.setattr(pop, "read_projections", lambda m: (proj, []))
-    monkeypatch.setattr(pop, "read_notes", lambda m: ([june], [], 0))
-    monkeypatch.setattr(pop, "read_rbi", lambda m: ([], []))
-    monkeypatch.setattr(pop, "read_nas", lambda m: ([nas], []))
+    monkeypatch.setattr(read, "read_projections", lambda m: (proj, []))
+    monkeypatch.setattr(read, "read_notes", lambda m: ([june], [], 0))
+    monkeypatch.setattr(read, "read_rbi", lambda m: ([], []))
+    monkeypatch.setattr(read, "read_nas", lambda m: ([nas], []))
     by_series, _ = pop.population({})
     assert by_series["2022-23"]["2023-24"] == {"million": 1000.004, "source": "mospi", "document": "NAS"}
 
 
 def test_the_committed_nas_2026_statement_reads_as_published():
-    from gdp_pipeline.fetch import load_manifest
-
-    tables, problems = pop.read_nas(load_manifest())
+    tables, problems = read.read_nas(F.load_manifest())
     assert problems == []
     cur = next(t for t in tables if t["prices"] == "cur")
     assert cur["years"] == ["2022-23", "2023-24", "2024-25"]
@@ -257,15 +258,15 @@ def statement_rows(*extra, constant_heading="At constant (2022-23) prices", unit
 def test_a_growth_section_headed_like_constant_prices_is_not_read_as_figures():
     rows = statement_rows((None, None, "At constant (2022-23) prices: percentage change over previous year"),
                           (None, 6.3, "Per Capita GDP ( ₹)"))
-    figures, _, problems = pop.parse_nas(rows)
+    figures, _, problems = read.parse_nas(rows)
     assert problems == []
     assert figures["con"]["pc_gdp"] == {"2023-24": 1950.0}
 
 
 def test_a_row_read_twice_or_in_another_unit_is_a_problem():
-    _, _, problems = pop.parse_nas(statement_rows((None, 1960.0, "Per Capita GDP ( ₹)")))
+    _, _, problems = read.parse_nas(statement_rows((None, 1960.0, "Per Capita GDP ( ₹)")))
     assert problems == ["'Per Capita GDP ( ₹)' read twice at constant prices"]
-    _, _, problems = pop.parse_nas(statement_rows(unit="(₹ lakh)"))
+    _, _, problems = read.parse_nas(statement_rows(unit="(₹ lakh)"))
     assert "'Per Capita GDP(₹ lakh)': unit is not ₹" in problems
     assert any("pc_gdp not read at current prices" in p for p in problems)
 
@@ -277,11 +278,11 @@ def test_documents_that_disagree_on_a_population_fail(monkeypatch):
            "exact_population": True, "figures": {"population": {"2023-24": 1004.001}}}
     fake_sources(monkeypatch, notes=[june, nas])
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert not any("give different populations" in f for f in report.sections[0][2])
     nas["figures"]["population"]["2023-24"] = 1005.0
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert any("give different populations" in f for f in report.sections[0][2])
 
 
@@ -291,7 +292,7 @@ def test_a_press_note_total_far_from_the_api_is_a_revision_not_a_failure(monkeyp
     fake_sources(monkeypatch, notes=[note])
     ds = {"data": {"2022-23": {"annual": {"2023-24": {"FINAL": {"gdp": {"con": 2_00_000.0}, "per_person": {"gdp": {"con": 2000}}}}}}}}
     report = Report()
-    pop.check(ds, report, manifest={})
+    pchecks.check(ds, report, manifest={})
     assert not any("misread" in f for f in report.sections[0][2])
 
 
@@ -301,39 +302,37 @@ def test_a_published_total_far_from_the_api_is_a_misread_not_a_revision(monkeypa
     fake_sources(monkeypatch, notes=[table])
     ds = {"data": {"2022-23": {"annual": {"2023-24": {"FINAL": {"gdp": {"con": 2_00_000.0}, "per_person": {"gdp": {"con": 2000}}}}}}}}
     report = Report()
-    pop.check(ds, report, manifest={})
+    pchecks.check(ds, report, manifest={})
     assert any("a misread row, unit or section" in f for f in report.sections[0][2])
 
 
 def test_add_refuses_to_put_another_file_under_an_edition_unless_told(monkeypatch, tmp_path, capsys):
     import pytest
 
-    from gdp_pipeline import fetch as F
-
     monkeypatch.setattr(F, "ROOT", tmp_path)
     monkeypatch.setattr(F, "RAW", tmp_path / "sources" / "raw")
     monkeypatch.setattr(F, "SNAPSHOTS", tmp_path / "sources" / "snapshots")
     monkeypatch.setattr(F, "MANIFEST", tmp_path / "sources" / "manifest.json")
-    key = pop.NAS_STATEMENTS[-1]["key"]
+    key = read.NAS_STATEMENTS[-1]["key"]
     a, b, bad = tmp_path / "a.xlsx", tmp_path / "b.xlsx", tmp_path / "c.xlsx"
     a.write_bytes(b"PK first"), b.write_bytes(b"PK second"), bad.write_bytes(b"<html>")
-    pop.add_by_hand(a, key)
+    F.add_by_hand(a, key)
     assert F.load_manifest()[key]["file_name"] == "a.xlsx"
-    pop.add_by_hand(a, key)
+    F.add_by_hand(a, key)
     assert "unchanged" in capsys.readouterr().out
     with pytest.raises(SystemExit, match="already holds another file"):
-        pop.add_by_hand(b, key)
+        F.add_by_hand(b, key)
     with pytest.raises(SystemExit, match="not an xlsx file"):
-        pop.add_by_hand(bad, key)
+        F.add_by_hand(bad, key)
     with pytest.raises(SystemExit, match="no such file"):
-        pop.add_by_hand(tmp_path / "missing.xlsx", key)
-    pop.add_by_hand(b, key, replace=True)
+        F.add_by_hand(tmp_path / "missing.xlsx", key)
+    F.add_by_hand(b, key, replace=True)
     assert F.load_manifest()[key]["file_name"] == "b.xlsx"
 
 
 def test_fetch_carries_on_when_a_hand_downloaded_file_is_missing(monkeypatch, capsys):
-    monkeypatch.setattr(pop, "documents", lambda: [])
-    pop.fetch({}, False)  # no exception: the refresh goes on
+    monkeypatch.setattr(read, "documents", lambda: [])
+    F.fetch_population({}, False)  # no exception: the refresh goes on
     assert "Download it from" in capsys.readouterr().out
 
 
@@ -342,12 +341,12 @@ def test_fetch_carries_on_when_a_hand_downloaded_file_is_missing(monkeypatch, ca
 def check_failures(monkeypatch, ds=None, **sources):
     fake_sources(monkeypatch, **sources)
     report = Report()
-    pop.check(ds or {"data": {}}, report, manifest={})
+    pchecks.check(ds or {"data": {}}, report, manifest={})
     return report.sections[0][2]
 
 
 def projections(changes=None):
-    out = {pop.fy(y): {"persons": 990_000.0 + (y - 2011) * 1000, "male": 495_000.0 + (y - 2011) * 500,
+    out = {read.fy(y): {"persons": 990_000.0 + (y - 2011) * 1000, "male": 495_000.0 + (y - 2011) * 500,
                        "female": 495_000.0 + (y - 2011) * 500} for y in range(2011, 2037)}
     return {**out, **(changes or {})}
 
@@ -357,7 +356,7 @@ def test_a_source_that_could_not_be_read_fails(monkeypatch):
     sources = pop.population({})[1]
     sources["problems"].append("RBI table 1: layout changed (no year or base-year row)")
     report = Report()
-    pop.check({"data": {}}, report, manifest={})
+    pchecks.check({"data": {}}, report, manifest={})
     assert report.sections[0][2] == ["RBI table 1: layout changed (no year or base-year row)"]
 
 

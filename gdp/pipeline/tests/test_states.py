@@ -3,6 +3,7 @@
 import json
 
 from gdp_pipeline import states
+from gdp_pipeline import states_checks as sc
 
 
 def row(code, state, year, cur, con, industry="", sub=""):
@@ -57,7 +58,7 @@ def test_net_figure_equal_to_gross_is_left_out():
     assert "pc_nsdp_alt" not in node and "nsva" not in node and "nsva_sub" not in node
     assert node["pc_nsdp"] == {"cur": 311_709, "con": 181_487}
     assert len(notes) == 2 and all(n.startswith("Karnataka: ") for n in notes)
-    assert all(states.allowed("source", n) for n in notes)  # both are known, explained source errors
+    assert all(sc.allowed("source", n) for n in notes)  # both are known, explained source errors
     assert [r["indicator_code"] for r in rows if r["left_out"]] == [32, 30, 30]
 
 
@@ -98,7 +99,7 @@ def test_coverage_counts_last_years_weight_of_the_states_reporting():
         "Big": {"2023-24": {"gsdp": {"cur": 90}}, "2024-25": {"gsdp": {"cur": 99}}},
         "Small": {"2023-24": {"gsdp": {"cur": 10}}},
     }
-    assert states.coverage(data, "2024-25") == 0.9
+    assert sc.coverage(data, "2024-25") == 0.9
 
 
 class Report:
@@ -120,13 +121,13 @@ def test_derived_gsdp_with_a_population_jump_fails():
     slip = st_of({"Haryana": {"2021-22": year(100_000, 10_000), "2022-23": year(90_000, 10_250)}})  # taxes left out
     for st, fails in ((ok, 0), (slip, 1)):
         report = Report()
-        states.check_per_person(st, report)
+        sc.check_per_person(st, report)
         assert len(report.sections[0][2]) == fails
 
 
 def test_value_added_without_gsdp_fails():
     report = Report()
-    states.check_identities(st_of({"Assam": {"2024-25": {"gsva": {"total": {"cur": 1, "con": 1}}}}}), report)
+    sc.check_identities(st_of({"Assam": {"2024-25": {"gsva": {"total": {"cur": 1, "con": 1}}}}}), report)
     assert "GSDP is not" in report.sections[0][2][0]
 
 
@@ -150,14 +151,14 @@ def test_states_against_india_is_for_review_and_skips_advance_estimates_and_thin
         "Small": {"2022-23": {"gsdp": {"cur": 10}}, "2023-24": {"gsdp": {"cur": 10}}, "2024-25": {"gsdp": {"cur": 10}}},
     })
     report = Report()
-    states.check_sum(st, ds, report)
+    sc.check_sum(st, ds, report)
     title, checked, failures, notes = report.sections[0]
     assert "for review" in title and failures == []
     assert [n[:7] for n in notes] == ["2022-23", "2023-24"]  # 2024-25 is only an advance estimate
     assert "outside the usual" in notes[1]  # 210% of India: listed, not failed
     st["data"]["2011-12"]["Big"].pop("2023-24")
     report = Report()
-    states.check_sum(st, ds, report)
+    sc.check_sum(st, ds, report)
     assert [n[:7] for n in report.sections[0][3]] == ["2022-23"]  # 2023-24: the states reporting it were 10% of the year before
 
 
@@ -188,68 +189,68 @@ def failures_of(check, data):
 def test_gsdp_that_is_not_value_added_plus_taxes_less_subsidies_fails():
     node = {"gsdp": {"cur": 1_000.0}, "gsva": {"total": {"cur": 900.0}}, "taxes": {"cur": 120.0},
             "subsidies": {"cur": 20.0}}
-    assert failures_of(states.check_identities, {"Goa": {"2023-24": node}}) == (1, [])
+    assert failures_of(sc.check_identities, {"Goa": {"2023-24": node}}) == (1, [])
     node["gsdp"]["cur"] = 1_010.0
-    _, failures = failures_of(states.check_identities, {"Goa": {"2023-24": node}})
+    _, failures = failures_of(sc.check_identities, {"Goa": {"2023-24": node}})
     assert failures == ["Goa, 2023-24, cur: GSDP 1,010 but GSVA + taxes - subsidies = 1,000 (₹ crore)"]
 
 
 def test_industries_that_do_not_add_up_to_total_value_added_fail():
     node = {"gsva": {"agriculture": {"cur": 300.0}, "mining": {"cur": 600.0}, "total": {"cur": 1_000.0}}}
-    _, failures = failures_of(states.check_industries, {"Goa": {"2023-24": node}})
+    _, failures = failures_of(sc.check_industries, {"Goa": {"2023-24": node}})
     assert failures == ["Goa, 2023-24, GSVA cur: industries add up to 900, total is 1,000"]
 
 
 def test_sub_industries_that_do_not_add_up_to_their_industry_fail():
     node = {"gsva": {"agriculture": {"cur": 300.0}, "total": {"cur": 300.0}},
             "gsva_sub": {"agriculture": {"crops": {"cur": 200.0}, "livestock": {"cur": 90.0}}}}
-    _, failures = failures_of(states.check_industries, {"Goa": {"2023-24": node}})
+    _, failures = failures_of(sc.check_industries, {"Goa": {"2023-24": node}})
     assert failures == ["Goa, 2023-24, GSVA agriculture cur: parts add up to 290, industry is 300"]
 
 
 def test_published_growth_that_does_not_follow_from_the_levels_fails():
     years = {"2022-23": {"gsdp": {"con": 100_000.0}},
              "2023-24": {"gsdp": {"con": 107_000.0}, "growth": {"gsdp": {"real": 7.0}}}}
-    assert failures_of(states.check_growth, {"Goa": years}) == (1, [])
+    assert failures_of(sc.check_growth, {"Goa": years}) == (1, [])
     years["2023-24"]["growth"]["gsdp"]["real"] = 7.2
-    _, failures = failures_of(states.check_growth, {"Goa": years})
+    _, failures = failures_of(sc.check_growth, {"Goa": years})
     assert failures == ["Goa, 2023-24, gsdp_growth real: published 7.2%, levels give 7.00%"]
     years["2023-24"]["growth"]["gsdp"]["published"] = False  # worked out here, not published: not checked
-    assert failures_of(states.check_growth, {"Goa": years}) == (0, [])
+    assert failures_of(sc.check_growth, {"Goa": years}) == (0, [])
 
 
 def test_two_tables_of_nsdp_per_person_that_disagree_fail():
     node = {"pc_nsdp": {"cur": 100_000.0}, "pc_nsdp_alt": {"cur": 100_005.0}}
-    _, failures = failures_of(states.check_per_person, {"Goa": {"2023-24": node}})
+    _, failures = failures_of(sc.check_per_person, {"Goa": {"2023-24": node}})
     assert failures == ["Goa, 2023-24, cur: NSDP per person ₹100,000 in one table, ₹100,005 in the other"]
 
 
 def test_gsdp_and_nsdp_per_person_implying_different_populations_fail():
     # GSDP ₹1,000 crore / ₹10,000 a person = 10 lakh people; NSDP ₹900 crore / ₹9,500 = 9.47 lakh
     node = {"gsdp": {"cur": 1_000.0}, "nsdp": {"cur": 900.0}, "pc_gsdp": {"cur": 10_000.0}, "pc_nsdp": {"cur": 9_500.0}}
-    _, failures = failures_of(states.check_per_person, {"Goa": {"2023-24": node}})
+    _, failures = failures_of(sc.check_per_person, {"Goa": {"2023-24": node}})
     assert len(failures) == 1 and "GSDP per person implies" in failures[0] and "NSDP per person" in failures[0]
 
 
 def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monkeypatch):
-    monkeypatch.setattr(states, "DATA", tmp_path)
+    monkeypatch.setattr(sc, "DATA", tmp_path)
     (tmp_path / "state_accounts.csv").write_text("header\n")
     known = "Karnataka: NSDP per person (second table, ind32) is not below the gross figure, 2022-23, 2011-12 base; left out"
     unknown = "nas/2011-12/Current/Annually/ind23: unknown state or union territory 'Goa & Daman'"
     st = {**st_of({}), "source_problems": [unknown], "left_out": [known]}
     report = Report()
-    states.check_rows(st, report)
+    sc.check_rows(st, report)
     (_, _, failures, notes), = report.sections
     assert failures == [unknown] and notes[0].startswith(f"Allowed: {known}. Reason: ")
 
 
 def test_known_exceptions_no_longer_needed_are_listed(tmp_path, monkeypatch):
-    monkeypatch.setattr(states, "DATA", tmp_path)
+    monkeypatch.setattr(sc, "DATA", tmp_path)
     (tmp_path / "state_accounts.csv").write_text("header\n")
     report = Report()
-    states.check({"data": {}}, report, st=st_of({}))
+    sc.check({"data": {}}, report, st=st_of({}))
     title, _, failures, notes = report.sections[-1]
-    assert "no longer needed" in title and failures == [] and len(notes) == len(states.KNOWN_EXCEPTIONS)
+    assert "no longer needed" in title and failures == [] and len(notes) == len(sc.KNOWN_EXCEPTIONS)
 
 
 def test_rows_in_an_unexpected_unit_industry_or_year_are_problems(tmp_path, monkeypatch):

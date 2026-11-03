@@ -13,6 +13,7 @@ after every release and the revision history builds up.
 Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]
 """
 
+import hashlib
 import json
 import sys
 import time
@@ -23,6 +24,7 @@ from pathlib import Path
 from pipeline_common import download
 from pipeline_common.download import fetch_pages, get, is_type, now
 
+from . import forecasts, population_read
 from .sources import (BUDGETS, NAS_API, NAS_INDICATORS, NAS_PAGE_LIMIT, NAS_SERIES, STATE_INDICATORS, STATE_SERIES,
                       budget_glance_urls, fy)
 
@@ -127,6 +129,69 @@ def fetch_budgets(manifest: dict, force: bool) -> None:
         time.sleep(0.5)
 
 
+def fetch_forecasts(manifest: dict, force: bool) -> None:
+    """Every document a forecast is quoted from (forecasts.py)."""
+    for name in forecasts.SOURCES:
+        for r in forecasts.load(name):
+            for url in forecasts.urls(r):
+                key = forecasts.doc_key(url)
+                if key in manifest and not force:
+                    continue
+                try:
+                    content = get(url)
+                except Exception as exc:  # noqa: BLE001 - report and carry on; the check will fail
+                    print(f"{key}: {url} -> {exc}")
+                    continue
+                ext = "pdf" if is_type(content, "pdf") else "html"
+                save(manifest, key, RAW / f"{key}.{ext}", content, url, {"document": f"{name} {r['fiscal_year']}"})
+                print(f"{key}: saved {url} ({len(content):,} bytes)")
+                time.sleep(0.5)
+
+
+def fetch_population(manifest: dict, force: bool) -> None:
+    """The documents population is read from (population_read.py). NAS statements are added by hand (add_by_hand)."""
+    for n in population_read.NAS_STATEMENTS:  # downloaded by hand: never fetched, only reported if missing
+        if n["key"] not in manifest:
+            print(f"{n['key']}: not added. Download it from {n['url']} and run "
+                  "`uv run python -m gdp_pipeline.population --add <file>` (gdp/README.md).")
+
+    for key, url, ext in population_read.documents():
+        if key in manifest and not force:
+            continue
+        try:
+            content = get(url)
+        except Exception as exc:  # noqa: BLE001 - report and carry on; the checks will fail
+            print(f"{key}: {url} -> {exc}")
+            continue
+        if not is_type(content, ext):
+            print(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
+            continue
+        save(manifest, key, RAW / f"{key}.{ext}", content, url)
+        print(f"{key}: saved {url} ({len(content):,} bytes)")
+
+
+def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
+    """Copy a hand-downloaded NAS statement into sources/ and record it in the manifest. Refuses to put a different
+    file under an edition that already has one (add the new edition to NAS_STATEMENTS first), unless replace."""
+    n = next(x for x in population_read.NAS_STATEMENTS if x["key"] == key)
+    if not source.is_file():
+        raise SystemExit(f"{source}: no such file")
+    content = source.read_bytes()
+    if not is_type(content, "xlsx"):
+        raise SystemExit(f"{source} is not an xlsx file")
+    manifest = load_manifest()
+    old = manifest.get(key)
+    if old and old.get("sha256") != hashlib.sha256(content).hexdigest() and not replace:
+        raise SystemExit(f"{key} already holds another file ({old.get('file_name') or old['file']}). For a new edition, "
+                         "add its entry to NAS_STATEMENTS in population_read.py first; to replace this one, pass "
+                         "--replace.")
+    changed = save(manifest, key, RAW / f"{key}.xlsx", content, n["url"],
+                   {"downloaded_by_hand": f"from {n['url']} (the publication page needs a browser)",
+                    "file_name": source.name})
+    write_manifest(manifest)
+    print(f"{key}: {'added' if changed else 'unchanged'} {source} ({len(content):,} bytes)")
+
+
 def main(force: bool = False, force_nas: bool = False) -> None:
     """force: re-download everything. force_nas: re-download only the MoSPI API files (they are the ones that
     change after a release; budget, forecast and population documents are fixed), and anything else that is
@@ -135,10 +200,8 @@ def main(force: bool = False, force_nas: bool = False) -> None:
     try:
         fetch_all_nas(manifest, force or force_nas)
         fetch_budgets(manifest, force)
-        from . import forecasts, population
-
-        forecasts.fetch(manifest, force)
-        population.fetch(manifest, force)
+        fetch_forecasts(manifest, force)
+        fetch_population(manifest, force)
     finally:
         write_manifest(manifest)
 

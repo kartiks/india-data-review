@@ -1,9 +1,9 @@
 """Published forecasts of India's real GDP growth, each tied to its official document.
 
 The figures are listed by hand in forecast_sources/*.json, each with the exact
-sentence it was read from and the document's URL. The pipeline downloads every
-document and checks that the sentence is there and that the numbers in the
-sentence are the numbers recorded (see verify_quotes).
+sentence it was read from and the document's URL. fetch.py downloads every
+document; the checks (verify_quotes) find the sentence in it and check that the
+numbers in the sentence are the numbers recorded.
 
 - economic_survey.json : the Economic Survey's projection for the coming year
                          (Ministry of Finance, indiabudget.gov.in)
@@ -14,12 +14,10 @@ sentence are the numbers recorded (see verify_quotes).
 import hashlib
 import json
 import re
-import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 CURATED = Path(__file__).resolve().parent / "forecast_sources"
-RAW = ROOT / "sources" / "raw" / "forecasts"
 SOURCES = {
     "economic_survey": "Economic Survey (Ministry of Finance)",
     "rbi": "Reserve Bank of India, monetary policy statements",
@@ -38,26 +36,6 @@ def doc_key(url: str) -> str:
 
 def urls(record: dict) -> list[str]:
     return [u for u in (record.get("url"), record.get("quote_2_url")) if u]
-
-
-def fetch(manifest: dict, force: bool) -> None:
-    from .fetch import RAW as RAW_ROOT, get, is_type, save
-
-    for name in SOURCES:
-        for r in load(name):
-            for url in urls(r):
-                key = doc_key(url)
-                if key in manifest and not force:
-                    continue
-                try:
-                    content = get(url)
-                except Exception as exc:  # noqa: BLE001 - report and carry on; the check will fail
-                    print(f"{key}: {url} -> {exc}")
-                    continue
-                ext = "pdf" if is_type(content, "pdf") else "html"
-                save(manifest, key, RAW_ROOT / f"{key}.{ext}", content, url, {"document": f"{name} {r['fiscal_year']}"})
-                print(f"{key}: saved {url} ({len(content):,} bytes)")
-                time.sleep(0.5)
 
 
 # ---- reading documents ---------------------------------------------------------

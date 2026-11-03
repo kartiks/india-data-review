@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 57077,
+ "checks": 57473,
  "failures": 0,
  "allowed": 0,
  "sections": [
@@ -13,7 +13,7 @@
   },
   {
    "title": "Accounting identities hold in every estimate",
-   "checks": 1959,
+   "checks": 2355,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []

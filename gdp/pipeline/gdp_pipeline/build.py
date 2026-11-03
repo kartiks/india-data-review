@@ -144,7 +144,8 @@ SECTOR_LABELS = {
 
 
 def slug(text: str) -> str:
-    return "".join(c if c.isalnum() else "_" for c in text.lower()).strip("_").replace("__", "_")
+    """'Trade & Repair Services' -> 'trade_repair_services': lower case, every run of other characters one '_'."""
+    return re.sub("_+", "_", "".join(c if c.isalnum() else "_" for c in text.lower())).strip("_")
 
 
 def number(v) -> float | None:

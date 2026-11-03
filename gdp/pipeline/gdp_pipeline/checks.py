@@ -4,7 +4,7 @@ figure on the site can be traced to an official source.
 1. Source rows: every row read has a known year, stage, industry and sector.
 2. Accounting identities, for every series, year, estimate stage and price basis:
    - the eight industries add up to total GVA; group industries = their parts;
-     sub-industries (crops, livestock, ...) add up to their industry
+     each industry's sub-industries (crops, livestock, ...) are a complete, known set and add up to it
    - GDP = GVA + net taxes on products; net taxes = taxes - subsidies
    - NDP = GDP - depreciation; GNI = GDP + net primary income from abroad;
      GNDI = GNI + net current transfers from abroad
@@ -47,12 +47,19 @@ GROSS_GROWTH_GAP = 1.5
 # Series where MoSPI's API keeps the estimates every rate was measured against, so every rate must match exactly.
 EXACT_GROWTH_SERIES = {"2022-23"}
 
-# Sub-industries MoSPI publishes for each industry, when complete.
+# The sub-industries MoSPI publishes for each industry (ids from build.slug), as one or more complete sets. An
+# estimate that has sub-industries for an industry must have exactly one of its sets, and they must add up to it.
 SUBINDUSTRIES = {
-    "agriculture": ["crops", "livestock", "forestry_and_logging", "fishing_and_aquaculture"],
-    "manufacturing": ["food_products_beverages_and_tobacco", "textiles_apparel_and_leather_products",
-                      "metal_products", "machinery_and_equipment", "other_manufactured_goods"],
-    "trade_hotels": ["trade_repair_services", "hotels_restaurants"],
+    "agriculture": [["crops", "livestock", "forestry_and_logging", "fishing_and_aquaculture"]],
+    "manufacturing": [["food_products_beverages_and_tobacco", "textiles_apparel_and_leather_products",
+                       "metal_products", "machinery_and_equipment", "other_manufactured_goods"]],
+    "trade_hotels": [["trade_repair_services", "hotels_restaurants"]],
+    "transport_comm": [
+        ["railways", "road_transport", "water_transport", "air_transport", "services_incidental_to_transport",
+         "storage", "communication_services_related_to_broadcasting"],
+        # the back series before 2004-05 gives road, water, air and incidental services as one figure
+        ["railways", "transport_by_other_means", "storage", "communication_services_related_to_broadcasting"],
+    ],
 }
 
 # (check id, key) -> reason. Keys are the message prefixes the checks produce.
@@ -72,8 +79,9 @@ INTRO = ("National and state accounts (MoSPI), the Union Budget's GDP assumption
 
 BACK_ADDITIVITY = (
     "MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 "
-    "the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01; exact from "
-    "2004-05, where the back series was recompiled in full). Industry shares on the site for these years are "
+    "the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01), nor the "
+    "sub-industries to their industry (up to about 19% for transport's parts in the 1950s); both are exact from "
+    "2004-05, where the back series was recompiled in full. Industry shares on the site for these years are "
     "shares of the sum of industries."
 )
 EARLY_NET_TAXES = (
@@ -137,6 +145,22 @@ def sum_check(target: dict | None, parts: list[dict | None], price: str) -> tupl
     return abs(s - target[price]) <= LEVEL_TOL, target[price], s
 
 
+def subindustry_problem(ind: str, sub: dict, total: dict | None) -> str | None:
+    """Why the sub-industries published for an industry cannot be added up to it, or None. A part missing, an
+    unknown part or a missing industry figure would otherwise make the sum check skip silently."""
+    if ind not in SUBINDUSTRIES:
+        return f"not expected for this industry ({', '.join(sorted(sub))}): add its sub-industries to SUBINDUSTRIES"
+    sets = SUBINDUSTRIES[ind]
+    if set(sub) not in [set(s) for s in sets]:
+        best = min(sets, key=lambda s: len(set(s) ^ set(sub)))
+        missing, extra = sorted(set(best) - set(sub)), sorted(set(sub) - set(best))
+        return "; ".join(x for x in (f"missing {', '.join(missing)}" if missing else "",
+                                     f"unexpected {', '.join(extra)}" if extra else "") if x)
+    if not total:
+        return f"published, but {ind} itself is not"
+    return None
+
+
 def check_identities(ds: dict, report: Report) -> None:
     failures, notes = [], []
     checked = 0
@@ -158,6 +182,12 @@ def check_identities(ds: dict, report: Report) -> None:
     for freq in ("annual", "quarterly"):
         for series, period, stage, n in nodes(ds, freq):
             gva = n.get("gva_by_industry", {})
+            subs = n.get("gva_sub", {})
+            for ind, sub in list(subs.items()):
+                if problem := subindustry_problem(ind, sub, gva.get(ind)):
+                    checked += 1
+                    failures.append(f"{series} series, {period}, {stage}: sub-industries of {ind}: {problem}")
+                    subs = {k: v for k, v in subs.items() if k != ind}
             for price in ("cur", "con"):
                 loc = where(series, period, stage, price)
                 if not any(gva.get(i, {}).get("summed") for i in BROAD):
@@ -169,9 +199,13 @@ def check_identities(ds: dict, report: Report) -> None:
                 if any(gva.get(i, {}).get("summed") for i in BROAD):
                     test("finer industries = total GVA (where groups are not published)", loc,
                          sum_check(gva.get("total"), [gva.get(i) for i in fine], price))
-                for ind, subs in SUBINDUSTRIES.items():
-                    sub = n.get("gva_sub", {}).get(ind, {})
-                    test("sub-industries = industry", loc, sum_check(gva.get(ind), [sub.get(s) for s in subs], price))
+                for ind, sub in subs.items():
+                    lacking = sorted(k for k, v in sub.items() if price not in v)
+                    if price in gva[ind] and lacking:
+                        checked += 1
+                        failures.append(f"{loc}: sub-industries of {ind}: no figure for {', '.join(lacking)}")
+                    else:
+                        test("sub-industries = industry", loc, sum_check(gva[ind], list(sub.values()), price))
                 test("GDP = GVA + net taxes on products", loc, sum_check(n.get("gdp"), [gva.get("total"), n.get("net_taxes")], price))
                 if n.get("product_taxes") and n.get("product_subsidies") and price in n["product_taxes"]:
                     neg = {price: -n["product_subsidies"][price]} if price in n["product_subsidies"] else None

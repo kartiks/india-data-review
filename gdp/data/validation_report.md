@@ -2,7 +2,7 @@
 
 National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (57077 checks, 0 failures)
+**Result: PASSED** (57473 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -29,8 +29,8 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, other_services: published twice with different real growth (6.2 and 6.3); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, public_admin: published twice with different real growth (1.6 and 2); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, total: published twice with different nominal growth (13.5 and 13.6); neither is used
-- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (3.2 and 3.3); neither is used
-- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (11.8 and 11.9); neither is used
+- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (3.2 and 3.3); neither is used
+- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (11.8 and 11.9); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels: published twice with different real growth (10.9 and 11); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, transport_comm, air_transport: published twice with different real growth (-4.7 and -7); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, transport_comm, railways: published twice with different real growth (12.7 and 12.8); neither is used
@@ -73,14 +73,14 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different nominal growth (12.6 and 12.7); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.2); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.3); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 0); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 2.4); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 6.4); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 7.7); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 0); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 2.4); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 6.4); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 7.7); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 5.8); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 7.2); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, railways: published twice with different real growth (6 and 6.5); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, road_transport: published twice with different real growth (6.2 and 6.4); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, services_incidental_to_transport: published twice with different real growth (5 and 5.5); neither is used
@@ -93,11 +93,11 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, utilities: published twice with different real growth (4 and 4.7); neither is used
 
 ## ✅ Accounting identities hold in every estimate
-1959 checks, 0 failures.
+2355 checks, 0 failures.
 
-- Checks run: 8 industries = total GVA (222); GDP = GVA + net taxes on products (414); GNDI = GNI + net current transfers from abroad (99); GNI = GDP + net primary income from abroad (198); NDP = GDP − depreciation (198); cfc by sector = total (37); finer industries = total GVA (where groups are not published) (192); gfcf by sector = total (74); industry group = its parts (18); net taxes = taxes − subsidies (74); saving by sector = total (37); sub-industries = industry (396)
+- Checks run: 8 industries = total GVA (222); GDP = GVA + net taxes on products (414); GNDI = GNI + net current transfers from abroad (99); GNI = GDP + net primary income from abroad (198); NDP = GDP − depreciation (198); cfc by sector = total (37); finer industries = total GVA (where groups are not published) (192); gfcf by sector = total (74); industry group = its parts (18); net taxes = taxes − subsidies (74); saving by sector = total (37); sub-industries = industry (792)
 - Allowed (8 figures, e.g. 2011-12 series, 2014-15, AE1, current prices: GDP = GVA + net taxes on products — printed 12,653,762, parts give 13,000,302 (-346,540)). Reason: In MoSPI's API, net taxes on products for the First Advance and Provisional Estimates of 2014-15 and 2015-16 do not equal GDP minus GVA from the same release. GDP and GVA are the published headline figures (the February 2015 release put 2014-15 real GVA at ₹98.58 lakh crore, as here), so they are shown; net taxes for these four releases are not used.
-- Allowed (320 figures, e.g. 2011-12-back series, 1950-51, BACK, current prices: finer industries = total GVA (where groups are not published) — printed 9,809, parts give 10,280 (-471)). Reason: MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01; exact from 2004-05, where the back series was recompiled in full). Industry shares on the site for these years are shares of the sum of industries.
+- Allowed (507 figures, e.g. 2011-12-back series, 1950-51, BACK, current prices: finer industries = total GVA (where groups are not published) — printed 9,809, parts give 10,280 (-471)). Reason: MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01), nor the sub-industries to their industry (up to about 19% for transport's parts in the 1950s); both are exact from 2004-05, where the back series was recompiled in full. Industry shares on the site for these years are shares of the sum of industries.
 
 ## ✅ Published GDP growth rates follow from published GDP levels
 134 checks, 0 failures.

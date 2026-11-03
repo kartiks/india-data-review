@@ -1,7 +1,7 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-03T12:03:55+00:00",
+ "generated_at": "2026-11-03T16:03:21+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
@@ -255,11 +255,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 89901.0,
          "con": 89901.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 793681.0,
          "con": 793681.0
         }
@@ -269,7 +269,7 @@
          "cur": 4393.0,
          "con": 4393.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 125930.0,
          "con": 125930.0
         },
@@ -589,11 +589,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 89900.0,
          "con": 89900.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 793681.0,
          "con": 793681.0
         }
@@ -603,7 +603,7 @@
          "cur": 4392.0,
          "con": 4392.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 125929.0,
          "con": 125929.0
         },
@@ -943,11 +943,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 99850.0,
          "con": 92832.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 954749.0,
          "con": 887566.0
         }
@@ -957,7 +957,7 @@
          "cur": 8147.0,
          "con": 4085.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 142969.0,
          "con": 134534.0
         },
@@ -1283,11 +1283,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 99849.0,
          "con": 92811.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 954754.0,
          "con": 887364.0
         }
@@ -1297,7 +1297,7 @@
          "cur": 8127.0,
          "con": 4183.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 142969.0,
          "con": 134504.0
         },
@@ -1623,11 +1623,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 99849.0,
          "con": 92955.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 954683.0,
          "con": 888665.0
         }
@@ -1637,7 +1637,7 @@
          "cur": 8127.0,
          "con": 4183.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 142969.0,
          "con": 134505.0
         },
@@ -1991,11 +1991,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 108418.0,
          "con": 95097.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1089250.0,
          "con": 955993.0
         }
@@ -2005,7 +2005,7 @@
          "cur": 7157.0,
          "con": 4440.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 179782.0,
          "con": 158771.0
         },
@@ -2331,11 +2331,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 106139.0,
          "con": 92831.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1078272.0,
          "con": 944505.0
         }
@@ -2345,7 +2345,7 @@
          "cur": 6852.0,
          "con": 4549.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 177802.0,
          "con": 156022.0
         },
@@ -2671,11 +2671,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 106139.0,
          "con": 92565.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1078420.0,
          "con": 941941.0
         }
@@ -2685,7 +2685,7 @@
          "cur": 6852.0,
          "con": 4550.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 177804.0,
          "con": 156031.0
         },
@@ -3293,11 +3293,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 121167.0,
          "con": 104142.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1231073.0,
          "con": 1058941.0
         }
@@ -3307,7 +3307,7 @@
          "cur": 19618.0,
          "con": 5008.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 207959.0,
          "con": 179465.0
         },
@@ -3672,11 +3672,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 114402.0,
          "con": 98067.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1197073.0,
          "con": 1027848.0
         }
@@ -3686,7 +3686,7 @@
          "cur": 11431.0,
          "con": 5187.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 207293.0,
          "con": 176733.0
         },
@@ -4051,11 +4051,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 114359.0,
          "con": 98201.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1206474.0,
          "con": 1037640.0
         }
@@ -4065,7 +4065,7 @@
          "cur": 11820.0,
          "con": 5188.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 206442.0,
          "con": 176047.0
         },
@@ -4712,11 +4712,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 127921.0,
          "con": 112663.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1297931.0,
          "con": 1144300.0
         }
@@ -4726,7 +4726,7 @@
          "cur": 19950.0,
          "con": 6057.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 242071.0,
          "con": 205073.0
         },
@@ -5091,11 +5091,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 126081.0,
          "con": 110822.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1304934.0,
          "con": 1148216.0
         }
@@ -5105,7 +5105,7 @@
          "cur": 20349.0,
          "con": 6052.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 243322.0,
          "con": 206218.0
         },
@@ -5470,11 +5470,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 126645.0,
          "con": 111304.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1307323.0,
          "con": 1150121.0
         }
@@ -5484,7 +5484,7 @@
          "cur": 20343.0,
          "con": 6052.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 237282.0,
          "con": 201243.0
         },
@@ -6262,11 +6262,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 139406.0,
          "con": 120406.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1446832.0,
          "con": 1250502.0
         }
@@ -6276,7 +6276,7 @@
          "cur": 20654.0,
          "con": 7184.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 256518.0,
          "con": 211274.0
         },
@@ -6641,11 +6641,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 140334.0,
          "con": 121010.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1468581.0,
          "con": 1268165.0
         }
@@ -6655,7 +6655,7 @@
          "cur": 22229.0,
          "con": 7170.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 246725.0,
          "con": 203208.0
         },
@@ -7020,11 +7020,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 140418.0,
          "con": 121092.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1468583.0,
          "con": 1268230.0
         }
@@ -7034,7 +7034,7 @@
          "cur": 21496.0,
          "con": 7172.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 247809.0,
          "con": 203896.0
         },
@@ -7812,11 +7812,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 153887.0,
          "con": 128156.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1679832.0,
          "con": 1400264.0
         }
@@ -7826,7 +7826,7 @@
          "cur": 23048.0,
          "con": 8430.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 242160.0,
          "con": 193417.0
         },
@@ -8191,11 +8191,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 153695.0,
          "con": 127974.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1679572.0,
          "con": 1399843.0
         }
@@ -8205,7 +8205,7 @@
          "cur": 22602.0,
          "con": 8430.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 241980.0,
          "con": 192827.0
         },
@@ -8570,11 +8570,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 158723.0,
          "con": 132190.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1722671.0,
          "con": 1435983.0
         }
@@ -8584,7 +8584,7 @@
          "cur": 22443.0,
          "con": 8372.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 247549.0,
          "con": 198344.0
         },
@@ -9362,11 +9362,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 172493.0,
          "con": 137845.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1900837.0,
          "con": 1519499.0
         }
@@ -9376,7 +9376,7 @@
          "cur": 17037.0,
          "con": 9463.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 268468.0,
          "con": 202453.0
         },
@@ -9741,11 +9741,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 180689.0,
          "con": 144422.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1954298.0,
          "con": 1562426.0
         }
@@ -9755,7 +9755,7 @@
          "cur": 12722.0,
          "con": 9396.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 258052.0,
          "con": 197150.0
         },
@@ -10120,11 +10120,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 180908.0,
          "con": 144543.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1955798.0,
          "con": 1563236.0
         }
@@ -10134,7 +10134,7 @@
          "cur": 12730.0,
          "con": 9401.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 258179.0,
          "con": 197214.0
         },
@@ -10912,11 +10912,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 199202.0,
          "con": 156732.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2124428.0,
          "con": 1670775.0
         }
@@ -10926,7 +10926,7 @@
          "cur": 21473.0,
          "con": 9151.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 290933.0,
          "con": 218458.0
         },
@@ -11291,11 +11291,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 196126.0,
          "con": 154215.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2129685.0,
          "con": 1674209.0
         }
@@ -11305,7 +11305,7 @@
          "cur": 22508.0,
          "con": 9158.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 293093.0,
          "con": 219312.0
         },
@@ -11670,11 +11670,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 194907.0,
          "con": 153260.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2131423.0,
          "con": 1675606.0
         }
@@ -11684,7 +11684,7 @@
          "cur": 22496.0,
          "con": 9157.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 292917.0,
          "con": 219178.0
         },
@@ -12462,11 +12462,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 86160.0,
          "con": 67221.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1732820.0,
          "con": 1350823.0
         }
@@ -12476,7 +12476,7 @@
          "cur": 10323.0,
          "con": 3176.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 321901.0,
          "con": 223157.0
         },
@@ -12841,11 +12841,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 90956.0,
          "con": 70937.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1756940.0,
          "con": 1369374.0
         }
@@ -12855,7 +12855,7 @@
          "cur": 10844.0,
          "con": 3434.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 318652.0,
          "con": 220901.0
         },
@@ -13220,11 +13220,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 90872.0,
          "con": 70877.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1754566.0,
          "con": 1367599.0
         }
@@ -13234,7 +13234,7 @@
          "cur": 10839.0,
          "con": 3433.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 318733.0,
          "con": 220966.0
         },
@@ -14012,11 +14012,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 145837.0,
          "con": 101981.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2100858.0,
          "con": 1469373.0
         }
@@ -14026,7 +14026,7 @@
          "cur": 12293.0,
          "con": 5446.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 381835.0,
          "con": 242203.0
         },
@@ -14391,11 +14391,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 138704.0,
          "con": 96968.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2170391.0,
          "con": 1517811.0
         }
@@ -14405,7 +14405,7 @@
          "cur": 11114.0,
          "con": 5442.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 374447.0,
          "con": 237908.0
         },
@@ -15183,11 +15183,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 239330.0,
          "con": 154176.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2615145.0,
          "con": 1684541.0
         }
@@ -15197,7 +15197,7 @@
          "cur": 16640.0,
          "con": 8749.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 436804.0,
          "con": 262710.0
         },
@@ -15562,11 +15562,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 264593.0,
          "con": 170447.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2604952.0,
          "con": 1677829.0
         }
@@ -15576,7 +15576,7 @@
          "cur": 18140.0,
          "con": 8748.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 435909.0,
          "con": 262188.0
         },
@@ -16365,11 +16365,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 316533.0,
          "con": 202370.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2812001.0,
          "con": 1797187.0
         }
@@ -16379,7 +16379,7 @@
          "cur": 33101.0,
          "con": 9975.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 480370.0,
          "con": 285337.0
         },
@@ -24301,17 +24301,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 28.0,
          "con": 2122.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 374.0,
          "con": 24323.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 45.0,
          "con": 682.0
         },
@@ -24503,17 +24503,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 32.0,
          "con": 2270.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 396.0,
          "con": 24806.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 50.0,
          "con": 724.0
         },
@@ -24705,17 +24705,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 30.0,
          "con": 2220.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 404.0,
          "con": 25776.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 51.0,
          "con": 766.0
         },
@@ -24907,17 +24907,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 33.0,
          "con": 2318.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 431.0,
          "con": 26729.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 52.0,
          "con": 807.0
         },
@@ -25109,17 +25109,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 33.0,
          "con": 2463.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 438.0,
          "con": 28579.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 55.0,
          "con": 868.0
         },
@@ -25311,17 +25311,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 34.0,
          "con": 2658.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 447.0,
          "con": 30643.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 60.0,
          "con": 945.0
         },
@@ -25513,17 +25513,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 40.0,
          "con": 2847.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 522.0,
          "con": 32780.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 65.0,
          "con": 1029.0
         },
@@ -25715,17 +25715,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 42.0,
          "con": 2898.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 563.0,
          "con": 33422.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 68.0,
          "con": 1047.0
         },
@@ -25917,17 +25917,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 47.0,
          "con": 3040.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 612.0,
          "con": 34753.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 76.0,
          "con": 1143.0
         },
@@ -26119,17 +26119,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 51.0,
          "con": 3188.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 678.0,
          "con": 36916.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 80.0,
          "con": 1227.0
         },
@@ -26321,17 +26321,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 58.0,
          "con": 3541.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 764.0,
          "con": 40290.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 81.0,
          "con": 1268.0
         },
@@ -26523,17 +26523,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 60.0,
          "con": 3737.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 815.0,
          "con": 42890.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 92.0,
          "con": 1382.0
         },
@@ -26725,17 +26725,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 66.0,
          "con": 3932.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 877.0,
          "con": 45154.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 101.0,
          "con": 1519.0
         },
@@ -26927,17 +26927,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 77.0,
          "con": 4226.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 996.0,
          "con": 48454.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 116.0,
          "con": 1699.0
         },
@@ -27129,17 +27129,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 105.0,
          "con": 4519.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1207.0,
          "con": 52023.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 133.0,
          "con": 1836.0
         },
@@ -27331,17 +27331,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 106.0,
          "con": 4569.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1313.0,
          "con": 52344.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 147.0,
          "con": 1950.0
         },
@@ -27533,17 +27533,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 127.0,
          "con": 4667.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1557.0,
          "con": 53639.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 170.0,
          "con": 2064.0
         },
@@ -27735,17 +27735,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 156.0,
          "con": 4863.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1794.0,
          "con": 55574.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 185.0,
          "con": 2171.0
         },
@@ -27937,17 +27937,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 154.0,
          "con": 5068.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1850.0,
          "con": 57982.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 224.0,
          "con": 2237.0
         },
@@ -28139,17 +28139,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 172.0,
          "con": 5314.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1991.0,
          "con": 61113.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 253.0,
          "con": 2357.0
         },
@@ -28341,17 +28341,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 186.0,
          "con": 5607.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2212.0,
          "con": 64393.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 297.0,
          "con": 2554.0
         },
@@ -28543,17 +28543,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 202.0,
          "con": 5724.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2403.0,
          "con": 65633.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 330.0,
          "con": 2704.0
         },
@@ -28745,17 +28745,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 233.0,
          "con": 5743.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2651.0,
          "con": 65848.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 345.0,
          "con": 2854.0
         },
@@ -28947,17 +28947,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 289.0,
          "con": 5989.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 3285.0,
          "con": 68662.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 391.0,
          "con": 3063.0
         },
@@ -29149,17 +29149,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 392.0,
          "con": 6266.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 4419.0,
          "con": 71847.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 446.0,
          "con": 3189.0
         },
@@ -29351,17 +29351,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 418.0,
          "con": 6862.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 5040.0,
          "con": 78674.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 511.0,
          "con": 3404.0
         },
@@ -29553,17 +29553,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 433.0,
          "con": 7117.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 5248.0,
          "con": 81446.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 680.0,
          "con": 3691.0
         },
@@ -29755,17 +29755,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 495.0,
          "con": 7716.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 5989.0,
          "con": 88184.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 749.0,
          "con": 3865.0
         },
@@ -29957,17 +29957,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 518.0,
          "con": 8383.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 6400.0,
          "con": 95869.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 874.0,
          "con": 4122.0
         },
@@ -30159,17 +30159,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 618.0,
          "con": 8089.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 7546.0,
          "con": 92674.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 950.0,
          "con": 4457.0
         },
@@ -30361,17 +30361,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 776.0,
          "con": 8553.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 9270.0,
          "con": 97527.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 997.0,
          "con": 4774.0
         },
@@ -30563,17 +30563,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 912.0,
          "con": 8319.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 11364.0,
          "con": 103713.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 1145.0,
          "con": 5145.0
         },
@@ -30765,17 +30765,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 1119.0,
          "con": 9858.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 12564.0,
          "con": 109117.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 1396.0,
          "con": 5387.0
         },
@@ -30967,17 +30967,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 1329.0,
          "con": 9946.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 14490.0,
          "con": 115126.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 1647.0,
          "con": 5693.0
         },
@@ -31169,17 +31169,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 1516.0,
          "con": 10506.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 16862.0,
          "con": 120040.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 1839.0,
          "con": 6157.0
         },
@@ -31371,17 +31371,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 1727.0,
          "con": 10997.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 19656.0,
          "con": 130162.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 2015.0,
          "con": 6258.0
         },
@@ -31573,17 +31573,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 1839.0,
          "con": 11531.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 21861.0,
          "con": 137715.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 2492.0,
          "con": 6649.0
         },
@@ -31775,17 +31775,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 2087.0,
          "con": 12231.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 24308.0,
          "con": 143570.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 3543.0,
          "con": 7039.0
         },
@@ -31977,17 +31977,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 2533.0,
          "con": 13041.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 28641.0,
          "con": 153109.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 4524.0,
          "con": 7360.0
         },
@@ -32179,17 +32179,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 3033.0,
          "con": 14663.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 33528.0,
          "con": 164694.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 5122.0,
          "con": 7881.0
         },
@@ -32381,17 +32381,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 3577.0,
          "con": 15779.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 39170.0,
          "con": 173016.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 6174.0,
          "con": 8402.0
         },
@@ -32583,17 +32583,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 4088.0,
          "con": 15902.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 44602.0,
          "con": 173970.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 7621.0,
          "con": 9023.0
         },
@@ -32785,17 +32785,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 4821.0,
          "con": 16925.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 51979.0,
          "con": 184389.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 9896.0,
          "con": 10172.0
         },
@@ -32987,17 +32987,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 5668.0,
          "con": 18328.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 61020.0,
          "con": 197144.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 12749.0,
          "con": 11524.0
         },
@@ -33189,17 +33189,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 6411.0,
          "con": 19071.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 73325.0,
          "con": 218528.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 16092.0,
          "con": 13301.0
         },
@@ -33391,17 +33391,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 8529.0,
          "con": 23923.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 89626.0,
          "con": 249140.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 19187.0,
          "con": 15489.0
         },
@@ -33593,17 +33593,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 10606.0,
          "con": 26994.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 105221.0,
          "con": 268391.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 22999.0,
          "con": 17152.0
         },
@@ -33795,17 +33795,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 12183.0,
          "con": 29167.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 119151.0,
          "con": 288874.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 27285.0,
          "con": 20605.0
         },
@@ -33997,17 +33997,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 14478.0,
          "con": 33242.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 134918.0,
          "con": 309681.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 32849.0,
          "con": 24621.0
         },
@@ -34200,17 +34200,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 16591.0,
          "con": 36492.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 150020.0,
          "con": 331489.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 34663.0,
          "con": 30071.0
         },
@@ -34406,17 +34406,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 18504.0,
          "con": 39034.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 165680.0,
          "con": 348000.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 38508.0,
          "con": 37596.0
         },
@@ -34612,17 +34612,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 20398.0,
          "con": 42098.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 184865.0,
          "con": 382170.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 45989.0,
          "con": 44896.0
         },
@@ -34818,17 +34818,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 22529.0,
          "con": 44502.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 205114.0,
          "con": 408842.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 44864.0,
          "con": 55318.0
         },
@@ -35024,17 +35024,17 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 25232.0,
          "con": 48336.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 233851.0,
          "con": 450615.0
         }
        },
        "transport_comm": {
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 53438.0,
          "con": 69590.0
         },
@@ -35230,11 +35230,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 30362.0,
          "con": 53852.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 272045.0,
          "con": 483515.0
         }
@@ -35244,7 +35244,7 @@
          "cur": 2309.0,
          "con": 1587.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 62351.0,
          "con": 84172.0
         },
@@ -35448,11 +35448,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 36648.0,
          "con": 61600.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 315530.0,
          "con": 531753.0
         }
@@ -35462,7 +35462,7 @@
          "cur": 2192.0,
          "con": 1961.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 71354.0,
          "con": 86607.0
         },
@@ -35666,11 +35666,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 44319.0,
          "con": 68993.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 374306.0,
          "con": 584720.0
         }
@@ -35680,7 +35680,7 @@
          "cur": 1842.0,
          "con": 2577.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 82651.0,
          "con": 88278.0
         },
@@ -35884,11 +35884,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 52107.0,
          "con": 75922.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 422836.0,
          "con": 618540.0
         }
@@ -35898,7 +35898,7 @@
          "cur": 1756.0,
          "con": 3149.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 96567.0,
          "con": 95411.0
         },
@@ -36102,11 +36102,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 55860.0,
          "con": 72630.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 480934.0,
          "con": 628896.0
         }
@@ -36116,7 +36116,7 @@
          "cur": 1421.0,
          "con": 2933.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 109958.0,
          "con": 98371.0
         },
@@ -36320,11 +36320,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 60781.0,
          "con": 72424.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 542511.0,
          "con": 650620.0
         }
@@ -36334,7 +36334,7 @@
          "cur": 3880.0,
          "con": 3386.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 121795.0,
          "con": 118627.0
         },
@@ -36538,11 +36538,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 75399.0,
          "con": 84433.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 666811.0,
          "con": 750536.0
         }
@@ -36552,7 +36552,7 @@
          "cur": 4996.0,
          "con": 3961.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 110779.0,
          "con": 119347.0
         },
@@ -36756,11 +36756,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 89901.0,
          "con": 89901.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 793681.0,
          "con": 793681.0
         }
@@ -36770,7 +36770,7 @@
          "cur": 4393.0,
          "con": 4392.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 125930.0,
          "con": 125929.0
         },
@@ -36975,11 +36975,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 279599.0,
          "con": 279599.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1667100.0,
          "con": 1667100.0
         }
@@ -36989,7 +36989,7 @@
          "cur": 20686.0,
          "con": 20686.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 372347.0,
          "con": 372347.0
         },
@@ -37326,11 +37326,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 339577.0,
          "con": 321209.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 1915461.0,
          "con": 1900656.0
         }
@@ -37340,7 +37340,7 @@
          "cur": 36774.0,
          "con": 24617.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 389952.0,
          "con": 420209.0
         },
@@ -37745,11 +37745,11 @@
         }
        },
        "trade_hotels": {
-        "hotels__restaurants": {
+        "hotels_restaurants": {
          "cur": 375488.0,
          "con": 333650.0
         },
-        "trade__repair_services": {
+        "trade_repair_services": {
          "cur": 2075946.0,
          "con": 2047750.0
         }
@@ -37759,7 +37759,7 @@
          "cur": 42219.0,
          "con": 27551.0
         },
-        "communication__services_related_to_broadcasting": {
+        "communication_services_related_to_broadcasting": {
          "cur": 428678.0,
          "con": 467512.0
         },
@@ -43147,8 +43147,8 @@
   "2011-12 series, 2012-13, gva_growth, ADD, other_services: published twice with different real growth (6.2 and 6.3); neither is used",
   "2011-12 series, 2012-13, gva_growth, ADD, public_admin: published twice with different real growth (1.6 and 2); neither is used",
   "2011-12 series, 2012-13, gva_growth, ADD, total: published twice with different nominal growth (13.5 and 13.6); neither is used",
-  "2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (3.2 and 3.3); neither is used",
-  "2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (11.8 and 11.9); neither is used",
+  "2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (3.2 and 3.3); neither is used",
+  "2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (11.8 and 11.9); neither is used",
   "2011-12 series, 2012-13, gva_growth, ADD, trade_hotels: published twice with different real growth (10.9 and 11); neither is used",
   "2011-12 series, 2012-13, gva_growth, ADD, transport_comm, air_transport: published twice with different real growth (-4.7 and -7); neither is used",
   "2011-12 series, 2012-13, gva_growth, ADD, transport_comm, railways: published twice with different real growth (12.7 and 12.8); neither is used",
@@ -43191,14 +43191,14 @@
   "2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different nominal growth (12.6 and 12.7); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.2); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.3); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 0); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 2.4); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 6.4); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 7.7); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 0); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 2.4); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 6.4); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 7.7); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 5.8); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 7.2); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used",
-  "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used",
+  "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, railways: published twice with different real growth (6 and 6.5); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, road_transport: published twice with different real growth (6.2 and 6.4); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, transport_comm, services_incidental_to_transport: published twice with different real growth (5 and 5.5); neither is used",

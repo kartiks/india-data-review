@@ -57,7 +57,7 @@ const inStart = new Set(start.map((c) => c.key));
   </figcaption>
   <ul class="chips small" aria-label={`${noun[0].toUpperCase()}${noun.slice(1)}s shown`}>
     {start.map(({ o, slot }) => (
-      <li><button type="button" class="chip" data-key={o.key} aria-label={`Remove ${o.name}`}><span class={slot === 0 ? "sw dashed" : "sw"} style={slot === 0 ? undefined : `background:${slotColor(slot)}`} aria-hidden="true" />{o.name}<span class="x" aria-hidden="true">×</span></button></li>
+      <li><span class="chip static"><span class={slot === 0 ? "sw dashed" : "sw"} style={slot === 0 ? undefined : `background:${slotColor(slot)}`} aria-hidden="true" />{o.name}</span></li>
     ))}
   </ul>
   <details class="choose" hidden>
@@ -69,7 +69,7 @@ const inStart = new Set(start.map((c) => c.key));
         <span class="limit muted" role="status"></span>
       </div>
       <fieldset class="small">
-        <legend class="sr-only">{noun[0].toUpperCase()}{noun.slice(1)}s to show, up to {max}</legend>
+        <legend class="sr-only">{noun[0].toUpperCase()}{noun.slice(1)}s to show, up to {max}{ref ? `, plus ${ref.name}` : ""}</legend>
         {all.map((o) => (
           <label><input type="checkbox" value={o.key} checked={inStart.has(o.key)} />{o.name}</label>
         ))}
@@ -144,6 +144,7 @@ const inStart = new Set(start.map((c) => c.key));
         })),
       });
       fig.querySelector<HTMLElement>(".empty")!.hidden = sel.length > 0;
+      fig.querySelector<HTMLElement>(".table-view")!.hidden = sel.length === 0;
 
       // Chips (also the legend)
       chips.replaceChildren(...sel.map(({ c, o }) => {
@@ -234,16 +235,17 @@ const inStart = new Set(start.map((c) => c.key));
   /* Chips are rebuilt by the script, so their styles are global within the list. */
   .chips :global(.chip) { font: inherit; display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; }
   .chips :global(.chip:hover) { border-color: var(--ink-2); }
+  .chips .chip.static, .chips .chip.static:hover { cursor: default; border-color: var(--border); }
   .chips :global(.sw) { width: 14px; height: 3px; border-radius: 2px; flex: none; }
   .chips :global(.sw.dashed) { background: repeating-linear-gradient(90deg, var(--ink-2) 0 5px, transparent 5px 8px); }
   .chips :global(.x) { color: var(--muted); font-size: 1.1em; line-height: 1; }
   .choose { margin: 0 0 8px; }
-  .choose[hidden], .empty[hidden] { display: none; }
+  .choose[hidden], .empty[hidden], .table-view[hidden] { display: none; }
   .choose summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
   .choose-panel { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
   .choose-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
   .reset, .clear { font: inherit; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
-  fieldset { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); gap: 4px 12px; }
+  fieldset { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(9.5em, 1fr)); gap: 4px 12px; }
   fieldset label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
   fieldset label:has(input:disabled) { color: var(--muted); cursor: default; }
   .empty { margin: 4px 0 0; }

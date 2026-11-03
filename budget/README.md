@@ -25,7 +25,8 @@ cd pipeline
 uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
 uv run python -m budget_pipeline --fetch    # also download anything missing
 uv run python -m budget_pipeline --refresh  # re-download every budget document (overwrites sources/raw/)
-uv run pytest                               # parser tests + end-to-end checks (~6 min)
+uv run pytest                               # parser tests + end-to-end checks (~6 min; builds in a temporary
+                                            # folder and fails if anything in data/ changes)
 ```
 
 The command exits with an error if any check fails, so it can gate a website build.

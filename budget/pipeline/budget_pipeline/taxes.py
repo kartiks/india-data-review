@@ -47,7 +47,7 @@ from .sources import FORMAT_PRIORITY
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "sources" / "manifest.json"
-OBSERVATIONS = ROOT / "data" / "observations.csv"
+DATA = ROOT / "data"  # observations.csv, the headline figures written by build.py
 
 TOLERANCE_CRORE = 5
 
@@ -910,8 +910,8 @@ def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple[str
     return out
 
 
-def load_summary_observations(path: Path = OBSERVATIONS) -> list[dict]:
-    with path.open() as f:
+def load_summary_observations(path: Path | None = None) -> list[dict]:
+    with (path or DATA / "observations.csv").open() as f:
         return list(csv.DictReader(f))
 
 

@@ -163,8 +163,15 @@ It checks out that commit in a temporary folder (your working folder is not touc
 Running a pipeline's tests rewrites its `data/` files with only a new `generated_at`; discard those changes rather
 than committing them (the hashes leave `generated_at` out, so they never trip the gate).
 
-It downloads no data (npm and uv may download packages) and takes 10 to 15 minutes, most of it the budget tests.
-The weekly refresh runs the same script on its own commit before pushing.
+It downloads no data (npm and uv may download packages) and takes about 10 to 15 minutes on a laptop (about 6 on
+GitHub's runners), most of it the budget tests. The weekly refresh runs the same script on its own commit before
+pushing.
+
+Don't make the "CI / ci" check required for `main` in branch protection as things stand: the weekly refresh pushes
+straight to `main` with the workflow's own token, and pushes made with that token don't start other workflows, so
+its commits would never get that check and the push would be refused. To require it, first let the refresh bypass
+the rule (a ruleset with GitHub Actions as a bypass actor) or have it open a pull request with a token that does
+trigger workflows.
 
 ## Adding data
 

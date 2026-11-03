@@ -46,7 +46,7 @@ DATA=() SOURCES=()
 for area in "${AREAS[@]}"; do DATA+=("$area/data"); SOURCES+=("$area/sources"); done
 # Each build writes its time into "generated_at" (some files are one line of compact JSON), so compare every
 # rebuilt file with the committed one after removing that field from both.
-STRIP='s/"generated_at": ?"[^"]*"//'
+STRIP='s/"generated_at": ?"[^"]*"//g'
 DIFFERS=""
 for f in $(git -C "$WORK" diff --name-only -- "${DATA[@]}"); do
   if ! cmp -s <(git -C "$WORK" show "HEAD:$f" | sed -E "$STRIP") <(sed -E "$STRIP" "$WORK/$f"); then

@@ -11,7 +11,8 @@ figure on the site can be traced to an official source.
    - investment and saving by institutional sector add up to the total
 3. Growth rates: every published GDP growth rate is reproduced from the
    published GDP levels (against the previous year's estimate available then).
-4. Quarters add up to the year; published quarterly growth matches the levels.
+4. Quarters add up to the year; published quarterly growth matches the levels (to within rounding in the 2022-23
+   series; within 1.5 points in the 2011-12 series, whose earlier quarterly estimates the API no longer keeps).
 5. The back series (1950-51 to 2011-12) joins the current series in 2011-12.
 6. Spending side: the gap between GDP and its spending components
    ("discrepancies") is listed for review.
@@ -44,7 +45,8 @@ LEVEL_TOL = 10  # ₹ crore: published figures are rounded to the crore, so sums
 GROWTH_TOL = 0.051  # published growth rates have one decimal
 # A published growth rate further than this from every reading of the levels is treated as an error.
 GROSS_GROWTH_GAP = 1.5
-# Series where MoSPI's API keeps the estimates every rate was measured against, so every rate must match exactly.
+# Series where MoSPI's API keeps the estimates every rate was measured against, so every rate (annual and quarterly,
+# GDP and industries) must match the levels to within rounding.
 EXACT_GROWTH_SERIES = {"2022-23"}
 
 # The sub-industries MoSPI publishes for each industry (ids from build.slug), as one or more complete sets. An
@@ -361,7 +363,7 @@ def check_quarters(ds: dict, report: Report) -> None:
                         calc = (n["gdp"][price] / p["gdp"][price] - 1) * 100
                         if abs(calc - g[key]) > GROWTH_TOL:
                             msg = f"{series} series, {y} Q{i}: published {key} growth {g[key]}%, levels give {calc:.2f}%"
-                            if abs(calc - g[key]) > GROSS_GROWTH_GAP:
+                            if abs(calc - g[key]) > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
                                 reason = allowed("quarters", msg)
                                 (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
                             else:

@@ -11,10 +11,13 @@ type of data, and a shared home page with charts that use more than one area.
 | [`gdp/`](gdp/README.md) | GDP and national accounts (MoSPI), the Budget's GDP assumption, Economic Survey and RBI forecasts |
 | [`jobs-prices/`](jobs-prices/README.md) | Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES), from MoSPI |
 | [`site/`](site/README.md) | The website: `/` home, `/budget/…`, `/gdp/…`, `/jobs-prices/…`, `/about/` |
+| [`shared/pipeline/`](shared/pipeline/) | `pipeline_common`, the Python code the three pipelines share (a uv path dependency of each) |
 
 Each data area is self-contained: its own `pipeline/` (a Python package run with uv), `data/` (the verified
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
-URL and SHA-256). The site refuses to build unless every area's `data/validation_report.md` says PASSED.
+URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for people and
+`data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED. Code
+the pipelines share (the validation report) is in `shared/pipeline/` (package `pipeline_common`).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.
@@ -39,7 +42,8 @@ Each pipeline command builds its area's `data/` from the files already in `sourc
 changed files in `sources/snapshots/`; the budget overwrites its files, so compare them with the committed copies).
 `--refresh-nas` (GDP) and `--refresh-api` (jobs and prices) re-download only the sources that are revised in place;
 the weekly refresh runs them. `--help` lists an area's options; any other option is refused.
-Tests: `uv run pytest` in each `pipeline/` folder, and `npm run check` (type check) in `site/`.
+Tests: `uv run pytest` in each `pipeline/` folder (including `shared/pipeline/`), and `npm run check` (type check) in
+`site/`.
 
 ## Keeping the data up to date
 
@@ -148,7 +152,7 @@ It checks out that commit in a temporary folder (your working folder is not touc
 - every area's pipeline rebuilds `data/` from the committed sources with every check passing;
 - the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
 - the build changes no committed file in `sources/` and writes no new files;
-- every area's tests pass;
+- every area's tests pass, and the shared pipeline code's;
 - the site type-checks and builds.
 
 It downloads no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
@@ -182,8 +186,11 @@ which takes about an hour on GitHub) and 240 minutes in all.
 
 ### A new area
 
-1. Create `<area>/` with `pipeline/`, `data/` and `sources/`, following `gdp/` (fetch → build → checks,
-   writing `data/validation_report.md`).
+1. Create `<area>/` with `pipeline/`, `data/` and `sources/`, following `gdp/` (fetch → build → checks). Add
+   `pipeline-common` to the pipeline's dependencies as a path dependency (copy `[tool.uv.sources]` from
+   `gdp/pipeline/pyproject.toml`), and write the checks with its `Report`, which writes `data/validation_report.md`
+   and the `data/validation_summary.json` the site reads. Code that more than one area needs goes in
+   `shared/pipeline/pipeline_common/`, with tests in `shared/pipeline/tests/`; area-specific code stays in the area.
 2. Add the area to `AREAS` in `site/scripts/copy-data.mjs`, a data module in `site/src/lib/<area>/`, pages in
    `site/src/pages/<area>/`, and a tab and sub-navigation in `site/src/layouts/Base.astro`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).

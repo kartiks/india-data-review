@@ -81,10 +81,10 @@ def growth_ds(series, year, stage, published_real, level_now=110.0, level_before
 
 
 def industry_growth(ds):
-    report = checks.Report()
+    report = checks.Report(checks.INTRO)
     checks.check_industry_growth(ds, report)
-    (_, checked, failures, notes), = report.sections
-    return checked, failures, notes
+    (s,) = report.sections
+    return s.checks, s.failures, s.notes
 
 
 def test_industry_growth_matching_levels_passes():

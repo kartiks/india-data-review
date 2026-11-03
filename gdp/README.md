@@ -35,7 +35,7 @@ uv run pytest
 ```
 
 The command exits with an error if any check fails, and the website (`../site/`) refuses to build unless
-`data/validation_report.md` says PASSED.
+`data/validation_summary.json` says PASSED.
 
 **MoSPI's national and state accounts are refreshed every week** by a GitHub Action that runs `--refresh-nas`, commits what
 changed and pushes it to `main` once every check and the local CI pass (see
@@ -58,6 +58,7 @@ refreshed totals every week.
 | `states.json` | The state accounts the site uses: base → state → year, levels in ₹ crore, per-person figures in ₹ |
 | `state_accounts.csv` | Every state-accounts row MoSPI published, one value per line, as printed, with our ids and the source URL; rows left out are marked |
 | `validation_report.md` | Every check, and the reason for every allowed exception |
+| `validation_summary.json` | The same results for programs (the site reads it): PASSED or FAILED, and checks, failures and allowed exceptions per group of checks |
 
 Values are ₹ crore; growth rates are %. `cur` = current prices (nominal), `con` = constant prices (real).
 

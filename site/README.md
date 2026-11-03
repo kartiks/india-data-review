@@ -40,7 +40,9 @@ rural vs urban by state); `src/layouts/Base.astro` has the tabs and sub-navigati
 the URL. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
 (CC BY 4.0, following the Survey of India's map) simplified by `scripts/make-india-map.py`, whose header says how to
 redo it; the page must credit DataMeet. A new area also needs adding to `AREAS` in `scripts/copy-data.mjs`, which copies each area's checked
-data into `public/data/<area>/` for download and stops the build if a validation report does not say PASSED.
+data into `public/data/<area>/` for download and stops the build if an area's `data/validation_summary.json` is
+missing or does not say PASSED. Pages read the check results through `src/lib/validation.ts`, never by parsing
+`validation_report.md`.
 
 ## How numbers are chosen
 

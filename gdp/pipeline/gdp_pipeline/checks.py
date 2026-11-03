@@ -24,13 +24,15 @@ figure on the site can be traced to an official source.
    against India's GDP (see states.py).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS, each with a reason.
-Writes gdp/data/validation_report.md and exits non-zero on any failure.
+Writes gdp/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 """
 
 import json
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+from pipeline_common.report import Report
 
 from . import population, states
 from .build import BROAD, GROUPS, STAGE_ORDER
@@ -64,32 +66,8 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
         "release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is "
         "7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.",
 }
-
-
-class Report:
-    def __init__(self) -> None:
-        self.sections: list[tuple[str, int, list[str], list[str]]] = []
-
-    def add(self, title: str, checked: int, failures: list[str], notes: list[str]) -> None:
-        self.sections.append((title, checked, failures, notes))
-
-    @property
-    def failed(self) -> bool:
-        return any(f for _, _, f, _ in self.sections)
-
-    def markdown(self) -> str:
-        total = sum(c for _, c, _, _ in self.sections)
-        nfail = sum(len(f) for _, _, f, _ in self.sections)
-        out = ["# Data validation report", "",
-               "National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. "
-               "Every allowed exception lists its reason.", "",
-               f"**Result: {'FAILED' if nfail else 'PASSED'}** ({total} checks, {nfail} failures)", ""]
-        for title, checked, failures, notes in self.sections:
-            out += [f"## {'❌' if failures else '✅'} {title}", f"{checked} checks, {len(failures)} failures.", ""]
-            out += [f"- FAIL: {f}" for f in failures]
-            out += [f"- {n}" for n in notes]
-            out.append("")
-        return "\n".join(out)
+INTRO = ("National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. "
+         "Every allowed exception lists its reason.")
 
 
 BACK_ADDITIVITY = (
@@ -451,7 +429,7 @@ def check_revisions(ds: dict, report: Report) -> None:
 
 def main(ds: dict | None = None) -> int:
     ds = ds or json.loads((DATA / "gdp.json").read_text())
-    report = Report()
+    report = Report(INTRO)
     check_source(ds, report)
     check_identities(ds, report)
     check_growth(ds, report)
@@ -464,10 +442,7 @@ def main(ds: dict | None = None) -> int:
     check_revisions(ds, report)
     population.check(ds, report)
     states.check(ds, report)
-    (DATA / "validation_report.md").write_text(report.markdown())
-    for title, checked, failures, _ in report.sections:
-        print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")
-    return 1 if report.failed else 0
+    return report.write(DATA)
 
 
 if __name__ == "__main__":

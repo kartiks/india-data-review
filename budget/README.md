@@ -141,7 +141,7 @@ Research's *Union Budget 2026-27 Analysis*.
   - Up to 2016-17, State Plan assistance routed through a department is listed separately (`state_plans:<id>`); from 2017-18 it's inside the department.
   - Union Territory demands are grouped under Home Affairs, as in the Demands for Grants.
 - **Schemes** start in 2017-18. Before that, schemes appear only as "Plan outlays", which aren't comparable. Renamed schemes keep one id when the same figure is printed under both names (`data_maps/scheme_names.csv`).
-- **"% of GDP"** is available only for the deficits, as printed in the budgets. The site's home page also divides budget figures by MoSPI's GDP (from `gdp/`) and labels them as % of MoSPI's GDP; this pipeline doesn't.
+- **"% of GDP"** is available only for the deficits, as printed in the budgets. The site's home page also divides budget figures by MoSPI's GDP (from `gdp/`) and its chart says so; this pipeline doesn't.
 
 ## Layout
 

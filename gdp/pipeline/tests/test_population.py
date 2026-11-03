@@ -335,3 +335,64 @@ def test_fetch_carries_on_when_a_hand_downloaded_file_is_missing(monkeypatch, ca
     monkeypatch.setattr(pop, "documents", lambda: [])
     pop.fetch({}, False)  # no exception: the refresh goes on
     assert "Download it from" in capsys.readouterr().out
+
+
+# ---- check failures not covered above ---------------------------------------------------------------------------
+
+def check_failures(monkeypatch, ds=None, **sources):
+    fake_sources(monkeypatch, **sources)
+    report = Report()
+    pop.check(ds or {"data": {}}, report, manifest={})
+    return report.sections[0][2]
+
+
+def projections(changes=None):
+    out = {pop.fy(y): {"persons": 990_000.0 + (y - 2011) * 1000, "male": 495_000.0 + (y - 2011) * 500,
+                       "female": 495_000.0 + (y - 2011) * 500} for y in range(2011, 2037)}
+    return {**out, **(changes or {})}
+
+
+def test_a_source_that_could_not_be_read_fails(monkeypatch):
+    fake_sources(monkeypatch)
+    sources = pop.population({})[1]
+    sources["problems"].append("RBI table 1: layout changed (no year or base-year row)")
+    report = Report()
+    pop.check({"data": {}}, report, manifest={})
+    assert report.sections[0][2] == ["RBI table 1: layout changed (no year or base-year row)"]
+
+
+def test_projections_missing_a_year_fail(monkeypatch):
+    proj = projections()
+    proj.pop("2036-37")
+    failures = check_failures(monkeypatch, projections=proj)
+    assert failures == ["projections: years read ['2011-12']…['2035-36'] (25), expected 2011 to 2036"]
+
+
+def test_projections_that_do_not_rise_fail(monkeypatch):
+    failures = check_failures(monkeypatch, projections=projections(
+        {"2020-21": {"persons": 990_000.0, "male": 495_000.0, "female": 495_000.0}}))
+    assert failures == ["projections 2020-21: population does not rise from 2019-20"]
+
+
+def test_implied_population_far_from_the_printed_one_fails(monkeypatch):
+    note = {"document": "Press note", "statement": "S1", "base": "2022-23", "prices": "con", "years": ["2025-26"],
+            "figures": {"gdp": {"2025-26": 1_00_400.0}, "pc_gdp": {"2025-26": 1000.0},
+                        "population": {"2025-26": 1010.0}}}  # implies 1,004 million, prints 1,010
+    failures = check_failures(monkeypatch, notes=[note])
+    assert failures == ["Press note, S1, 2025-26: implied population 1004.000 million, printed 1,010"]
+
+
+def test_population_far_from_the_rbis_reprint_fails(monkeypatch):
+    rbi = {"document": "RBI", "statement": "", "base": "2011-12", "prices": "cur", "years": [],
+           "figures": {"population_lakh": {"2021-22": 10_010.0}}}  # 1,001 million; 1,000 used here
+    failures = check_failures(monkeypatch, rbi=[rbi])
+    assert failures == ["2011-12 series, 2021-22: population 1000.000 million here, RBI 10,010 lakh"]
+
+
+def test_mospi_population_off_the_projection_before_2022_23_fails(monkeypatch):
+    # The fixture projects 1,000 million for 2021-22; MoSPI's figure must equal it in those years.
+    note = {"document": "Press note", "statement": "S1", "base": "2011-12", "prices": "cur", "years": ["2021-22"],
+            "figures": {"gdp": {"2021-22": 1_00_100.0}, "pc_gdp": {"2021-22": 1000.0}}}  # 1,001 million
+    failures = check_failures(monkeypatch, notes=[note])
+    assert failures == ["2011-12 series, 2021-22: MoSPI's population (implied, 1001.000 million, Press note) differs "
+                        "from the projection (1000.000) by +0.100%"]

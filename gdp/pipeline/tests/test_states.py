@@ -1,5 +1,7 @@
 """The state accounts: how rows are arranged, what is derived, and what is left out."""
 
+import json
+
 from gdp_pipeline import states
 
 
@@ -172,3 +174,95 @@ def test_a_new_base_may_fill_up_state_by_state(tmp_path, monkeypatch):
         "nas/2022-23/Current/Annually/ind23": {"file": "new.json", "url": "u", "sha256": "s"},
     })
     assert problems == []
+
+
+# ---- each check fed one wrong figure: it must fail and say what is wrong ------------------------------------------
+
+def failures_of(check, data):
+    report = Report()
+    check(st_of(data), report)
+    (_, checked, failures, _), = report.sections
+    return checked, failures
+
+
+def test_gsdp_that_is_not_value_added_plus_taxes_less_subsidies_fails():
+    node = {"gsdp": {"cur": 1_000.0}, "gsva": {"total": {"cur": 900.0}}, "taxes": {"cur": 120.0},
+            "subsidies": {"cur": 20.0}}
+    assert failures_of(states.check_identities, {"Goa": {"2023-24": node}}) == (1, [])
+    node["gsdp"]["cur"] = 1_010.0
+    _, failures = failures_of(states.check_identities, {"Goa": {"2023-24": node}})
+    assert failures == ["Goa, 2023-24, cur: GSDP 1,010 but GSVA + taxes - subsidies = 1,000 (₹ crore)"]
+
+
+def test_industries_that_do_not_add_up_to_total_value_added_fail():
+    node = {"gsva": {"agriculture": {"cur": 300.0}, "mining": {"cur": 600.0}, "total": {"cur": 1_000.0}}}
+    _, failures = failures_of(states.check_industries, {"Goa": {"2023-24": node}})
+    assert failures == ["Goa, 2023-24, GSVA cur: industries add up to 900, total is 1,000"]
+
+
+def test_sub_industries_that_do_not_add_up_to_their_industry_fail():
+    node = {"gsva": {"agriculture": {"cur": 300.0}, "total": {"cur": 300.0}},
+            "gsva_sub": {"agriculture": {"crops": {"cur": 200.0}, "livestock": {"cur": 90.0}}}}
+    _, failures = failures_of(states.check_industries, {"Goa": {"2023-24": node}})
+    assert failures == ["Goa, 2023-24, GSVA agriculture cur: parts add up to 290, industry is 300"]
+
+
+def test_published_growth_that_does_not_follow_from_the_levels_fails():
+    years = {"2022-23": {"gsdp": {"con": 100_000.0}},
+             "2023-24": {"gsdp": {"con": 107_000.0}, "growth": {"gsdp": {"real": 7.0}}}}
+    assert failures_of(states.check_growth, {"Goa": years}) == (1, [])
+    years["2023-24"]["growth"]["gsdp"]["real"] = 7.2
+    _, failures = failures_of(states.check_growth, {"Goa": years})
+    assert failures == ["Goa, 2023-24, gsdp_growth real: published 7.2%, levels give 7.00%"]
+    years["2023-24"]["growth"]["gsdp"]["published"] = False  # worked out here, not published: not checked
+    assert failures_of(states.check_growth, {"Goa": years}) == (0, [])
+
+
+def test_two_tables_of_nsdp_per_person_that_disagree_fail():
+    node = {"pc_nsdp": {"cur": 100_000.0}, "pc_nsdp_alt": {"cur": 100_005.0}}
+    _, failures = failures_of(states.check_per_person, {"Goa": {"2023-24": node}})
+    assert failures == ["Goa, 2023-24, cur: NSDP per person ₹100,000 in one table, ₹100,005 in the other"]
+
+
+def test_gsdp_and_nsdp_per_person_implying_different_populations_fail():
+    # GSDP ₹1,000 crore / ₹10,000 a person = 10 lakh people; NSDP ₹900 crore / ₹9,500 = 9.47 lakh
+    node = {"gsdp": {"cur": 1_000.0}, "nsdp": {"cur": 900.0}, "pc_gsdp": {"cur": 10_000.0}, "pc_nsdp": {"cur": 9_500.0}}
+    _, failures = failures_of(states.check_per_person, {"Goa": {"2023-24": node}})
+    assert len(failures) == 1 and "GSDP per person implies" in failures[0] and "NSDP per person" in failures[0]
+
+
+def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monkeypatch):
+    monkeypatch.setattr(states, "DATA", tmp_path)
+    (tmp_path / "state_accounts.csv").write_text("header\n")
+    known = "Karnataka: NSDP per person (second table, ind32) is not below the gross figure, 2022-23, 2011-12 base; left out"
+    unknown = "nas/2011-12/Current/Annually/ind23: unknown state or union territory 'Goa & Daman'"
+    st = {**st_of({}), "source_problems": [unknown], "left_out": [known]}
+    report = Report()
+    states.check_rows(st, report)
+    (_, _, failures, notes), = report.sections
+    assert failures == [unknown] and notes[0].startswith(f"Allowed: {known}. Reason: ")
+
+
+def test_known_exceptions_no_longer_needed_are_listed(tmp_path, monkeypatch):
+    monkeypatch.setattr(states, "DATA", tmp_path)
+    (tmp_path / "state_accounts.csv").write_text("header\n")
+    report = Report()
+    states.check({"data": {}}, report, st=st_of({}))
+    title, _, failures, notes = report.sections[-1]
+    assert "no longer needed" in title and failures == [] and len(notes) == len(states.KNOWN_EXCEPTIONS)
+
+
+def test_rows_in_an_unexpected_unit_industry_or_year_are_problems(tmp_path, monkeypatch):
+    rows, problems = load_from(tmp_path, monkeypatch, [
+        raw("Goa", "2020-21", "100"), raw("Kerala", "2020-21", "100"),
+        raw("Goa", "2021-22", "100", unit="₹ Lakh"),
+        raw("Kerala", "2021", "100"),
+    ])
+    assert [(r["state"], r["year"]) for r in rows] == [("Goa", "2020-21"), ("Kerala", "2020-21")]
+    assert problems == ["nas/2011-12/Current/Annually/ind23: unit '₹ Lakh', expected '₹ Crore' (Goa, 2021-22)",
+                        "nas/2011-12/Current/Annually/ind23: row with year '2021', state 'Kerala' not understood"]
+    monkeypatch.setattr(states, "STATE_INDICATORS", [29])
+    (tmp_path / "ind29.json").write_text(json.dumps({"rows": [
+        {**raw("Goa", "2020-21", "1", unit="₹ Lakh"), "industry": "Space Mining"}]}))
+    _, problems = states.load({"nas/2011-12/Current/Annually/ind29": {"file": "ind29.json", "url": "u", "sha256": "s"}})
+    assert "nas/2011-12/Current/Annually/ind29: unknown industry 'Space Mining'" in problems

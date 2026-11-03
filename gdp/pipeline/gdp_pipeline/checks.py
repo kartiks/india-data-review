@@ -37,6 +37,8 @@ from pipeline_common.report import Report
 
 from . import population, states
 from .build import BROAD, GROUPS, STAGE_ORDER
+from .forecasts import verify_quotes
+from .sources import BUDGETS, fy
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -136,7 +138,8 @@ def check_source(ds: dict, report: Report) -> None:
         reason = allowed("source", p)
         (notes.append(f"Allowed: {p}. Reason: {reason}") if reason else failures.append(p))
     notes += [f"Left out: {d}" for d in ds["duplicate_rows"]]
-    rows = sum(1 for _ in open(DATA / "national_accounts.csv")) - 1
+    with open(DATA / "national_accounts.csv", encoding="utf-8") as f:
+        rows = sum(1 for _ in f) - 1
     report.add("Every published row is understood", rows, failures, notes)
 
 
@@ -415,8 +418,6 @@ def check_expenditure(ds: dict, report: Report) -> None:
 
 
 def check_budget(ds: dict, report: Report) -> None:
-    from .sources import BUDGETS, fy
-
     failures, notes = [], []
     found = {a["budget"]: a for a in ds["budget_assumptions"]}
     checked = 0
@@ -441,8 +442,6 @@ def check_budget(ds: dict, report: Report) -> None:
 
 
 def check_forecasts(ds: dict, report: Report) -> None:
-    from .forecasts import verify_quotes
-
     checked, failures, notes = verify_quotes(ds)
     report.add("Every forecast is quoted from its official document", checked, failures, notes)
 

@@ -4,7 +4,8 @@ import Money from "../Money.astro";
 import BarList from "../BarList.astro";
 import PromiseGap from "../PromiseGap.astro";
 import SourceLine from "./SourceLine.astro";
-import { YEARS, LATEST_YEAR, KIND_LABEL, headline, yearKind, nextYear, type Kind } from "../../lib/budget/data";
+import { YEARS, LATEST_YEAR, KIND_LABEL, headline, yearKind, type Kind } from "../../lib/budget/data";
+import { nextFy } from "../../lib/fy";
 import { comesFrom, goesTo, previous, promiseGaps, topSchemes, YEAR_NOTES } from "../../lib/budget/views";
 import { money, pct, signedPct } from "../../lib/format";
 
@@ -16,9 +17,9 @@ const prevYear = YEARS[i - 1];
 const nextY = YEARS[i + 1];
 
 const status: Record<Kind, string> = {
-  be: `Budget Estimates, as announced in Budget ${year}. Revised figures come with Budget ${nextYear(year)}.`,
-  re: `Revised Estimates, published in Budget ${nextYear(year)}. Actual figures follow a year later.`,
-  actual: `Actual figures, published in Budget ${nextYear(nextYear(year))}.`,
+  be: `Budget Estimates, as announced in Budget ${year}. Revised figures come with Budget ${nextFy(year)}.`,
+  re: `Revised Estimates, published in Budget ${nextFy(year)}. Actual figures follow a year later.`,
+  actual: `Actual figures, published in Budget ${nextFy(nextFy(year))}.`,
 };
 
 const total = headline(year, "total_expenditure", kind)!;
@@ -51,6 +52,7 @@ const schemes = topSchemes(year, kind, 8);
       <select id="year-select" name="y" data-year-select>
         {[...YEARS].reverse().map((y) => <option value={y} selected={y === year}>{y}</option>)}
       </select>
+      <noscript><button type="submit">Go</button></noscript>
     </form>
   </div>
   <p class="muted"><span class="chip">{KIND_LABEL[kind]}</span> {status[kind]}</p>
@@ -129,7 +131,7 @@ const schemes = topSchemes(year, kind, 8);
 ) : (
   <section class="card">
     <h2>Announced vs what happened</h2>
-    <p class="muted">These are this year's announced figures. The Revised Estimates arrive with Budget {nextYear(year)}.</p>
+    <p class="muted">These are this year's announced figures. The Revised Estimates arrive with Budget {nextFy(year)}.</p>
     {prevYear && <p><a href={link(`/budget/years/${prevYear}/`)}>See how {prevYear}'s budget turned out →</a></p>}
   </section>
 )}
@@ -144,11 +146,11 @@ const schemes = topSchemes(year, kind, 8);
 )}
 
 <script>
+  import { link } from "../../lib/url";
   document.querySelector<HTMLSelectElement>("[data-year-select]")?.addEventListener("change", (e) => {
     const y = (e.target as HTMLSelectElement).value;
     const latest = (e.target as HTMLSelectElement).options[0].value;
-    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
-    location.href = base + (y === latest ? "/budget/" : `/budget/years/${y}/`);
+    location.href = link(y === latest ? "/budget/" : `/budget/years/${y}/`);
   });
 </script>
 

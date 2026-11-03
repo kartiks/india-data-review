@@ -8,11 +8,10 @@ import {
   WORKERS, CONDITIONS, EARNINGS, PLFS_YEARS, PLFS_LATEST, PLFS_STATES, cleanLabel, cpiAllIndia, yearAverage, GENERAL,
   RBI, rbiLatestYear, RBI_EDITION, type Gender, type Sector, type CpiSector,
 } from "../../../lib/jobs-prices/data";
-import { axisPct, gpct, pct } from "../../../lib/format";
+import { axisPct, gpct, pct, rupees } from "../../../lib/format";
 
 const Y = PLFS_LATEST;
 const SRC = "MoSPI, Periodic Labour Force Survey (PLFS), usual status, via MoSPI's data service.";
-const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
 const w = (q: Partial<{ year: string; state: string; sector: Sector; gender: Gender; breakdown: string }>) =>
   WORKERS.filter((r) => r.year === (q.year ?? Y) && r.state === (q.state ?? "All India") && r.sector === (q.sector ?? "rural + urban")
     && r.gender === (q.gender ?? "person") && r.breakdown === q.breakdown && r.value != null);
@@ -92,8 +91,8 @@ const wageStates = [...new Set(RBI.filter((r) => r.table_id === "wage_agricultur
 const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India", values: WAGE_KINDS.map((k) => wageOf(k.id, st)) }))
   .sort((a, b) => (a.strong ? -1 : b.strong ? 1 : (b.values[0] ?? 0) - (a.values[0] ?? 0)));
 ---
-<Base title="Work and earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
-  <h1>Work and earnings</h1>
+<Base title="Work & earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
+  <h1>Work &amp; earnings</h1>
   <p class="lede">
     <strong>{pct(agriNow)}</strong> of India's workers were in agriculture, forestry or fishing in {Y}:
     {" "}{pct(agriWomen)} of working women and {pct(agriMen)} of working men. A regular salaried job paid{" "}
@@ -191,7 +190,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
       subtitle="Average daily wage in villages for three kinds of work. Sorted by the farm-labour wage. The survey covers the 20 larger states."
       series={WAGE_KINDS.map(({ name, slot }) => ({ name, slot }))}
       rows={wageRows}
-      format={(v) => `₹${v.toFixed(0)}`}
+      format={rupees}
       source={`Labour Bureau, Wage Rates in Rural India, via the RBI Handbook of Statistics on Indian States (${RBI_EDITION}), Tables 112, 113 and 115.`}
     />
   </section>

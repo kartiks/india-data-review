@@ -2,11 +2,12 @@
 import Base from "../../../layouts/Base.astro";
 import LineChart from "../../../components/LineChart.astro";
 import {
-  OLD, NEW, LONG, STAGE_LABEL, oldBaseOf, bestOf, latestStage, node, range, share, type Node,
+  OLD, NEW, LONG, STAGE_LABEL, oldBaseOf, bestOf, latestStage, node, share, type Node,
 } from "../../../lib/gdp/data";
+import { fyRange } from "../../../lib/fy";
 import { axisPct, pct } from "../../../lib/format";
 
-const years = range("2000-01", LONG[LONG.length - 1].year);
+const years = fyRange("2000-01", LONG[LONG.length - 1].year);
 const kind = (stage?: string) => (!stage ? "" : stage === "BACK" ? "Back series" : STAGE_LABEL[stage]);
 
 // Share of GDP, both from the same estimate (current prices).
@@ -19,7 +20,7 @@ const netx = oldBaseOf(years, ofGdp((n) => (n.exports?.cur !== undefined && n.im
 const saving = oldBaseOf(years, ofGdp((n) => n.saving?.cur));
 
 // Investment and saving by who, 2011-12 base, years with the sector split.
-const syears = range("2011-12", "2023-24");
+const syears = fyRange("2011-12", "2023-24");
 const sec = (field: "gfcf_by_sector" | "saving_by_sector", ids: string[]) =>
   bestOf(OLD, syears, (n) => {
     const by = n[field];

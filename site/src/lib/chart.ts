@@ -26,7 +26,8 @@ export function niceTicks(min: number, max: number, count = 5): number[] {
   const hi = Math.ceil(max / step) * step;
   const ticks: number[] = [];
   for (let v = lo; v <= hi + step / 2; v += step) ticks.push(Math.round(v * 1e6) / 1e6);
-  return ticks;
+  // No finite range (a chart with no values and zero=false gets min=Infinity, max=-Infinity): use 0 to 1.
+  return ticks.length ? ticks : niceTicks(0, 1, count);
 }
 
 export const scale = (d0: number, d1: number, r0: number, r1: number) => (v: number) =>

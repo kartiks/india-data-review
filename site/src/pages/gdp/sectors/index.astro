@@ -4,11 +4,12 @@ import LineChart from "../../../components/LineChart.astro";
 import StackedColumns from "../../../components/StackedColumns.astro";
 import BarList from "../../../components/BarList.astro";
 import {
-  OLD, NEW, STAGE_LABEL, LONG, LATEST_YEAR, oldBaseOf, latestStage, node, annual, range, industrySum, share,
+  OLD, NEW, STAGE_LABEL, LONG, LATEST_YEAR, oldBaseOf, latestStage, node, annual, industrySum, share,
 } from "../../../lib/gdp/data";
+import { fyRange } from "../../../lib/fy";
 import { axisPct, gpct, money, pct } from "../../../lib/format";
 
-const years = range("2000-01", LONG[LONG.length - 1].year);
+const years = fyRange("2000-01", LONG[LONG.length - 1].year);
 const SHORT: Record<string, string> = {
   agriculture: "Agriculture", mining: "Mining", manufacturing: "Manufacturing", utilities: "Utilities",
   construction: "Construction", trade_transport: "Trade, hotels & transport", finance_realestate: "Finance & real estate",
@@ -42,7 +43,7 @@ const latestRows = order.map((i) => ({ i, g: ng.gva_growth?.[i]?.real, share: sh
   .sort((a, b) => b.g! - a.g!);
 
 // Growth over time by industry: published GVA growth, latest estimate, 2011-12 base.
-const gyears = range("2012-13", LONG[LONG.length - 1].year);
+const gyears = fyRange("2012-13", LONG[LONG.length - 1].year);
 const gpoints = (ind: string) => gyears.map((y) => {
   const st = latestStage(OLD, y, (n) => n.gva_growth?.[ind]?.real !== undefined);
   return st ? { value: annual(OLD)[y][st].gva_growth![ind].real!, kind: STAGE_LABEL[st] } : { value: null };

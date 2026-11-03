@@ -2,11 +2,12 @@
 import { link } from "../../../lib/url";
 import Base from "../../../layouts/Base.astro";
 import LineChart from "../../../components/LineChart.astro";
-import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBaseOf, bestOf, range } from "../../../lib/gdp/data";
+import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBaseOf, bestOf } from "../../../lib/gdp/data";
+import { fyRange } from "../../../lib/fy";
 import { axisPct, gpct, money, moneyShort } from "../../../lib/format";
 
 const lastYear = LONG[LONG.length - 1].year; // the 2011-12 base's last year
-const years = range("2000-01", lastYear);
+const years = fyRange("2000-01", lastYear);
 const rows = years.map((y) => LONG.find((r) => r.year === y)!);
 const kind = (stage: string) => (stage === "BACK" ? "Back series" : STAGE_LABEL[stage]);
 const real = rows.map((r) => ({ value: r.growth?.real ?? null, kind: kind(r.stage) }));
@@ -19,7 +20,7 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
 
 // Decade averages of published/derived real growth (simple mean of yearly rates), 2011-12 base.
 const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", lastYear]].map(([a, b]) => {
-  const ys = range(a, b);
+  const ys = fyRange(a, b);
   const v = ys.map((y) => LONG.find((r) => r.year === y)?.growth?.real).filter((x): x is number => x !== undefined);
   return { label: `${a} to ${b}`, avg: v.reduce((s, x) => s + x, 0) / v.length, n: v.length };
 });

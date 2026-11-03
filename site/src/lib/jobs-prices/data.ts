@@ -5,6 +5,7 @@
 // - differences between two published figures.
 import fs from "node:fs";
 import path from "node:path";
+import { fyMonths, isFy, prevFy } from "../fy";
 
 type Num = number | null;
 interface Table { fields: string[]; labels: Record<string, string[]>; rows: (number | null)[][] }
@@ -149,8 +150,8 @@ export function monthRange(a: string, b: string): string[] {
 
 /** Average of the 12 monthly indices of a calendar year ("2025") or fiscal year ("2024-25", April to March). */
 export function yearAverage(points: CpiPoint[], year: string): number | undefined {
-  const months = year.includes("-")
-    ? monthRange(`${year.slice(0, 4)}-04`, `${Number(year.slice(0, 4)) + 1}-03`)
+  const months = isFy(year)
+    ? monthRange(...fyMonths(year))
     : monthRange(`${year}-01`, `${year}-12`);
   const byMonth = new Map(points.map((p) => [p.month, p.index]));
   const vals = months.map((m) => byMonth.get(m));
@@ -159,8 +160,8 @@ export function yearAverage(points: CpiPoint[], year: string): number | undefine
 }
 /** Change in the yearly average index on the year before (how RBI and MoSPI state average inflation). */
 export function averageInflation(points: CpiPoint[], year: string): number | undefined {
-  const prev = year.includes("-")
-    ? `${Number(year.slice(0, 4)) - 1}-${year.slice(2, 4)}`
+  const prev = isFy(year)
+    ? prevFy(year)
     : String(Number(year) - 1);
   const a = yearAverage(points, year), b = yearAverage(points, prev);
   return a !== undefined && b !== undefined ? (a / b - 1) * 100 : undefined;
@@ -238,10 +239,12 @@ export function rbiValue(tableId: string, state: string, year: string, variant =
 }
 export const rbiYears = (tableId: string) => [...new Set(RBI.filter((r) => r.table_id === tableId).map((r) => r.year))].sort();
 /** The latest year in which nearly all states have a figure (at least 90% of the best-covered year): the newest
- * year in the handbook is often missing many states. */
+ * year in the handbook is often missing many states. Throws if the table (or variant) has no state figures at all,
+ * so a renamed table or an unparsed unit stops the build instead of showing blanks. */
 export function rbiLatestYear(tableId: string, variant = ""): string {
   const count = (y: string) => RBI.filter((r) => r.table_id === tableId && r.year === y && r.variant === variant && r.value != null && r.state !== "All India").length;
   const years = rbiYears(tableId);
-  const best = Math.max(...years.map(count));
+  const best = Math.max(0, ...years.map(count));
+  if (!best) throw new Error(`No state figures in the RBI handbook for table "${tableId}"${variant ? `, variant "${variant}"` : ""}`);
   return [...years].reverse().find((y) => count(y) >= 0.9 * best) ?? years[years.length - 1];
 }

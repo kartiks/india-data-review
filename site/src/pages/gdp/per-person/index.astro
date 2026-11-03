@@ -3,10 +3,11 @@ import { link } from "../../../lib/url";
 import Base from "../../../layouts/Base.astro";
 import LineChart from "../../../components/LineChart.astro";
 import {
-  NEW, OLD, LATEST_YEAR, STAGE_LABEL, SERIES_LABEL, POPULATION, PP_YEAR, node, growthAt, yearsOf, range, prevYear,
+  NEW, OLD, LATEST_YEAR, STAGE_LABEL, SERIES_LABEL, POPULATION, PP_YEAR, node, growthAt, yearsOf,
   bestOf, latestStage, popOf, perPersonGrowth, type Node, type PerPersonMeasure,
 } from "../../../lib/gdp/data";
-import { axisPct, gpct, rupees, rupeesAxis } from "../../../lib/format";
+import { fyRange, fyStart, prevFy } from "../../../lib/fy";
+import { axisPct, decimal, gpct, orDash, rupees, rupeesAxis } from "../../../lib/format";
 
 // Headline: the latest year of the new 2022-23 series that has a population. Each January MoSPI adds a year whose
 // population is added by hand later (see gdp/README.md); until then the page stays on the year before.
@@ -16,7 +17,7 @@ const pp = node(NEW, Y, ST)!.per_person!;
 const gdpGrowth = growthAt(NEW, Y, ST)?.real;
 const ppGrowth = perPersonGrowth(NEW, Y);
 const popRate = (series: string, y: string) => {
-  const a = popOf(series, prevYear(y)), b = popOf(series, y);
+  const a = popOf(series, prevFy(y)), b = popOf(series, y);
   return a && b ? (b.million / a.million - 1) * 100 : undefined;
 };
 const popGrowth = popRate(NEW, Y);
@@ -26,7 +27,7 @@ const pending = LATEST_YEAR !== Y ? LATEST_YEAR : undefined;
 const newChecked = Boolean(POPULATION.checked[NEW]?.[Y]);
 // "2022-23 to 2024-25" for consecutive years, else each year listed.
 const span = (ys: string[]) => {
-  const run = ys.every((y, i) => i === 0 || Number(y.slice(0, 4)) === Number(ys[i - 1].slice(0, 4)) + 1);
+  const run = ys.every((y, i) => i === 0 || fyStart(y) === fyStart(ys[i - 1]) + 1);
   return ys.length > 1 && run ? `${ys[0]} to ${ys[ys.length - 1]}` : ys.length > 1 ? `${ys.slice(0, -1).join(", ")} and ${ys[ys.length - 1]}` : ys.join("");
 };
 const newCheckedYears = Object.keys(POPULATION.checked[NEW] ?? {}).sort();
@@ -39,14 +40,14 @@ const newYears = yearsOf(NEW).filter((y) => popOf(NEW, y));
 const lastYear = [...oldYears, ...newYears].sort().at(-1)!;
 
 // Real growth of GDP per person, each series on its own.
-const gYears = range(oldYears[1], lastYear);
+const gYears = fyRange(oldYears[1], lastYear);
 const growthPoints = (series: string, have: string[]) => gYears.map((y) => {
-  const v = have.includes(y) && have.includes(prevYear(y)) ? perPersonGrowth(series, y) : undefined;
+  const v = have.includes(y) && have.includes(prevFy(y)) ? perPersonGrowth(series, y) : undefined;
   return { value: v ?? null, kind: v === undefined ? "" : kind(series, y) };
 });
 
 // Income per person at current prices: levels, each series drawn separately.
-const lYears = range(oldYears[0], lastYear);
+const lYears = fyRange(oldYears[0], lastYear);
 const levelPoints = (series: string) =>
   bestOf(series, lYears, (n) => n.per_person?.nni?.cur).map((p) => ({ value: p?.value ?? null, kind: p ? STAGE_LABEL[p.stage] : "" }));
 
@@ -63,8 +64,6 @@ const tableRows = [
     gdp: pick(n, "gdp"), nni: pick(n, "nni"), pfce: pick(n, "pfce"), growth: perPersonGrowth(series, y),
   };
 });
-const f = (v: number | undefined, fmt: (v: number) => string) => (v === undefined ? "–" : fmt(v));
-const million = (v: number) => new Intl.NumberFormat("en-IN", { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v);
 const SRC = POPULATION.sources;
 const until = POPULATION.projections_until;
 const SOURCE = "MoSPI national accounts (latest estimate of each year) divided by population at the middle of the year: the 2019 official projections to 2021-22, then MoSPI's own figures.";
@@ -105,7 +104,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
     </div>
     <div class="tile">
       <div class="label">Real growth per person, {Y}</div>
-      <div class="value">{f(ppGrowth, gpct)}</div>
+      <div class="value">{orDash(ppGrowth, gpct)}</div>
       <div class="sub">GDP per person after inflation</div>
     </div>
   </div>
@@ -155,8 +154,8 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
         <tbody>
           {tableRows.map((r) => (
             <tr>
-              <td>{r.y}</td><td>{SERIES_LABEL[r.series]}</td><td>{r.stage}</td><td>{million(r.pop)}</td>
-              <td>{f(r.gdp, rupees)}</td><td>{f(r.nni, rupees)}</td><td>{f(r.pfce, rupees)}</td><td>{f(r.growth, gpct)}</td>
+              <td>{r.y}</td><td>{SERIES_LABEL[r.series]}</td><td>{r.stage}</td><td>{decimal(r.pop, 1)}</td>
+              <td>{orDash(r.gdp, rupees)}</td><td>{orDash(r.nni, rupees)}</td><td>{orDash(r.pfce, rupees)}</td><td>{orDash(r.growth, gpct)}</td>
             </tr>
           ))}
         </tbody>
@@ -165,7 +164,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
     <ul class="small muted notes">
       <li><strong>GDP per person</strong> is gross domestic product divided by the population. <strong>Income per person</strong> is net national income (gross national income, which is GDP plus net income from abroad, less depreciation) divided by the population: what MoSPI calls per capita income. India's net income from abroad is negative, so national income is below GDP. <strong>Household spending</strong> is private final consumption expenditure.</li>
       <li><strong>Population</strong> is India's population at the middle of each financial year (1 October), as MoSPI uses it. To {until} it is the official projection (<a href={SRC.projections.url} rel="external noopener">{SRC.projections.title}</a>, {SRC.projections.table}); MoSPI's figures equal it in the years they could be checked ({Object.keys(POPULATION.checked[OLD] ?? {}).filter((y) => y <= until).join(" and ") || "none"}). From the next year MoSPI uses its own figures, slightly above the projections; they are taken from its National Accounts Statistics ({SRC.nas.map((n, i) => <>{i > 0 && "; "}<a href={n.url} rel="external noopener">{n.document}</a></>)}) and press notes ({SRC.press_notes.map((n, i) => <>{i > 0 && "; "}<a href={n.url} rel="external noopener">{n.document}</a></>)}) and, where neither covers the year, from the RBI's reprint of MoSPI's tables ({SRC.rbi.map((t, i) => <>{i > 0 && "; "}<a href={t.url} rel="external noopener">{t.title}</a></>)}). The two series use slightly different populations for the same year, as MoSPI does.</li>
-      <li><strong>The change of population source</strong> between {until} and the next year is in MoSPI's own figures too. It makes the population grow faster that year in the 2011-12 series ({f(popRate(OLD, range(until, lastYear)[1]), (v) => gpct(v, 2))}, against 0.91% from one projection to the next), so growth per person that year is a little lower than it would be on a single population source.</li>
+      <li><strong>The change of population source</strong> between {until} and the next year is in MoSPI's own figures too. It makes the population grow faster that year in the 2011-12 series ({orDash(popRate(OLD, fyRange(until, lastYear)[1]), (v) => gpct(v, 2))}, against 0.91% from one projection to the next), so growth per person that year is a little lower than it would be on a single population source.</li>
       <li><strong>Worked out here</strong>: each figure is MoSPI's latest total divided by that population, and growth per person is worked out from the constant-price figures. Where the total is the one MoSPI printed its per-person figure from, the two agree to the rupee (checked). Where MoSPI has revised the total since the document quoted here, the figure here uses the revised total with that document's population, and differs a little from the one printed there. Per-person figures are for the latest estimate of each year only: MoSPI divided earlier estimates by the population known at the time.</li>
       <li>Constant prices are those of each series' base year (2011-12 or 2022-23), so real levels from the two series are not compared; growth rates are. See <a href={link("/gdp/sources/")}>Sources and checks</a>.</li>
     </ul>

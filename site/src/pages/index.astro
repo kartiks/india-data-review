@@ -9,6 +9,7 @@ import * as B from "../lib/budget/data";
 import * as G from "../lib/gdp/data";
 import * as J from "../lib/jobs-prices/data";
 import { axisPct, gpct, pct } from "../lib/format";
+import { completeFys } from "../lib/fy";
 
 // ---- headline tiles --------------------------------------------------------------
 const gdpNode = G.node(G.NEW, G.LATEST_YEAR, G.LATEST_STAGE)!;
@@ -62,8 +63,7 @@ const events = [{ year: "2008-09", label: "Global crisis" }, { year: "2020-21", 
 // ---- consumer prices vs the GDP deflator (jobs-prices + gdp) ---------------------------------
 // GDP deflator inflation from MoSPI's published growth rates: (1 + nominal) / (1 + real) - 1, 2011-12 base.
 const cpiGeneral = J.cpiAllIndia(J.GENERAL);
-const priceYears: string[] = [];
-for (let y = 2014; `${y + 1}-03` <= J.CPI_LAST; y++) priceYears.push(`${y}-${String(y + 1).slice(2)}`);
+const priceYears = completeFys(2014, J.CPI_LAST);
 const cpiFy = priceYears.map((y) => ({ value: J.averageInflation(cpiGeneral, y) ?? null }));
 const deflator = priceYears.map((y) => {
   const r = G.longRow(y);
@@ -178,9 +178,9 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       <p class="small"><a href={link("/gdp/revisions/")}>Revisions</a> · <a href={link("/gdp/forecasts/")}>Forecasts</a> · <a href={link("/gdp/sectors/")}>Sectors</a> · <a href={link("/gdp/quarters/")}>Quarters</a></p>
     </section>
     <section class="card">
-      <h2><a href={link("/jobs-prices/")}>Jobs and prices</a></h2>
+      <h2><a href={link("/jobs-prices/")}>Jobs &amp; prices</a></h2>
       <p class="muted">Work and unemployment from the Periodic Labour Force Survey, consumer prices since 2013 and household spending in 2022-23 and 2023-24, rural and urban, by state.</p>
-      <p class="small"><a href={link("/jobs-prices/jobs/")}>Jobs</a> · <a href={link("/jobs-prices/work/")}>Earnings</a> · <a href={link("/jobs-prices/prices/")}>Prices</a> · <a href={link("/jobs-prices/spending/")}>Spending</a></p>
+      <p class="small"><a href={link("/jobs-prices/jobs/")}>Jobs</a> · <a href={link("/jobs-prices/work/")}>Work &amp; earnings</a> · <a href={link("/jobs-prices/prices/")}>Prices</a> · <a href={link("/jobs-prices/spending/")}>Household spending</a></p>
     </section>
   </div>
 </Base>

@@ -9,6 +9,7 @@ import {
   type CpiPoint, type CpiSector,
 } from "../../../lib/jobs-prices/data";
 import { axisPct, gpct } from "../../../lib/format";
+import { completeFys } from "../../../lib/fy";
 
 const SRC = "MoSPI, Consumer Price Index (base 2012 = 100), via MoSPI's data service.";
 const SRC24 = "MoSPI, Consumer Price Index (base 2024 = 100), monthly press releases on PIB.";
@@ -43,8 +44,7 @@ const state24 = cpi24Rows("states").map((st) => ({ label: tidyState(st.name), va
 const SECT: [CpiSector, string, number][] = [["Combined", "All India", 7], ["Rural", "Rural", 3], ["Urban", "Urban", 4]];
 
 // Average inflation by fiscal year (April to March)
-const fys: string[] = [];
-for (let y = Number(firstInfl.slice(0, 4)); `${y + 1}-03` <= CPI_LAST; y++) fys.push(`${y}-${String(y + 1).slice(2)}`);
+const fys = completeFys(Number(firstInfl.slice(0, 4)), CPI_LAST);
 const fyPoints = SECT.map(([s, name, slot]) => ({
   name, slot, points: fys.map((y) => ({ value: averageInflation(cpiAllIndia(GENERAL, s), y) ?? null })),
 }));

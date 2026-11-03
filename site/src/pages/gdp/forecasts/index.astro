@@ -3,12 +3,13 @@ import Base from "../../../layouts/Base.astro";
 import RangeRows from "../../../components/RangeRows.astro";
 import PromiseGap from "../../../components/PromiseGap.astro";
 import {
-  OLD, NEW, STAGE_LABEL, SURVEY, BUDGET, rbiFor, rbiFirst, firstEstimate, latestStage, growthAt, node, range,
+  OLD, NEW, STAGE_LABEL, SURVEY, BUDGET, rbiFor, rbiFirst, firstEstimate, latestStage, growthAt, node,
 } from "../../../lib/gdp/data";
+import { fyRange, fyStart } from "../../../lib/fy";
 import { axisPct, gpct, money } from "../../../lib/format";
 
 const lastYear = SURVEY[SURVEY.length - 1].fiscal_year;
-const years = range("2011-12", lastYear);
+const years = fyRange("2011-12", lastYear);
 const latestIn = (s: string, y: string) => {
   const st = latestStage(s, y, (n) => n.growth?.gdp?.real !== undefined);
   return st ? { v: growthAt(s, y, st)!.real!, st } : undefined;
@@ -27,15 +28,14 @@ const rows = [...years].reverse().map((y) => {
   if (lo) marks.push({ s: 3, v: lo.v, text: `${gpct(lo.v)} (${STAGE_LABEL[lo.st]})` });
   if (ln) marks.push({ s: 4, v: ln.v, text: `${gpct(ln.v)} (${STAGE_LABEL[ln.st]})` });
   const notes = [];
-  if (fyNum(y) <= 2014) notes.push("Forecasts made on the old 2004-05 base (GDP at factor cost); outcome on the 2011-12 base.");
+  if (fyStart(y) <= 2014) notes.push("Forecasts made on the old 2004-05 base (GDP at factor cost); outcome on the 2011-12 base.");
   if (r1 && r1.measure !== "GDP") notes.push(`RBI projected ${r1.measure}, not GDP.`);
   if (sv?.band_low != null) notes.push(`Survey point forecast with a band of ${sv.band_low}–${sv.band_high}%.`);
   return { label: y, marks, note: notes.join(" ") };
 });
-function fyNum(y: string) { return Number(y.slice(0, 4)); }
 
 // How often did the Survey's range contain the outcome (latest estimate, 2011-12 base, settled years)?
-const judged = years.filter((y) => fyNum(y) >= 2015 && latestIn(OLD, y) && SURVEY.find((s) => s.fiscal_year === y)
+const judged = years.filter((y) => fyStart(y) >= 2015 && latestIn(OLD, y) && SURVEY.find((s) => s.fiscal_year === y)
   && (latestStage(OLD, y) ?? "") !== "AE1");
 const score = judged.map((y) => {
   const sv = SURVEY.find((s) => s.fiscal_year === y)!, out = latestIn(OLD, y)!.v;

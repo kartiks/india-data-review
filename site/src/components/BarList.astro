@@ -22,9 +22,10 @@ const { rows, tone = 1, label } = Astro.props;
 const posMax = Math.max(0, ...rows.map((r) => r.value));
 const negMax = Math.max(0, ...rows.map((r) => -r.value));
 const diverging = negMax > 0;
-const span = (Astro.props.max ?? posMax + negMax) || 1;
+const span = Math.max(Astro.props.max ?? 0, posMax + negMax) || 1; // a smaller max would push bars off the track
 const zero = diverging ? (negMax / span) * 100 : 0; // position of the zero line, % from the left
-const width = (v: number) => Math.max(0.5, (Math.abs(v) / span) * 100).toFixed(2);
+// A diverging list draws no bar for zero, so a sliver can't read as positive.
+const width = (v: number) => (diverging && v === 0 ? 0 : Math.max(0.5, (Math.abs(v) / span) * 100)).toFixed(2);
 const barStyle = (v: number) =>
   !diverging
     ? `width:${width(v)}%;background:var(--s${tone})`
@@ -40,7 +41,7 @@ const barStyle = (v: number) =>
         <span class="val"><strong>{r.display}</strong>{r.sub && <span class="sub">{r.sub.split(" · ").map((part, i) => <>{i > 0 && " · "}<span class="part">{part}</span></>)}</span>}</span>
       </div>
       <div class="track" aria-hidden="true">
-        {diverging && <span class="zero" style={`left:${zero.toFixed(2)}%`} />}
+        {diverging && <span class="zero" style={`left:min(${zero.toFixed(2)}%, calc(100% - 1px))`} />}
         <div class:list={["bar", { neg: diverging && r.value < 0 }]} style={barStyle(r.value)} />
       </div>
       {r.note && <p class="row-note small muted">{r.note}</p>}
@@ -58,7 +59,7 @@ const barStyle = (v: number) =>
      can neither push the row past the card nor squeeze the name to a word per line. */
   .val { text-align: right; flex: 0 1 auto; max-width: 50%; }
   .val strong { white-space: nowrap; }
-  .val .sub { display: block; font-size: 0.78rem; color: var(--ink-2); }
+  .val .sub { display: block; font-size: 0.78rem; color: var(--ink-2); overflow-wrap: anywhere; }
   .val .part { white-space: nowrap; } /* a sub-line wraps only between its " · " parts */
   @media (min-width: 640px) { .val { max-width: none; white-space: nowrap; } }
   .track { margin-top: 4px; height: 10px; }

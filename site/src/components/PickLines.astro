@@ -6,6 +6,7 @@
 // named `axis` format, the same at build time and in the browser.
 import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
 import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export interface PickOption {
   key: string;
@@ -253,9 +254,7 @@ const inStart = new Set(start.map((c) => c.key));
   .empty { margin: 4px 0 0; }
   .pick-notes { padding-left: 18px; margin: 8px 0 0; }
   .pick-notes:empty { display: none; }
-  .plots :global(.plot) { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
-  .plots :global(.plot-lg) { display: none; }
-  @media (min-width: 640px) { .plots :global(.plot-sm) { display: none; } .plots :global(.plot-lg) { display: block; } }
+  .plots :global(.plot) { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
   .plots :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plots :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
   .plots :global(.tick) { fill: var(--muted); }

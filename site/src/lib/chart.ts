@@ -1,19 +1,29 @@
 // Geometry helpers for the build-time SVG charts.
 
 export interface Size {
-  name: "sm" | "lg";
-  width: number;
+  name: "sm" | "md" | "lg" | "xl";
+  width: number; // viewBox width
   height: number;
-  font: number;
+  font: number; // in viewBox units
   left: number;
-  right: number;
+  right: number; // a line chart with one series: room for its end label (shown when this is over 40)
+  rightMulti: number; // a line chart with two or more series (legend and hover instead of end labels)
   top: number;
   bottom: number;
+  xLabels: number; // most labels on the x axis
+  from: number; // shown when the chart is at least this many CSS px wide (styles/charts.css)
+  max: number; // drawn at most this many CSS px wide (styles/charts.css)
 }
-// Two renderings of every chart: one sized for phones, one for wider screens.
+// Four renderings of every chart; styles/charts.css shows the one that fits the chart's own width (a container
+// query, so a chart in a half-width column gets a narrower one than a full-width chart on the same screen). Each
+// is shown from `from` px wide and drawn at most `max` px wide, which keeps tick labels at about 11-14px:
+// sm 320: 10.6px on a 375px phone, 14px at 410; md 480: 11px at 440, 14px at 560; lg 660: 11px at 600, 14px at
+// 770; xl 880: 11px at 800, 13px on the widest card (958).
 export const SIZES: Size[] = [
-  { name: "sm", width: 360, height: 220, font: 11, left: 44, right: 12, top: 14, bottom: 26 },
-  { name: "lg", width: 720, height: 300, font: 12, left: 56, right: 96, top: 16, bottom: 28 },
+  { name: "sm", width: 320, height: 220, font: 11, left: 44, right: 12, rightMulti: 12, top: 14, bottom: 26, xLabels: 4, from: 0, max: 410 },
+  { name: "md", width: 480, height: 250, font: 12, left: 52, right: 24, rightMulti: 24, top: 16, bottom: 28, xLabels: 6, from: 440, max: 560 },
+  { name: "lg", width: 660, height: 280, font: 12, left: 56, right: 96, rightMulti: 36, top: 16, bottom: 28, xLabels: 8, from: 600, max: 770 },
+  { name: "xl", width: 880, height: 320, font: 12, left: 56, right: 96, rightMulti: 36, top: 16, bottom: 28, xLabels: 10, from: 800, max: 1027 },
 ];
 
 /** Round tick steps (1, 2, 2.5, 5 × 10^n) covering [min, max]. */
@@ -56,9 +66,8 @@ export function barPath(x0: number, y: number, x1: number, h: number, r = 4): st
 
 export const shortYear = (y: string) => y; // "2005-06"
 
-/** Indices to label on the x axis: the latest year, then evenly back, as many as fit at this size. */
-export function xTickIndices(n: number, size: "sm" | "lg"): number[] {
-  const maxLabels = size === "sm" ? 4 : 9;
+/** Indices to label on the x axis: the latest year, then evenly back, at most `maxLabels` (a size's xLabels). */
+export function xTickIndices(n: number, maxLabels: number): number[] {
   const step = Math.max(1, Math.ceil(n / maxLabels));
   const out: number[] = [];
   for (let i = n - 1; i >= 0; i -= step) out.push(i);

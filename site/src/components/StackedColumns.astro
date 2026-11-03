@@ -3,6 +3,7 @@
 // only the top segment gets the rounded data-end. Hover/tap/focus a column for its breakdown.
 import { SIZES, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 interface Props {
   title: string;
@@ -45,7 +46,7 @@ const charts = SIZES.map((sz) => {
     });
     return { i, segs, x: x(i), band };
   });
-  const xTicks = xTickIndices(years.length, sz.name).map((i) => ({ yr: years[i], i }));
+  const xTicks = xTickIndices(years.length, sz.xLabels).map((i) => ({ yr: years[i], i }));
   return { sz, cols, y, xTicks, right, band, x, w };
 });
 
@@ -114,9 +115,7 @@ const tipData = safeJson({
   .chart figcaption .chart-title { font-size: 1.05rem; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
-  .plot { width: 100%; height: auto; display: block; touch-action: pan-y; }
-  .plot-lg { display: none; }
-  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot { width: 100%; height: auto; touch-action: pan-y; }
   .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
   .plot :global(.tick) { fill: var(--muted); }

@@ -25,7 +25,7 @@ export function plotTicks(lines: PlotLine[]): number[] {
 
 export function linePlotSvg(sz: Size, years: string[], lines: PlotLine[], format: (v: number) => string, label: string): string {
   const ticks = plotTicks(lines);
-  const right = sz.name === "lg" ? 36 : 12;
+  const right = sz.rightMulti;
   const x = scale(0, years.length - 1, sz.left, sz.width - right);
   const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
   const xs = years.map((_, i) => x(i));
@@ -34,7 +34,7 @@ export function linePlotSvg(sz: Size, years: string[], lines: PlotLine[], format
     out.push(`<line x1="${sz.left}" x2="${sz.width - right}" y1="${n1(y(t))}" y2="${n1(y(t))}" class="${t === 0 ? "baseline" : "gridline"}"/>`);
     out.push(`<text x="${sz.left - 6}" y="${n1(y(t))}" dy="0.32em" text-anchor="end" class="tick">${esc(format(t))}</text>`);
   }
-  for (const i of xTickIndices(years.length, sz.name)) {
+  for (const i of xTickIndices(years.length, sz.xLabels)) {
     const anchor = i === years.length - 1 && right < 30 ? "end" : "middle";
     out.push(`<text x="${n1(xs[i])}" y="${sz.height - 8}" text-anchor="${anchor}" class="tick">${esc(years[i])}</text>`);
   }

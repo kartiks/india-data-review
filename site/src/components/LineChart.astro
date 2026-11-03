@@ -3,6 +3,7 @@
 // Hollow markers = estimates (Budget or Revised); the line itself is the best figure available each year.
 import { SIZES, niceTicks, scale, xTickIndices } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export interface Point {
   value: number | null;
@@ -41,12 +42,12 @@ const id = "c" + Math.random().toString(36).slice(2, 9);
 
 const charts = SIZES.map((sz) => {
   // Right margin holds the end label; with 2+ series end labels are dropped (legend + hover instead).
-  const right = series.length === 1 ? sz.right : sz.name === "lg" ? 36 : 12;
+  const right = series.length === 1 ? sz.right : sz.rightMulti;
   const x = scale(0, years.length - 1, sz.left, sz.width - right);
   const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
   const xs = years.map((_, i) => x(i));
   // Label the latest year, then every fifth year back from it, so labels never collide.
-  const xTicks = xTickIndices(years.length, sz.name).map((i) => ({ yr: years[i], i }));
+  const xTicks = xTickIndices(years.length, sz.xLabels).map((i) => ({ yr: years[i], i }));
   const paths = series.map((s) => {
     let d = "";
     let pen = false;
@@ -177,9 +178,7 @@ const tooltipData = safeJson({
   .chart figcaption .chart-title { font-size: 1.05rem; margin-bottom: 2px; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
-  .plot { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
-  .plot-lg { display: none; }
-  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
   .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
   .plot :global(.tick) { fill: var(--muted); }

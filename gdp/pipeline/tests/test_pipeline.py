@@ -135,6 +135,6 @@ def test_gdp_growth_exact_for_the_new_series():
             "2024-25": {"RE1": {"gdp": {"con": 106.0}, "growth": {"gdp": {"real": published}}}},
         }}}}
     for series, failures in (("2022-23", 1), ("2011-12", 0)):
-        report = checks.Report()
+        report = checks.Report(checks.INTRO)
         checks.check_growth(ds(series, 6.5), report)
-        assert len(report.sections[0][2]) == failures
+        assert len(report.sections[0].failures) == failures

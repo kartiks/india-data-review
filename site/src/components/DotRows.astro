@@ -2,6 +2,7 @@
 // One row per item (e.g. a state) with two or more dots on a shared scale, joined by a thin line:
 // rural vs urban, women vs men. Plain HTML so long names wrap on phones; every value is printed,
 // so no hover is needed. A table view lists the same numbers.
+import "../styles/charts.css";
 export interface DotSeries { name: string; slot: number }
 export interface DotRow { label: string; values: (number | null)[]; note?: string; strong?: boolean }
 interface Props {
@@ -77,7 +78,6 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
 
 <style>
   .chart { margin: 0; }
-  .chart figcaption .chart-title { font-size: 1.05rem; margin-bottom: 2px; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
   .rows { list-style: none; margin: 0; padding: 0; }

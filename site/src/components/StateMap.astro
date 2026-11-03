@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { stateKey } from "../lib/jobs-prices/data";
 import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export interface MapMetric {
   id: string;
@@ -160,7 +161,6 @@ const id = "m" + Math.random().toString(36).slice(2, 9);
   .controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .metric { font: inherit; font-size: 0.85rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
   .metric[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-  .map-title { font-size: 1.05rem; margin-bottom: 2px; }
   .map-wrap { display: grid; gap: 16px; align-items: start; }
   @media (min-width: 760px) { .map-wrap { grid-template-columns: minmax(0, 3fr) minmax(200px, 2fr); } }
   svg { width: 100%; height: auto; display: block; max-height: 640px; }

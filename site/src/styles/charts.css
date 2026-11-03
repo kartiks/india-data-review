@@ -1,3 +1,8 @@
+/* Chart and map titles are plain h2/h3 (headingLevel), so they take the global heading sizes and margins: a
+   chart card titled h2 looks like a hand-written card h2, an h3 like a card h3. A card's own title and the
+   muted line under it are pulled together by `.card > h2 + .muted` (global.css); the same for a chart's. */
+figure figcaption > h2 + .muted { margin-top: -0.2em; }
+
 /* Which of a chart's four renderings shows (sm, md, lg, xl: SIZES in lib/chart.ts), chosen by the width of the chart
    itself rather than the screen, so a chart in a half-width column is drawn for its column. The breakpoints are
    the sizes' `from` widths and the max-widths their `max`; keep them in step with SIZES. */

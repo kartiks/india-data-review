@@ -1,7 +1,7 @@
 ---
 // Line chart over fiscal years, drawn at build time.
 // Hollow markers = estimates (Budget or Revised); the line itself is the best figure available each year.
-import { SIZES, niceTicks, scale, xTickIndices } from "../lib/chart";
+import { SIZES, estimate, estimateLayout, niceTicks, scale, xTickIndices } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
 
@@ -77,12 +77,18 @@ const charts = SIZES.map((sz) => {
   return { sz, xs, y, xTicks, paths, right, notes };
 });
 
+// Estimate labels in short form; left out when every figure has the same one (said once under the table).
+const est = series.map((s) => s.points.map((p) => (p.value == null ? null : estimate(p.kind))));
+const layout = estimateLayout(years.map((_, i) => est.map((e) => e[i]?.short ?? null)));
+const rowEst = years.map((_, i) => est.map((e) => e[i]).find((e) => e?.short) ?? null); // "column" mode
+const allEst = layout.all ? est.flat().find((e) => e?.short === layout.all) : undefined;
+
 const tooltipData = safeJson({
   years,
-  series: series.map((s) => ({
+  series: series.map((s, j) => ({
     name: s.name,
     slot: s.slot,
-    values: s.points.map((p) => (p.value == null ? null : { t: tipFormat(p.value), k: p.kind ?? "" })),
+    values: s.points.map((p, i) => (p.value == null ? null : { t: tipFormat(p.value), k: layout.mode === "none" ? "" : est[j][i]!.short })),
   })),
 });
 ---
@@ -155,20 +161,22 @@ const tooltipData = safeJson({
     <summary>Show as table</summary>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Year</th>{series.map((s) => <th>{s.name}</th>)}</tr></thead>
+        <thead><tr><th>Year</th>{layout.mode === "column" && <th class="est-col">Estimate</th>}{series.map((s) => <th>{s.name}</th>)}</tr></thead>
         <tbody>
           {years.map((yr, i) => (
             <tr>
               <td>{yr}</td>
-              {series.map((s) => {
-                const p = s.points[i];
-                return <td>{p.value == null ? "–" : tableFormat(p.value)}{p.kind && p.value != null && p.kind !== "Actual" ? ` (${p.kind})` : ""}</td>;
+              {layout.mode === "column" && <td class="est-col">{rowEst[i] && <span class="est" title={rowEst[i].full}>{rowEst[i].short}</span>}</td>}
+              {series.map((s, j) => {
+                const p = s.points[i], e = est[j][i];
+                return <td>{layout.mode === "inline" && e?.short && <span class="est" title={e.full}>{e.short}</span>}{p.value == null ? "–" : tableFormat(p.value)}</td>;
               })}
             </tr>
           ))}
         </tbody>
       </table>
     </div>
+    {allEst && <p class="muted small est-note">Every figure in this table: {allEst.full}.</p>}
   </details>
   {source && <p class="source">{source}</p>}
 </figure>
@@ -185,4 +193,8 @@ const tooltipData = safeJson({
   .plot :global(.end-label) { fill: var(--ink-2); font-weight: 600; }
   .plot :global(.annotation line) { stroke: var(--axis); stroke-width: 1; }
   .plot :global(.crosshair) { stroke: var(--ink-2); stroke-width: 1; }
+  .est { color: var(--ink-2); font-size: 0.85em; margin-right: 6px; }
+  .est-col { text-align: left; }
+  .est-col .est { margin-right: 0; }
+  .est-note { margin: 6px 0 0; }
 </style>

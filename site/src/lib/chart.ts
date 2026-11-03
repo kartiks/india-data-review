@@ -66,6 +66,29 @@ export function barPath(x0: number, y: number, x1: number, h: number, r = 4): st
 
 export const shortYear = (y: string) => y; // "2005-06"
 
+export interface Estimate { short: string; full: string }
+/** How final a figure is, as pages pass it ("Actual", "RE", "Third Revised Estimate", "Provisional", "1st advance
+ *  estimate"), turned into one short lower-case form for tables and readouts ("RE", "3rd revised", "provisional",
+ *  "1st advance") and a full name for a tooltip. Actuals get "", since they need no label. Presentation only. */
+export function estimate(kind: string | undefined): Estimate {
+  const k = (kind ?? "").trim();
+  if (!k || /^actuals?$/i.test(k)) return { short: "", full: "" };
+  if (k === "RE") return { short: "RE", full: "Revised Estimate" };
+  if (k === "BE") return { short: "BE", full: "Budget Estimate" };
+  const short = k.toLowerCase().replace(/\s+estimates?$/, "").replace(/^first\b/, "1st").replace(/^second\b/, "2nd").replace(/^third\b/, "3rd");
+  return { short, full: k[0].toUpperCase() + k.slice(1) };
+}
+
+/** Where a table shows estimate labels, given each cell's short label (null = no value):
+ *  "none" when every value has the same one (`all`, "" for actuals: say it once under the table);
+ *  "column" when each row's values share one (a column after the year); "inline" otherwise (before each value). */
+export function estimateLayout(cells: (string | null)[][]): { mode: "none" | "column" | "inline"; all: string } {
+  const present = cells.flat().filter((k): k is string => k != null);
+  if (new Set(present).size <= 1) return { mode: "none", all: present[0] ?? "" };
+  const rowShares = cells.every((row) => new Set(row.filter((k) => k != null)).size <= 1);
+  return { mode: rowShares ? "column" : "inline", all: "" };
+}
+
 /** Indices to label on the x axis: the latest year, then evenly back, at most `maxLabels` (a size's xLabels). */
 export function xTickIndices(n: number, maxLabels: number): number[] {
   const step = Math.max(1, Math.ceil(n / maxLabels));

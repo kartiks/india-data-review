@@ -8,7 +8,7 @@ import { axisPct, gpct, money } from "../../../lib/format";
 const real = (s: string, p: string) => quarterNode(s, p)?.growth?.gdp?.real;
 const withGrowth = (s: string) => quarters(s).filter((p) => real(s, p) !== undefined);
 const periods = [...new Set([...withGrowth(OLD), ...withGrowth(NEW)])].sort();
-const pts = (s: string) => periods.map((p) => ({ value: real(s, p) ?? null, kind: "Latest" }));
+const pts = (s: string) => periods.map((p) => ({ value: real(s, p) ?? null, kind: "Latest estimate" }));
 
 const newQ = withGrowth(NEW);
 const lastQ = newQ[newQ.length - 1];

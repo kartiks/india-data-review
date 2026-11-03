@@ -5,6 +5,7 @@
 // address (#show=key,key) so a comparison can be shared. Values are formatted at build time; axis ticks use the
 // named `axis` format, the same at build time and in the browser.
 import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
+import { estimate } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
 
@@ -36,7 +37,7 @@ const pack = (o: PickOption) => ({
   key: o.key, name: o.name, note: o.note ?? "",
   v: o.values,
   t: o.values.map((v) => (v == null ? null : tipFormat(v))),
-  k: o.kinds ?? o.values.map(() => ""),
+  k: o.values.map((_, i) => estimate(o.kinds?.[i]).short), // short estimate labels ("1st advance"), "" for none
 });
 const opts = options.map(pack);
 const ref = reference ? pack(reference) : null;
@@ -91,7 +92,7 @@ const inStart = new Set(start.map((c) => c.key));
         <thead><tr><th>Year</th>{start.map(({ o }) => <th>{o.name}</th>)}</tr></thead>
         <tbody>
           {shown.map((yr, i) => (
-            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] ?? "–"}{o.t[i] && o.k[i] ? ` (${o.k[i]})` : ""}</td>)}</tr>
+            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est">{o.k[i]}</span>}{o.t[i] ?? "–"}</td>)}</tr>
           ))}
         </tbody>
       </table>
@@ -127,6 +128,13 @@ const inStart = new Set(start.map((c) => c.key));
       const e = document.createElement(tag);
       if (text != null) e.textContent = text;
       return e;
+    };
+    // A table cell: the value, after its estimate label (muted) so the numbers stay right-aligned.
+    const cell = (t: string | null, k: string) => {
+      const td = el("td");
+      if (t != null && k) td.append(Object.assign(el("span", k), { className: "est" }));
+      td.append(t ?? "–");
+      return td;
     };
 
     /** Redraw everything from `chosen`. `focusKey`: after a chip is removed, the chip to move focus to ("" = none
@@ -186,7 +194,7 @@ const inStart = new Set(start.map((c) => c.key));
       head.append(el("th", "Year"), ...sel.map(({ o }) => el("th", o.name)));
       const body = years.map((yr, i) => {
         const tr = el("tr");
-        tr.append(el("td", yr), ...sel.map(({ o }) => el("td", o.t[i] == null ? "–" : `${o.t[i]}${o.k[i] ? ` (${o.k[i]})` : ""}`)));
+        tr.append(el("td", yr), ...sel.map(({ o }) => cell(o.t[i], o.k[i])));
         return tr;
       });
       table.tHead!.replaceChildren(head);
@@ -254,6 +262,7 @@ const inStart = new Set(start.map((c) => c.key));
   .empty { margin: 4px 0 0; }
   .pick-notes { padding-left: 18px; margin: 8px 0 0; }
   .pick-notes:empty { display: none; }
+  .table-view :global(.est) { color: var(--ink-2); font-size: 0.85em; margin-right: 6px; }
   .plots :global(.plot) { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
   .plots :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plots :global(.baseline) { stroke: var(--axis); stroke-width: 1; }

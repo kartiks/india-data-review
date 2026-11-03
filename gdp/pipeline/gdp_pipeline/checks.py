@@ -18,6 +18,8 @@ figure on the site can be traced to an official source.
 7. Budget: the GDP assumption is found in every budget and its stated growth
    reproduces from the two numbers printed with it.
 8. Forecasts: every quoted forecast sentence is found in the official document.
+9. State accounts: identities, growth, per-person figures and the sum of states
+   against India's GDP (see states.py).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS, each with a reason.
 Writes gdp/data/validation_report.md and exits non-zero on any failure.
@@ -28,6 +30,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from . import states
 from .build import BROAD, GROUPS, STAGE_ORDER
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,7 +73,7 @@ class Report:
         total = sum(c for _, c, _, _ in self.sections)
         nfail = sum(len(f) for _, _, f, _ in self.sections)
         out = ["# Data validation report", "",
-               "National accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. "
+               "National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. "
                "Every allowed exception lists its reason.", "",
                f"**Result: {'FAILED' if nfail else 'PASSED'}** ({total} checks, {nfail} failures)", ""]
         for title, checked, failures, notes in self.sections:
@@ -393,6 +396,7 @@ def main(ds: dict | None = None) -> int:
     check_forecasts(ds, report)
     check_expenditure(ds, report)
     check_revisions(ds, report)
+    states.check(ds, report)
     (DATA / "validation_report.md").write_text(report.markdown())
     for title, checked, failures, _ in report.sections:
         print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")

@@ -14,6 +14,7 @@ def sandbox(tmp_path, monkeypatch):
     monkeypatch.setattr(fetch, "SNAPSHOTS", tmp_path / "sources" / "snapshots")
     monkeypatch.setattr(fetch, "NAS_SERIES", [("2022-23", "Current", "Annual")])
     monkeypatch.setattr(fetch, "NAS_INDICATORS", [1, 2])
+    monkeypatch.setattr(fetch, "STATE_SERIES", [])
     monkeypatch.setattr(fetch.time, "sleep", lambda s: None)
     return tmp_path
 
@@ -88,3 +89,21 @@ def test_indicator_that_never_had_data_is_recorded_as_empty(sandbox, monkeypatch
     monkeypatch.setattr(fetch, "fetch_nas", fetch_nas)
     fetch.fetch_all_nas(manifest, force=True)
     assert manifest[KEY1]["empty"] is True
+
+
+def test_state_indicators_are_part_of_the_refresh(sandbox, monkeypatch):
+    monkeypatch.setattr(fetch, "STATE_SERIES", [("2011-12", "Current", "Annually"), ("2022-23", "Current", "Annually")])
+    monkeypatch.setattr(fetch, "STATE_INDICATORS", [23])
+    asked = []
+
+    def fetch_nas(base, series, freq, code):
+        asked.append((base, code))
+        rows = [{"v": code}] if base == "2011-12" else []
+        return {"url": f"https://example.test/{base}/{code}", "rows": rows, "total_records": len(rows)}
+
+    monkeypatch.setattr(fetch, "fetch_nas", fetch_nas)
+    manifest = {}
+    fetch.fetch_all_nas(manifest, force=True)
+    assert asked == [("2022-23", 1), ("2022-23", 2), ("2011-12", 23), ("2022-23", 23)]
+    assert manifest["nas/2011-12/Current/Annually/ind23"]["records"] == 1
+    assert manifest["nas/2022-23/Current/Annually/ind23"]["empty"] is True  # asked again every week

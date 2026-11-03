@@ -1291,6 +1291,102 @@
   "fetched_at": "2026-10-30T08:43:42+00:00",
   "records": 64
  },
+ "nas/2011-12/Current/Annually/ind23": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=23",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind23.json",
+  "sha256": "18f429bbe8329e255cee195d6c06a7cd531f6ecca530a3c468c0d179f9c52dbc",
+  "bytes": 119786,
+  "fetched_at": "2026-11-03T02:55:13+00:00",
+  "records": 450
+ },
+ "nas/2011-12/Current/Annually/ind24": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=24",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind24.json",
+  "sha256": "08900ec5b0e81fb195dbbf12748d887c785feab03b2faf5bb93ff9f9ab05ba06",
+  "bytes": 118846,
+  "fetched_at": "2026-11-03T02:55:16+00:00",
+  "records": 450
+ },
+ "nas/2011-12/Current/Annually/ind25": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=25",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind25.json",
+  "sha256": "01b79393b35ddd0cdfdefaa1ecde21a06425c3c37494b714d32fe36ab81feb46",
+  "bytes": 120967,
+  "fetched_at": "2026-11-03T02:55:19+00:00",
+  "records": 450
+ },
+ "nas/2011-12/Current/Annually/ind26": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=26",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind26.json",
+  "sha256": "d47387d8ef83cb6b022a70fc5feb3b4b9e9249f01f24d55e08f5c490ed4ce920",
+  "bytes": 101555,
+  "fetched_at": "2026-11-03T02:55:21+00:00",
+  "records": 420
+ },
+ "nas/2011-12/Current/Annually/ind27": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=27",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind27.json",
+  "sha256": "bee04b8ccc08f611ec1f5e2aef83555e986ec3396cbc250bb90feeeed6577e97",
+  "bytes": 101565,
+  "fetched_at": "2026-11-03T02:55:23+00:00",
+  "records": 420
+ },
+ "nas/2011-12/Current/Annually/ind28": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=28",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind28.json",
+  "sha256": "3cbf731dc4b38eea48cd6349045ffbd035a89efd0cee2346258dc1859ac96b56",
+  "bytes": 102366,
+  "fetched_at": "2026-11-03T02:55:26+00:00",
+  "records": 420
+ },
+ "nas/2011-12/Current/Annually/ind29": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=29",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind29.json",
+  "sha256": "c179c688abf4784b90b7f618318445b4f96a8bdea08587fece1b595c72398731",
+  "bytes": 4249050,
+  "fetched_at": "2026-11-03T02:56:28+00:00",
+  "records": 11950
+ },
+ "nas/2011-12/Current/Annually/ind30": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=30",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind30.json",
+  "sha256": "fd151a1978b14b766b057b86e36fe45871d49ead42f3526ccf822a17e08736b1",
+  "bytes": 4223549,
+  "fetched_at": "2026-11-03T02:57:31+00:00",
+  "records": 11950
+ },
+ "nas/2011-12/Current/Annually/ind31": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=31",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind31.json",
+  "sha256": "25ee47f7d94e614ed31342248a271c0b16e42f658e8249524887c1b41d7326dd",
+  "bytes": 120848,
+  "fetched_at": "2026-11-03T02:57:34+00:00",
+  "records": 478
+ },
+ "nas/2011-12/Current/Annually/ind32": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=32",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind32.json",
+  "sha256": "eba8493a5b671dae94f5486a4a12b136d8ef73616a0dbdc326f993a62968a1a0",
+  "bytes": 120786,
+  "fetched_at": "2026-11-03T02:57:36+00:00",
+  "records": 478
+ },
+ "nas/2011-12/Current/Annually/ind33": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=33",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind33.json",
+  "sha256": "4bd2468ade6b86d436860a5ccf64cfd2b6c1a2980754a454dd6eb9f10e8ce1c4",
+  "bytes": 122313,
+  "fetched_at": "2026-11-03T02:57:39+00:00",
+  "records": 478
+ },
+ "nas/2011-12/Current/Annually/ind34": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Annually&indicator_code=34",
+  "file": "sources/raw/nas/2011-12/Current/Annually/ind34.json",
+  "sha256": "3e9d6fa71e97935d7210672406f917e7b750f995aa4f0a88075bd065451f4792",
+  "bytes": 123469,
+  "fetched_at": "2026-11-03T02:57:42+00:00",
+  "records": 478
+ },
  "nas/2011-12/Current/Quarterly/ind01": {
   "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2011-12&series=Current&frequency_code=Quarterly&indicator_code=1",
   "file": "sources/raw/nas/2011-12/Current/Quarterly/ind01.json",
@@ -1612,6 +1708,66 @@
   "bytes": 1212,
   "fetched_at": "2026-10-30T08:44:45+00:00",
   "records": 3
+ },
+ "nas/2022-23/Current/Annually/ind23": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=23",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:42+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind24": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=24",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:43+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind25": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=25",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:43+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind26": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=26",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:43+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind27": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=27",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:44+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind28": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=28",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:44+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind29": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=29",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:44+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind30": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=30",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:45+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind31": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=31",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:45+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind32": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=32",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:45+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind33": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=33",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:46+00:00"
+ },
+ "nas/2022-23/Current/Annually/ind34": {
+  "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Annually&indicator_code=34",
+  "empty": true,
+  "checked_at": "2026-11-03T02:57:46+00:00"
  },
  "nas/2022-23/Current/Quarterly/ind01": {
   "url": "https://api.mospi.gov.in/api/nas/getNASData?base_year=2022-23&series=Current&frequency_code=Quarterly&indicator_code=1",

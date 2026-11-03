@@ -52,6 +52,7 @@ same decision: see [Adding data](#adding-data).
 | Data on the site | Source | How it is kept up to date | Source changes |
 |---|---|---|---|
 | GDP and national accounts (base 2011-12 and 2022-23; annual and quarterly) | MoSPI national accounts API | **Weekly refresh** | Early January, end of February, May, August, November |
+| State GDP (GDP › States): GSDP, NSDP, income per person, growth, value added by industry (base 2011-12) | MoSPI national accounts API (state accounts) | **Weekly refresh**; the new 2022-23 base is queried too, and the validation report says when it appears (the site then needs switching over) | When states publish their estimates, at different times through the year |
 | Jobs: PLFS participation, worker ratio, unemployment, workers, job conditions, earnings | MoSPI API | **Weekly refresh** | Monthly bulletin mid-month; quarterly bulletin each quarter |
 | Consumer prices, base 2012 (to December 2025) | MoSPI API | **Weekly refresh** (the series has ended, so it no longer changes) | No longer |
 | CPI for farm and rural labourers | Labour Bureau, through MoSPI API | **Weekly refresh** | End of each month |

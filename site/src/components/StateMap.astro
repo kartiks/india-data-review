@@ -21,7 +21,7 @@ interface Props {
   names: Record<string, string>; // stateKey -> display name
   source?: string;
 }
-const { metrics, names, source } = Astro.props;
+const { metrics, source } = Astro.props;
 
 const geo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), "src", "data", "india-states.json"), "utf8")) as {
   source: string; states: { name: string; rings: [number, number][][] }[];
@@ -35,6 +35,8 @@ const S = 20; // units per degree
 const W = (maxX - minX) * K * S, H = (maxY - minY) * S;
 const px = (x: number) => ((x - minX) * K * S).toFixed(1);
 const py = (y: number) => ((maxY - y) * S).toFixed(1);
+// A state or UT on the map that the data does not name gets the map's own name.
+const names: Record<string, string> = { ...Object.fromEntries(geo.states.map((s) => [stateKey(s.name), s.name])), ...Astro.props.names };
 const shapes = geo.states.map((s) => ({
   key: stateKey(s.name),
   d: s.rings.map((r) => "M" + r.map(([x, y]) => `${px(x)},${py(y)}`).join("L") + "Z").join(""),

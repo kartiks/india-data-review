@@ -159,3 +159,71 @@ def test_a_year_read_twice_from_the_projections_table_is_a_problem(monkeypatch, 
     proj, problems = pop.read_projections({})
     assert proj["2011-12"] == {"persons": 1220116, "male": 627946, "female": 592170}
     assert problems == ["projections: year 2011 read twice on page 125"]
+
+
+def nas_workbook(path):
+    """A small copy of NAS Statement 1.2's layout (Hindi and English labels, years across)."""
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    rows = [
+        [None, "STATEMENT 1.2: PER CAPITA INCOME, PRODUCT AND FINAL CONSUMPTION"],
+        ["क्र. सं.", "मद", "2023-24", "2024-25", "Item ", "S.No."],
+        [1, "जनसंख्या", 1000.5, 1010.25, "Population (in million)", 1],
+        [None, "प्रचलित", None, None, "At current prices", None],
+        [2, "x", 2000.4, 2100.6, "Per Capita GDP( ₹) ", 2],
+        [3, "x", 1900.0, 2000.0, "Per Capita GNI ( ₹) ", 3],
+        [4, "x", 1700.0, 1800.0, "Per Capita NNI ( ₹) ", 4],
+        [5, "x", 2050.0, 2150.0, "Per Capita GNDI( ₹) ", 5],
+        [6, "x", 1200.0, 1300.0, "Per Capita PFCE( ₹) ", 6],
+        [None, "स्थिर", None, None, "At constant (2022-23) prices", None],
+        [7, "x", 1950.0, 2000.0, "Per Capita GDP ( ₹) ", 7],
+        [8, "x", 1850.0, 1900.0, "Per Capita GNI ( ₹) ", 8],
+        [9, "x", 1650.0, 1700.0, "Per Capita NNI( ₹) ", 9],
+        [10, "x", 1150.0, 1200.0, "Per Capita PFCE( ₹) ", 10],
+        [None, "x", None, None, "Percentage change over previous year at constant (2022-23) prices", None],
+        [11, "x", None, 2.6, "Per Capita GDP ", 11],
+    ]
+    for r in rows:
+        ws.append(r)
+    wb.save(path)
+
+
+def test_the_nas_statement_is_read_by_its_english_labels(monkeypatch, tmp_path):
+    nas_workbook(tmp_path / "s.xlsx")
+    monkeypatch.setattr(pop, "path_of", lambda m, k: tmp_path / "s.xlsx")
+    tables, problems = pop.read_nas({})
+    assert problems == []
+    cur, con = tables
+    assert cur["prices"] == "cur" and con["prices"] == "con" and cur["years"] == ["2023-24", "2024-25"]
+    assert cur["figures"]["population"] == {"2023-24": 1000.5, "2024-25": 1010.25} == con["figures"]["population"]
+    assert cur["figures"]["pc_gdp"]["2023-24"] == 2000.4
+    assert con["figures"]["pc_gdp"]["2024-25"] == 2000.0  # growth rates after it are not read
+    assert cur["exact_population"] and pop.table_population(cur, "2024-25") == 1010.25
+
+
+def test_a_statement_without_totals_is_compared_through_per_person_times_population():
+    # ₹2,000.4 a person × 1,000.5 million = ₹2,00,140.02 crore: the API's total, so the same estimate.
+    table = {"document": "NAS", "base": "2022-23", "prices": "cur", "years": ["2023-24"], "exact_population": True,
+             "figures": {"population": {"2023-24": 1000.5}, "pc_gdp": {"2023-24": 2000.4}}}
+    data = {"2022-23": {"annual": {"2023-24": {"FINAL": {"gdp": {"cur": 2_00_140.0}, "per_person": {"gdp": {"cur": 2000}}}}}}}
+    (row,) = pop.comparisons(data, {"notes": [table], "rbi": []})
+    assert row[5:] == (2000, 2000.4, "NAS", True)
+    data["2022-23"]["annual"]["2023-24"]["FINAL"]["gdp"]["cur"] = 2_10_000.0  # revised since: not compared
+    (row,) = pop.comparisons(data, {"notes": [table], "rbi": []})
+    assert row[-1] is False
+
+
+def test_the_newest_mospi_document_gives_the_population(monkeypatch):
+    proj = {pop.fy(y): {"persons": 1_000_000.0, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
+    june = {"document": "June note", "date": "2026-06-05", "base": "2022-23", "prices": "con", "years": ["2023-24"],
+            "statement": "", "figures": {"gdp": {"2023-24": 1_00_000.0}, "pc_gdp": {"2023-24": 1000.0}}}
+    nas = {"document": "NAS", "date": "2026-08-31", "base": "2022-23", "prices": "cur", "years": ["2023-24"],
+           "statement": "", "exact_population": True, "figures": {"population": {"2023-24": 1000.004}}}
+    monkeypatch.setattr(pop, "read_projections", lambda m: (proj, []))
+    monkeypatch.setattr(pop, "read_notes", lambda m: ([june], [], 0))
+    monkeypatch.setattr(pop, "read_rbi", lambda m: ([], []))
+    monkeypatch.setattr(pop, "read_nas", lambda m: ([nas], []))
+    by_series, _ = pop.population({})
+    assert by_series["2022-23"]["2023-24"] == {"million": 1000.004, "source": "mospi", "document": "NAS"}

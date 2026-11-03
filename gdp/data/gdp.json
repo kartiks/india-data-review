@@ -1,7 +1,7 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-03T08:04:25+00:00",
+ "generated_at": "2026-11-03T09:24:05+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
@@ -37629,8 +37629,8 @@
       },
       "per_person": {
        "gdp": {
-        "cur": 208340,
-        "con": 201325
+        "cur": 208339,
+        "con": 201324
        },
        "gni": {
         "cur": 205387,
@@ -37638,7 +37638,7 @@
        },
        "pfce": {
         "cur": 117634,
-        "con": 113734
+        "con": 113733
        },
        "nni": {
         "cur": 177897,
@@ -38052,7 +38052,7 @@
         "con": 213880
        },
        "gni": {
-        "cur": 222927,
+        "cur": 222928,
         "con": 211400
        },
        "pfce": {
@@ -40195,22 +40195,19 @@
    },
    "2022-23": {
     "2022-23": {
-     "million": 1382.895,
+     "million": 1382.894,
      "source": "mospi",
-     "document": "Press note on Provisional Estimates of GDP for 2025-26 and Q4 2025-26 (new series, base 2022-23)",
-     "printed_million": 1383.0
+     "document": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption"
     },
     "2023-24": {
-     "million": 1395.475,
+     "million": 1395.478,
      "source": "mospi",
-     "document": "Press note on Provisional Estimates of GDP for 2025-26 and Q4 2025-26 (new series, base 2022-23)",
-     "printed_million": 1395.0
+     "document": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption"
     },
     "2024-25": {
-     "million": 1408.055,
+     "million": 1408.054,
      "source": "mospi",
-     "document": "Press note on Provisional Estimates of GDP for 2025-26 and Q4 2025-26 (new series, base 2022-23)",
-     "printed_million": 1408.0
+     "document": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption"
     },
     "2025-26": {
      "million": 1420.64,
@@ -40249,6 +40246,14 @@
      "title": "RBI, Handbook of Statistics on the Indian Economy 2025-26, Table 2: Macro-Economic Aggregates (at constant prices)",
      "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/2T_HBIE310720261ED415A38F9E465C9B9BEDEA897741FB.XLSX"
     }
+   ],
+   "nas": [
+    {
+     "document": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption",
+     "date": "2026-08-31",
+     "base": "2022-23",
+     "url": "https://mospi.gov.in/publications-reports/innerpage/2861"
+    }
    ]
   },
   "projections_until": "2021-22",
@@ -40261,7 +40266,11 @@
     "2024-25": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)",
     "2025-26": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)"
    },
-   "2022-23": {}
+   "2022-23": {
+    "2022-23": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption",
+    "2023-24": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption",
+    "2024-25": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption"
+   }
   }
  },
  "long_run": [

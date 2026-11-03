@@ -2,7 +2,7 @@
 
 National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (54818 checks, 0 failures)
+**Result: PASSED** (54855 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -255,13 +255,13 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - 2023-24: real growth first 7.3% (AE1), latest 9.1% (RE1), revised +1.8 points
 
 ## ✅ Population and figures per person
-126 checks, 0 failures.
+163 checks, 0 failures.
 
 - MoSPI's population equals the projection in 2020-21 and 2021-22 (the years a source here covers); earlier years up to 2021-22 use the projection without a check.
 - 2011-12 series: MoSPI's population from 2022-23 is above the 2019 projections (2022-23: 1,382.9 million against 1,381.0; 2023-24: 1,395.0 million against 1,393.4; 2024-25: 1,408.0 million against 1,405.8; 2025-26: 1,420.6 million against 1,418.3).
 - 2022-23 series: MoSPI's population from 2022-23 is above the 2019 projections (2022-23: 1,382.9 million against 1,381.0; 2023-24: 1,395.5 million against 1,393.4; 2024-25: 1,408.1 million against 1,405.8; 2025-26: 1,420.6 million against 1,418.3).
 - 2011-12 series: 30 published per-person figures reproduced to within ₹2 (2020-21, 2021-22, 2022-23, 2023-24, 2024-25, 2025-26); 0 are for an earlier estimate than the API's latest and are not compared.
-- 2022-23 series: 0 published per-person figures reproduced to within ₹2; 32 are for an earlier estimate than the API's latest and are not compared.
+- 2022-23 series: 24 published per-person figures reproduced to within ₹2 (2022-23, 2023-24, 2024-25); 32 are for an earlier estimate than the API's latest and are not compared.
 
 ## ✅ State accounts: every published row is understood
 28422 checks, 0 failures.

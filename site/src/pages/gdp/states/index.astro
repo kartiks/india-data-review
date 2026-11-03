@@ -2,7 +2,7 @@
 import Base from "../../../layouts/Base.astro";
 import StateMap, { type MapMetric } from "../../../components/StateMap.astro";
 import BarList from "../../../components/BarList.astro";
-import LineChart from "../../../components/LineChart.astro";
+import PickLines, { type PickOption } from "../../../components/PickLines.astro";
 import { link } from "../../../lib/url";
 import { stateKey } from "../../../lib/jobs-prices/data";
 import {
@@ -72,13 +72,28 @@ const gap = (Number(top.income) / Number(bottom.income)).toFixed(1);
 const sumShare = IN ? pct((total / IN.gdp) * 100) : undefined;
 const boundaryNotes = rows.filter((r) => r.boundary).map((r) => BOUNDARY[r.st].note);
 
-// Growth over time, six largest economies.
-const gyears = STATE_YEARS.filter((y) => y > FIRST_YEAR && y <= Y);
-const six = biggest.slice(0, 6);
-const growthSeries = six.map((r, i) => ({
-  name: r.st, slot: i + 1,
-  points: gyears.map((y) => { const n = sNode(r.st, y); return { value: n ? realGrowth(n) ?? null : null }; }),
-}));
+// Growth over time: every state with constant-price figures, to compare any set; the six largest are shown first.
+// Years run to the latest any state has published; the chart ends at the latest year among the states shown.
+const gyears = STATE_YEARS.filter((y) => y > FIRST_YEAR);
+const nextYear = (y: string) => STATE_YEARS[STATE_YEARS.indexOf(y) + 1];
+const growthOptions: PickOption[] = STATES.map((st) => {
+  const kinds = gyears.map((y) => sNode(st, y)?.growth?.gsdp?.published === false ? "worked out"
+    : BOUNDARY[st] && y === nextYear(BOUNDARY[st].until) ? "area changed" : "");
+  const values = gyears.map((y) => { const n = sNode(st, y); return n ? realGrowth(n) ?? null : null; });
+  const worked = gyears.filter((_, i) => values[i] != null && kinds[i] === "worked out").length;
+  const notes = [
+    worked ? `${st}: growth worked out here from GSDP levels${worked < values.filter((v) => v != null).length ? " in some years" : ""}, because MoSPI's GSDP table leaves ${st} out (see the notes below the table).` : "",
+    BOUNDARY[st] ? BOUNDARY[st].note : "",
+  ].filter(Boolean);
+  return { key: stateKey(st), name: st, values, kinds, note: notes.join(" ") };
+}).filter((o) => o.values.some((v) => v != null));
+const noGrowth = STATES.filter((st) => !growthOptions.some((o) => o.name === st));
+const indiaGrowth: PickOption = {
+  key: "india", name: "All India",
+  values: gyears.map((y) => india(y)?.growth ?? null),
+  note: "All India (dashed): GDP growth from the national accounts on the same 2011-12 base, latest estimate for each year.",
+};
+const six = biggest.slice(0, 6).map((r) => r.key);
 const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 base, via api.mospi.gov.in.";
 ---
 <Base title="States" section="states" description="Each Indian state's economy: size, growth, income per person and the shares of agriculture, industry and services, from MoSPI's state accounts.">
@@ -120,14 +135,16 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
   </div>
 
   <section class="card">
-    <LineChart
-      title="Real growth of the six largest state economies"
-      subtitle={`GSDP at constant 2011-12 prices, on the year before, ${gyears[0]} to ${Y}`}
+    <PickLines
+      title="Real growth, state by state"
+      subtitle={`GSDP at constant 2011-12 prices, on the year before. Starting with the six largest economies in ${Y}: add or remove states (up to eight), or All India, to compare any set.${noGrowth.length ? ` No constant-price figures for ${list(noGrowth)}.` : ""}`}
       years={gyears}
-      series={growthSeries}
+      options={growthOptions}
+      reference={indiaGrowth}
+      initial={six}
+      axis="pct"
       format={axisPct}
-      tableFormat={(v) => gpct(v)}
-      zero
+      tipFormat={(v) => gpct(v)}
       source={SOURCE}
     />
   </section>

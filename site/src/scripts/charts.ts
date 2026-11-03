@@ -1,8 +1,8 @@
 // Hover / touch / keyboard readouts for the build-time SVG charts.
 // Every value is also in each chart's table view; this only makes reading easier.
 
-interface TipRow { slot: number; value: string; name: string; kind?: string }
-interface LineData { years: string[]; series: { name: string; slot: number; values: ({ t: string; k: string } | null)[] }[] }
+interface TipRow { slot: number; color?: string; value: string; name: string; kind?: string }
+export interface LineData { years: string[]; series: { name: string; slot: number; color?: string; values: ({ t: string; k: string } | null)[] }[] }
 interface ColumnData { columns: { title: string; rows: TipRow[] }[] }
 
 const tip = document.querySelector<HTMLDivElement>(".tooltip")!;
@@ -18,7 +18,7 @@ function showTip(title: string, rows: TipRow[], clientX: number, clientY: number
     row.className = "tip-row";
     const key = document.createElement("span");
     key.className = "tip-key";
-    key.style.background = `var(--s${r.slot})`;
+    key.style.background = r.color ?? `var(--s${r.slot})`;
     const val = document.createElement("strong");
     val.textContent = r.value;
     const name = document.createElement("span");
@@ -45,7 +45,8 @@ function toViewBoxX(svg: SVGSVGElement, clientX: number): number {
   return pt.x;
 }
 
-function setupLine(fig: HTMLElement, data: LineData) {
+/** Hover readouts for a line chart; call again after redrawing its SVGs. */
+export function setupLine(fig: HTMLElement, data: LineData) {
   fig.querySelectorAll<SVGSVGElement>("svg.plot").forEach((svg) => {
     const xs = (svg.dataset.xs ?? "").split(",").map(Number);
     const cross = svg.querySelector<SVGLineElement>(".crosshair");
@@ -58,7 +59,7 @@ function setupLine(fig: HTMLElement, data: LineData) {
       const rows = data.series
         .map((s) => ({ s, v: s.values[i] }))
         .filter(({ v }) => v)
-        .map(({ s, v }) => ({ slot: s.slot, value: v!.t, name: s.name, kind: v!.k }));
+        .map(({ s, v }) => ({ slot: s.slot, color: s.color, value: v!.t, name: s.name, kind: v!.k }));
       showTip(data.years[i], rows.length ? rows : [{ slot: 0, value: "–", name: "No figure" }], clientX, clientY);
     };
     const nearest = (vx: number) => xs.reduce((best, x, i) => (Math.abs(x - vx) < Math.abs(xs[best] - vx) ? i : best), 0);

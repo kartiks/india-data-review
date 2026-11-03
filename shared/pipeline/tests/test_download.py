@@ -91,6 +91,22 @@ def test_save_keeps_the_previous_version_as_a_snapshot(tmp_path):
         {"sha256": first["sha256"], "fetched_at": "2026-01-05T00:00:00+00:00", "file": "sources/snapshots/2026-01-05/nas/ind01.json"}]
 
 
+def test_check_records_refuses_a_much_shorter_download():
+    manifest = {"nas/ind01": {"records": 1000}, "nas/ind02": {"empty": True}}
+    download.check_records(manifest, "nas/ind01", 1000)
+    download.check_records(manifest, "nas/ind01", 1200)  # more rows: a revision or a new period
+    download.check_records(manifest, "nas/ind01", 950)  # 5% fewer: allowed
+    with pytest.raises(download.RecordsDropped, match=r"nas/ind01: 949 records, 1,000 before"):
+        download.check_records(manifest, "nas/ind01", 949)
+    with pytest.raises(download.RecordsDropped):
+        download.check_records(manifest, "nas/ind01", 900, max_drop=0.05)
+    download.check_records(manifest, "nas/ind01", 900, max_drop=0.2)
+    # nothing to compare with: a new key, an empty entry, or one saved without a count
+    download.check_records(manifest, "nas/ind03", 1)
+    download.check_records(manifest, "nas/ind02", 1)
+    download.check_records({"k": {"sha256": "x"}}, "k", 1)
+
+
 def test_manifest_round_trip_is_stable(tmp_path):
     path = tmp_path / "sources" / "manifest.json"
     assert download.load_manifest(path) == {}

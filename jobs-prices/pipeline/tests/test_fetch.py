@@ -91,3 +91,24 @@ def test_vanished_query_keeps_the_saved_file_and_fails(sandbox, monkeypatch):
     assert manifest[KEY1]["sha256"] == sha
     assert saved_rows(KEY1) == [{"v": 1}]
     assert saved_rows(KEY2) == [{"v": 20}]
+
+
+def test_much_shorter_download_keeps_the_saved_file_and_fails(sandbox, monkeypatch):
+    use_api(monkeypatch, {KEY1: [{"v": i} for i in range(100)], KEY2: [{"v": 2}]})
+    fetch.main()
+    sha = json.loads(fetch.MANIFEST.read_text())[KEY1]["sha256"]
+
+    # 94 rows where there were 100: more than 5% fewer
+    calls = use_api(monkeypatch, {KEY1: [{"v": i} for i in range(94)], KEY2: [{"v": 20}]})
+    with pytest.raises(RuntimeError, match=rf"{KEY1}: 94 records, 100 before"):
+        fetch.main(force_api=True)
+    assert calls == [KEY1, KEY2]  # carried on past it
+    manifest = json.loads(fetch.MANIFEST.read_text())
+    assert manifest[KEY1]["sha256"] == sha and manifest[KEY1]["records"] == 100
+    assert len(saved_rows(KEY1)) == 100
+    assert saved_rows(KEY2) == [{"v": 20}]
+
+    # 95 rows: within 5%, accepted as a revision
+    use_api(monkeypatch, {KEY1: [{"v": i} for i in range(95)], KEY2: [{"v": 20}]})
+    fetch.main(force_api=True)
+    assert len(saved_rows(KEY1)) == 95

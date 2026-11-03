@@ -7,7 +7,10 @@ changed one gives a readable diff.
 
 MoSPI's API keeps only the latest figures. When a re-download differs from the
 saved file, the old file is kept under sources/snapshots/<date it was fetched>/
-before being replaced, so revisions build up over time.
+before being replaced, so revisions build up over time. A re-download with no
+rows, or with more than 5% fewer rows than the saved file, is more likely a
+fault than a revision: the saved file is kept, the rest is downloaded, and the
+run fails at the end.
 
 Run: uv run python -m jobs_prices_pipeline.fetch [--force | --force-api]
 """
@@ -149,7 +152,7 @@ def main(force: bool = False, force_api: bool = False) -> None:
     (MoSPI's API and the RBI handbook tables), and anything else that is missing. Press releases and report tables
     are fixed documents."""
     manifest = load_manifest()
-    vanished = []
+    vanished, dropped = [], []
     try:
         for key, path, params in queries():
             if key in manifest and not (force or force_api):
@@ -165,6 +168,12 @@ def main(force: bool = False, force_api: bool = False) -> None:
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 print(f"{key}: no data")
                 continue
+            try:  # far fewer rows than before: kept, like a vanished query
+                download.check_records(manifest, key, result["total_records"])
+            except download.RecordsDropped as e:
+                print(e, flush=True)
+                dropped.append(str(e))
+                continue
             changed = save(manifest, key, RAW / f"{key}.json", encode(result), result["url"],
                            {"records": result["total_records"]})
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}", flush=True)
@@ -174,8 +183,9 @@ def main(force: bool = False, force_api: bool = False) -> None:
         fetch_rbi(manifest, force or force_api)
     finally:
         write_manifest(manifest)
-    if vanished:
-        raise RuntimeError(f"MoSPI returned no rows for queries that had data: {', '.join(vanished)}")
+    errors = [f"MoSPI returned no rows for queries that had data: {', '.join(vanished)}"] if vanished else []
+    if errors := errors + dropped:
+        raise RuntimeError("\n".join(errors))
 
 
 if __name__ == "__main__":

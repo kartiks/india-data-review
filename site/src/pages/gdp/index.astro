@@ -5,9 +5,9 @@ import LineChart from "../../components/LineChart.astro";
 import Money from "../../components/Money.astro";
 import {
   LONG, NEW, OLD, LATEST_YEAR, LATEST_STAGE, STAGE_LABEL, node, growthAt, quarters, quarterNode, BUDGET,
-  firstEstimate, latestGrowth, yearsOf, range,
+  firstEstimate, latestGrowth, yearsOf, range, PP_YEAR,
 } from "../../lib/gdp/data";
-import { axisPct, gpct, money } from "../../lib/format";
+import { axisPct, gpct, money, rupees } from "../../lib/format";
 
 const latest = node(NEW, LATEST_YEAR, LATEST_STAGE)!;
 const g = growthAt(NEW, LATEST_YEAR, LATEST_STAGE)!;
@@ -21,6 +21,7 @@ const overlap = "2022-23";
 const newGdp = node(NEW, overlap)?.gdp?.cur ?? NaN;
 const oldGdp = node(OLD, overlap)?.gdp?.cur ?? NaN;
 const gap = (1 - newGdp / oldGdp) * 100;
+const ppIncome = PP_YEAR ? node(NEW, PP_YEAR)?.per_person?.nni?.cur : undefined;
 
 // Biggest revision among recent years: first estimate vs latest.
 interface Rev { y: string; first: number; last: number; d: number }
@@ -106,6 +107,10 @@ const newPoints = years.map((y) => {
   </section>
 
   <div class="grid-2">
+    <div class="card link-card">
+      <h2><a href={link("/gdp/per-person/")}>Per person</a></h2>
+      <p class="muted">{ppIncome !== undefined && `Income per person was ${rupees(ppIncome)} in ${PP_YEAR}. `}GDP, income and household spending per person, and their growth after inflation.</p>
+    </div>
     <div class="card link-card">
       <h2><a href={link("/gdp/revisions/")}>Revisions</a></h2>
       <p class="muted">Growth is estimated up to six times. {big.y} was first put at {gpct(big.first)}; it is now {gpct(big.last)}.</p>

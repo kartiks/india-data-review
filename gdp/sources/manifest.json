@@ -1914,5 +1914,40 @@
   "bytes": 3746,
   "fetched_at": "2026-10-30T08:44:59+00:00",
   "records": 13
+ },
+ "population/press-note-1657b26833a1": {
+  "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+  "file": "sources/raw/population/press-note-1657b26833a1.pdf",
+  "sha256": "2074d6eb285a446642749c535e4a57055b4b948a8d38509cf59bfdacf37fa0db",
+  "bytes": 968042,
+  "fetched_at": "2026-11-03T07:11:46+00:00"
+ },
+ "population/press-note-4919aef80eec": {
+  "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1767781372753_1380ce82-f5a5-440d-99e6-e6b35af0deb5_GDP_Press_Note_on_FAE_2025-26.pdf",
+  "file": "sources/raw/population/press-note-4919aef80eec.pdf",
+  "sha256": "2e9e43f31b7c77295f65a31218583e756d22e66114b84c2f9fc5092634208cd9",
+  "bytes": 529165,
+  "fetched_at": "2026-11-03T07:11:47+00:00"
+ },
+ "population/projections-2019": {
+  "url": "https://nhm.gov.in/New_Updates_2018/Report_Population_Projection_2019.pdf",
+  "file": "sources/raw/population/projections-2019.pdf",
+  "sha256": "9a9031c9c75d609e03ab94ce0ac6115cb9d8a9ab82d1b18a47b78e90ae01331b",
+  "bytes": 11543351,
+  "fetched_at": "2026-11-03T07:11:44+00:00"
+ },
+ "population/rbi-hbs-table-1": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/1T_HBIE310720260FBAA53A59A94B94A78CB8313C150B62.XLSX",
+  "file": "sources/raw/population/rbi-hbs-table-1.xlsx",
+  "sha256": "5d9d86f40d813bb094d62b05cb6c43bd5ebf686520fa960beb94b9a47ab7338b",
+  "bytes": 12282,
+  "fetched_at": "2026-11-03T07:11:44+00:00"
+ },
+ "population/rbi-hbs-table-2": {
+  "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/2T_HBIE310720261ED415A38F9E465C9B9BEDEA897741FB.XLSX",
+  "file": "sources/raw/population/rbi-hbs-table-2.xlsx",
+  "sha256": "b5658b87860b77a5fcc1ba7eddfefca14781d4aca162e4e1a5e14dab16c1c502",
+  "bytes": 10897,
+  "fetched_at": "2026-11-03T07:11:44+00:00"
  }
 }

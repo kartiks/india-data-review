@@ -18,7 +18,9 @@ figure on the site can be traced to an official source.
 7. Budget: the GDP assumption is found in every budget and its stated growth
    reproduces from the two numbers printed with it.
 8. Forecasts: every quoted forecast sentence is found in the official document.
-9. State accounts: identities, growth, per-person figures and the sum of states
+9. Population and figures per person: population read cleanly from its sources,
+   and per-person figures reproduce MoSPI's published ones (see population.py).
+10. State accounts: identities, growth, per-person figures and the sum of states
    against India's GDP (see states.py).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS, each with a reason.
@@ -30,7 +32,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from . import states
+from . import population, states
 from .build import BROAD, GROUPS, STAGE_ORDER
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -396,6 +398,7 @@ def main(ds: dict | None = None) -> int:
     check_forecasts(ds, report)
     check_expenditure(ds, report)
     check_revisions(ds, report)
+    population.check(ds, report)
     states.check(ds, report)
     (DATA / "validation_report.md").write_text(report.markdown())
     for title, checked, failures, _ in report.sections:

@@ -64,6 +64,40 @@ def read_xlsx(path: Path) -> list[list[str]]:
 
 NUM_TOKEN = re.compile(r"^-?\(?-?[\d,]+(\.\d+)?\)?[*$@#]*$|^\.{2,}$|^…$|^\(-\)$|^-$")
 SUPERSCRIPT_MAX_SIZE = 7.0  # footnote markers are ~6pt; body text is 9-11pt
+FOOTNOTE_SIZE = 0.75  # characters below this share of the body text size are footnote markers
+
+
+# ----- shared steps of the PDF line readers ---------------------------------------------------------------------
+# Three readers turn PDF pages into text lines: read_pdf below (the headline and Receipts tables) and the
+# position-based readers of the ministries and schemes tables. They share these steps; the tables differ in type
+# size and line spacing, so each reader passes its own cut-off and tolerance.
+
+
+def body_size(sizes: list[float], default: float) -> float:
+    """The most common character size (the body text), or `default` when there are no characters."""
+    return max(set(sizes), key=sizes.count) if sizes else default
+
+
+def drop_small_chars(page, min_size: float):
+    """The page without characters smaller than `min_size`: superscript footnote markers, which would otherwise
+    glue onto the number they follow (a footnote "1" printed after 62043 reads as 620431)."""
+    return page.filter(lambda obj: obj.get("object_type") != "char" or obj.get("size", 99) >= min_size)
+
+
+def group_lines(words: list[dict], tol: float) -> list[list[dict]]:
+    """Group words into text lines, top to bottom, each line left to right. A word joins the line above when its
+    bottom edge (baseline) is within `tol` points of the line's last word: numbers with a trailing symbol like "$"
+    can sit a point higher than the rest of the line."""
+    words = sorted(words, key=lambda w: (w["bottom"], w["x0"]))
+    lines: list[list[dict]] = []
+    for w in words:
+        if lines and abs(lines[-1][-1]["bottom"] - w["bottom"]) <= tol:
+            lines[-1].append(w)
+        else:
+            lines.append([w])
+    for line in lines:
+        line.sort(key=lambda w: w["x0"])
+    return lines
 
 
 class PdfLine(list):
@@ -85,21 +119,9 @@ def read_pdf(path: Path) -> list[list[str]]:
     rows: list[list[str]] = []
     with pdfplumber.open(path) as pdf:
         for page in pdf.pages:
-            page = page.filter(
-                lambda obj: obj.get("object_type") != "char" or obj.get("size", 99) >= SUPERSCRIPT_MAX_SIZE
-            )
+            page = drop_small_chars(page, SUPERSCRIPT_MAX_SIZE)
             words = page.extract_words(keep_blank_chars=False, use_text_flow=False)
-            # Group words into lines by their baseline (bottom edge): numbers with a
-            # trailing symbol like "$" can sit a point higher than the rest of the line.
-            words.sort(key=lambda w: (w["bottom"], w["x0"]))
-            lines: list[list[dict]] = []
-            for w in words:
-                if lines and abs(lines[-1][-1]["bottom"] - w["bottom"]) <= 2.5:
-                    lines[-1].append(w)
-                else:
-                    lines.append([w])
-            for line in lines:
-                line.sort(key=lambda w: w["x0"])
+            for line in group_lines(words, tol=2.5):
                 values: list[dict] = []
                 while line and NUM_TOKEN.match(line[-1]["text"]):
                     values.insert(0, line.pop())

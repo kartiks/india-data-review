@@ -31,7 +31,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .parse import Column, ParseError, expected_columns, fy
-from .readers import read_any
+from .readers import FOOTNOTE_SIZE, body_size, drop_small_chars, group_lines, read_any
 from .sources import FIRST_SCHEME_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -70,11 +70,14 @@ def _is_numberish(text: str) -> bool:
     return bool(text) and re.fullmatch(r"[\d.,\-*…()]+", text) is not None and re.search(r"[\d.…]", text) is not None
 
 
+LINE_TOL = 2.5  # points between the bottom edges of words on one line
+
+
 def _anchors(pages_words: list[list[dict]]) -> list[float]:
     """Right edges of the 12 value columns, from lines that hold exactly 12 numbers."""
     samples: list[list[float]] = []
     for words in pages_words:
-        for line in _group_lines(words):
+        for line in group_lines(words, LINE_TOL):
             nums = [w for w in line if _is_numberish(w["text"])]
             if len(nums) >= 12:
                 tail = nums[-12:]
@@ -108,19 +111,6 @@ def _tokens(word: dict) -> list[tuple[float, float, str]]:
     return out
 
 
-def _group_lines(words: list[dict], tol: float = 2.5) -> list[list[dict]]:
-    words = sorted(words, key=lambda w: (w["bottom"], w["x0"]))
-    lines: list[list[dict]] = []
-    for w in words:
-        if lines and abs(lines[-1][-1]["bottom"] - w["bottom"]) <= tol:
-            lines[-1].append(w)
-        else:
-            lines.append([w])
-    for line in lines:
-        line.sort(key=lambda w: w["x0"])
-    return lines
-
-
 def read_pdf_lines(path: Path) -> list[Line]:
     import pdfplumber
 
@@ -129,10 +119,8 @@ def read_pdf_lines(path: Path) -> list[Line]:
         for page in pdf.pages:
             # Drop superscript footnote markers: characters much smaller than the page's body text.
             # (A fixed cut-off fails: some years print "Grand Total" at 6.8pt.)
-            sizes = sorted(round(c["size"], 1) for c in page.chars)
-            body = max(set(sizes), key=sizes.count) if sizes else 10.0
-            cutoff = 0.75 * body
-            page = page.filter(lambda o, cutoff=cutoff: o.get("object_type") != "char" or o.get("size", 99) >= cutoff)
+            body = body_size(sorted(round(c["size"], 1) for c in page.chars), 10.0)
+            page = drop_small_chars(page, FOOTNOTE_SIZE * body)
             pages_words.append(page.extract_words(x_tolerance=1.5, keep_blank_chars=False, extra_attrs=["size"],
                                                   return_chars=True))
     anchors = _anchors(pages_words)
@@ -144,7 +132,7 @@ def read_pdf_lines(path: Path) -> list[Line]:
 
     out: list[Line] = []
     for pno, words in enumerate(pages_words, start=1):
-        for line in _group_lines(words):
+        for line in group_lines(words, LINE_TOL):
             label_parts: list[str] = []
             cells: list[list[tuple[float, str]]] = [[] for _ in range(12)]
             full_text = " ".join(w["text"] for w in line)

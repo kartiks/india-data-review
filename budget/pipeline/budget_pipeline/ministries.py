@@ -28,7 +28,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from .parse import Column, ParseError, ascii_text, fy
-from .readers import read_any
+from .readers import FOOTNOTE_SIZE, body_size, drop_small_chars, group_lines, read_any
 from .sources import FORMAT_PRIORITY
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -105,20 +105,12 @@ def read_pdf_lines(path: Path) -> list[Line]:
 
     out: list[Line] = []
     with pdfplumber.open(path) as pdf:
-        sizes = [round(c["size"], 1) for p in pdf.pages[:2] for c in p.chars if c["text"].isdigit()]
-        body = max(set(sizes), key=sizes.count) if sizes else 8.0
+        # Body size from the digits of the first two pages: the whole table uses one type size.
+        body = body_size([round(c["size"], 1) for p in pdf.pages[:2] for c in p.chars if c["text"].isdigit()], 8.0)
         for pno, page in enumerate(pdf.pages):
-            page = page.filter(lambda o: o.get("object_type") != "char" or o.get("size", 99) >= body * 0.75)
+            page = drop_small_chars(page, body * FOOTNOTE_SIZE)
             words = page.extract_words(x_tolerance=1.5, y_tolerance=2, keep_blank_chars=False)
-            words.sort(key=lambda w: (w["bottom"], w["x0"]))
-            lines: list[list[dict]] = []
-            for w in words:
-                if lines and abs(lines[-1][-1]["bottom"] - w["bottom"]) <= 2.0:
-                    lines[-1].append(w)
-                else:
-                    lines.append([w])
-            for ws in lines:
-                ws.sort(key=lambda w: w["x0"])
+            for ws in group_lines(words, tol=2.0):
                 values: list[tuple[str, float]] = []
                 while ws:
                     w = ws[-1]

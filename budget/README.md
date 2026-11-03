@@ -151,7 +151,7 @@ Research's *Union Budget 2026-27 Analysis*.
 pipeline/budget_pipeline/
   sources.py      where each table lives, per year and document type
   fetch.py        downloads every format, records checksums, checks the title
-  readers.py      HTML / XLS / XLSX / PDF -> rows of cells
+  readers.py      HTML / XLS / XLSX / PDF -> rows of cells; steps all PDF line readers share
   parse.py        headline table
   taxes.py        Receipts table + Receipt Budget Annex 7
   ministries.py   Statement 2 / 3A (own position-based PDF reader)

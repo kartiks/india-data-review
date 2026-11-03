@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { stateKey } from "../lib/jobs-prices/data";
+import { safeJson } from "../lib/safe-json";
 
 export interface MapMetric {
   id: string;
@@ -58,7 +59,7 @@ const prepared = metrics.map((m) => {
 });
 const first = prepared[0];
 const SMALL = ["chandigarh", "delhi", "dadraandnagarhavelianddamananddiu", "goa", "lakshadweep", "puducherry"];
-const payload = JSON.stringify({ metrics: prepared, names });
+const payload = safeJson({ metrics: prepared, names });
 const id = "m" + Math.random().toString(36).slice(2, 9);
 ---
 <figure class="state-map" id={id}>

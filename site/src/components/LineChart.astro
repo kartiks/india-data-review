@@ -2,6 +2,7 @@
 // Line chart over fiscal years, drawn at build time.
 // Hollow markers = estimates (Budget or Revised); the line itself is the best figure available each year.
 import { SIZES, niceTicks, scale, xTickIndices } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
 
 export interface Point {
   value: number | null;
@@ -73,7 +74,7 @@ const charts = SIZES.map((sz) => {
   return { sz, xs, y, xTicks, paths, right, notes };
 });
 
-const tooltipData = JSON.stringify({
+const tooltipData = safeJson({
   years,
   series: series.map((s) => ({
     name: s.name,

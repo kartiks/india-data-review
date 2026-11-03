@@ -5,6 +5,7 @@
 // address (#show=key,key) so a comparison can be shared. Values are formatted at build time; axis ticks use the
 // named `axis` format, the same at build time and in the browser.
 import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
+import { safeJson } from "../lib/safe-json";
 
 export interface PickOption {
   key: string;
@@ -46,8 +47,7 @@ const label = `${title}. Values are listed in the table below.`;
 const plots = linePlots(shown, start.map(({ o, slot }) => ({
   name: o.name, color: slotColor(slot), dashed: slot === 0, values: o.v.slice(0, shown.length),
 })), AXIS_FORMATS[axis], label);
-// "<" escaped so the JSON cannot close its script element.
-const payload = JSON.stringify({ years, options: opts, reference: ref, initial, max, axis, label }).replace(/</g, "\\u003c");
+const payload = safeJson({ years, options: opts, reference: ref, initial, max, axis, label });
 const inStart = new Set(start.map((c) => c.key));
 ---
 <figure class="chart pick-lines">

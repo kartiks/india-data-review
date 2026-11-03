@@ -2,6 +2,7 @@
 // Stacked columns over fiscal years (part-to-whole over time). Segments are separated by a 2px surface gap;
 // only the top segment gets the rounded data-end. Hover/tap/focus a column for its breakdown.
 import { SIZES, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
 
 interface Props {
   title: string;
@@ -46,7 +47,7 @@ const charts = SIZES.map((sz) => {
   return { sz, cols, y, xTicks, right, band, x, w };
 });
 
-const tipData = JSON.stringify({
+const tipData = safeJson({
   columns: years.map((yr, i) => ({
     title: `${yr}${kinds[i] && kinds[i] !== "Actual" ? ` (${kinds[i]})` : ""} · total ${tipFormat(totals[i])}`,
     rows: categories

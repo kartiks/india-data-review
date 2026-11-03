@@ -3,6 +3,7 @@
 // Used for "how the estimate moved" (revisions) and "forecast vs outcome". Hover/tap/focus a row for its values;
 // every value is also in the table view.
 import { SIZES, niceTicks, scale } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
 
 export type Shape = "range" | "dot" | "ring" | "small" | "diamond";
 export interface RowSeries { name: string; slot: number; shape: Shape; join?: boolean }
@@ -37,7 +38,7 @@ const charts = SIZES.map((sz) => {
   return { sz, rowH, labelW, top, bottom, right, height, x, yMid };
 });
 
-const tipData = JSON.stringify({
+const tipData = safeJson({
   columns: rows.map((r) => ({
     title: r.label,
     rows: r.marks.map((m) => ({ slot: series[m.s].slot, value: markText(m), name: series[m.s].name })),

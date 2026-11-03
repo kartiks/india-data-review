@@ -42,6 +42,8 @@ LEVEL_TOL = 10  # ₹ crore: published figures are rounded to the crore, so sums
 GROWTH_TOL = 0.051  # published growth rates have one decimal
 # A published growth rate further than this from every reading of the levels is treated as an error.
 GROSS_GROWTH_GAP = 1.5
+# Series where MoSPI's API keeps the estimates every rate was measured against, so every rate must match exactly.
+EXACT_GROWTH_SERIES = {"2022-23"}
 
 # Sub-industries MoSPI publishes for each industry, when complete.
 SUBINDUSTRIES = {
@@ -57,6 +59,10 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
         "MoSPI's API returns one Gross National Disposable Income row (First Advance Estimate, ₹3,62,04,793 crore) "
         "labelled with the year '1999'. No fiscal year is given, so the row is left out. The value matches no other "
         "GNDI figure in the series and does not affect GDP or growth.",
+    ("industry_growth", "2011-12 series, 2019-20 AE2, total: published nominal growth 3.3%"):
+        "MoSPI's API gives 3.3% for nominal GVA growth in the Second Advance Estimates of 2019-20, but the same "
+        "release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is "
+        "7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.",
 }
 
 
@@ -98,8 +104,16 @@ EARLY_NET_TAXES = (
     "February 2015 release put 2014-15 real GVA at ₹98.58 lakh crore, as here), so they are shown; net taxes for "
     "these four releases are not used."
 )
+EARLY_INDUSTRY_GROWTH = (
+    "The First Advance and Provisional Estimates of 2014-15 were the first releases on the 2011-12 base. Their "
+    "industry growth rates were measured against 2013-14 as estimated at the time; MoSPI's API keeps 2013-14 only "
+    "as later revised (RE2, RE3 and the additional revision of 2011-12 to 2013-14), which moved some industries' "
+    "levels by several percent. The site shows the latest estimate of 2014-15."
+)
 # (check, test on the message) -> reason, for whole families of known differences.
 KNOWN_RULES = [
+    ("industry_growth", lambda m: m.startswith(("2011-12 series, 2014-15 AE1,", "2011-12 series, 2014-15 PE,")),
+     EARLY_INDUSTRY_GROWTH),
     ("identity", lambda m: m.startswith("2011-12-back series, ") and int(m[21:25]) < 2004, BACK_ADDITIVITY),
     ("identity", lambda m: any(m.startswith(f"2011-12 series, {y}, {s},") for y in ("2014-15", "2015-16") for s in ("AE1", "PE"))
      and "GDP = GVA + net taxes" in m, EARLY_NET_TAXES),
@@ -232,7 +246,7 @@ def check_growth(ds: dict, report: Report) -> None:
                         opts = ", ".join(f"{ps} {v:.2f}%" for ps, v in calcs.items())
                         msg = f"{series} series, {year} {stage}: published {key} growth {g[key]}%, levels give {opts}"
                         gap = min(abs(v - g[key]) for v in calcs.values())
-                        if gap > GROSS_GROWTH_GAP:
+                        if gap > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
                             reason = allowed("growth", msg)
                             (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
                         else:
@@ -246,6 +260,55 @@ def check_growth(ds: dict, report: Report) -> None:
                      "rates as MoSPI announced them. Listed for review:")
         notes[2:2] = unreproduced
     report.add("Published GDP growth rates follow from published GDP levels", checked, failures, notes)
+
+
+def check_industry_growth(ds: dict, report: Report) -> None:
+    """Each published industry growth rate (annual and quarterly) must follow from that industry's GVA levels:
+    this period's estimate vs an estimate of the same period a year earlier."""
+    failures, unreproduced = [], []
+    allowed_by_reason: dict[str, list[str]] = defaultdict(list)
+    checked = uncheckable = 0
+    for freq in ("annual", "quarterly"):
+        for series, period, stage, n in nodes(ds, freq):
+            year, _, quarter = period.partition(" ")
+            prev_period = f"{int(year[:4]) - 1}-{year[2:4]}" + (f" {quarter}" if quarter else "")
+            prev = ds["data"][series][freq].get(prev_period, {})
+            levels = n.get("gva_by_industry", {})
+            for ind, g in n.get("gva_growth", {}).items():
+                for price, key in (("con", "real"), ("cur", "nominal")):
+                    if key not in g or price not in levels.get(ind, {}):
+                        continue
+                    calcs = {ps: (levels[ind][price] / pn["gva_by_industry"][ind][price] - 1) * 100
+                             for ps, pn in prev.items() if price in pn.get("gva_by_industry", {}).get(ind, {})}
+                    if not calcs:
+                        uncheckable += 1
+                        continue
+                    checked += 1
+                    gap = min(abs(v - g[key]) for v in calcs.values())
+                    if gap <= GROWTH_TOL:
+                        continue
+                    opts = ", ".join(f"{ps} {v:.2f}%" for ps, v in calcs.items())
+                    msg = f"{series} series, {period} {stage}, {ind}: published {key} growth {g[key]}%, levels give {opts}"
+                    if gap > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
+                        reason = allowed("industry_growth", msg)
+                        if reason:
+                            allowed_by_reason[reason].append(msg)
+                        else:
+                            failures.append(msg)
+                    else:
+                        unreproduced.append((gap, msg))
+    notes = []
+    for reason, msgs in allowed_by_reason.items():
+        notes.append(f"Allowed ({len(msgs)} {'rate' if len(msgs) == 1 else 'rates'}). Reason: {reason}")
+        notes += msgs
+    if uncheckable:
+        notes.append(f"{uncheckable} published rates not checkable (no levels for the year before).")
+    if unreproduced:
+        notes.append(f"{len(unreproduced)} published rates in the 2011-12 series are within {GROSS_GROWTH_GAP} points of "
+                     "the levels but not exact: as for GDP, each was measured against an estimate of the year before "
+                     "that MoSPI's API no longer keeps. The 20 furthest apart, for review:")
+        notes += [m for _, m in sorted(unreproduced, reverse=True)[:20]]
+    report.add("Published industry growth rates follow from industry GVA levels", checked, failures, notes)
 
 
 def check_quarters(ds: dict, report: Report) -> None:
@@ -392,6 +455,7 @@ def main(ds: dict | None = None) -> int:
     check_source(ds, report)
     check_identities(ds, report)
     check_growth(ds, report)
+    check_industry_growth(ds, report)
     check_quarters(ds, report)
     check_join(ds, report)
     check_budget(ds, report)

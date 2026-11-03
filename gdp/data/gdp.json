@@ -1,7 +1,7 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-03T09:42:13+00:00",
+ "generated_at": "2026-11-03T12:03:55+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
@@ -149,10 +149,6 @@
     "2011-12": {
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 8106656.0,
-        "con": 8106656.0
-       },
        "agriculture": {
         "cur": 1501816.0,
         "con": 1501816.0
@@ -184,6 +180,10 @@
        "real_estate": {
         "cur": 1050465.0,
         "con": 1050465.0
+       },
+       "total": {
+        "cur": 8106656.0,
+        "con": 8106656.0
        },
        "trade_hotels": {
         "cur": 883582.0,
@@ -483,10 +483,6 @@
      },
      "ADD": {
       "gva_by_industry": {
-       "total": {
-        "cur": 8106945.0,
-        "con": 8106945.0
-       },
        "agriculture": {
         "cur": 1501947.0,
         "con": 1501947.0
@@ -518,6 +514,10 @@
        "real_estate": {
         "cur": 1050651.0,
         "con": 1050651.0
+       },
+       "total": {
+        "cur": 8106945.0,
+        "con": 8106945.0
        },
        "trade_hotels": {
         "cur": 883582.0,
@@ -837,10 +837,6 @@
     "2012-13": {
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 9210023.0,
-        "con": 8546552.0
-       },
        "agriculture": {
         "cur": 1680797.0,
         "con": 1524398.0
@@ -872,6 +868,10 @@
        "real_estate": {
         "cur": 1243348.0,
         "con": 1149436.0
+       },
+       "total": {
+        "cur": 9210023.0,
+        "con": 8546552.0
        },
        "trade_hotels": {
         "cur": 1054598.0,
@@ -1177,10 +1177,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 9205315.0,
-        "con": 8548229.0
-       },
        "agriculture": {
         "cur": 1680798.0,
         "con": 1524398.0
@@ -1212,6 +1208,10 @@
        "real_estate": {
         "cur": 1239204.0,
         "con": 1149364.0
+       },
+       "total": {
+        "cur": 9205315.0,
+        "con": 8548229.0
        },
        "trade_hotels": {
         "cur": 1054604.0,
@@ -1517,10 +1517,6 @@
      },
      "ADD": {
       "gva_by_industry": {
-       "total": {
-        "cur": 9202692.0,
-        "con": 8546275.0
-       },
        "agriculture": {
         "cur": 1675106.0,
         "con": 1524288.0
@@ -1552,6 +1548,10 @@
        "real_estate": {
         "cur": 1239813.0,
         "con": 1150239.0
+       },
+       "total": {
+        "cur": 9202692.0,
+        "con": 8546275.0
        },
        "trade_hotels": {
         "cur": 1054532.0,
@@ -1849,14 +1849,11 @@
        "cur": 3369201.0
       },
       "gva_growth": {
-       "agriculture": {
-        "real": 5.2
-       },
        "real_estate": {
         "real": 9.4
        },
        "transport_comm": {
-        "real": 7.6
+        "real": 7.5
        }
       },
       "growth": {
@@ -1888,10 +1885,6 @@
     "2013-14": {
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 10380813.0,
-        "con": 9084369.0
-       },
        "agriculture": {
         "cur": 1902452.0,
         "con": 1588237.0
@@ -1923,6 +1916,10 @@
        "real_estate": {
         "cur": 1480551.0,
         "con": 1292812.0
+       },
+       "total": {
+        "cur": 10380813.0,
+        "con": 9084369.0
        },
        "trade_hotels": {
         "cur": 1197668.0,
@@ -2228,10 +2225,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 10366265.0,
-        "con": 9079249.0
-       },
        "agriculture": {
         "cur": 1932692.0,
         "con": 1609061.0
@@ -2263,6 +2256,10 @@
        "real_estate": {
         "cur": 1470044.0,
         "con": 1285629.0
+       },
+       "total": {
+        "cur": 10366265.0,
+        "con": 9079249.0
        },
        "trade_hotels": {
         "cur": 1184412.0,
@@ -2568,10 +2565,6 @@
      },
      "ADD": {
       "gva_by_industry": {
-       "total": {
-        "cur": 10363152.0,
-        "con": 9063648.0
-       },
        "agriculture": {
         "cur": 1926371.0,
         "con": 1609198.0
@@ -2603,6 +2596,10 @@
        "real_estate": {
         "cur": 1470166.0,
         "con": 1289492.0
+       },
+       "total": {
+        "cur": 10363152.0,
+        "con": 9063648.0
        },
        "trade_hotels": {
         "cur": 1184560.0,
@@ -2899,11 +2896,6 @@
       "saving": {
        "cur": 3608192.0
       },
-      "gva_growth": {
-       "transport_comm": {
-        "real": 8.7
-       }
-      },
       "growth": {
        "gdp": {
         "real": 6.3,
@@ -3195,10 +3187,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 11472409.0,
-        "con": 9727490.0
-       },
        "agriculture": {
         "cur": 1995251.0,
         "con": 1584293.0
@@ -3230,6 +3218,10 @@
        "real_estate": {
         "cur": 1708919.0,
         "con": 1444769.0
+       },
+       "total": {
+        "cur": 11472409.0,
+        "con": 9727490.0
        },
        "trade_hotels": {
         "cur": 1352240.0,
@@ -3528,7 +3520,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.3
+        "real": -0.2
        },
        "construction": {
         "real": 4.4
@@ -3537,7 +3529,7 @@
         "real": 7.9
        },
        "manufacturing": {
-        "real": 5.1
+        "real": 5.5
        },
        "mining": {
         "real": 10.8
@@ -3556,10 +3548,10 @@
         "nominal": 10.5
        },
        "trade_hotels": {
-        "real": 10.8
+        "real": 10.7
        },
        "transport_comm": {
-        "real": 8.2
+        "real": 8.4
        },
        "utilities": {
         "real": 8.0
@@ -3574,10 +3566,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 11470415.0,
-        "con": 9709346.0
-       },
        "agriculture": {
         "cur": 2067935.0,
         "con": 1604259.0
@@ -3609,6 +3597,10 @@
        "real_estate": {
         "cur": 1704170.0,
         "con": 1440729.0
+       },
+       "total": {
+        "cur": 11470415.0,
+        "con": 9709346.0
        },
        "trade_hotels": {
         "cur": 1311475.0,
@@ -3907,7 +3899,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.3
+        "real": -0.2
        },
        "construction": {
         "real": 3.0
@@ -3916,7 +3908,7 @@
         "real": 8.9
        },
        "manufacturing": {
-        "real": 0.6
+        "real": 7.4
        },
        "mining": {
         "real": 14.7
@@ -3935,10 +3927,10 @@
         "nominal": 10.6
        },
        "trade_hotels": {
-        "real": 8.8
+        "real": 8.5
        },
        "transport_comm": {
-        "real": 8.2
+        "real": 8.6
        },
        "utilities": {
         "real": 7.1
@@ -3953,10 +3945,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 11504279.0,
-        "con": 9712132.0
-       },
        "agriculture": {
         "cur": 2093611.0,
         "con": 1605715.0
@@ -3988,6 +3976,10 @@
        "real_estate": {
         "cur": 1701935.0,
         "con": 1446459.0
+       },
+       "total": {
+        "cur": 11504279.0,
+        "con": 9712132.0
        },
        "trade_hotels": {
         "cur": 1320833.0,
@@ -4286,7 +4278,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.3
+        "real": -0.2
        },
        "construction": {
         "real": 4.3
@@ -4295,7 +4287,7 @@
         "real": 8.5
        },
        "manufacturing": {
-        "real": 0.0
+        "real": 7.8
        },
        "mining": {
         "real": 9.7
@@ -4314,10 +4306,10 @@
         "nominal": 11.0
        },
        "trade_hotels": {
-        "real": 10.1
+        "real": 9.7
        },
        "transport_comm": {
-        "real": 8.2
+        "real": 8.7
        },
        "utilities": {
         "real": 7.2
@@ -4614,10 +4606,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 12451937.0,
-        "con": 10469719.0
-       },
        "agriculture": {
         "cur": 2172909.0,
         "con": 1616461.0
@@ -4649,6 +4637,10 @@
        "real_estate": {
         "cur": 1911358.0,
         "con": 1622340.0
+       },
+       "total": {
+        "cur": 12451937.0,
+        "con": 10469719.0
        },
        "trade_hotels": {
         "cur": 1425853.0,
@@ -4947,7 +4939,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.5
+        "real": 0.7
        },
        "construction": {
         "real": 2.7
@@ -4956,7 +4948,7 @@
         "real": 6.6
        },
        "manufacturing": {
-        "real": 7.9
+        "real": 10.5
        },
        "mining": {
         "real": 12.3
@@ -4975,10 +4967,10 @@
         "nominal": 8.5
        },
        "trade_hotels": {
-        "real": 11.3
+        "real": 11.6
        },
        "transport_comm": {
-        "real": 1.9
+        "real": 9.0
        },
        "utilities": {
         "real": 5.0
@@ -4993,10 +4985,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 12566645.0,
-        "con": 10503347.0
-       },
        "agriculture": {
         "cur": 2225367.0,
         "con": 1615215.0
@@ -5028,6 +5016,10 @@
        "real_estate": {
         "cur": 1904030.0,
         "con": 1625891.0
+       },
+       "total": {
+        "cur": 12566645.0,
+        "con": 10503347.0
        },
        "trade_hotels": {
         "cur": 1431016.0,
@@ -5326,7 +5318,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.9
+        "real": 0.5
        },
        "construction": {
         "real": 3.7
@@ -5335,7 +5327,7 @@
         "real": 7.4
        },
        "manufacturing": {
-        "real": 19.9
+        "real": 12.7
        },
        "mining": {
         "real": 13.7
@@ -5354,10 +5346,10 @@
         "nominal": 9.2
        },
        "trade_hotels": {
-        "real": 10.6
+        "real": 10.8
        },
        "transport_comm": {
-        "real": 1.8
+        "real": 9.3
        },
        "utilities": {
         "real": 4.7
@@ -5372,10 +5364,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 12574498.0,
-        "con": 10491870.0
-       },
        "agriculture": {
         "cur": 2227532.0,
         "con": 1616145.0
@@ -5407,6 +5395,10 @@
        "real_estate": {
         "cur": 1899851.0,
         "con": 1621999.0
+       },
+       "total": {
+        "cur": 12574498.0,
+        "con": 10491870.0
        },
        "trade_hotels": {
         "cur": 1433968.0,
@@ -5705,7 +5697,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.4
+        "real": 0.6
        },
        "construction": {
         "real": 3.6
@@ -5714,7 +5706,7 @@
         "real": 7.2
        },
        "manufacturing": {
-        "real": 19.6
+        "real": 13.0
        },
        "mining": {
         "real": 10.1
@@ -5733,10 +5725,10 @@
         "nominal": 9.3
        },
        "trade_hotels": {
-        "real": 10.8
+        "real": 11.0
        },
        "transport_comm": {
-        "real": 1.7
+        "real": 8.8
        },
        "utilities": {
         "real": 4.7
@@ -6164,10 +6156,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 13841591.0,
-        "con": 11247629.0
-       },
        "agriculture": {
         "cur": 2484005.0,
         "con": 1716745.0
@@ -6199,6 +6187,10 @@
        "real_estate": {
         "cur": 2114386.0,
         "con": 1755304.0
+       },
+       "total": {
+        "cur": 13841591.0,
+        "con": 11247629.0
        },
        "trade_hotels": {
         "cur": 1586238.0,
@@ -6497,7 +6489,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.5
+        "real": 6.2
        },
        "construction": {
         "real": 1.3
@@ -6506,7 +6498,7 @@
         "real": 1.2
        },
        "manufacturing": {
-        "real": 5.6
+        "real": 7.8
        },
        "mining": {
         "real": 12.9
@@ -6525,10 +6517,10 @@
         "nominal": 10.1
        },
        "trade_hotels": {
-        "real": 8.9
+        "real": 8.8
        },
        "transport_comm": {
-        "real": 5.9
+        "real": 4.3
        },
        "utilities": {
         "real": 9.2
@@ -6543,10 +6535,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 13935917.0,
-        "con": 11318971.0
-       },
        "agriculture": {
         "cur": 2496358.0,
         "con": 1717466.0
@@ -6578,6 +6566,10 @@
        "real_estate": {
         "cur": 2161677.0,
         "con": 1797341.0
+       },
+       "total": {
+        "cur": 13935917.0,
+        "con": 11318971.0
        },
        "trade_hotels": {
         "cur": 1608916.0,
@@ -6876,7 +6868,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 9.8
+        "real": 6.2
        },
        "construction": {
         "real": 6.0
@@ -6885,7 +6877,7 @@
         "real": 3.6
        },
        "manufacturing": {
-        "real": 1.8
+        "real": 7.9
        },
        "mining": {
         "real": 9.4
@@ -6904,10 +6896,10 @@
         "nominal": 10.8
        },
        "trade_hotels": {
-        "real": 10.2
+        "real": 10.1
        },
        "transport_comm": {
-        "real": 5.8
+        "real": 3.3
        },
        "utilities": {
         "real": 9.9
@@ -6922,10 +6914,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 13965200.0,
-        "con": 11328285.0
-       },
        "agriculture": {
         "cur": 2518662.0,
         "con": 1726004.0
@@ -6957,6 +6945,10 @@
        "real_estate": {
         "cur": 2161236.0,
         "con": 1796983.0
+       },
+       "total": {
+        "cur": 13965200.0,
+        "con": 11328285.0
        },
        "trade_hotels": {
         "cur": 1609001.0,
@@ -7255,7 +7247,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 10.0
+        "real": 6.8
        },
        "construction": {
         "real": 5.9
@@ -7264,7 +7256,7 @@
         "real": 3.4
        },
        "manufacturing": {
-        "real": 0.8
+        "real": 7.9
        },
        "mining": {
         "real": 9.8
@@ -7283,10 +7275,10 @@
         "nominal": 11.1
        },
        "trade_hotels": {
-        "real": 10.3
+        "real": 10.1
        },
        "transport_comm": {
-        "real": 5.9
+        "real": 3.5
        },
        "utilities": {
         "real": 10.0
@@ -7714,10 +7706,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 15482714.0,
-        "con": 12104164.0
-       },
        "agriculture": {
         "cur": 2670146.0,
         "con": 1803038.0
@@ -7749,6 +7737,10 @@
        "real_estate": {
         "cur": 2410812.0,
         "con": 1922436.0
+       },
+       "total": {
+        "cur": 15482714.0,
+        "con": 12104164.0
        },
        "trade_hotels": {
         "cur": 1833719.0,
@@ -8047,7 +8039,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.0
+        "real": 4.9
        },
        "construction": {
         "real": 5.6
@@ -8056,7 +8048,7 @@
         "real": 4.2
        },
        "manufacturing": {
-        "real": -0.9
+        "real": 5.9
        },
        "mining": {
         "real": 5.0
@@ -8075,10 +8067,10 @@
         "nominal": 11.0
        },
        "trade_hotels": {
-        "real": 10.4
+        "real": 10.0
        },
        "transport_comm": {
-        "real": 6.5
+        "real": 3.6
        },
        "utilities": {
         "real": 8.6
@@ -8093,10 +8085,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 15513122.0,
-        "con": 12074413.0
-       },
        "agriculture": {
         "cur": 2796908.0,
         "con": 1828329.0
@@ -8128,6 +8116,10 @@
        "real_estate": {
         "cur": 2362636.0,
         "con": 1879751.0
+       },
+       "total": {
+        "cur": 15513122.0,
+        "con": 12074413.0
        },
        "trade_hotels": {
         "cur": 1833267.0,
@@ -8426,7 +8418,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.4
+        "real": 5.9
        },
        "construction": {
         "real": 5.0
@@ -8435,7 +8427,7 @@
         "real": 4.8
        },
        "manufacturing": {
-        "real": 5.1
+        "real": 6.6
        },
        "mining": {
         "real": 4.9
@@ -8454,10 +8446,10 @@
         "nominal": 11.1
        },
        "trade_hotels": {
-        "real": 10.4
+        "real": 10.0
        },
        "transport_comm": {
-        "real": 6.5
+        "real": 3.3
        },
        "utilities": {
         "real": 11.2
@@ -8472,10 +8464,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 15505665.0,
-        "con": 12034170.0
-       },
        "agriculture": {
         "cur": 2829825.0,
         "con": 1840022.0
@@ -8507,6 +8495,10 @@
        "real_estate": {
         "cur": 2281017.0,
         "con": 1808520.0
+       },
+       "total": {
+        "cur": 15505665.0,
+        "con": 12034170.0
        },
        "trade_hotels": {
         "cur": 1881394.0,
@@ -8805,7 +8797,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.8
+        "real": 6.6
        },
        "construction": {
         "real": 5.2
@@ -8833,10 +8825,10 @@
         "nominal": 11.0
        },
        "trade_hotels": {
-        "real": 13.2
+        "real": 12.8
        },
        "transport_comm": {
-        "real": 39.0
+        "real": 5.7
        },
        "utilities": {
         "real": 10.6
@@ -9264,10 +9256,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 17139962.0,
-        "con": 12803128.0
-       },
        "agriculture": {
         "cur": 2922846.0,
         "con": 1872339.0
@@ -9299,6 +9287,10 @@
        "real_estate": {
         "cur": 2669824.0,
         "con": 2023280.0
+       },
+       "total": {
+        "cur": 17139962.0,
+        "con": 12803128.0
        },
        "trade_hotels": {
         "cur": 2073330.0,
@@ -9597,7 +9589,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 8.1
+        "real": 2.4
        },
        "construction": {
         "real": 6.1
@@ -9606,7 +9598,7 @@
         "real": 4.7
        },
        "manufacturing": {
-        "real": 4.5
+        "real": 5.7
        },
        "mining": {
         "real": -5.8
@@ -9628,7 +9620,7 @@
         "real": 8.5
        },
        "transport_comm": {
-        "real": 5.8
+        "real": 6.2
        },
        "utilities": {
         "real": 8.2
@@ -9643,10 +9635,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 17161212.0,
-        "con": 12744202.0
-       },
        "agriculture": {
         "cur": 3016276.0,
         "con": 1887144.0
@@ -9678,6 +9666,10 @@
        "real_estate": {
         "cur": 2587114.0,
         "con": 1955631.0
+       },
+       "total": {
+        "cur": 17161212.0,
+        "con": 12744202.0
        },
        "trade_hotels": {
         "cur": 2134987.0,
@@ -9976,7 +9968,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 8.4
+        "real": 2.5
        },
        "construction": {
         "real": 6.3
@@ -9985,7 +9977,7 @@
         "real": 4.7
        },
        "manufacturing": {
-        "real": 5.1
+        "real": 5.2
        },
        "mining": {
         "real": 0.2
@@ -10007,7 +9999,7 @@
         "real": 8.8
        },
        "transport_comm": {
-        "real": 5.9
+        "real": 3.7
        },
        "utilities": {
         "real": 8.0
@@ -10022,10 +10014,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 17175128.0,
-        "con": 12733797.0
-       },
        "agriculture": {
         "cur": 3029925.0,
         "con": 1878598.0
@@ -10057,6 +10045,10 @@
        "real_estate": {
         "cur": 2587720.0,
         "con": 1956051.0
+       },
+       "total": {
+        "cur": 17175128.0,
+        "con": 12733797.0
        },
        "trade_hotels": {
         "cur": 2136707.0,
@@ -10355,7 +10347,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 8.6
+        "real": 2.0
        },
        "construction": {
         "real": 6.4
@@ -10364,7 +10356,7 @@
         "real": 4.0
        },
        "manufacturing": {
-        "real": 6.8
+        "real": 5.4
        },
        "mining": {
         "real": -0.8
@@ -10383,10 +10375,10 @@
         "nominal": 10.7
        },
        "trade_hotels": {
-        "real": 8.8
+        "real": 8.9
        },
        "transport_comm": {
-        "real": 5.9
+        "real": 3.8
        },
        "utilities": {
         "real": 7.8
@@ -10814,10 +10806,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18461343.0,
-        "con": 13271470.0
-       },
        "agriculture": {
         "cur": 3394032.0,
         "con": 1968570.0
@@ -10849,6 +10837,10 @@
        "real_estate": {
         "cur": 2863021.0,
         "con": 2121765.0
+       },
+       "total": {
+        "cur": 18461343.0,
+        "con": 13271470.0
        },
        "trade_hotels": {
         "cur": 2323631.0,
@@ -11147,7 +11139,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.9
+        "real": 4.3
        },
        "construction": {
         "real": 0.9
@@ -11156,7 +11148,7 @@
         "real": 4.1
        },
        "manufacturing": {
-        "real": -1.8
+        "real": -2.4
        },
        "mining": {
         "real": -2.5
@@ -11175,10 +11167,10 @@
         "nominal": 7.5
        },
        "trade_hotels": {
-        "real": 6.9
+        "real": 7.0
        },
        "transport_comm": {
-        "real": 3.0
+        "real": 5.0
        },
        "utilities": {
         "real": 2.0
@@ -11193,10 +11185,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18355109.0,
-        "con": 13219475.0
-       },
        "agriculture": {
         "cur": 3358363.0,
         "con": 1982302.0
@@ -11228,6 +11216,10 @@
        "real_estate": {
         "cur": 2851979.0,
         "con": 2112721.0
+       },
+       "total": {
+        "cur": 18355109.0,
+        "con": 13219475.0
        },
        "trade_hotels": {
         "cur": 2325812.0,
@@ -11526,7 +11518,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.4
+        "real": 5.5
        },
        "construction": {
         "real": 1.1
@@ -11535,7 +11527,7 @@
         "real": 3.4
        },
        "manufacturing": {
-        "real": -2.0
+        "real": -2.9
        },
        "mining": {
         "real": -1.5
@@ -11557,7 +11549,7 @@
         "real": 7.0
        },
        "transport_comm": {
-        "real": 3.0
+        "real": 3.6
        },
        "utilities": {
         "real": 2.2
@@ -11572,10 +11564,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18381117.0,
-        "con": 13236100.0
-       },
        "agriculture": {
         "cur": 3368471.0,
         "con": 1994325.0
@@ -11607,6 +11595,10 @@
        "real_estate": {
         "cur": 2853477.0,
         "con": 2113707.0
+       },
+       "total": {
+        "cur": 18381117.0,
+        "con": 13236100.0
        },
        "trade_hotels": {
         "cur": 2326330.0,
@@ -11905,7 +11897,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 7.5
+        "real": 6.1
        },
        "construction": {
         "real": 1.6
@@ -11914,7 +11906,7 @@
         "real": 3.4
        },
        "manufacturing": {
-        "real": -3.0
+        "real": -2.9
        },
        "mining": {
         "real": -2.9
@@ -11933,10 +11925,10 @@
         "nominal": 7.0
        },
        "trade_hotels": {
-        "real": 7.1
+        "real": 7.0
        },
        "transport_comm": {
-        "real": 3.0
+        "real": 3.6
        },
        "utilities": {
         "real": 2.2
@@ -12364,10 +12356,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18057809.0,
-        "con": 12585073.0
-       },
        "agriculture": {
         "cur": 3609494.0,
         "con": 2048031.0
@@ -12399,6 +12387,10 @@
        "real_estate": {
         "cur": 2957537.0,
         "con": 2137176.0
+       },
+       "total": {
+        "cur": 18057809.0,
+        "con": 12585073.0
        },
        "trade_hotels": {
         "cur": 1818981.0,
@@ -12697,7 +12689,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.1
+        "real": 3.3
        },
        "construction": {
         "real": -7.3
@@ -12706,7 +12698,7 @@
         "real": 5.1
        },
        "manufacturing": {
-        "real": -18.4
+        "real": -0.5
        },
        "mining": {
         "real": -8.6
@@ -12725,10 +12717,10 @@
         "nominal": -1.6
        },
        "trade_hotels": {
-        "real": -19.3
+        "real": -22.4
        },
        "transport_comm": {
-        "real": -5.5
+        "real": -15.2
        },
        "utilities": {
         "real": -3.6
@@ -12743,10 +12735,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18188780.0,
-        "con": 12681482.0
-       },
        "agriculture": {
         "cur": 3695412.0,
         "con": 2076327.0
@@ -12778,6 +12766,10 @@
        "real_estate": {
         "cur": 2950834.0,
         "con": 2134289.0
+       },
+       "total": {
+        "cur": 18188780.0,
+        "con": 12681482.0
        },
        "trade_hotels": {
         "cur": 1847896.0,
@@ -13076,7 +13068,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.2
+        "real": 4.1
        },
        "construction": {
         "real": -5.7
@@ -13085,7 +13077,7 @@
         "real": 5.1
        },
        "manufacturing": {
-        "real": -5.7
+        "real": 2.9
        },
        "mining": {
         "real": -8.5
@@ -13104,10 +13096,10 @@
         "nominal": -1.0
        },
        "trade_hotels": {
-        "real": -18.2
+        "real": -21.2
        },
        "transport_comm": {
-        "real": -5.6
+        "real": -16.4
        },
        "utilities": {
         "real": -4.3
@@ -13122,10 +13114,6 @@
      },
      "RE3": {
       "gva_by_industry": {
-       "total": {
-        "cur": 18210997.0,
-        "con": 12687344.0
-       },
        "agriculture": {
         "cur": 3706469.0,
         "con": 2074212.0
@@ -13157,6 +13145,10 @@
        "real_estate": {
         "cur": 2941808.0,
         "con": 2129836.0
+       },
+       "total": {
+        "cur": 18210997.0,
+        "con": 12687344.0
        },
        "trade_hotels": {
         "cur": 1845439.0,
@@ -13455,7 +13447,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.2
+        "real": 4.0
        },
        "construction": {
         "real": -4.6
@@ -13464,7 +13456,7 @@
         "real": 5.0
        },
        "manufacturing": {
-        "real": -9.3
+        "real": 3.0
        },
        "mining": {
         "real": -8.2
@@ -13483,10 +13475,10 @@
         "nominal": -0.9
        },
        "trade_hotels": {
-        "real": -18.3
+        "real": -21.3
        },
        "transport_comm": {
-        "real": -5.7
+        "real": -16.9
        },
        "utilities": {
         "real": -4.1
@@ -13914,10 +13906,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 21438883.0,
-        "con": 13798024.0
-       },
        "agriculture": {
         "cur": 4066649.0,
         "con": 2149122.0
@@ -13949,6 +13937,10 @@
        "real_estate": {
         "cur": 3437033.0,
         "con": 2268434.0
+       },
+       "total": {
+        "cur": 21438883.0,
+        "con": 13798024.0
        },
        "trade_hotels": {
         "cur": 2246696.0,
@@ -14247,7 +14239,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.0
+        "real": 3.5
        },
        "construction": {
         "real": 14.8
@@ -14256,7 +14248,7 @@
         "real": 0.7
        },
        "manufacturing": {
-        "real": 26.9
+        "real": 11.0
        },
        "mining": {
         "real": 7.0
@@ -14275,10 +14267,10 @@
         "nominal": 17.8
        },
        "trade_hotels": {
-        "real": 7.3
+        "real": 9.0
        },
        "transport_comm": {
-        "real": 3.9
+        "real": 23.0
        },
        "utilities": {
         "real": 9.8
@@ -14293,10 +14285,6 @@
      },
      "RE2": {
       "gva_by_industry": {
-       "total": {
-        "cur": 21635583.0,
-        "con": 13876840.0
-       },
        "agriculture": {
         "cur": 4099472.0,
         "con": 2170106.0
@@ -14328,6 +14316,10 @@
        "real_estate": {
         "cur": 3472633.0,
         "con": 2291541.0
+       },
+       "total": {
+        "cur": 21635583.0,
+        "con": 13876840.0
        },
        "trade_hotels": {
         "cur": 2309096.0,
@@ -14626,7 +14618,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 6.3
+        "real": 4.6
        },
        "construction": {
         "real": 19.9
@@ -14635,7 +14627,7 @@
         "real": 0.8
        },
        "manufacturing": {
-        "real": 18.7
+        "real": 9.9
        },
        "mining": {
         "real": 6.2
@@ -14654,10 +14646,10 @@
         "nominal": 18.8
        },
        "trade_hotels": {
-        "real": 10.9
+        "real": 12.2
        },
        "transport_comm": {
-        "real": 6.4
+        "real": 20.9
        },
        "utilities": {
         "real": 10.3
@@ -15085,10 +15077,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 24659041.0,
-        "con": 14804900.0
-       },
        "agriculture": {
         "cur": 4484267.0,
         "con": 2272250.0
@@ -15120,6 +15108,10 @@
        "real_estate": {
         "cur": 4077678.0,
         "con": 2510871.0
+       },
+       "total": {
+        "cur": 24659041.0,
+        "con": 14804900.0
        },
        "trade_hotels": {
         "cur": 2854476.0,
@@ -15418,7 +15410,7 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 5.0
+        "real": 4.7
        },
        "construction": {
         "real": 9.4
@@ -15427,7 +15419,7 @@
         "real": 7.6
        },
        "manufacturing": {
-        "real": -10.3
+        "real": -2.2
        },
        "mining": {
         "real": 1.9
@@ -15446,10 +15438,10 @@
         "nominal": 13.9
        },
        "trade_hotels": {
-        "real": 10.9
+        "real": 13.8
        },
        "transport_comm": {
-        "real": 8.2
+        "real": 8.4
        },
        "utilities": {
         "real": 9.4
@@ -15464,10 +15456,6 @@
      },
      "FINAL": {
       "gva_by_industry": {
-       "total": {
-        "cur": 24646697.0,
-        "con": 14878028.0
-       },
        "agriculture": {
         "cur": 4449332.0,
         "con": 2305977.0
@@ -15499,6 +15487,10 @@
        "real_estate": {
         "cur": 4147760.0,
         "con": 2555908.0
+       },
+       "total": {
+        "cur": 24646697.0,
+        "con": 14878028.0
        },
        "trade_hotels": {
         "cur": 2869545.0,
@@ -15797,8 +15789,8 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 4.9,
-        "nominal": 10.2
+        "real": 6.2,
+        "nominal": 8.5
        },
        "construction": {
         "real": 9.1,
@@ -15809,8 +15801,8 @@
         "nominal": 23.8
        },
        "manufacturing": {
-        "real": -1.4,
-        "nominal": 3.2
+        "real": -1.7,
+        "nominal": 4.1
        },
        "mining": {
         "real": 3.3,
@@ -15833,12 +15825,12 @@
         "nominal": 13.9
        },
        "trade_hotels": {
-        "real": 10.5,
-        "nominal": 20.0
+        "real": 14.4,
+        "nominal": 24.2
        },
        "transport_comm": {
-        "real": 8.2,
-        "nominal": 15.2
+        "real": 8.3,
+        "nominal": 12.9
        },
        "utilities": {
         "real": 10.8,
@@ -16267,10 +16259,6 @@
      },
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 27412888.0,
-        "con": 16151476.0
-       },
        "agriculture": {
         "cur": 4877867.0,
         "con": 2367286.0
@@ -16302,6 +16290,10 @@
        "real_estate": {
         "cur": 4645967.0,
         "con": 2841712.0
+       },
+       "total": {
+        "cur": 27412888.0,
+        "con": 16151476.0
        },
        "trade_hotels": {
         "cur": 3128534.0,
@@ -16600,8 +16592,8 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 5.4,
-        "nominal": 10.3
+        "real": 2.6,
+        "nominal": 9.6
        },
        "construction": {
         "real": 10.4,
@@ -16612,8 +16604,8 @@
         "nominal": 10.0
        },
        "manufacturing": {
-        "real": -0.2,
-        "nominal": -4.0
+        "real": 12.3,
+        "nominal": 10.9
        },
        "mining": {
         "real": 3.2,
@@ -16636,12 +16628,12 @@
         "nominal": 11.2
        },
        "trade_hotels": {
-        "real": 7.1,
-        "nominal": 7.9
+        "real": 8.1,
+        "nominal": 9.0
        },
        "transport_comm": {
-        "real": 7.3,
-        "nominal": 1.5
+        "real": 6.1,
+        "nominal": 10.2
        },
        "utilities": {
         "real": 8.6,
@@ -36880,10 +36872,6 @@
     "2022-23": {
      "FINAL": {
       "gva_by_industry": {
-       "total": {
-        "cur": 23823136.0,
-        "con": 23823136.0
-       },
        "agriculture": {
         "cur": 4744554.0,
         "con": 4744554.0
@@ -36923,6 +36911,10 @@
        "real_estate": {
         "cur": 4567483.0,
         "con": 4567483.0
+       },
+       "total": {
+        "cur": 23823136.0,
+        "con": 23823136.0
        },
        "trade_hotels": {
         "cur": 1946700.0,
@@ -37231,10 +37223,6 @@
     "2023-24": {
      "FINAL": {
       "gva_by_industry": {
-       "total": {
-        "cur": 26405480.0,
-        "con": 25592651.0
-       },
        "agriculture": {
         "cur": 5105553.0,
         "con": 4872239.0
@@ -37274,6 +37262,10 @@
        "real_estate": {
         "cur": 5071820.0,
         "con": 4866227.0
+       },
+       "total": {
+        "cur": 26405480.0,
+        "con": 25592651.0
        },
        "trade_hotels": {
         "cur": 2255038.0,
@@ -37561,8 +37553,8 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 2.9,
-        "nominal": 7.2
+        "real": 2.7,
+        "nominal": 7.6
        },
        "construction": {
         "real": 9.7,
@@ -37577,8 +37569,8 @@
         "nominal": 12.2
        },
        "manufacturing": {
-        "real": -1.3,
-        "nominal": -1.0
+        "real": 10.7,
+        "nominal": 10.8
        },
        "mining": {
         "real": 0.9,
@@ -37605,16 +37597,16 @@
         "nominal": 10.8
        },
        "trade_hotels": {
-        "real": 14.0,
-        "nominal": 14.9
+        "real": 14.1,
+        "nominal": 15.8
        },
        "trade_transport": {
         "real": 11.5,
         "nominal": 13.8
        },
        "transport_comm": {
-        "real": 7.4,
-        "nominal": 8.3
+        "real": 7.7,
+        "nominal": 10.8
        },
        "utilities": {
         "real": 11.7,
@@ -37650,10 +37642,6 @@
     "2024-25": {
      "RE1": {
       "gva_by_industry": {
-       "total": {
-        "cur": 28845683.0,
-        "con": 27421770.0
-       },
        "agriculture": {
         "cur": 5576710.0,
         "con": 5074193.0
@@ -37693,6 +37681,10 @@
        "real_estate": {
         "cur": 5659206.0,
         "con": 5293759.0
+       },
+       "total": {
+        "cur": 28845683.0,
+        "con": 27421770.0
        },
        "trade_hotels": {
         "cur": 2451434.0,
@@ -37980,8 +37972,8 @@
       },
       "gva_growth": {
        "agriculture": {
-        "real": 5.1,
-        "nominal": 9.3
+        "real": 4.1,
+        "nominal": 9.2
        },
        "construction": {
         "real": 6.6,
@@ -37996,8 +37988,8 @@
         "nominal": 11.0
        },
        "manufacturing": {
-        "real": 7.5,
-        "nominal": 12.6
+        "real": 10.0,
+        "nominal": 8.4
        },
        "mining": {
         "real": 13.5,
@@ -38024,16 +38016,16 @@
         "nominal": 9.2
        },
        "trade_hotels": {
-        "real": 7.7,
-        "nominal": 8.4
+        "real": 7.2,
+        "nominal": 8.7
        },
        "trade_transport": {
         "real": 7.0,
         "nominal": 7.6
        },
        "transport_comm": {
-        "real": 3.9,
-        "nominal": 16.3
+        "real": 6.7,
+        "nominal": 5.9
        },
        "utilities": {
         "real": 2.8,

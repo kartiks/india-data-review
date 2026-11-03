@@ -239,10 +239,12 @@ export function rbiValue(tableId: string, state: string, year: string, variant =
 }
 export const rbiYears = (tableId: string) => [...new Set(RBI.filter((r) => r.table_id === tableId).map((r) => r.year))].sort();
 /** The latest year in which nearly all states have a figure (at least 90% of the best-covered year): the newest
- * year in the handbook is often missing many states. */
+ * year in the handbook is often missing many states. Throws if the table (or variant) has no state figures at all,
+ * so a renamed table or an unparsed unit stops the build instead of showing blanks. */
 export function rbiLatestYear(tableId: string, variant = ""): string {
   const count = (y: string) => RBI.filter((r) => r.table_id === tableId && r.year === y && r.variant === variant && r.value != null && r.state !== "All India").length;
   const years = rbiYears(tableId);
-  const best = Math.max(...years.map(count));
+  const best = Math.max(0, ...years.map(count));
+  if (!best) throw new Error(`No state figures in the RBI handbook for table "${tableId}"${variant ? `, variant "${variant}"` : ""}`);
   return [...years].reverse().find((y) => count(y) >= 0.9 * best) ?? years[years.length - 1];
 }

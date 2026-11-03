@@ -114,6 +114,25 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
           </ul>
         </nav>
       )}
+      <script is:inline>
+        // Navigation rows scroll sideways on narrow screens. Fade the edge where more items are hidden,
+        // and start with the current page's item in view. Runs before first paint, so nothing jumps.
+        for (const ul of document.querySelectorAll(".site-header nav ul")) {
+          const cur = ul.querySelector('[aria-current="page"]');
+          if (cur && ul.scrollWidth > ul.clientWidth) {
+            const a = cur.getBoundingClientRect(), u = ul.getBoundingClientRect();
+            if (a.left < u.left || a.right > u.right) ul.scrollLeft += a.left - u.left - (u.width - a.width) / 2;
+          }
+          const edges = () => {
+            const max = ul.scrollWidth - ul.clientWidth;
+            ul.toggleAttribute("data-more-left", ul.scrollLeft > 1);
+            ul.toggleAttribute("data-more-right", ul.scrollLeft < max - 1);
+          };
+          edges();
+          ul.addEventListener("scroll", edges, { passive: true });
+          addEventListener("resize", edges, { passive: true });
+        }
+      </script>
     </header>
     <main class="wrap">
       <slot />
@@ -177,6 +196,14 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
   .theme { background: none; border: 1px solid var(--border); color: var(--ink-2); border-radius: 8px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; }
   nav ul { list-style: none; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
   nav ul::-webkit-scrollbar { display: none; }
+  /* Fade an edge when more items are scrolled out of view that way (set by the script above). The mask
+     only uses alpha, so it works on any background in either theme. */
+  nav ul {
+    --fade-l: 0px; --fade-r: 0px;
+    mask-image: linear-gradient(to right, transparent, #000 var(--fade-l), #000 calc(100% - var(--fade-r)), transparent);
+  }
+  nav ul[data-more-left] { --fade-l: 32px; }
+  nav ul[data-more-right] { --fade-r: 32px; }
   .tabs ul { margin: 0 -7px; padding: 4px 0 0; }
   .tabs a { display: block; padding: 8px 9px 10px; color: var(--ink-2); text-decoration: none; font-size: 0.95rem; white-space: nowrap; border-bottom: 2px solid transparent; }
   .tabs a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); font-weight: 600; }
@@ -187,5 +214,11 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
   .subnav a { display: block; padding: 6px 9px; color: var(--ink-2); text-decoration: none; font-size: 0.86rem; white-space: nowrap; border-radius: 6px; }
   .subnav a[aria-current="page"] { color: var(--ink); background: var(--surface); font-weight: 600; }
   .subnav a:hover { color: var(--ink); }
+  /* On phones the three header rows would take ~130px of the screen for good; let them scroll away. */
+  @media (max-width: 640px) {
+    .site-header { position: static; }
+    .bar { padding-top: 6px; }
+    .tabs a { padding: 6px 9px 8px; }
+  }
   .site-footer { border-top: 1px solid var(--border); padding: 20px 0 32px; color: var(--ink-2); }
 </style>

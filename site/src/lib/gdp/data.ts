@@ -15,6 +15,11 @@ export interface Node {
   gva_sub?: Record<string, Record<string, Pair>>;
   gfcf_by_sector?: Record<string, Pair>;
   saving_by_sector?: Record<string, Pair>;
+  per_person?: Partial<Record<PerPersonMeasure, Pair>>; // ₹ per person (pipeline: population.py)
+}
+export type PerPersonMeasure = "gdp" | "gni" | "nni" | "pfce";
+export interface PopYear {
+  million: number; source: "projections" | "mospi"; document?: string; printed_million?: number; printed_lakh?: number;
 }
 type Stages = Record<string, Node>;
 interface Dataset {
@@ -30,6 +35,11 @@ interface Dataset {
   forecasts: { economic_survey: SurveyForecast[]; rbi: RbiForecast[] };
   source_problems: string[];
   duplicate_rows: string[];
+  population: {
+    by_series: Record<string, Record<string, PopYear>>;
+    sources: { projections: { title: string; table: string; url: string }; press_notes: { document: string; date: string; url: string }[]; rbi: { title: string; url: string }[] };
+    projections_until: string;
+  };
 }
 export interface BudgetAssumption {
   budget: string; gdp_crore: number; growth_pct?: number; over?: string; base_gdp_crore?: number;
@@ -188,3 +198,17 @@ export const SERIES_LABEL: Record<string, string> = {
   [NEW]: "2022-23 base (new series)",
 };
 export const GENERATED = DS.generated_at;
+
+// ---- per person ------------------------------------------------------------------
+
+export const POPULATION = DS.population;
+export const popOf = (series: string, year: string): PopYear | undefined => POPULATION.by_series[series]?.[year];
+
+/** Real growth of a per-person figure: its constant-price level in the latest estimate of the year, on the latest
+ *  estimate of the year before, in the same series. Worked out here (MoSPI publishes per-person growth only in its
+ *  press notes, for the years they cover). */
+export function perPersonGrowth(series: string, year: string, measure: PerPersonMeasure = "gdp"): number | undefined {
+  const get = (n: Node) => n.per_person?.[measure]?.con;
+  const [a] = bestOf(series, [prevYear(year)], get), [b] = bestOf(series, [year], get);
+  return a && b ? (b.value / a.value - 1) * 100 : undefined;
+}

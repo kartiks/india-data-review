@@ -1,0 +1,57 @@
+[
+  {
+    "document": "Press note on Provisional Estimates of GDP for 2025-26 and Q4 2025-26 (new series, base 2022-23)",
+    "date": "2026-06-05",
+    "base": "2022-23",
+    "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
+    "years": ["2022-23", "2023-24", "2024-25", "2025-26"],
+    "tables": [
+      {
+        "statement": "Statement 1 (constant prices)",
+        "pdf_page": 12,
+        "prices": "con",
+        "rows": {
+          "population": "25 Population (in million) 1383 1395 1408 1421",
+          "gdp": "3 Gross Domestic Product (GDP) 2,61,17,627 2,80,00,767 2,99,88,619 3,23,12,034",
+          "nni": "24 Net National Income (NNI) 2,20,65,054 2,37,44,458 2,55,09,992 2,74,86,593",
+          "pc_gdp": "26 Per Capita GDP (₹) 1,88,862 2,00,654 2,12,979 2,27,447",
+          "pc_nni": "28 Per Capita NNI (₹) 1,59,557 1,70,153 1,81,172 1,93,480"
+        }
+      }
+    ],
+    "notes": "Statement 2 (current prices, PDF page 13) is laid out so that its text does not extract in reading order, so only Statement 1 is quoted. Population is the same in both statements."
+  },
+  {
+    "document": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)",
+    "date": "2026-01-07",
+    "base": "2011-12",
+    "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1767781372753_1380ce82-f5a5-440d-99e6-e6b35af0deb5_GDP_Press_Note_on_FAE_2025-26.pdf",
+    "years": ["2023-24", "2024-25", "2025-26"],
+    "tables": [
+      {
+        "statement": "Statement 1 (constant prices)",
+        "pdf_page": 8,
+        "prices": "con",
+        "rows": {
+          "population": "25 Population* (in million) 1395 1408 1421",
+          "gdp": "3 Gross Domestic Product (GDP) @ 1,76,50,591 1,87,96,955 2,01,89,919",
+          "nni": "24 Net National Income (NNI) 1,51,75,671 1,61,51,199 1,73,27,240",
+          "pc_gdp": "26 Per Capita GDP (₹) 1,26,528 1,33,501 1,42,119",
+          "pc_nni": "28 Per Capita NNI (₹) 1,08,786 1,14,710 1,21,968"
+        }
+      },
+      {
+        "statement": "Statement 2 (current prices)",
+        "pdf_page": 9,
+        "prices": "cur",
+        "rows": {
+          "gdp": "3 Gross Domestic Product (GDP) @ 3,01,22,956 3,30,68,145 3,57,13,886",
+          "nni": "24 Net National Income (NNI) 2,63,50,374 2,89,09,595 3,11,93,630",
+          "pc_gdp": "27 Per Capita GDP (₹) 2,15,935 2,34,859 2,51,393",
+          "pc_nni": "29 Per Capita NNI (₹) 1,88,892 2,05,324 2,19,575"
+        }
+      }
+    ],
+    "notes": "Population is marked '*Relates to mid-financial year'."
+  }
+]

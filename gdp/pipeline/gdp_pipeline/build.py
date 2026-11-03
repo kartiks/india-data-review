@@ -375,6 +375,9 @@ def main() -> dict:
         w.writerows(rows)
 
     tree = arrange(rows)
+    from . import population  # imports this module, so not at the top
+
+    pop = population.build(manifest, tree)  # adds per_person to every estimate with a population
     assumptions = [a for s in BUDGETS if (a := budget.assumption(s, manifest))]
     dataset = {
         "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
@@ -394,12 +397,15 @@ def main() -> dict:
         "industry_groups": GROUPS,
         "sectors": SECTOR_LABELS,
         "data": tree,
+        "population": pop,
         "long_run": long_run(tree),
         "budget_assumptions": assumptions,
         "forecasts": forecasts.build(manifest),
         "source_problems": problems,
         "duplicate_rows": dup_notes,
     }
+    n = population.write_csv(tree, pop["by_series"], DATA / "per_person.csv")
+    print(f"per_person.csv: {n} rows")
     (DATA / "gdp.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
     print(f"national_accounts.csv: {len(rows)} rows; gdp.json written; {len(problems)} problems, {len(dup_notes)} duplicate notes")
 

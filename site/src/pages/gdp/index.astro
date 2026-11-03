@@ -7,7 +7,7 @@ import {
   LONG, NEW, OLD, LATEST_YEAR, LATEST_STAGE, STAGE_LABEL, node, growthAt, quarters, quarterNode, BUDGET,
   firstEstimate, latestGrowth, yearsOf, range,
 } from "../../lib/gdp/data";
-import { axisPct, gpct, money } from "../../lib/format";
+import { axisPct, gpct, money, rupees } from "../../lib/format";
 
 const latest = node(NEW, LATEST_YEAR, LATEST_STAGE)!;
 const g = growthAt(NEW, LATEST_YEAR, LATEST_STAGE)!;
@@ -106,6 +106,12 @@ const newPoints = years.map((y) => {
   </section>
 
   <div class="grid-2">
+    {latest.per_person?.nni?.cur !== undefined && (
+      <div class="card link-card">
+        <h2><a href={link("/gdp/per-person/")}>Per person</a></h2>
+        <p class="muted">Income per person was {rupees(latest.per_person.nni.cur)} in {LATEST_YEAR}. GDP, income and household spending per person, and their growth after inflation.</p>
+      </div>
+    )}
     <div class="card link-card">
       <h2><a href={link("/gdp/revisions/")}>Revisions</a></h2>
       <p class="muted">Growth is estimated up to six times. {big.y} was first put at {gpct(big.first)}; it is now {gpct(big.last)}.</p>

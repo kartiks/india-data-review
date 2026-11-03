@@ -186,14 +186,16 @@ def write_manifest(manifest: dict) -> None:
 
 def main(force: bool = False, force_nas: bool = False) -> None:
     """force: re-download everything. force_nas: re-download only the MoSPI API files (they are the ones that
-    change after a release; budget and forecast documents are fixed), and anything else that is missing."""
+    change after a release; budget, forecast and population documents are fixed), and anything else that is
+    missing."""
     manifest = load_manifest()
     try:
         fetch_all_nas(manifest, force or force_nas)
         fetch_budgets(manifest, force)
-        from . import forecasts
+        from . import forecasts, population
 
         forecasts.fetch(manifest, force)
+        population.fetch(manifest, force)
     finally:
         write_manifest(manifest)
 

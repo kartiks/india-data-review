@@ -13,6 +13,7 @@ const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
 const files = [
   ["gdp.json", "Everything on this site: national accounts by series, year and estimate stage; Budget assumptions; forecasts"],
   ["national_accounts.csv", "Every row MoSPI published, one value per line, with names as printed and the source URL"],
+  ["per_person.csv", "GDP, national income, GNI and household spending per person, with the population used, by series, year and estimate"],
   ["states.json", "State accounts by state and year: GSDP, NSDP, income per person, growth, value added by industry"],
   ["state_accounts.csv", "Every state-accounts row MoSPI published, one value per line, as printed, with the source URL"],
   ["validation_report.md", "Every check and every documented exception"],
@@ -25,7 +26,9 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
     National and state accounts come from the Ministry of Statistics and Programme Implementation (MoSPI), through its official
     data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in).
     Forecasts come from the Economic Survey and the Union Budget (<a href="https://www.indiabudget.gov.in" rel="external noopener">indiabudget.gov.in</a>)
-    and the Reserve Bank of India (<a href="https://www.rbi.org.in" rel="external noopener">rbi.org.in</a>). A program
+    and the Reserve Bank of India (<a href="https://www.rbi.org.in" rel="external noopener">rbi.org.in</a>). Population,
+    for figures per person, comes from the official projections (National Commission on Population) and MoSPI's press
+    notes, checked against the RBI's Handbook of Statistics on the Indian Economy. A program
     downloads every file, keeps a copy with its fingerprint (SHA-256), builds the data and checks it. Data last built {updated}.
   </p>
 
@@ -40,6 +43,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Growth rates</strong>: every published annual and quarterly growth rate is compared with the GDP levels it should follow from.</li>
       <li><strong>Quarters</strong> add up to the year.</li>
       <li><strong>State accounts</strong>: each state's GSDP and NSDP add up from its industries, taxes and subsidies; industries add up to total value added; every published state growth rate follows from the levels; the per-person tables agree; and the states together come to within a few percent of India's GDP.</li>
+      <li><strong>Population and figures per person</strong>: the population projections are read from the official report and must add up (men plus women) and rise every year; every per-person figure MoSPI or the RBI printed implies the same population within its table; the population used agrees with the RBI's to the lakh; and every printed per-person figure whose total is the same estimate as MoSPI's latest is reproduced to within ₹2.</li>
       <li><strong>The long-run back series</strong> (1950-51 to 2011-12) joins the current series in 2011-12.</li>
       <li><strong>Forecasts</strong>: each of the {SURVEY.length} Economic Survey and {RBI.length} RBI forecasts is stored with the sentence it was read from; the program finds that sentence in the downloaded document and checks the numbers in it. The {BUDGET.length} Budget GDP assumptions are read from the Budget at a Glance PDFs and their stated growth is re-computed.</li>
     </ul>
@@ -55,6 +59,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Two series.</strong> MoSPI's 2011-12-base series (released January 2015) and its new 2022-23-base series (27 February 2026). Their levels are never mixed. Long-run charts use the 2011-12 base, which MoSPI has carried back to 1950-51.</li>
       <li><strong>Estimate stages.</strong> A year's GDP is first estimated before the year ends and revised up to five times. Charts use the latest estimate unless they say otherwise; the <a href={link("/gdp/revisions/")}>Revisions</a> page shows every stage.</li>
       <li><strong>Growth rates</strong> are shown as MoSPI published them. For the back series (before 2012-13), which MoSPI publishes as levels only, growth is worked out from constant-price GDP and marked "from levels".</li>
+      <li><strong>Per person</strong>: MoSPI's latest total divided by India's population at the middle of the year: the official 2019 projections up to {DS.population.projections_until}, then MoSPI's own figures, read from its press notes. Net national income is GNI less depreciation, worked out as NDP + GNI − GDP. Growth per person is worked out from the constant-price figures. See <a href={link("/gdp/per-person/")}>Per person</a>.</li>
       <li><strong>Shares</strong> (of GDP, of GVA) divide two figures from the same year and the same estimate.</li>
       <li><strong>State accounts</strong> are on the 2011-12 base, the only one MoSPI publishes them on, with the latest estimate for each year. Where MoSPI's GSDP table leaves a state out but its value-added table covers it ({DERIVED_STATES.join(", ")}), GSDP is worked out as value added plus taxes minus subsidies on products, and marked.</li>
     </ul>

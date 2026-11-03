@@ -47,3 +47,9 @@ export const gpct = (v: number, digits = 1) => `${v < 0 ? "−" : ""}${Math.abs(
 export const pts = (v: number) => `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.abs(v).toFixed(1)} pts`;
 /** Axis label for growth: "8%", "−4%". */
 export const axisPct = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v)}%`;
+
+/** Rupees (not crore), Indian grouping: "₹2,43,107". */
+export const rupees = (v: number) => `${v < 0 ? "−" : ""}₹${inr(0).format(Math.abs(v))}`;
+/** Rupees for axes: "₹50,000", "₹1.5 lakh". */
+export const rupeesAxis = (v: number) =>
+  Math.abs(v) >= 100000 ? `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }).format(v / 100000)} lakh` : rupees(v);

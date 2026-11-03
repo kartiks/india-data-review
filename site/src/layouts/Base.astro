@@ -12,7 +12,7 @@ interface Props {
 const SITE = "India Data Review";
 const { title, description = "India's economy and public finances from official data, checked: the Union Budget since 2000-01, GDP from MoSPI's national accounts, and jobs, prices and household spending.", section } = Astro.props;
 
-// The area comes from the URL: /budget/..., /gdp/..., /about/, or the home page.
+// The area comes from the URL: /budget/..., /gdp/..., /jobs-prices/..., /about/, or the home page.
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const pathname = Astro.url.pathname.slice(base.length) || "/";
 const AREAS = ["budget", "gdp", "jobs-prices", "about"];

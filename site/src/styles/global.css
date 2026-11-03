@@ -152,10 +152,11 @@ details.table-view[open] > summary { margin-bottom: 8px; }
 .source { font-size: 0.8rem; color: var(--ink-2); margin-top: 8px; }
 
 /* Form controls */
-input[type="search"], select {
+input[type="search"], select, button[type="submit"] {
   font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--axis);
   border-radius: 8px; padding: 8px 10px; max-width: 100%;
 }
+button[type="submit"] { cursor: pointer; }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 12px; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

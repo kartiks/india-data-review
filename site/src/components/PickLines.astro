@@ -2,9 +2,9 @@
 // Line chart whose lines the reader chooses (up to `max`, one colour each), plus an optional dashed reference line
 // that does not count against the limit. The starting set is drawn at build time, so the chart reads without
 // JavaScript; a script redraws it as lines are added or removed, rebuilds the table, and keeps the choice in the
-// address (#show=key,key) so a comparison can be shared. Values are formatted at build time; only the axis ticks
-// are formatted in the browser, by the named `axis` format.
-import { linePlots, type PlotLine } from "../lib/line-plot";
+// address (#show=key,key) so a comparison can be shared. Values are formatted at build time; axis ticks use the
+// named `axis` format, the same at build time and in the browser.
+import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
 
 export interface PickOption {
   key: string;
@@ -22,12 +22,11 @@ interface Props {
   initial: string[];
   max?: number;
   noun?: string; // "state"
-  axis: "pct";
-  format: (v: number) => string; // axis ticks at build time; must match `axis`
+  axis: AxisFormat;
   tipFormat: (v: number) => string;
   source?: string;
 }
-const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, format, tipFormat, source } = Astro.props;
+const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, tipFormat, source } = Astro.props;
 
 const pack = (o: PickOption) => ({
   key: o.key, name: o.name, note: o.note ?? "",
@@ -37,44 +36,48 @@ const pack = (o: PickOption) => ({
 });
 const opts = options.map(pack);
 const ref = reference ? pack(reference) : null;
-const byKey = new Map([...opts, ...(ref ? [ref] : [])].map((o) => [o.key, o]));
-const start = initial.filter((k) => byKey.has(k)).map((k, i) => ({ o: byKey.get(k)!, slot: i + 1 }));
-const color = (slot: number) => `var(--s${slot})`;
+const all = [...(ref ? [ref] : []), ...opts];
+const byKey = new Map(all.map((o) => [o.key, o]));
 
-// Build-time drawing of the starting set (the script redraws the same way).
-const lastIndex = Math.max(-1, ...start.flatMap(({ o }) => o.v.map((v, i) => (v == null ? -1 : i))));
-const shown = lastIndex >= 0 ? years.slice(0, lastIndex + 1) : years;
-const lines: PlotLine[] = start.map(({ o, slot }) => ({ name: o.name, color: color(slot), values: o.v.slice(0, shown.length) }));
+// Build-time drawing of the starting set, the same way the script draws any set.
+const start = assignSlots(initial, (k) => byKey.has(k), ref?.key, max).map((c) => ({ ...c, o: byKey.get(c.key)! }));
+const shown = yearsWithData(years, start.map(({ o }) => ({ values: o.v })));
 const label = `${title}. Values are listed in the table below.`;
-const plots = linePlots(shown, lines, format, label);
-const payload = JSON.stringify({ years, options: opts, reference: ref, initial, max, axis, label });
-const id = "p" + Math.random().toString(36).slice(2, 9);
+const plots = linePlots(shown, start.map(({ o, slot }) => ({
+  name: o.name, color: slotColor(slot), dashed: slot === 0, values: o.v.slice(0, shown.length),
+})), AXIS_FORMATS[axis], label);
+// "<" escaped so the JSON cannot close its script element.
+const payload = JSON.stringify({ years, options: opts, reference: ref, initial, max, axis, label }).replace(/</g, "\\u003c");
+const inStart = new Set(start.map((c) => c.key));
 ---
-<figure class="chart pick-lines" id={id}>
+<figure class="chart pick-lines">
   <figcaption>
     <h3>{title}</h3>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
-  <div class="picker">
-    <ul class="chips small" aria-label="Shown">
-      {start.map(({ o, slot }) => (
-        <li><button type="button" class="chip" data-key={o.key} aria-label={`Remove ${o.name}`}><span class="sw" style={`background:${color(slot)}`} aria-hidden="true" />{o.name}<span class="x" aria-hidden="true">×</span></button></li>
-      ))}
-    </ul>
-    <div class="add-row small" hidden>
-      <label class="add-label">
-        <span class="sr-only">Add a {noun}</span>
-        <select class="add">
-          <option value="">Add a {noun}…</option>
-        </select>
-      </label>
-      <button type="button" class="reset">Reset</button>
-      <button type="button" class="clear">Clear</button>
-      <span class="limit muted" hidden>Up to {max} {noun}s at once: remove one to add another.</span>
+  <ul class="chips small" aria-label={`${noun[0].toUpperCase()}${noun.slice(1)}s shown`}>
+    {start.map(({ o, slot }) => (
+      <li><button type="button" class="chip" data-key={o.key} aria-label={`Remove ${o.name}`}><span class={slot === 0 ? "sw dashed" : "sw"} style={slot === 0 ? undefined : `background:${slotColor(slot)}`} aria-hidden="true" />{o.name}<span class="x" aria-hidden="true">×</span></button></li>
+    ))}
+  </ul>
+  <details class="choose" hidden>
+    <summary>Choose {noun}s</summary>
+    <div class="choose-panel">
+      <div class="choose-bar small">
+        <button type="button" class="reset">Reset</button>
+        <button type="button" class="clear">Clear</button>
+        <span class="limit muted" role="status"></span>
+      </div>
+      <fieldset class="small">
+        <legend class="sr-only">{noun[0].toUpperCase()}{noun.slice(1)}s to show, up to {max}</legend>
+        {all.map((o) => (
+          <label><input type="checkbox" value={o.key} checked={inStart.has(o.key)} />{o.name}</label>
+        ))}
+      </fieldset>
     </div>
-  </div>
+  </details>
   <div class="plots" set:html={plots} />
-  <p class="empty muted small" hidden>Add a {noun} to draw its line.</p>
+  <p class="empty muted small" hidden>Choose a {noun} to draw its line.</p>
   <ul class="pick-notes small muted">
     {[...new Set(start.map(({ o }) => o.note).filter(Boolean))].map((n) => <li>{n}</li>)}
   </ul>
@@ -96,53 +99,47 @@ const id = "p" + Math.random().toString(36).slice(2, 9);
 </figure>
 
 <script>
-  import { linePlots } from "../lib/line-plot";
+  import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
   import { setupLine } from "../scripts/charts";
-  import { axisPct } from "../lib/format";
 
   interface Opt { key: string; name: string; note: string; v: (number | null)[]; t: (string | null)[]; k: string[] }
-  interface Data { years: string[]; options: Opt[]; reference: Opt | null; initial: string[]; max: number; axis: "pct"; label: string }
-  const AXIS = { pct: axisPct };
-  const REF_COLOR = "var(--ink-2)";
+  interface Data { years: string[]; options: Opt[]; reference: Opt | null; initial: string[]; max: number; axis: AxisFormat; label: string }
 
   function setup(fig: HTMLElement) {
     const data = JSON.parse(fig.querySelector(".pick-data")!.textContent!) as Data;
     const ref = data.reference;
     const byKey = new Map([...data.options, ...(ref ? [ref] : [])].map((o) => [o.key, o]));
+    const pick = (keys: string[], current: { key: string; slot: number }[] = []) =>
+      assignSlots(keys, (k) => byKey.has(k), ref?.key, data.max, current);
     let chosen: { key: string; slot: number }[] = [];
-    const counted = () => chosen.filter((c) => c.key !== ref?.key).length;
-    const freeSlot = () => { for (let s = 1; ; s++) if (!chosen.some((c) => c.slot === s)) return s; };
-    const add = (key: string) => {
-      if (!byKey.has(key) || chosen.some((c) => c.key === key)) return;
-      if (key === ref?.key) chosen.push({ key, slot: 0 });
-      else if (counted() < data.max) chosen.push({ key, slot: freeSlot() });
-    };
-    const colorOf = (c: { slot: number }) => (c.slot === 0 ? REF_COLOR : `var(--s${c.slot})`);
 
     const chips = fig.querySelector<HTMLUListElement>(".chips")!;
-    const select = fig.querySelector<HTMLSelectElement>("select.add")!;
+    const boxes = [...fig.querySelectorAll<HTMLInputElement>(".choose input[type=checkbox]")];
+    const summary = fig.querySelector<HTMLElement>(".choose summary")!;
     const plots = fig.querySelector<HTMLDivElement>(".plots")!;
     const notes = fig.querySelector<HTMLUListElement>(".pick-notes")!;
     const table = fig.querySelector<HTMLTableElement>(".table-view table")!;
+    const limit = fig.querySelector<HTMLElement>(".limit")!;
     const el = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string) => {
       const e = document.createElement(tag);
       if (text != null) e.textContent = text;
       return e;
     };
 
-    const render = (keepFocus?: string) => {
+    /** Redraw everything from `chosen`. `focusKey`: after a chip is removed, the chip to move focus to ("" = none
+     *  left, so focus goes to the Choose button). */
+    const render = (focusKey?: string) => {
       const sel = chosen.map((c) => ({ c, o: byKey.get(c.key)! }));
-      const last = Math.max(-1, ...sel.flatMap(({ o }) => o.v.map((v, i) => (v == null ? -1 : i))));
-      const years = last >= 0 ? data.years.slice(0, last + 1) : data.years;
+      const years = yearsWithData(data.years, sel.map(({ o }) => ({ values: o.v })));
 
-      // Chart
-      plots.innerHTML = linePlots(years, sel.map(({ c, o }) => ({
-        name: o.name, color: colorOf(c), dashed: c.slot === 0, values: o.v.slice(0, years.length),
-      })), AXIS[data.axis], data.label);
+      // Chart (hidden when nothing is chosen, rather than an empty axis)
+      plots.innerHTML = sel.length ? linePlots(years, sel.map(({ c, o }) => ({
+        name: o.name, color: slotColor(c.slot), dashed: c.slot === 0, values: o.v.slice(0, years.length),
+      })), AXIS_FORMATS[data.axis], data.label) : "";
       setupLine(fig, {
         years,
         series: sel.map(({ c, o }) => ({
-          name: o.name, slot: c.slot, color: colorOf(c),
+          name: o.name, slot: c.slot, color: slotColor(c.slot),
           values: years.map((_, i) => (o.t[i] == null ? null : { t: o.t[i]!, k: o.k[i] })),
         })),
       });
@@ -158,7 +155,7 @@ const id = "p" + Math.random().toString(36).slice(2, 9);
         b.setAttribute("aria-label", `Remove ${o.name}`);
         const sw = el("span");
         sw.className = c.slot === 0 ? "sw dashed" : "sw";
-        if (c.slot !== 0) sw.style.background = colorOf(c);
+        if (c.slot !== 0) sw.style.background = slotColor(c.slot);
         sw.setAttribute("aria-hidden", "true");
         const x = el("span", "×");
         x.className = "x";
@@ -167,21 +164,15 @@ const id = "p" + Math.random().toString(36).slice(2, 9);
         li.append(b);
         return li;
       }));
-      if (keepFocus) (chips.querySelector<HTMLButtonElement>(`[data-key="${keepFocus}"]`) ?? select).focus();
+      if (focusKey != null) (chips.querySelector<HTMLButtonElement>(`[data-key="${focusKey}"]`) ?? summary).focus();
 
-      // Add menu: the reference line first, then everything not shown.
-      const full = counted() >= data.max;
-      const first = select.options[0];
-      select.replaceChildren(first, ...[...(ref ? [ref] : []), ...data.options]
-        .filter((o) => !chosen.some((c) => c.key === o.key))
-        .map((o) => {
-          const op = el("option", o.name);
-          op.value = o.key;
-          op.disabled = full && o.key !== ref?.key;
-          return op;
-        }));
-      select.value = "";
-      fig.querySelector<HTMLElement>(".limit")!.hidden = !full;
+      // Checkboxes: ticked for lines shown; the rest disabled at the limit (the reference line never is).
+      const full = chosen.filter((c) => c.key !== ref?.key).length >= data.max;
+      for (const b of boxes) {
+        b.checked = chosen.some((c) => c.key === b.value);
+        b.disabled = full && !b.checked && b.value !== ref?.key;
+      }
+      limit.textContent = full ? `Up to ${data.max} at once: untick one to add another.` : "";
 
       // Notes for the lines shown
       notes.replaceChildren(...[...new Set(sel.map(({ o }) => o.note).filter(Boolean))].map((n) => el("li", n)));
@@ -197,36 +188,41 @@ const id = "p" + Math.random().toString(36).slice(2, 9);
       table.tHead!.replaceChildren(head);
       table.tBodies[0].replaceChildren(...body);
 
-      // Address: only when the choice differs from the starting set.
+      // Address: #show=… when the choice differs from the starting set; otherwise drop only our own hash.
       const keys = chosen.map((c) => c.key);
       const same = keys.length === data.initial.length && keys.every((k, i) => k === data.initial[i]);
-      history.replaceState(null, "", same ? location.pathname + location.search : `#show=${keys.join(",")}`);
+      if (!same) history.replaceState(null, "", `#show=${keys.join(",")}`);
+      else if (location.hash.startsWith("#show")) history.replaceState(null, "", location.pathname + location.search);
     };
 
-    // An empty "#show=" is a deliberate empty chart; a list naming nothing we know falls back to the starting set.
+    // No "#show" = the starting set; an empty "#show=" = an empty chart; a list naming nothing we know = the
+    // starting set.
     const fromAddress = () => {
-      const keys = new URLSearchParams(location.hash.slice(1)).get("show");
-      chosen = [];
-      (keys != null ? keys.split(",") : data.initial).forEach(add);
-      if (!chosen.length && keys) data.initial.forEach(add);
+      const keys = location.hash.startsWith("#show") ? new URLSearchParams(location.hash.slice(1)).get("show") : null;
+      chosen = pick(keys != null ? keys.split(",") : data.initial);
+      if (!chosen.length && keys) chosen = pick(data.initial);
       render();
     };
     fromAddress();
-    // Other in-page links (#notes and the like) leave the choice alone.
-    window.addEventListener("hashchange", () => { if (location.hash.startsWith("#show=")) fromAddress(); });
-    fig.querySelector<HTMLElement>(".add-row")!.hidden = false;
+    // Going back to the page's own address restores the starting set; other in-page links leave the choice alone.
+    window.addEventListener("hashchange", () => { if (location.hash === "" || location.hash.startsWith("#show")) fromAddress(); });
+    fig.querySelector<HTMLElement>(".choose")!.hidden = false;
 
     chips.addEventListener("click", (e) => {
       const b = (e.target as HTMLElement).closest<HTMLButtonElement>("button.chip");
-      if (!b) return;
-      const i = chosen.findIndex((c) => c.key === b.dataset.key);
+      const i = chosen.findIndex((c) => c.key === b?.dataset.key);
       if (i < 0) return;
       chosen.splice(i, 1);
-      render(chosen[i]?.key ?? chosen[i - 1]?.key);
+      render(chosen[i]?.key ?? chosen[i - 1]?.key ?? "");
     });
-    select.addEventListener("change", () => { add(select.value); render(); select.focus(); });
-    fig.querySelector(".reset")!.addEventListener("click", () => { chosen = []; data.initial.forEach(add); render(); });
-    fig.querySelector(".clear")!.addEventListener("click", () => { chosen = []; render(); select.focus(); });
+    for (const b of boxes) {
+      b.addEventListener("change", () => {
+        chosen = b.checked ? pick([b.value], chosen) : chosen.filter((c) => c.key !== b.value);
+        render();
+      });
+    }
+    fig.querySelector(".reset")!.addEventListener("click", () => { chosen = pick(data.initial); render(); });
+    fig.querySelector(".clear")!.addEventListener("click", () => { chosen = []; render(); });
   }
   document.querySelectorAll<HTMLElement>("figure.pick-lines").forEach(setup);
 </script>
@@ -234,18 +230,22 @@ const id = "p" + Math.random().toString(36).slice(2, 9);
 <style>
   .chart { margin: 0; }
   .chart figcaption h3 { margin-bottom: 2px; }
-  .picker { margin: 8px 0 6px; }
-  .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 8px; }
-  /* Chips are rebuilt by the script, so their styles are global within the picker. */
+  .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 8px 0; }
+  /* Chips are rebuilt by the script, so their styles are global within the list. */
   .chips :global(.chip) { font: inherit; display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; }
   .chips :global(.chip:hover) { border-color: var(--ink-2); }
   .chips :global(.sw) { width: 14px; height: 3px; border-radius: 2px; flex: none; }
   .chips :global(.sw.dashed) { background: repeating-linear-gradient(90deg, var(--ink-2) 0 5px, transparent 5px 8px); }
   .chips :global(.x) { color: var(--muted); font-size: 1.1em; line-height: 1; }
-  .add-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
-  .add-row[hidden], .limit[hidden], .empty[hidden] { display: none; }
-  .add { font: inherit; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); max-width: 100%; }
-  .reset, .clear { font: inherit; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+  .choose { margin: 0 0 8px; }
+  .choose[hidden], .empty[hidden] { display: none; }
+  .choose summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+  .choose-panel { margin-top: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; }
+  .choose-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin-bottom: 8px; }
+  .reset, .clear { font: inherit; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
+  fieldset { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(12em, 1fr)); gap: 4px 12px; }
+  fieldset label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  fieldset label:has(input:disabled) { color: var(--muted); cursor: default; }
   .empty { margin: 4px 0 0; }
   .pick-notes { padding-left: 18px; margin: 8px 0 0; }
   .pick-notes:empty { display: none; }

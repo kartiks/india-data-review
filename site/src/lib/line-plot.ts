@@ -1,6 +1,11 @@
 // SVG markup for a plain multi-line chart, as a string, so the same drawing runs at build time and in the browser
 // (charts whose lines the reader chooses). Same geometry and classes as LineChart.astro; no estimates or annotations.
 import { SIZES, niceTicks, scale, xTickIndices, type Size } from "./chart";
+import { axisPct } from "./format";
+
+/** Axis tick formats by name, so a chart drawn again in the browser formats its ticks the same way. */
+export const AXIS_FORMATS = { pct: axisPct };
+export type AxisFormat = keyof typeof AXIS_FORMATS;
 
 export interface PlotLine {
   name: string;
@@ -56,3 +61,26 @@ export function linePlotSvg(sz: Size, years: string[], lines: PlotLine[], format
 /** Both sizes (phone and wider screens); CSS shows one. */
 export const linePlots = (years: string[], lines: PlotLine[], format: (v: number) => string, label: string) =>
   SIZES.map((sz) => linePlotSvg(sz, years, lines, format, label)).join("");
+
+/** Colour slots for a chosen set of lines: each known key in order takes the lowest free slot (1..max lines); the
+ *  reference line takes slot 0 and does not count. Unknown and repeated keys are skipped. */
+export function assignSlots(keys: string[], known: (key: string) => boolean, refKey: string | undefined, max: number, current: { key: string; slot: number }[] = []) {
+  const out = [...current];
+  for (const key of keys) {
+    if (!known(key) || out.some((c) => c.key === key)) continue;
+    if (key === refKey) { out.push({ key, slot: 0 }); continue; }
+    if (out.filter((c) => c.key !== refKey).length >= max) continue;
+    let slot = 1;
+    while (out.some((c) => c.slot === slot)) slot++;
+    out.push({ key, slot });
+  }
+  return out;
+}
+
+export const slotColor = (slot: number) => (slot === 0 ? "var(--ink-2)" : `var(--s${slot})`);
+
+/** Years up to the last one in which any of the lines has a value (all years if none has). */
+export function yearsWithData(years: string[], lines: { values: (number | null)[] }[]) {
+  const last = Math.max(-1, ...lines.flatMap((l) => l.values.map((v, i) => (v == null ? -1 : i))));
+  return last >= 0 ? years.slice(0, last + 1) : years;
+}

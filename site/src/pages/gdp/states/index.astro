@@ -4,12 +4,13 @@ import StateMap, { type MapMetric } from "../../../components/StateMap.astro";
 import BarList from "../../../components/BarList.astro";
 import PickLines, { type PickOption } from "../../../components/PickLines.astro";
 import { link } from "../../../lib/url";
+import { STAGE_SHORT } from "../../../lib/gdp/data";
 import { stateKey } from "../../../lib/jobs-prices/data";
 import {
   STATES, STATE_YEARS, FIRST_YEAR, SECTORS, SECTOR_LABEL, LATEST, NOT_COVERED, BOUNDARY, sNode, countWith, gsdpCur,
   realGrowth, incomePerPerson, gsdpPerPerson, sectorShares, averageGrowth, isDerived, india, indiaAverageGrowth,
 } from "../../../lib/gdp/states";
-import { axisPct, gpct, money, pct } from "../../../lib/format";
+import { gpct, money, pct } from "../../../lib/format";
 
 // One year for every measure, so states are compared like with like: the latest year in which the states that have
 // published made up at least 97% of the states' economy the year before.
@@ -82,18 +83,23 @@ const growthOptions: PickOption[] = STATES.map((st) => {
   const values = gyears.map((y) => { const n = sNode(st, y); return n ? realGrowth(n) ?? null : null; });
   const worked = gyears.filter((_, i) => values[i] != null && kinds[i] === "worked out").length;
   const notes = [
-    worked ? `${st}: growth worked out here from GSDP levels${worked < values.filter((v) => v != null).length ? " in some years" : ""}, because MoSPI's GSDP table leaves ${st} out (see the notes below the table).` : "",
+    worked ? `${st}: growth worked out here from GSDP levels${worked < values.filter((v) => v != null).length ? " in some years" : ""}, because MoSPI's GSDP table leaves ${st} out (see the notes under the table of all states, below).` : "",
     BOUNDARY[st] ? BOUNDARY[st].note : "",
   ].filter(Boolean);
   return { key: stateKey(st), name: st, values, kinds, note: notes.join(" ") };
 }).filter((o) => o.values.some((v) => v != null));
 const noGrowth = STATES.filter((st) => !growthOptions.some((o) => o.name === st));
+const EARLY = new Set(["AE1", "AE2", "PE"]);
 const indiaGrowth: PickOption = {
   key: "india", name: "All India",
   values: gyears.map((y) => india(y)?.growth ?? null),
-  note: "All India (dashed): GDP growth from the national accounts on the same 2011-12 base, latest estimate for each year.",
+  // Years still at an early estimate are marked; on the 2011-12 base they will not be revised further.
+  kinds: gyears.map((y) => { const st = india(y)?.stage; return st && EARLY.has(st) ? `${STAGE_SHORT[st].toLowerCase()} estimate` : ""; }),
+  note: "All India (dashed): GDP growth from the national accounts on the same 2011-12 base, the latest estimate for each year. MoSPI moved national GDP to a 2022-23 base in February 2026, so the last years on this base stay at their advance or provisional estimates.",
 };
 const six = biggest.slice(0, 6).map((r) => r.key);
+const GLAST = gyears[gyears.length - 1];
+const glastCount = countWith(GLAST, realGrowth);
 const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 base, via api.mospi.gov.in.";
 ---
 <Base title="States" section="states" description="Each Indian state's economy: size, growth, income per person and the shares of agriculture, industry and services, from MoSPI's state accounts.">
@@ -137,13 +143,12 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
   <section class="card">
     <PickLines
       title="Real growth, state by state"
-      subtitle={`GSDP at constant 2011-12 prices, on the year before. Starting with the six largest economies in ${Y}: add or remove states (up to eight), or All India, to compare any set.${noGrowth.length ? ` No constant-price figures for ${list(noGrowth)}.` : ""}`}
+      subtitle={`GSDP at constant 2011-12 prices, on the year before. Starts with the six largest economies in ${Y}.${GLAST > Y ? ` Lines run to ${GLAST} for the ${glastCount} of ${growthOptions.length} states that have published it.` : ""}${noGrowth.length ? ` No constant-price figures for ${list(noGrowth)}.` : ""}`}
       years={gyears}
       options={growthOptions}
       reference={indiaGrowth}
       initial={six}
       axis="pct"
-      format={axisPct}
       tipFormat={(v) => gpct(v)}
       source={SOURCE}
     />

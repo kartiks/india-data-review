@@ -111,6 +111,8 @@ FINAL_ENOUGH = "PE"  # ... and India's figure for it is at least a provisional e
 
 # Every state and union territory in MoSPI's state accounts. A new or renamed one fails the checks until it is added
 # here (and, if renamed, its old rows are looked at); one that disappears fails too.
+# States that publish no subsidies on products at all: their GSDP is value added plus taxes.
+NO_SUBSIDIES = {"Chhattisgarh"}
 SITE_BASE = "2011-12"  # the base the site shows (STATE_BASE in site/src/lib/gdp/states.ts)
 KNOWN_STATES = [
     "Andaman & Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh",
@@ -272,12 +274,10 @@ def arrange(rows: list[dict]) -> tuple[dict, list[str]]:
 
     # GSDP where MoSPI's GSDP table leaves the state out: GSVA + taxes - subsidies, and growth from those levels.
     for states in tree.values():
-        for years in states.values():
-            # A state that never publishes subsidies on products (Chhattisgarh) has none to subtract.
-            never_subsidies = not any("subsidies" in n for n in years.values())
+        for state, years in states.items():
             for year, node in years.items():
                 total, taxes = node.get("gsva", {}).get("total"), node.get("taxes")
-                subs = node.get("subsidies") or ({"cur": 0, "con": 0} if never_subsidies else None)
+                subs = node.get("subsidies") or ({"cur": 0, "con": 0} if state in NO_SUBSIDIES else None)
                 if "gsdp" in node or not (total and taxes and subs):
                     continue
                 gsdp = {k: round(total[k] + taxes[k] - subs[k], 2) for k in ("cur", "con") if k in total and k in taxes and k in subs}

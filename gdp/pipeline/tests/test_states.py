@@ -132,6 +132,9 @@ def test_state_that_never_publishes_subsidies_still_gets_a_derived_gsdp():
     tree, _ = states.arrange([row(29, "Chhattisgarh", "2024-25", 500_000, 400_000, industry="total"),
                               row(33, "Chhattisgarh", "2024-25", 50_000, 40_000)])
     assert tree["2011-12"]["Chhattisgarh"]["2024-25"]["gsdp"] == {"cur": 5_500, "con": 4_400, "derived": True}
+    tree, _ = states.arrange([row(29, "Goa", "2024-25", 500_000, 400_000, industry="total"),
+                              row(33, "Goa", "2024-25", 50_000, 40_000)])
+    assert "gsdp" not in tree["2011-12"]["Goa"]["2024-25"]  # any other state: subsidies missing, so no GSDP
 
 
 def test_states_against_india_is_for_review_and_skips_advance_estimates_and_thin_years():

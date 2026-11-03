@@ -1,6 +1,7 @@
+import hashlib
 import json
 
-from pipeline_common.report import FAILURE_MARK, Allowed, Report
+from pipeline_common.report import FAILURE_MARK, Allowed, Report, data_hash, data_hashes
 
 
 def sample(fail: bool) -> Report:
@@ -50,6 +51,7 @@ def test_summary_and_files(tmp_path, capsys):
              "allowed_reasons": [{"reason": "A known slip.", "cases": 2}, {"reason": "Another reason.", "cases": 1}]},
             {"title": "Second group", "checks": 5, "failures": 0, "allowed": 0, "allowed_reasons": []},
         ],
+        "files": {},
     }
     assert (tmp_path / "validation_report.md").read_text().startswith("# Data validation report")
     assert "ok   First group: 10 checks, 0 failures" in capsys.readouterr().out
@@ -58,3 +60,38 @@ def test_summary_and_files(tmp_path, capsys):
     summary = json.loads((tmp_path / "validation_summary.json").read_text())
     assert (summary["result"], summary["failures"], summary["sections"][1]["failures"]) == ("FAILED", 1, 1)
     assert "FAIL Second group: 5 checks, 1 failures" in capsys.readouterr().out
+
+
+def test_data_hash_ignores_the_build_time(tmp_path):
+    f = tmp_path / "a.json"
+    f.write_text('{\n "generated_at": "2026-01-01T00:00:00+00:00",\n "x": 1\n}\n')
+    first = data_hash(f)
+    assert first == hashlib.sha256(b'{\n ,\n "x": 1\n}\n').hexdigest()
+    f.write_text('{\n "generated_at": "2026-11-03T13:05:17+00:00",\n "x": 1\n}\n')
+    assert data_hash(f) == first
+    f.write_text('{\n "generated_at": "2026-11-03T13:05:17+00:00",\n "x": 2\n}\n')
+    assert data_hash(f) != first
+    # compact JSON, as jobs_prices.json is written
+    g = tmp_path / "b.json"
+    g.write_text('{"generated_at":"2026-01-01T00:00:00+00:00","x":1}')
+    compact = data_hash(g)
+    g.write_text('{"generated_at":"2027-01-01T00:00:00+00:00","x":1}')
+    assert data_hash(g) == compact
+    g.write_text('{"generated_at":"2027-01-01T00:00:00+00:00","x":10}')
+    assert data_hash(g) != compact
+
+
+def test_data_hashes_lists_every_data_file(tmp_path):
+    for name in ("b.csv", "a.json", "notes.md", "validation_report.md", "validation_summary.json", ".DS_Store", "x.txt"):
+        (tmp_path / name).write_text(name)
+    (tmp_path / "folder.json").mkdir()
+    hashes = data_hashes(tmp_path)
+    assert list(hashes) == ["a.json", "b.csv", "notes.md"]
+    assert hashes["b.csv"] == hashlib.sha256(b"b.csv").hexdigest()
+
+
+def test_write_records_the_hashes_of_the_data_it_checked(tmp_path, capsys):
+    (tmp_path / "data.csv").write_text("year,value\n2020,1\n")
+    sample(fail=False).write(tmp_path)
+    summary = json.loads((tmp_path / "validation_summary.json").read_text())
+    assert summary["files"] == {"data.csv": hashlib.sha256(b"year,value\n2020,1\n").hexdigest()}

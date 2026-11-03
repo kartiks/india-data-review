@@ -185,5 +185,19 @@
    "allowed": 0,
    "allowed_reasons": []
   }
- ]
+ ],
+ "files": {
+  "cpi.csv": "2971b4fafc37b6018489626a60fed6bcb9e6082498b946c28c0b4f93009d0a40",
+  "cpi2024.csv": "49225989158cbe54b16e135af0873afab7f3ffa9b39f01664c388c82fdb18e64",
+  "cpialrl.csv": "7b275129d770fad9a69b48676c0f7b7b671886b9b4eee6410d9949616c322565",
+  "hces.csv": "6a7560779e72b2469b1dcadd3404e059d52df947d7b69519ce2c512ade4f23f7",
+  "hces_overall.csv": "6c40823fb05b17c0517d5d205356a3b4dc27248fda24efb1cd410d40154fc106",
+  "jobs_prices.json": "aaa19e25f64125bdb243fd49ea92c363132683276e9379aa52a2f9967acb67c8",
+  "plfs_conditions.csv": "03b8c8dc6b3c1c5eda884f703a30c0c980469f47b54b0e6b389fa390681f0a2d",
+  "plfs_earnings.csv": "fe84dcb0a48937f0c46540e55b8b67f66f3d0733087f6e84642edaafb4f61750",
+  "plfs_rates.csv": "6af787592650fedbc771376a8a9ac23d764e1edb180023ddb71c2f33b047e538",
+  "plfs_workers.csv": "1866cce2b7de067823fd58041c4a0f54243d62937e48775c325028fa412e59d8",
+  "rbi_states.csv": "fe5393da1e3e8a36e50ece88013953925e5b7671469c1564649842aa8c10a089",
+  "sources.csv": "9b25c5a1faffebbcf5921d02b44f3fe8e58cd8829e8b2d6da8a0f25fe8721b6e"
+ }
 }

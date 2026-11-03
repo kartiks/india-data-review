@@ -132,14 +132,15 @@ works in years with no depreciation figure. Per-person figures are for the lates
 divided earlier estimates by the population known at the time, which is not kept here.
 
 MoSPI's documents agree on population: for 2022-23 to 2024-25, the June press note's implied population and NAS
-2026's printed one are within 3,000 people, so MoSPI kept its population when it revised the totals in August.
+2026's printed one are within 3,000 people (the implied figure's own precision), consistent with MoSPI keeping its
+population when it revised the totals in August. Where they agree, the printed figure is used.
 NAS 2026 prints no totals in its per-capita statement; its unrounded per-person figure times its population gives
 the total back (to within ₹1 crore of the API's), which is how its figures are matched to the API's estimate.
 
 **What is checked.** The per-person figures reproduce MoSPI's for the 2011-12 series from 2020-21 and for the
 2022-23 series for 2022-23 to 2024-25 (`population.checked` in `gdp.json`). The new series' latest year (2025-26
-today) is not checked: MoSPI revised its total in NAS 2026, and none of the per-person figures quoted here is for
-that total, so the figure divides the revised total by the population in the June press note. The site's Per person
+today) is not checked: MoSPI has revised its total since the June press note, and none of the per-person figures
+quoted here is for that total, so the figure divides the revised total by the population in the June note. The site's Per person
 page says so while it is the case.
 
 Checks ("Population and figures per person" in the report):
@@ -186,7 +187,15 @@ new series), add its per-capita statement, which makes the check cover the revis
 3. Run `uv run python -m gdp_pipeline.population --add ~/Downloads/<file>.xlsx`. It copies the file into
    `sources/raw/population/` and records it in the manifest (with its SHA-256 and that it was downloaded by hand).
 4. Run `uv run python -m gdp_pipeline`. The newest document gives each year's population; the report shows the
-   figures reproduced. The weekly refresh never downloads these files; if one is missing, `--fetch` says so.
+   figures reproduced. The weekly refresh never downloads these files; if one is missing, `--fetch` says so and
+   the checks fail (so the weekly refresh stops) until it is added.
+
+The statement is read by its English labels, and a changed layout is reported rather than misread: a section
+heading not understood, a unit other than million or ₹, a row read twice, or a figure whose total (per person ×
+population) is more than 10% from MoSPI's API is a check failure. `--add` puts the file under the last entry of
+`NAS_STATEMENTS` and refuses to replace a different file already there unless given `--replace`, so add the new
+edition's entry first. MoSPI divided by the printed population in NAS 2026; the match to the API allows for a
+population rounded to the thousand in case a later edition does not.
 
 When the RBI publishes a new *Handbook of Statistics on the Indian Economy* (each July or August), the addresses of
 Tables 1 and 2 in `population.py` (`RBI_TABLES`) can be updated so that the checks cover the newest years too.

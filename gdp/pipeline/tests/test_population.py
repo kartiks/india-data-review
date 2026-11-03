@@ -227,3 +227,101 @@ def test_the_newest_mospi_document_gives_the_population(monkeypatch):
     monkeypatch.setattr(pop, "read_nas", lambda m: ([nas], []))
     by_series, _ = pop.population({})
     assert by_series["2022-23"]["2023-24"] == {"million": 1000.004, "source": "mospi", "document": "NAS"}
+
+
+def test_the_committed_nas_2026_statement_reads_as_published():
+    from gdp_pipeline.fetch import load_manifest
+
+    tables, problems = pop.read_nas(load_manifest())
+    assert problems == []
+    cur = next(t for t in tables if t["prices"] == "cur")
+    assert cur["years"] == ["2022-23", "2023-24", "2024-25"]
+    assert cur["figures"]["population"] == {"2022-23": 1382.894, "2023-24": 1395.478, "2024-25": 1408.054}
+    assert round(cur["figures"]["pc_gdp"]["2023-24"], 2) == 208339.27
+
+
+def statement_rows(*extra, constant_heading="At constant (2022-23) prices", unit="( ₹)"):
+    return [
+        ("मद", "2023-24", "Item "),
+        (None, 1000.5, "Population (in million)"),
+        (None, None, "At current prices"),
+        (None, 2000.0, f"Per Capita GDP{unit}"), (None, 1900.0, "Per Capita GNI ( ₹)"),
+        (None, 1700.0, "Per Capita NNI ( ₹)"), (None, 1200.0, "Per Capita PFCE( ₹)"),
+        (None, None, constant_heading),
+        (None, 1950.0, "Per Capita GDP ( ₹)"), (None, 1850.0, "Per Capita GNI ( ₹)"),
+        (None, 1650.0, "Per Capita NNI( ₹)"), (None, 1150.0, "Per Capita PFCE( ₹)"),
+        *extra,
+    ]
+
+
+def test_a_growth_section_headed_like_constant_prices_is_not_read_as_figures():
+    rows = statement_rows((None, None, "At constant (2022-23) prices: percentage change over previous year"),
+                          (None, 6.3, "Per Capita GDP ( ₹)"))
+    figures, _, problems = pop.parse_nas(rows)
+    assert problems == []
+    assert figures["con"]["pc_gdp"] == {"2023-24": 1950.0}
+
+
+def test_a_row_read_twice_or_in_another_unit_is_a_problem():
+    _, _, problems = pop.parse_nas(statement_rows((None, 1960.0, "Per Capita GDP ( ₹)")))
+    assert problems == ["'Per Capita GDP ( ₹)' read twice at constant prices"]
+    _, _, problems = pop.parse_nas(statement_rows(unit="(₹ lakh)"))
+    assert "'Per Capita GDP(₹ lakh)': unit is not ₹" in problems
+    assert any("pc_gdp not read at current prices" in p for p in problems)
+
+
+def test_documents_that_disagree_on_a_population_fail(monkeypatch):
+    june = {"document": "June note", "statement": "S1", "base": "2022-23", "prices": "con", "years": ["2023-24"],
+            "figures": {"gdp": {"2023-24": 1_00_400.0}, "pc_gdp": {"2023-24": 1000.0}}}  # 1,004.0 million
+    nas = {"document": "NAS", "statement": "", "base": "2022-23", "prices": "cur", "years": ["2023-24"],
+           "exact_population": True, "figures": {"population": {"2023-24": 1004.001}}}
+    fake_sources(monkeypatch, notes=[june, nas])
+    report = Report()
+    pop.check({"data": {}}, report, manifest={})
+    assert not any("give different populations" in f for f in report.sections[0][2])
+    nas["figures"]["population"]["2023-24"] = 1005.0
+    report = Report()
+    pop.check({"data": {}}, report, manifest={})
+    assert any("give different populations" in f for f in report.sections[0][2])
+
+
+def test_a_published_total_far_from_the_api_is_a_misread_not_a_revision(monkeypatch):
+    table = {"document": "NAS", "statement": "", "base": "2022-23", "prices": "con", "years": ["2023-24"],
+             "exact_population": True, "figures": {"population": {"2023-24": 1000.0}, "pc_gdp": {"2023-24": 6.3}}}
+    fake_sources(monkeypatch, notes=[table])
+    ds = {"data": {"2022-23": {"annual": {"2023-24": {"FINAL": {"gdp": {"con": 2_00_000.0}, "per_person": {"gdp": {"con": 2000}}}}}}}}
+    report = Report()
+    pop.check(ds, report, manifest={})
+    assert any("a misread row, unit or section" in f for f in report.sections[0][2])
+
+
+def test_add_refuses_to_put_another_file_under_an_edition_unless_told(monkeypatch, tmp_path, capsys):
+    import pytest
+
+    from gdp_pipeline import fetch as F
+
+    monkeypatch.setattr(F, "ROOT", tmp_path)
+    monkeypatch.setattr(F, "RAW", tmp_path / "sources" / "raw")
+    monkeypatch.setattr(F, "SNAPSHOTS", tmp_path / "sources" / "snapshots")
+    monkeypatch.setattr(F, "MANIFEST", tmp_path / "sources" / "manifest.json")
+    key = pop.NAS_STATEMENTS[-1]["key"]
+    a, b, bad = tmp_path / "a.xlsx", tmp_path / "b.xlsx", tmp_path / "c.xlsx"
+    a.write_bytes(b"PK first"), b.write_bytes(b"PK second"), bad.write_bytes(b"<html>")
+    pop.add_by_hand(a, key)
+    assert F.load_manifest()[key]["file_name"] == "a.xlsx"
+    pop.add_by_hand(a, key)
+    assert "unchanged" in capsys.readouterr().out
+    with pytest.raises(SystemExit, match="already holds another file"):
+        pop.add_by_hand(b, key)
+    with pytest.raises(SystemExit, match="not an xlsx file"):
+        pop.add_by_hand(bad, key)
+    with pytest.raises(SystemExit, match="no such file"):
+        pop.add_by_hand(tmp_path / "missing.xlsx", key)
+    pop.add_by_hand(b, key, replace=True)
+    assert F.load_manifest()[key]["file_name"] == "b.xlsx"
+
+
+def test_fetch_carries_on_when_a_hand_downloaded_file_is_missing(monkeypatch, capsys):
+    monkeypatch.setattr(pop, "documents", lambda: [])
+    pop.fetch({}, False)  # no exception: the refresh goes on
+    assert "Download it from" in capsys.readouterr().out

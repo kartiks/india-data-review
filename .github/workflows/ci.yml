@@ -1,0 +1,44 @@
+# CI on every pull request and every push to main: runs the local CI (scripts/ci.sh) on the commit, which rebuilds
+# every area's data offline from the committed sources with every check passing, compares the rebuilt data with the
+# committed data, runs every test suite, and type-checks and builds the site. See "Local CI" in the README.
+#
+# Pushes made by the weekly data refresh (with the workflow's own token) do not start this workflow; the refresh
+# runs scripts/ci.sh on its commit itself before pushing.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  # A new push to a pull request replaces the run on its previous commit; runs on main always finish.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      # The default shallow clone is enough: scripts/ci.sh only adds a worktree of HEAD (for a pull request, the
+      # merge commit GitHub checks out) and compares the rebuilt files with that same commit.
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@v6
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: site/package-lock.json
+
+      - name: Local CI on the commit
+        run: scripts/ci.sh HEAD

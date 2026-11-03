@@ -64,6 +64,12 @@ It does **not** download the base-2024 CPI press releases or the HCES report tab
 documents. A release listed in `CPI2024_RELEASES` but not yet downloaded is downloaded by the next run, but add new
 releases by hand as below, so that you see the checks.
 
+It does notice when they are out of date: if the latest base-2024 month's release (about the 12th of the next month)
+is more than 45 days old, so the following month's release has been out for about two weeks, the refresh exits with
+an error after building and checking (`sources.cpi2024_overdue`), and the run fails until the new month is added.
+Only `--refresh-api` and `--refresh` do this: the plain build, and `scripts/ci.sh`, keep passing on committed data
+however much time has passed.
+
 ### Each month
 
 **Consumer prices, base 2024 (12th of the month), by hand.** MoSPI's data service does not yet return the base-2024

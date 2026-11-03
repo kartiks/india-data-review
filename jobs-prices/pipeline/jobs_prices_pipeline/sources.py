@@ -26,6 +26,8 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
    has one. Add each new month's release page below.
 """
 
+from datetime import date
+
 API = "https://api.mospi.gov.in/api"
 PAGE_LIMIT = 200  # the API refuses larger pages
 
@@ -70,6 +72,27 @@ CPI2024_RELEASES = {
     "2026-08": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2310058&reg=3&lang=1",
     "2026-09": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2322244&reg=3&lang=1",
 }
+CPI2024_RELEASE_DAY = 12  # MoSPI releases each month's CPI on about the 12th of the next month
+CPI2024_MAX_AGE_DAYS = 45  # the refresh fails when the latest release is older: the next one is ~2 weeks overdue
+
+
+def cpi2024_overdue(latest: str | None, today: date) -> str | None:
+    """Why the base-2024 CPI is out of date, or None. latest = the latest month read ('2026-09'). Its release came
+    out about the 12th of the next month; more than CPI2024_MAX_AGE_DAYS after that, the following month's release
+    (due a month later) has been out for about two weeks and has not been added to CPI2024_RELEASES.
+
+    Run only by the weekly refresh (--refresh-api, --refresh), not by the offline build: the committed data must
+    keep building and passing its checks however much time passes."""
+    if latest is None:
+        return "no base-2024 CPI release read"
+    y, m = map(int, latest.split("-"))
+    released = date(y + m // 12, m % 12 + 1, CPI2024_RELEASE_DAY)
+    age = (today - released).days
+    if age <= CPI2024_MAX_AGE_DAYS:
+        return None
+    return (f"the latest base-2024 CPI month is {latest}, released about {released.isoformat()}, {age} days ago "
+            f"(more than {CPI2024_MAX_AGE_DAYS}): add the newer monthly releases to CPI2024_RELEASES in sources.py "
+            "and run --fetch (see the README, 'Each month')")
 
 
 def slug(text: str) -> str:

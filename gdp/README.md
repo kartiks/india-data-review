@@ -70,7 +70,8 @@ Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labe
 up from value added, taxes and subsidies on products; industries add up to total value added and sub-industries to
 their industry; every published growth rate follows from the levels (allowing for the levels' rounding, which
 matters for small states); the two tables of income per person agree, and GSDP and NSDP per person imply the same
-population; every state is one of the 34 in `KNOWN_STATES` and appears in the data; no row is published twice with
+population; every state is one of the 34 in `KNOWN_STATES` and each appears on the 2011-12 base (a newer base may
+fill up state by state: the report lists who is not on it yet); no row is published twice with
 different values; and a state with value added always gets a GSDP. These checks fail the run.
 
 For review only (listed in the report, never a failure): the states' GSDP against India's GDP on the same base, in
@@ -88,7 +89,8 @@ What MoSPI publishes, and what is done with it:
   marked `derived`; their growth is worked out from those levels and marked `published: false`. These derived
   figures match the RBI's Handbook of Statistics on Indian States, which compiles the same state accounts. As there
   is no published total to check them against, the population they imply with MoSPI's GSDP per person must move by
-  less than 3% a year.
+  less than 8% a year (MoSPI's own per-person figures can move a few percent when population projections change; a
+  missing tax figure or a lakh/crore slip moves it far more).
 - Jammu & Kashmir's figures up to 2018-19 include Ladakh (a separate union territory from October 2019; the implied
   population falls 1.4% in 2019-20). The site marks J&K's growth since 2011-12 (`BOUNDARY` in
   `site/src/lib/gdp/states.ts`).
@@ -96,7 +98,8 @@ What MoSPI publishes, and what is done with it:
   repeats Karnataka's gross value added, and its second table of income per person repeats Karnataka's GSDP per
   person; both are listed, with reasons, in `KNOWN_EXCEPTIONS` in `states.py`. A new case fails the checks until it
   is looked at.
-- Chhattisgarh publishes no subsidies on products; its GSDP equals value added plus taxes.
+- Chhattisgarh publishes no subsidies on products; its GSDP equals value added plus taxes (and would be worked out
+  that way if its GSDP were ever missing).
 
 The site shows the 2011-12 base (`STATE_BASE` in `site/src/lib/gdp/states.ts`), for the latest year whose
 reporting states made up 97% of the states' economy the year before, and names any state missing from it. When MoSPI publishes state accounts

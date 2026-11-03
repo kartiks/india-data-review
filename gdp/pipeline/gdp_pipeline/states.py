@@ -99,7 +99,10 @@ GROWTH_TOL = 0.05  # growth rates are printed to one decimal ...
 LEVEL_ROUNDING = 0.5  # ... and worked out from levels printed to the crore (or rupee), which matters for small states
 PER_PERSON_TOL = 1  # ₹
 POPULATION_TOL = 0.0005  # per-person GSDP and NSDP are rounded to the rupee
-DERIVED_POPULATION_STEP = 0.03  # a derived state's implied population moves less than this a year (catches unit slips)
+# A derived state's implied population moves less than this a year. MoSPI's own per-person figures can move a few
+# percent when population projections are revised; a missing tax figure (about 10% of GSDP) or a lakh/crore slip is
+# far larger.
+DERIVED_POPULATION_STEP = 0.08
 # For review only: states' GSDP / India's GDP usually sits in this band. The states are compiled separately and keep
 # being revised, while the national 2011-12 series stopped in February 2026, so this is not a hard check.
 SUM_BAND = (0.95, 1.06)
@@ -108,6 +111,7 @@ FINAL_ENOUGH = "PE"  # ... and India's figure for it is at least a provisional e
 
 # Every state and union territory in MoSPI's state accounts. A new or renamed one fails the checks until it is added
 # here (and, if renamed, its old rows are looked at); one that disappears fails too.
+SITE_BASE = "2011-12"  # the base the site shows (STATE_BASE in site/src/lib/gdp/states.ts)
 KNOWN_STATES = [
     "Andaman & Nicobar Islands", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh",
     "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu & Kashmir", "Jharkhand", "Karnataka", "Kerala",
@@ -196,9 +200,11 @@ def load(manifest: dict) -> tuple[list[dict], list[str]]:
                     "source_url": entry["url"],
                     "source_sha256": entry["sha256"],
                 })
-    for base in sorted({r["base_year"] for r in rows}):
-        present = {r["state"] for r in rows if r["base_year"] == base}
-        problems += [f"{base} base: no rows at all for {s}" for s in KNOWN_STATES if s not in present]
+    # Every state must be in the series the site shows. A newer base is expected to fill up state by state; check_rows
+    # lists the states not on it yet.
+    present = {r["state"] for r in rows if r["base_year"] == SITE_BASE}
+    if present:
+        problems += [f"{SITE_BASE} base: no rows at all for {s}" for s in KNOWN_STATES if s not in present]
     return rows, problems
 
 
@@ -267,8 +273,11 @@ def arrange(rows: list[dict]) -> tuple[dict, list[str]]:
     # GSDP where MoSPI's GSDP table leaves the state out: GSVA + taxes - subsidies, and growth from those levels.
     for states in tree.values():
         for years in states.values():
+            # A state that never publishes subsidies on products (Chhattisgarh) has none to subtract.
+            never_subsidies = not any("subsidies" in n for n in years.values())
             for year, node in years.items():
-                total, taxes, subs = node.get("gsva", {}).get("total"), node.get("taxes"), node.get("subsidies")
+                total, taxes = node.get("gsva", {}).get("total"), node.get("taxes")
+                subs = node.get("subsidies") or ({"cur": 0, "con": 0} if never_subsidies else None)
                 if "gsdp" in node or not (total and taxes and subs):
                     continue
                 gsdp = {k: round(total[k] + taxes[k] - subs[k], 2) for k in ("cur", "con") if k in total and k in taxes and k in subs}
@@ -353,10 +362,12 @@ def check_rows(st: dict, report) -> None:
     failures, notes = sort_out("source", st["source_problems"] + st["left_out"])
     with open(DATA / "state_accounts.csv", encoding="utf-8") as f:
         n = sum(1 for _ in f) - 1
-    other = [b for b in st["bases"] if b != "2011-12"]
-    if other:
-        notes.append(f"MoSPI now publishes state accounts on the {', '.join(other)} base. The site still shows the "
-                     "2011-12 base: switch it over (site/src/lib/gdp/states.ts).")
+    for base in (b for b in st["bases"] if b != SITE_BASE):
+        missing = [s for s in KNOWN_STATES if s not in st["data"][base]]
+        notes.append(f"MoSPI now publishes state accounts on the {base} base"
+                     + (f" (not yet for {', '.join(missing)})" if missing else " for every state")
+                     + f". The site still shows the {SITE_BASE} base: switch it over (site/src/lib/gdp/states.ts) "
+                     "once the new base covers the states.")
     report.add("State accounts: every published row is understood", n, failures, notes)
 
 
@@ -483,7 +494,7 @@ def check_sum(st: dict, ds: dict, report) -> None:
 
     notes = []
     annual = ds["data"].get("2011-12", {}).get("annual", {})
-    states = st["data"].get("2011-12", {})
+    states = st["data"].get(SITE_BASE, {})
     years_all = sorted({y for years in states.values() for y in years})
     for year in years_all:
         stages = annual.get(year)
@@ -502,8 +513,9 @@ def check_sum(st: dict, ds: dict, report) -> None:
     report.add("State accounts: the states' GSDP against India's GDP (for review, not failures)", 0, [], notes)
 
 
-def check(ds: dict, report) -> None:
-    st = json.loads((DATA / "states.json").read_text())
+def check(ds: dict, report, st: dict | None = None) -> None:
+    USED.clear()
+    st = st or json.loads((DATA / "states.json").read_text())
     check_rows(st, report)
     check_identities(st, report)
     check_industries(st, report)

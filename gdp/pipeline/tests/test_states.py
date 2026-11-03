@@ -97,3 +97,75 @@ def test_coverage_counts_last_years_weight_of_the_states_reporting():
         "Small": {"2023-24": {"gsdp": {"cur": 10}}},
     }
     assert states.coverage(data, "2024-25") == 0.9
+
+
+class Report:
+    def __init__(self):
+        self.sections = []
+
+    def add(self, title, checked, failures, notes):
+        self.sections.append((title, checked, failures, notes))
+
+
+def st_of(data, base="2011-12"):
+    return {"data": {base: data}, "bases": [base], "source_problems": [], "left_out": []}
+
+
+def test_derived_gsdp_with_a_population_jump_fails():
+    def year(gsdp, pc):
+        return {"gsdp": {"cur": gsdp, "derived": True}, "pc_gsdp": {"cur": pc}}
+    ok = st_of({"Haryana": {"2021-22": year(100_000, 10_000), "2022-23": year(105_000, 10_250)}})  # population +2.4%
+    slip = st_of({"Haryana": {"2021-22": year(100_000, 10_000), "2022-23": year(90_000, 10_250)}})  # taxes left out
+    for st, fails in ((ok, 0), (slip, 1)):
+        report = Report()
+        states.check_per_person(st, report)
+        assert len(report.sections[0][2]) == fails
+
+
+def test_value_added_without_gsdp_fails():
+    report = Report()
+    states.check_identities(st_of({"Assam": {"2024-25": {"gsva": {"total": {"cur": 1, "con": 1}}}}}), report)
+    assert "GSDP is not" in report.sections[0][2][0]
+
+
+def test_state_that_never_publishes_subsidies_still_gets_a_derived_gsdp():
+    tree, _ = states.arrange([row(29, "Chhattisgarh", "2024-25", 500_000, 400_000, industry="total"),
+                              row(33, "Chhattisgarh", "2024-25", 50_000, 40_000)])
+    assert tree["2011-12"]["Chhattisgarh"]["2024-25"]["gsdp"] == {"cur": 5_500, "con": 4_400, "derived": True}
+
+
+def test_states_against_india_is_for_review_and_skips_advance_estimates_and_thin_years():
+    ds = {"data": {"2011-12": {"annual": {
+        "2022-23": {"FINAL": {"gdp": {"cur": 100}}},
+        "2023-24": {"PE": {"gdp": {"cur": 100}}},
+        "2024-25": {"AE1": {"gdp": {"cur": 100}}},
+    }}}}
+    st = st_of({
+        "Big": {"2022-23": {"gsdp": {"cur": 90}}, "2023-24": {"gsdp": {"cur": 200}}, "2024-25": {"gsdp": {"cur": 95}}},
+        "Small": {"2022-23": {"gsdp": {"cur": 10}}, "2023-24": {"gsdp": {"cur": 10}}, "2024-25": {"gsdp": {"cur": 10}}},
+    })
+    report = Report()
+    states.check_sum(st, ds, report)
+    title, checked, failures, notes = report.sections[0]
+    assert "for review" in title and failures == []
+    assert [n[:7] for n in notes] == ["2022-23", "2023-24"]  # 2024-25 is only an advance estimate
+    assert "outside the usual" in notes[1]  # 210% of India: listed, not failed
+    st["data"]["2011-12"]["Big"].pop("2023-24")
+    report = Report()
+    states.check_sum(st, ds, report)
+    assert [n[:7] for n in report.sections[0][3]] == ["2022-23"]  # 2023-24: the states reporting it were 10% of the year before
+
+
+def test_a_new_base_may_fill_up_state_by_state(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setattr(states, "ROOT", tmp_path)
+    monkeypatch.setattr(states, "STATE_SERIES", [("2011-12", "Current", "Annually"), ("2022-23", "Current", "Annually")])
+    monkeypatch.setattr(states, "STATE_INDICATORS", [23])
+    monkeypatch.setattr(states, "KNOWN_STATES", ["Goa", "Kerala"])
+    (tmp_path / "old.json").write_text(json.dumps({"rows": [raw("Goa", "2020-21", "1"), raw("Kerala", "2020-21", "2")]}))
+    (tmp_path / "new.json").write_text(json.dumps({"rows": [raw("Goa", "2023-24", "1")]}))
+    _, problems = states.load({
+        "nas/2011-12/Current/Annually/ind23": {"file": "old.json", "url": "u", "sha256": "s"},
+        "nas/2022-23/Current/Annually/ind23": {"file": "new.json", "url": "u", "sha256": "s"},
+    })
+    assert problems == []

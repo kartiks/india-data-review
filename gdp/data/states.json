@@ -1,7 +1,7 @@
 {
  "description": "State accounts from MoSPI: gross and net state domestic product, income per person, growth and value added by industry, for each state and union territory.",
  "units": "₹ crore for levels (value added, taxes and subsidies converted from ₹ lakh); ₹ for per-person figures; % for growth. 'cur' = current prices, 'con' = constant 2011-12 prices. 'derived': worked out as GSVA + taxes - subsidies (MoSPI publishes no GSDP for the state); growth with 'published': false is worked out from the levels.",
- "generated_at": "2026-11-03T03:34:21+00:00",
+ "generated_at": "2026-11-03T03:37:48+00:00",
  "bases": [
   "2011-12"
  ],

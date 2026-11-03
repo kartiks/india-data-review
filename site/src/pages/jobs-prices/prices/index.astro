@@ -113,7 +113,6 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Consumer price inflation, month by month"
-      headingLevel={3}
       subtitle={`All India, change on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}. Hollow marker: provisional.`}
       years={labels}
       series={[
@@ -130,7 +129,6 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Food and all items"
-      headingLevel={3}
       subtitle="Inflation in the Consumer Food Price Index and in the general index, all India, on both series."
       years={labels}
       series={[
@@ -174,6 +172,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <DotRows
         title={`Inflation by state, ${monthLabel(CPI24_LATEST)}`}
+        headingLevel={3}
         subtitle={`Base 2024, on the same month a year earlier${now24.provisional ? ", provisional" : ""}. Sorted by the combined figure. Chandigarh has no rural market.`}
         series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
         rows={state24}
@@ -240,6 +239,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <DotRows
       title={`Inflation by state, ${lastYear}`}
+      headingLevel={3}
       subtitle={`Average index for ${lastYear} on ${Number(lastYear) - 1}. Sorted by the combined figure. MoSPI publishes Dadra & Nagar Haveli and Daman & Diu separately in this series, and no separate index for Ladakh.`}
       series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
       rows={stateRows}

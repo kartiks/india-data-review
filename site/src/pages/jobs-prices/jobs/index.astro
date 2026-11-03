@@ -116,17 +116,16 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <LineChart headingLevel={3} title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <LineChart headingLevel={3} title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
   </div>
 
   <section class="card">
     <LineChart
       title="Urban unemployment, quarter by quarter"
-      headingLevel={3}
       subtitle={`Towns and cities, aged 15 and over, current weekly status, ${qLabels[0]} to ${qLabels[qLabels.length - 1]}. ${covidUr ? `In Apr–Jun 2020, during the COVID-19 lockdown, it reached ${pct(covidUr)}.` : ""}`}
       years={qLabels}
       series={qSeries}
@@ -140,7 +139,6 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
     <section class="card">
       <LineChart
         title="Unemployment, month by month"
-        headingLevel={3}
         subtitle={`Aged 15 and over, current weekly status. MoSPI's monthly survey started in January 2025; latest ${periodLabel(lastM.year, lastM.period)}.`}
         years={mLabels}
         series={mSeries}
@@ -168,7 +166,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
       <DotRows title={`Young people (15–29), unemployment rate, ${Y}`} series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <h3>Unemployment by education, {Y}</h3>
+      <h2>Unemployment by education, {Y}</h2>
       <p class="muted small">All ages, usual status. Graduates are far more likely to be looking for work than people with little schooling, who mostly cannot afford not to work.</p>
       <BarList rows={eduRows} tone={3} label="Unemployment rate by level of education" />
       <p class="source">{SRC}</p>
@@ -177,13 +175,13 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <h3>Labour force participation by social group, {Y}</h3>
+      <h2>Labour force participation by social group, {Y}</h2>
       <p class="muted small">Aged 15 and over, usual status.</p>
       <BarList rows={groupRows("social_group")} tone={1} label="Labour force participation by social group" />
       <p class="source">{SRC}</p>
     </section>
     <section class="card">
-      <h3>Labour force participation by religion, {Y}</h3>
+      <h2>Labour force participation by religion, {Y}</h2>
       <p class="muted small">Aged 15 and over, usual status. MoSPI publishes the four largest religions.</p>
       <BarList rows={groupRows("religion")} tone={1} label="Labour force participation by religion" />
       <p class="source">{SRC}</p>

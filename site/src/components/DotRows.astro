@@ -12,10 +12,9 @@ interface Props {
   format: (v: number) => string;
   source?: string;
   zero?: boolean; // start the scale at zero (default true)
-  // 3 (default): these lists sit in cards inside a section with an h2; 2 for a card directly under the page's h1
-  headingLevel?: 2 | 3;
+  headingLevel?: 2 | 3; // 2 (default) for a card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, series, rows, format, source, zero = true, headingLevel = 3 } = Astro.props;
+const { title, subtitle, series, rows, format, source, zero = true, headingLevel = 2 } = Astro.props;
 const Heading = `h${headingLevel}` as "h2" | "h3";
 const all = rows.flatMap((r) => r.values).filter((v): v is number => v != null);
 const lo = zero ? Math.min(0, ...all) : Math.min(...all);

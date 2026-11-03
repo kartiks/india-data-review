@@ -2,12 +2,11 @@
 import Base from "../../../layouts/Base.astro";
 import DotRows from "../../../components/DotRows.astro";
 import { hces, hcesValue, hcesOverall, HCES_YEARS, HCES_LATEST, NOT_IMPUTED, IMPUTED, type HcesRow } from "../../../lib/jobs-prices/data";
-import { gpct, pct } from "../../../lib/format";
+import { gpct, pct, rupees } from "../../../lib/format";
 
 const Y = HCES_LATEST;
 const Y0 = HCES_YEARS[0];
 const SRC = "MoSPI, Household Consumption Expenditure Survey (HCES), via MoSPI's data service.";
-const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
 const q = (o: Partial<HcesRow>) => ({ year: Y, state: "All India", imputation_type: NOT_IMPUTED, ...o });
 const mpce = (sector: "Rural" | "Urban", o: Partial<HcesRow> = {}) => hcesValue(q({ indicator: "mpce", sector, ...o }));
 const rural = mpce("Rural")!, urban = mpce("Urban")!;

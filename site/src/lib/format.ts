@@ -48,6 +48,11 @@ export const pts = (v: number) => `${v > 0 ? "+" : v < 0 ? "−" : "±"}${Math.a
 /** Axis label for growth: "8%", "−4%". */
 export const axisPct = (v: number) => `${v < 0 ? "−" : ""}${Math.abs(v)}%`;
 
+/** A plain number with Indian grouping and a fixed number of decimals: "1,438.1". */
+export const decimal = (v: number, digits = 1) => `${v < 0 ? "−" : ""}${inr(digits).format(Math.abs(v))}`;
+/** A figure, or an en dash where there is none: orDash(r.growth, gpct). */
+export const orDash = (v: number | null | undefined, fmt: (v: number) => string) => (v == null ? "–" : fmt(v));
+
 /** Rupees (not crore), Indian grouping: "₹2,43,107". */
 export const rupees = (v: number) => `${v < 0 ? "−" : ""}₹${inr(0).format(Math.abs(v))}`;
 /** Rupees for axes: "₹50,000", "₹1.5 lakh". */

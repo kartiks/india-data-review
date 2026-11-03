@@ -41,7 +41,7 @@ def urls(record: dict) -> list[str]:
 
 
 def fetch(manifest: dict, force: bool) -> None:
-    from .fetch import RAW as RAW_ROOT, get, save
+    from .fetch import RAW as RAW_ROOT, get, is_type, save
 
     for name in SOURCES:
         for r in load(name):
@@ -54,7 +54,7 @@ def fetch(manifest: dict, force: bool) -> None:
                 except Exception as exc:  # noqa: BLE001 - report and carry on; the check will fail
                     print(f"{key}: {url} -> {exc}")
                     continue
-                ext = "pdf" if content.startswith(b"%PDF") else "html"
+                ext = "pdf" if is_type(content, "pdf") else "html"
                 save(manifest, key, RAW_ROOT / f"{key}.{ext}", content, url, {"document": f"{name} {r['fiscal_year']}"})
                 print(f"{key}: saved {url} ({len(content):,} bytes)")
                 time.sleep(0.5)

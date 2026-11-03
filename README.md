@@ -17,7 +17,7 @@ Each data area is self-contained: its own `pipeline/` (a Python package run with
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
 URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for people and
 `data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED. Code
-the pipelines share (the validation report) is in `shared/pipeline/` (package `pipeline_common`).
+the pipelines share (the validation report, downloading) is in `shared/pipeline/` (package `pipeline_common`).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.
@@ -179,9 +179,9 @@ which takes about an hour on GitHub) and 240 minutes in all.
 
 1. Add it to the area's `sources.py` and `fetch.py`, read it in `build.py`, and add checks for it.
 2. If it is refreshed weekly, make the area's refresh option (`--refresh-nas` for GDP, `--refresh-api` for jobs and
-   prices) re-download it, with the same `save()` (which keeps the old file as a snapshot) and the same guard against
-   data that vanishes, and extend `tests/test_fetch.py`. If its download is slow, raise the area's `timeout` in
-   `.github/workflows/data-refresh.yml`.
+   prices) re-download it, with the area's `save()` (`pipeline_common.download.save`, which keeps the old file as a
+   snapshot) and the same guard against data that vanishes, and extend `tests/test_fetch.py`. If its download is
+   slow, raise the area's `timeout` in `.github/workflows/data-refresh.yml`.
 3. Update the table and the area's README, as above.
 
 ### A new area

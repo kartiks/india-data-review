@@ -24,6 +24,7 @@ The website that presents this data is in `../site/` (see `../site/README.md`); 
 cd pipeline
 uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
 uv run python -m budget_pipeline --fetch    # also download anything missing
+uv run python -m budget_pipeline --refresh  # re-download every budget document (overwrites sources/raw/)
 uv run pytest                               # parser tests + end-to-end checks (~6 min)
 ```
 

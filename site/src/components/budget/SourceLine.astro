@@ -11,5 +11,5 @@ const url = headline(year, "total_expenditure", kind)?.source.url;
 <p class="source">
   Source: {docs.join("; ")}, Budget {budget} ({KIND_LABEL[kind]}s for {year}).{" "}
   {url && <><a href={url} rel="external noopener">Official PDF</a>{" · "}</>}
-  <a href={link("/budget/sources/")}>How it's checked</a>
+  <a href={link("/budget/sources/")}>Sources and checks</a>
 </p>

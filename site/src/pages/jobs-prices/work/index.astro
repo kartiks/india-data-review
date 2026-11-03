@@ -92,8 +92,8 @@ const wageStates = [...new Set(RBI.filter((r) => r.table_id === "wage_agricultur
 const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India", values: WAGE_KINDS.map((k) => wageOf(k.id, st)) }))
   .sort((a, b) => (a.strong ? -1 : b.strong ? 1 : (b.values[0] ?? 0) - (a.values[0] ?? 0)));
 ---
-<Base title="Work and earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
-  <h1>Work and earnings</h1>
+<Base title="Work & earnings" section="work" description="What kind of work Indians do and what it pays: industry, type of employment, job conditions and earnings, from MoSPI's Periodic Labour Force Survey.">
+  <h1>Work &amp; earnings</h1>
   <p class="lede">
     <strong>{pct(agriNow)}</strong> of India's workers were in agriculture, forestry or fishing in {Y}:
     {" "}{pct(agriWomen)} of working women and {pct(agriMen)} of working men. A regular salaried job paid{" "}

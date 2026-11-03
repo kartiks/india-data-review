@@ -51,7 +51,7 @@ const subnav: Record<string, { id: string; href: string; label: string }[]> = {
     { id: "jobs", href: "/jobs-prices/jobs/", label: "Jobs" },
     { id: "work", href: "/jobs-prices/work/", label: "Work & earnings" },
     { id: "prices", href: "/jobs-prices/prices/", label: "Prices" },
-    { id: "spending", href: "/jobs-prices/spending/", label: "Spending" },
+    { id: "spending", href: "/jobs-prices/spending/", label: "Household spending" },
     { id: "states", href: "/jobs-prices/states/", label: "States" },
     { id: "about", href: "/jobs-prices/sources/", label: "Sources" },
   ],
@@ -143,7 +143,7 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
           <p>
             Budget figures come from the Government of India's budget documents (indiabudget.gov.in), from Budget
             2000-01 to Budget {BUDGET_YEAR}, and are checked automatically: accounting rules, agreement between
-            documents and with RBI and PRS figures. <a href={link("/budget/sources/")}>How the data is checked</a>.
+            documents and with RBI and PRS figures. <a href={link("/budget/sources/")}>Sources and checks</a>.
           </p>
         )}
         {area === "gdp" && (

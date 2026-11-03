@@ -9,7 +9,7 @@ const h = (field: string, pctGdp = false) => (y: string, k: Kind) => {
   return pctGdp ? v?.pctGdp ?? undefined : v?.value;
 };
 const events = [
-  { year: "2008-09", label: "Financial crisis" },
+  { year: "2008-09", label: "Global crisis" },
   { year: "2020-21", label: "COVID-19" },
 ];
 const fd = announcedVsOutcome(YEARS, h("fiscal_deficit", true));

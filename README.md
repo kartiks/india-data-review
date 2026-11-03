@@ -17,7 +17,8 @@ Each data area is self-contained: its own `pipeline/` (a Python package run with
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
 URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for people and
 `data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED. Code
-the pipelines share (the validation report, downloading) is in `shared/pipeline/` (package `pipeline_common`).
+the pipelines share (the validation report, downloading, reading Budget at a Glance) is in `shared/pipeline/`
+(package `pipeline_common`).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.

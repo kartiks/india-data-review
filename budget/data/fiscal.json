@@ -1,7 +1,7 @@
 {
  "description": "Union Government of India: headline budget figures (Budget at a Glance), in Rs crore.",
  "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
- "generated_at": "2026-10-30T09:47:14+00:00",
+ "generated_at": "2026-11-03T13:05:17+00:00",
  "fields": {
   "revenue_receipts": "Revenue receipts",
   "tax_revenue_net": "Tax revenue (net to Centre)",
@@ -513,6 +513,21 @@
    "text": "GDP for BE 2023-2024 has been projected at % `3,01,75,065 crore",
    "source_budget": "2023-24",
    "source_url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag1.pdf"
+  },
+  "2024-25": {
+   "fiscal_year": "2024-25",
+   "value": 32636912.0,
+   "text": "GDP for Budget FY 2024-25 (Regular) is estimated at `3,26,36,912 crore",
+   "source_budget": "2024-25",
+   "source_url": "https://www.indiabudget.gov.in/budget2024-25/doc/Budget_at_Glance/bag1.pdf"
+  },
+  "2025-26": {
+   "fiscal_year": "2025-26",
+   "value": 35697923.0,
+   "text": "GDP for FY 2025-26 is estimated at ` 356,97,923 crore",
+   "note": "The two rupee amounts are not in the PDF's text layer; they were read from the rendered page.",
+   "source_budget": "2025-26",
+   "source_url": "https://www.indiabudget.gov.in/budget2025-26/doc/Budget_at_Glance/bag1.pdf"
   },
   "2026-27": {
    "fiscal_year": "2026-27",

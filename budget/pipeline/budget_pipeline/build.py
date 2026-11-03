@@ -21,8 +21,10 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pipeline_common import budget_glance
+
 from .annotations import HEADER_FIXES, SOURCE_NOTES
-from .parse import FIELD_PATTERNS, ParseError, fy, parse_document
+from .parse import FIELD_PATTERNS, ParseError, fy, parse_document, stated_gdp
 from .readers import read_any
 from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
 
@@ -94,8 +96,17 @@ def parse_all() -> tuple[list[dict], dict, list[dict]]:
                     "source_sha256": src["sha256"],
                 }
             )
-        if parsed["gdp"]:
-            gdp[doc_year] = {**parsed["gdp"], "source_budget": doc_year, "source_url": src["url"]}
+        stated = parsed["gdp"]
+        if not stated and primary == "pdf":
+            # The table's rows do not give the sentence whole: from 2024-25 the page is bilingual and the Hindi
+            # column's figures fall between its words, and 2025-26's text layer lacks the amounts. Read the page
+            # the way the gdp area does.
+            texts, note = budget_glance.texts(doc_year, ROOT / src["file"])
+            stated = next((s for s in map(stated_gdp, texts) if s), None)
+            if stated and note:
+                stated["note"] = note
+        if stated:
+            gdp[doc_year] = {**stated, "source_budget": doc_year, "source_url": src["url"]}
     return rows, gdp, comparisons
 
 

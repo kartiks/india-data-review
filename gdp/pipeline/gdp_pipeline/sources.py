@@ -20,6 +20,8 @@
    sentence and the official document it is quoted from).
 """
 
+from pipeline_common import budget_glance
+
 NAS_API = "https://api.mospi.gov.in/api/nas/getNASData"
 NAS_PAGE_LIMIT = 200  # the API refuses larger pages
 
@@ -42,7 +44,6 @@ STATE_SERIES = [
 ]
 STATE_INDICATORS = range(23, 35)
 
-BUDGET_BASE = "https://www.indiabudget.gov.in"
 FIRST_BUDGET = 2011  # 2011-12: first budget whose GDP assumption is on the 2011-12 base's era
 LATEST_BUDGET = 2026  # 2026-27
 
@@ -54,13 +55,7 @@ def fy(start: int) -> str:
 
 def budget_glance_urls(start: int) -> list[str]:
     """Budget at a Glance headline table (the page that states the GDP assumption)."""
-    y = fy(start)
-    if start <= 2018:
-        site = f"{BUDGET_BASE}/budget{start}-{start + 1}/ub{y}"
-        name = "bag/bag11" if start == 2016 else "bag/bag1"  # 2016-17 names this PDF bag11.pdf
-        return [f"{site}/{name}.pdf"]
-    site = (BUDGET_BASE if start == LATEST_BUDGET else f"{BUDGET_BASE}/budget{y}") + "/doc"
-    return [f"{site}/Budget_at_Glance/bag1.pdf"]
+    return [budget_glance.url(start, LATEST_BUDGET)]
 
 
 BUDGETS = list(range(FIRST_BUDGET, LATEST_BUDGET + 1))

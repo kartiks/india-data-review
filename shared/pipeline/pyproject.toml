@@ -3,7 +3,9 @@ name = "pipeline-common"
 version = "0.1.0"
 description = "Code shared by the India Data Review pipelines: validation report, downloads, Budget at a Glance"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "pdfplumber>=0.11.10",  # budget_glance.page_texts
+]
 
 [dependency-groups]
 dev = ["pytest>=9.2.0"]

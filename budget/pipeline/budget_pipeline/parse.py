@@ -19,6 +19,8 @@ or parsing stops with an error rather than guessing.
 import re
 from dataclasses import dataclass
 
+from pipeline_common.budget_glance import parse_sentence
+
 # Canonical line items, matched against the English label after removing the
 # item number (e.g. "17. ").
 FIELD_PATTERNS: list[tuple[str, str]] = [
@@ -251,11 +253,12 @@ def read_row_tokens(cells: list[str], ncols: int, anchors: list[float] | None) -
     return Row(label, amounts, pcts)
 
 
-GDP_RE = re.compile(
-    r"GDP for (?:the )?(?:Budget )?(?:BE|FY|Budget Estimates?)?\s*(?:FY\s*)?(\d{4}\s*-\s*\d{2,4})"
-    r"(?:\s*\([A-Za-z]+\))?.{0,40}?(?:projected|estimated)\s+at[\s`%]{0,6}([\d,]{6,})\s*crore",
-    re.I | re.S,
-)
+def stated_gdp(text: str) -> dict | None:
+    """The GDP the budget states under its headline table ("GDP for BE 2023-2024 has been projected at ..."), read
+    by pipeline_common.budget_glance (shared with the gdp area): {"fiscal_year" as printed, "value", "text"}. The
+    text is made ASCII first, with ₹ written as ` as most years' PDFs print it."""
+    p = parse_sentence(ascii_text(text.replace("₹", "`")), growth=False)
+    return {"fiscal_year": p["printed_year"], "value": p["gdp_crore"], "text": p["text"]} if p else None
 
 
 def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
@@ -346,9 +349,6 @@ def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
                 pct = -abs(pct)  # surpluses print as a positive % in some years
             observations.append(Observation(field, col.fiscal_year, col.kind, amount, pct, labels[field]))
 
-    gdp = None
-    m = GDP_RE.search(ascii_text(" ".join(" ".join(c) for c in rows).replace("₹", "`")))
-    if m:
-        gdp = {"fiscal_year": m.group(1).replace(" ", ""), "value": float(m.group(2).replace(",", "")), "text": m.group(0)}
+    gdp = stated_gdp(" ".join(" ".join(c) for c in rows))
 
     return {"columns": columns, "observations": observations, "gdp": gdp, "unknown_rows": unknown}

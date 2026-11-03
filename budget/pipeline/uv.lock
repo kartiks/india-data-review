@@ -368,8 +368,12 @@ wheels = [
 name = "pipeline-common"
 version = "0.1.0"
 source = { editable = "../../shared/pipeline" }
+dependencies = [
+    { name = "pdfplumber" },
+]
 
 [package.metadata]
+requires-dist = [{ name = "pdfplumber", specifier = ">=0.11.10" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=9.2.0" }]

@@ -94,8 +94,9 @@ RBI publishes the Handbook of Statistics on Indian States each year, usually in 
 it up: it reads the handbook page, finds the same table numbers in the new edition and checks their titles; the old
 edition's files are kept in `sources/snapshots/`. If RBI drops a table number or retitles it, that run fails with the
 table number. The title check looks for words a pair of tables share (both unemployment tables, both state GDP
-tables), so if RBI swaps the members of a pair (rural and urban, current and constant prices) the fetch still
-passes: when a new edition arrives, look over the `Data refresh` commit and the States page. To fix a numbering
+tables), so if RBI swaps the members of a pair the fetch still passes; the checks then catch it (rural and urban
+unemployment by each sheet's sub-title, current and constant prices by the state GDP and income checks). Still,
+when a new edition arrives, look over the `Data refresh` commit and the States page. To fix a numbering
 change, update `RBI_STATE_TABLES` in `rbi.py` and run `--refresh-api`.
 
 ### When MoSPI's data service carries the base-2024 index
@@ -143,10 +144,13 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   women, rural + urban between rural and urban; shares of workers add up to 100%.
 - **Prices**: every inflation rate reproduced from the index a year earlier; combined between rural and urban;
   no missing months.
-- **RBI handbook**: every table read with at least 30 states (18 for wage tables); the handbook's state inflation for
-  every year equals the average inflation worked out from MoSPI's own monthly indices (within 0.15 points; years
-  with missing months, such as 2020-21, not compared); overall unemployment lies between men's and women's; the
-  All-India rural wage lies within the states' range.
+- **RBI handbook**: every table read with at least 30 states (18 for wage tables), each sheet in the table's unit and
+  with one of its expected sub-titles (`RBI_STATE_TABLES` in `rbi.py`; the site looks figures up by sub-title); the
+  handbook's state inflation for every year equals the average inflation worked out from MoSPI's own monthly indices
+  (within 0.15 points; years with missing months, such as 2020-21, not compared); overall unemployment lies between
+  men's and women's; the All-India rural wage lies within the states' range. State GDP and income per person:
+  current and constant prices are equal in the base year (2011-12) and current ≥ constant after it, and GSDP ÷ per
+  capita NSDP is the same at current and constant prices within 10% (it is population × GSDP/NSDP).
 - **New price series**: headline sentence, summary table and annexures agree; page tables match the PDF; later
   releases revise only the previous month's provisional figures; linking factor = 2025 average new ÷ old.
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food

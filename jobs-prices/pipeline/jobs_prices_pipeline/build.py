@@ -432,12 +432,12 @@ def rbi_states(manifest: dict) -> tuple[list[dict], list[str], dict]:
     from . import rbi
 
     out, problems, editions = [], [], {}
-    for n, (table_id, _) in rbi.RBI_STATE_TABLES.items():
+    for n, spec in rbi.RBI_STATE_TABLES.items():
         e = manifest.get(f"rbi/table{n:03d}")
         if not e or e.get("empty"):
             problems.append(f"RBI table {n} not downloaded")
             continue
-        recs, probs = rbi.read_table(ROOT / e["file"], n, table_id)
+        recs, probs = rbi.read_table(ROOT / e["file"], n, spec)
         for r in recs:
             r["source"] = f"rbi/table{n:03d}"
         out += recs

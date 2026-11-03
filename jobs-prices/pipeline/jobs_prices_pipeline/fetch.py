@@ -129,15 +129,15 @@ def fetch_rbi(manifest: dict, force: bool) -> None:
     if not force and all(f"rbi/table{n:03d}" in manifest for n in rbi.RBI_STATE_TABLES):
         return
     edition, links = rbi.table_links(get(rbi.HANDBOOK_PAGE).decode("utf-8", "ignore"))
-    for n, (table_id, words) in rbi.RBI_STATE_TABLES.items():
+    for n, spec in rbi.RBI_STATE_TABLES.items():
         key = f"rbi/table{n:03d}"
         if key in manifest and not force:
             continue
         if n not in links:
             raise RuntimeError(f"{key}: table {n} not on the handbook page")
         title, url = links[n]
-        if words not in title.upper():
-            raise RuntimeError(f"{key}: expected a title with {words!r}, found {title!r}")
+        if spec.words not in title.upper():
+            raise RuntimeError(f"{key}: expected a title with {spec.words!r}, found {title!r}")
         content = get(url)
         if not is_type(content, "xlsx"):
             raise RuntimeError(f"{key}: {url} is not an Excel file")

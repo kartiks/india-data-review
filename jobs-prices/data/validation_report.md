@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service. Every allowed exception lists its reason.
 
-**Result: PASSED** (592165 checks, 0 failures)
+**Result: PASSED** (593524 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -233,6 +233,11 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 883 checks, 0 failures.
 
 - Unemployment: the overall rate lies between men's and women's (published per thousand, so within 1). Rural wages: the All-India average lies within the range of the states' averages.
+
+## ✅ RBI state GDP and income per person: current and constant prices agree
+1359 checks, 0 failures.
+
+- Base year 2011-12: current = constant prices; later years: current ≥ constant; GSDP ÷ per capita NSDP (population × GSDP/NSDP) within 10% at current and constant prices.
 
 ## ✅ Prices, new series (base 2024): every release read in full
 9 checks, 0 failures.

@@ -578,13 +578,19 @@ def check_rbi(ds: dict, report: Report) -> None:
     # 1. read in full
     failures, notes, checked = list(ds["rbi_problems"]), [], 0
     editions = set(ds["rbi_editions"].values())
-    for n, (table_id, _) in RBI_STATE_TABLES.items():
+    for n, spec in RBI_STATE_TABLES.items():
         checked += 1
         rows = [r for r in recs if r["table"] == n]
         states = {r["state"] for r in rows}
-        minimum = 18 if table_id.startswith("wage") else 30
+        minimum = 18 if spec.id.startswith("wage") else 30
         if len(states) < minimum:
-            failures.append(f"RBI table {n} ({table_id}): {len(states)} states read, expected at least {minimum}")
+            failures.append(f"RBI table {n} ({spec.id}): {len(states)} states read, expected at least {minimum}")
+        # The site looks figures up by variant and shows them in the table's unit.
+        units = {r["unit"] for r in rows} - {spec.unit}
+        variants = {r["variant"] for r in rows} - set(spec.variants)
+        if units or variants:
+            failures.append(f"RBI table {n} ({spec.id}): unexpected units {sorted(units)} or sub-titles {sorted(variants)} "
+                            f"(expected {spec.unit}, {list(spec.variants)})")
     if len(editions) > 1:
         failures.append(f"RBI tables come from different editions: {sorted(editions)}")
     notes.append(f"Edition: {', '.join(sorted(editions))}. Tables {', '.join(str(n) for n in RBI_STATE_TABLES)}.")
@@ -649,6 +655,46 @@ def check_rbi(ds: dict, report: Report) -> None:
                 "Rural wages: the All-India average lies within the range of the states' averages."])
 
 
+RBI_BASE_YEAR = "2011-12"  # the base year of the handbook's constant-price state accounts (tables 20 and 22)
+RBI_INCOME = {"gsdp": (21, 22), "per_capita_nsdp": (19, 20)}  # (current prices, constant prices)
+RBI_PRICE_RATIO_TOL = 0.1
+
+
+def check_rbi_income(ds: dict, report: Report) -> None:
+    """State GDP (GSDP, tables 21-22) and income per person (per capita NSDP, tables 19-20), at current and constant
+    prices. The tables give no NSDP level, population or growth rate, so the checks tie the four tables together:
+    - in the base year, current and constant prices are the same figure (within rounding);
+    - after it, current prices are not below constant prices (prices have risen every year since 2011-12);
+    - GSDP ÷ per capita NSDP is population × GSDP/NSDP, so it is about the same at current and constant prices
+      (within 10%); a table swapped for its pair, or read in the wrong unit, breaks this."""
+    v = {(r["table"], r["state"], r["year"]): r["value"] for r in ds["rbi"]
+         if r["table"] in (19, 20, 21, 22) and r["value"] is not None}
+    failures, checked = [], 0
+    if not any(y == RBI_BASE_YEAR for (_, _, y) in v):
+        failures.append(f"RBI tables 19-22: no figures for the base year {RBI_BASE_YEAR} (a new base? update RBI_BASE_YEAR)")
+    for name, (cur, const) in RBI_INCOME.items():
+        for (t, state, year), c in sorted(v.items()):
+            k = v.get((const, state, year))
+            if t != cur or k is None:
+                continue
+            checked += 1
+            if year == RBI_BASE_YEAR and abs(c - k) > max(2, c * 1e-6):
+                failures.append(f"{name} {state} {year} (base year): current prices {c:,.0f} ≠ constant prices {k:,.0f}")
+            elif year > RBI_BASE_YEAR and c < k:
+                failures.append(f"{name} {state} {year}: current prices {c:,.0f} below constant prices {k:,.0f}")
+    for (t, state, year), g in sorted(v.items()):
+        if t != 21 or None in (pc := v.get((19, state, year)), gk := v.get((22, state, year)), pk := v.get((20, state, year))):
+            continue
+        checked += 1
+        ratio = (g / pc) / (gk / pk)
+        if abs(ratio - 1) > RBI_PRICE_RATIO_TOL:
+            failures.append(f"{state} {year}: GSDP ÷ per capita NSDP is {g / pc * 1e5:,.0f} at current prices and "
+                            f"{gk / pk * 1e5:,.0f} at constant prices ({ratio - 1:+.0%})")
+    report.add("RBI state GDP and income per person: current and constant prices agree", checked, failures,
+               [f"Base year {RBI_BASE_YEAR}: current = constant prices; later years: current ≥ constant; GSDP ÷ per "
+                f"capita NSDP (population × GSDP/NSDP) within {RBI_PRICE_RATIO_TOL:.0%} at current and constant prices."])
+
+
 def main(ds: dict | None = None) -> int:
     if ds is None:
         from .build import assemble
@@ -664,6 +710,7 @@ def main(ds: dict | None = None) -> int:
     check_hces(ds, report)
     check_hces_overall(ds, report)
     check_rbi(ds, report)
+    check_rbi_income(ds, report)
     check_cpi2024(ds, report)
     return report.write(DATA)
 

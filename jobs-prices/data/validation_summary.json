@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 592165,
+ "checks": 593524,
  "failures": 0,
  "allowed": 7430,
  "sections": [
@@ -127,6 +127,13 @@
   {
    "title": "RBI state tables: totals lie within their parts",
    "checks": 883,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "RBI state GDP and income per person: current and constant prices agree",
+   "checks": 1359,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []

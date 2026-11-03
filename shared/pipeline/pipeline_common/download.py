@@ -11,6 +11,7 @@ import shutil
 import ssl
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from collections.abc import Callable
 from datetime import datetime, timezone
@@ -21,10 +22,12 @@ TRIES = 5
 BACKOFF_S = 5  # waits 5, 10, 15, 20 s between the tries
 TIMEOUT_S = 120
 
-# api.mospi.gov.in needs TLS legacy renegotiation, which Python turns off by default.
-# Certificates are still verified.
+# api.mospi.gov.in needs TLS legacy renegotiation, which Python turns off by default, so it is turned on for that
+# host only. Certificates are still verified everywhere.
 TLS = ssl.create_default_context()
-TLS.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+LEGACY_TLS_HOSTS = {"api.mospi.gov.in"}
+LEGACY_TLS = ssl.create_default_context()
+LEGACY_TLS.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
 
 # The first bytes of each kind of file, to tell a document from an error page saved under its address.
 MAGIC = {"pdf": b"%PDF", "xlsx": b"PK", "xls": b"\xd0\xcf\x11\xe0"}  # xlsx: a zip; xls: an OLE2 container
@@ -46,8 +49,12 @@ def _retryable(exc: Exception) -> bool:
     return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError))
 
 
+def tls_for(url: str) -> ssl.SSLContext:
+    return LEGACY_TLS if urllib.parse.urlsplit(url).hostname in LEGACY_TLS_HOSTS else TLS
+
+
 def _open(req: urllib.request.Request, timeout: float):
-    return urllib.request.urlopen(req, timeout=timeout, context=TLS)
+    return urllib.request.urlopen(req, timeout=timeout, context=tls_for(req.full_url))
 
 
 def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:

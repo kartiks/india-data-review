@@ -131,3 +131,11 @@ def test_fetch_pages_with_no_data(monkeypatch):
     get, _ = pages({"data": [], "meta_data": {}})
     monkeypatch.setattr(download, "get", get)
     assert download.fetch_pages(lambda n: f"https://example.test/q?page={n}", "q") == []
+
+
+def test_legacy_tls_only_for_mospi_api():
+    assert download.tls_for("https://api.mospi.gov.in/api/nas/getNASData?page=1") is download.LEGACY_TLS
+    for url in ("https://www.indiabudget.gov.in/doc/bag1.pdf", "https://rbidocs.rbi.org.in/x.XLSX",
+                "https://api.mospi.gov.in.evil.test/x"):
+        assert download.tls_for(url) is download.TLS
+    assert not download.TLS.options & getattr(download.ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)

@@ -1,11 +1,11 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-03T16:03:21+00:00",
+ "generated_at": "2026-11-03T16:15:22+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
-  "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only."
+  "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only; earlier estimates come from the downloads this site saved before each revision (earlier_releases)."
  },
  "stages": [
   {
@@ -43209,5 +43209,6 @@
   "2011-12 series, 2013-14, gva_growth, ADD, transport_comm: published twice with different real growth (8.3 and 8.7); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, utilities: published twice with different real growth (4 and 4.1); neither is used",
   "2011-12 series, 2013-14, gva_growth, ADD, utilities: published twice with different real growth (4 and 4.7); neither is used"
- ]
+ ],
+ "earlier_releases": []
 }

@@ -84,12 +84,13 @@ const allStages = DS.stages.filter((s) => years.some((y) => real(OLD, y, s.id) !
         <thead><tr><th>Year</th>{allStages.map((s) => <th title={s.label}>{STAGE_SHORT[s.id]}</th>)}<th>New series</th></tr></thead>
         <tbody>
           {[...years].reverse().map((y) => {
-            const ns = latestStage(NEW, y, (n) => n.growth?.gdp?.real !== undefined);
+            // Every estimate of the new series saved so far, first to latest.
+            const ns = withGrowth(NEW, y);
             return (
               <tr>
                 <td>{y}</td>
                 {allStages.map((s) => <td>{real(OLD, y, s.id) !== undefined ? gpct(real(OLD, y, s.id)!) : ""}</td>)}
-                <td>{ns ? `${gpct(real(NEW, y, ns)!)} (${STAGE_SHORT[ns]})` : ""}</td>
+                <td>{ns.map((st) => `${gpct(real(NEW, y, st)!)} (${STAGE_SHORT[st]})`).join(" → ")}</td>
               </tr>
             );
           })}
@@ -113,7 +114,8 @@ const allStages = DS.stages.filter((s) => years.some((y) => real(OLD, y, s.id) !
     <p class="small muted">
       From 2025, MoSPI's revision policy calls the last revision the "Final Estimate". The new 2022-23 series is only
       available as its latest estimates (MoSPI's data service keeps no earlier ones), so this site saves each release
-      as it comes out and the history of the new series will build up from here.
+      as it comes out and the history of the new series will build up from here: once a release revises a year, its
+      earlier estimates stay in the "New series" column above.
     </p>
   </section>
 </Base>

@@ -162,62 +162,98 @@ def series_key(base: str, series: str) -> str:
     return base if series == "Current" else f"{base}-back"
 
 
-def load_rows(manifest: dict) -> tuple[list[dict], list[str]]:
-    """Every published row with ids attached. Returns (rows, problems)."""
+def versions(entry: dict) -> list[dict]:
+    """The file a manifest entry points to, then each earlier version of it kept in sources/snapshots/ (the entry's
+    history), newest first: {file, sha256, fetched_at}."""
+    current = {"file": entry["file"], "sha256": entry["sha256"], "fetched_at": entry.get("fetched_at")}
+    earlier = [{k: h.get(k) for k in ("file", "sha256", "fetched_at")} for h in reversed(entry.get("history", []))]
+    return [current] + earlier
+
+
+def read_row(r: dict, key: str, base: str, series: str, freq: str, code: int, url: str,
+             sha: str) -> tuple[dict | None, list[str]]:
+    """One API row with our ids attached, or None if it cannot be used; and the problems found in it."""
+    if not re.fullmatch(r"\d{4}-(\d{2}|2000)", str(r.get("year"))):
+        return None, [f"{key}: row with year {r.get('year')!r} left out (not a fiscal year): {r.get('indicator')} "
+                      f"{r.get('revision')} {r.get('current_price')}"]
+    stage_label = r.get("revision")
+    stage = STAGE_BY_LABEL.get(stage_label) if stage_label else ("BACK" if series == "Back" else "LATEST")
+    if stage is None:
+        return None, [f"{key}: unknown estimate stage {stage_label!r}"]
+    problems = []
+    industry = r.get("industry")
+    sector = r.get("institutional_sector")
+    ind = INDUSTRIES.get(industry) if industry else None
+    if industry and ind is None:
+        problems.append(f"{key}: unknown industry {industry!r}")
+    sec = SECTORS.get(sector) if sector else None
+    if sector and sec is None:
+        problems.append(f"{key}: unknown institutional sector {sector!r}")
+    return {
+        "series": series_key(base, series),
+        "base_year": base,
+        "frequency": "annual" if freq == "Annually" else "quarterly",
+        "year": r["year"],
+        "quarter": r.get("quarter") or "",
+        "indicator_code": code,
+        "indicator": INDICATORS[code][0],
+        "indicator_as_printed": r.get("indicator"),
+        "stage": stage,
+        "stage_as_printed": stage_label or "",
+        "industry": ind or "",
+        "industry_as_printed": industry or "",
+        "subindustry": slug(r["subindustry"]) if r.get("subindustry") else "",
+        "subindustry_as_printed": r.get("subindustry") or "",
+        "sector": sec or "",
+        "sector_as_printed": sector or "",
+        "current_price": number(r.get("current_price")),
+        "constant_price": number(r.get("constant_price")),
+        "unit": r.get("unit") or "",
+        "source_url": url,
+        "source_sha256": sha,
+    }, problems
+
+
+def load_rows(manifest: dict) -> tuple[list[dict], list[str], list[dict]]:
+    """Every published row with ids attached. Returns (rows, problems, earlier): earlier lists the estimates read from
+    an earlier version of a file.
+
+    MoSPI's API keeps only the latest estimate of each year in the 2022-23 series: when a year moves from the
+    Provisional to the First Revised Estimate, its Provisional Estimate is gone from the API. fetch.py keeps every
+    replaced file in sources/snapshots/ (the manifest entry's history), so an official estimate (year, quarter and
+    stage) that the current file no longer has is read from the newest earlier version that has it. Where versions
+    share an estimate, the newest wins. Rows without a stage of their own (the quarters' and the back series' latest
+    figures) come from the current file only. Each row's source_sha256 is that of the version it was read from."""
     out: list[dict] = []
     problems: list[str] = []
+    earlier: dict[tuple, set[str]] = {}
     for base, series, freq in NAS_SERIES:
         for code in NAS_INDICATORS:
             key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
             entry = manifest.get(key)
             if not entry or entry.get("empty"):
                 continue
-            body = json.loads((ROOT / entry["file"]).read_text())
-            ind_id, _ = INDICATORS[code]
-            for r in body["rows"]:
-                if not re.fullmatch(r"\d{4}-(\d{2}|2000)", str(r.get("year"))):
-                    problems.append(f"{key}: row with year {r.get('year')!r} left out (not a fiscal year): {r.get('indicator')} "
-                                    f"{r.get('revision')} {r.get('current_price')}")
-                    continue
-                stage_label = r.get("revision")
-                stage = STAGE_BY_LABEL.get(stage_label) if stage_label else ("BACK" if series == "Back" else "LATEST")
-                if stage is None:
-                    problems.append(f"{key}: unknown estimate stage {stage_label!r}")
-                    continue
-                industry = r.get("industry")
-                sector = r.get("institutional_sector")
-                ind = INDUSTRIES.get(industry) if industry else None
-                if industry and ind is None:
-                    problems.append(f"{key}: unknown industry {industry!r}")
-                sec = SECTORS.get(sector) if sector else None
-                if sector and sec is None:
-                    problems.append(f"{key}: unknown institutional sector {sector!r}")
-                unit = r.get("unit") or ""
-                cur, con = number(r.get("current_price")), number(r.get("constant_price"))
-                out.append({
-                    "series": series_key(base, series),
-                    "base_year": base,
-                    "frequency": "annual" if freq == "Annually" else "quarterly",
-                    "year": r["year"],
-                    "quarter": r.get("quarter") or "",
-                    "indicator_code": code,
-                    "indicator": ind_id,
-                    "indicator_as_printed": r.get("indicator"),
-                    "stage": stage,
-                    "stage_as_printed": stage_label or "",
-                    "industry": ind or "",
-                    "industry_as_printed": industry or "",
-                    "subindustry": slug(r["subindustry"]) if r.get("subindustry") else "",
-                    "subindustry_as_printed": r.get("subindustry") or "",
-                    "sector": sec or "",
-                    "sector_as_printed": sector or "",
-                    "current_price": cur,
-                    "constant_price": con,
-                    "unit": unit,
-                    "source_url": entry["url"],
-                    "source_sha256": entry["sha256"],
-                })
-    return out, problems
+            have: set[tuple] = set()  # (year, quarter, stage as printed) already read from a newer version
+            for n, version in enumerate(versions(entry)):
+                found = set()
+                for r in json.loads((ROOT / version["file"]).read_text())["rows"]:
+                    estimate = (r.get("year"), r.get("quarter") or "", r.get("revision"))
+                    if n and (r.get("revision") not in STAGE_BY_LABEL or estimate in have):
+                        continue
+                    row, why = read_row(r, key, base, series, freq, code, entry["url"], version["sha256"])
+                    problems += why
+                    if row is None:
+                        continue
+                    out.append(row)
+                    found.add(estimate)
+                    if n:
+                        k = (row["series"], row["frequency"], row["year"], row["quarter"], row["stage"],
+                             (version["fetched_at"] or "")[:10])
+                        earlier.setdefault(k, set()).add(row["indicator"])
+                have |= found
+    earlier_list = [{"series": s, "frequency": f, "year": y, "quarter": q, "stage": st, "fetched_on": at,
+                     "indicators": sorted(inds)} for (s, f, y, q, st, at), inds in sorted(earlier.items())]
+    return out, list(dict.fromkeys(problems)), earlier_list
 
 
 def dedupe(rows: list[dict]) -> tuple[list[dict], list[str]]:
@@ -369,7 +405,7 @@ def long_run(tree: dict) -> list[dict]:
 
 def main() -> dict:
     manifest = json.loads(MANIFEST.read_text())
-    rows, problems = load_rows(manifest)
+    rows, problems, earlier = load_rows(manifest)
     rows, dup_notes = dedupe(rows)
     rows.sort(key=lambda r: (r["series"], r["frequency"], r["year"], r["quarter"], r["indicator_code"],
                              STAGE_ORDER.get(r["stage"], 99), r["industry"], r["subindustry"], r["sector"]))
@@ -391,7 +427,8 @@ def main() -> dict:
         "series": {
             "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
             "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
-            "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only.",
+            "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only; "
+                       "earlier estimates come from the downloads this site saved before each revision (earlier_releases).",
         },
         "stages": [{"id": sid, "as_printed": label, "label": short, "when": when} for sid, label, short, when in STAGES]
         + [{"id": "BACK", "as_printed": "", "label": "Back series", "when": "recomputed on the 2011-12 base"},
@@ -408,6 +445,7 @@ def main() -> dict:
         "forecasts": forecasts.build(manifest),
         "source_problems": problems,
         "duplicate_rows": dup_notes,
+        "earlier_releases": earlier,
     }
     n = population.write_csv(tree, pop["by_series"], DATA / "per_person.csv")
     print(f"per_person.csv: {n} rows")

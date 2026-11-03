@@ -138,6 +138,9 @@ def check_source(ds: dict, report: Report) -> None:
         reason = allowed("source", p)
         (notes.append(f"Allowed: {p}. Reason: {reason}") if reason else failures.append(p))
     notes += [f"Left out: {d}" for d in ds["duplicate_rows"]]
+    notes += [f"Read from the download of {e['fetched_on']} (since revised; sources/snapshots/): {e['series']} "
+              f"series, {e['year']}{' ' + e['quarter'] if e['quarter'] else ''} {e['stage']}, {len(e['indicators'])} "
+              "indicators" for e in ds.get("earlier_releases", [])]
     with open(DATA / "national_accounts.csv", encoding="utf-8") as f:
         rows = sum(1 for _ in f) - 1
     report.add("Every published row is understood", rows, failures, notes)

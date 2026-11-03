@@ -38,6 +38,7 @@ const pack = (o: PickOption) => ({
   v: o.values,
   t: o.values.map((v) => (v == null ? null : tipFormat(v))),
   k: o.values.map((_, i) => estimate(o.kinds?.[i]).short), // short estimate labels ("1st advance"), "" for none
+  kt: o.values.map((_, i) => estimate(o.kinds?.[i]).full), // their full names, for a tooltip
 });
 const opts = options.map(pack);
 const ref = reference ? pack(reference) : null;
@@ -92,7 +93,7 @@ const inStart = new Set(start.map((c) => c.key));
         <thead><tr><th>Year</th>{start.map(({ o }) => <th>{o.name}</th>)}</tr></thead>
         <tbody>
           {shown.map((yr, i) => (
-            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est">{o.k[i]}</span>}{o.t[i] ?? "–"}</td>)}</tr>
+            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est" title={o.kt[i]}>{o.k[i]}</span>}{o.t[i] ?? "–"}</td>)}</tr>
           ))}
         </tbody>
       </table>
@@ -106,7 +107,7 @@ const inStart = new Set(start.map((c) => c.key));
   import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
   import { setupLine } from "../scripts/charts";
 
-  interface Opt { key: string; name: string; note: string; v: (number | null)[]; t: (string | null)[]; k: string[] }
+  interface Opt { key: string; name: string; note: string; v: (number | null)[]; t: (string | null)[]; k: string[]; kt: string[] }
   interface Data { years: string[]; options: Opt[]; reference: Opt | null; initial: string[]; max: number; axis: AxisFormat; label: string }
 
   function setup(fig: HTMLElement) {
@@ -130,9 +131,9 @@ const inStart = new Set(start.map((c) => c.key));
       return e;
     };
     // A table cell: the value, after its estimate label (muted) so the numbers stay right-aligned.
-    const cell = (t: string | null, k: string) => {
+    const cell = (t: string | null, k: string, title: string) => {
       const td = el("td");
-      if (t != null && k) td.append(Object.assign(el("span", k), { className: "est" }));
+      if (t != null && k) td.append(Object.assign(el("span", k), { className: "est", title }));
       td.append(t ?? "–");
       return td;
     };
@@ -194,7 +195,7 @@ const inStart = new Set(start.map((c) => c.key));
       head.append(el("th", "Year"), ...sel.map(({ o }) => el("th", o.name)));
       const body = years.map((yr, i) => {
         const tr = el("tr");
-        tr.append(el("td", yr), ...sel.map(({ o }) => cell(o.t[i], o.k[i])));
+        tr.append(el("td", yr), ...sel.map(({ o }) => cell(o.t[i], o.k[i], o.kt[i])));
         return tr;
       });
       table.tHead!.replaceChildren(head);

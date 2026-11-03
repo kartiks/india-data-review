@@ -46,7 +46,7 @@ const plots = linePlots(
   { zero, endLabel: true, annotations },
 );
 
-// Estimate labels in short form; left out when every figure has the same one (said once under the table).
+// Estimate labels in short form; left out when every figure has the same one (said once, under the chart).
 const est = series.map((s) => s.points.map((p) => (p.value == null ? null : estimate(p.kind))));
 const layout = estimateLayout(years.map((_, i) => est.map((e) => e[i]?.short ?? null)));
 const rowEst = years.map((_, i) => est.map((e) => e[i]).find((e) => e?.short) ?? null); // "column" mode
@@ -78,6 +78,7 @@ const tooltipData = safeJson({
   )}
   <Fragment set:html={plots} />
   <script type="application/json" class="chart-data" set:html={tooltipData} />
+  {allEst && <p class="muted small est-note">All figures: {allEst.full}.</p>}
   <details class="table-view">
     <summary>Show as table</summary>
     <div class="table-scroll">
@@ -97,7 +98,6 @@ const tooltipData = safeJson({
         </tbody>
       </table>
     </div>
-    {allEst && <p class="muted small est-note">Every figure in this table: {allEst.full}.</p>}
   </details>
   {source && <p class="source">{source}</p>}
 </figure>
@@ -117,5 +117,5 @@ const tooltipData = safeJson({
   .est { color: var(--ink-2); font-size: 0.85em; margin-right: 6px; }
   .est-col { text-align: left; }
   .est-col .est { margin-right: 0; }
-  .est-note { margin: 6px 0 0; }
+  .est-note { margin: 4px 0 0; }
 </style>

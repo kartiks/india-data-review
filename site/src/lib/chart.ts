@@ -89,10 +89,21 @@ export function estimateLayout(cells: (string | null)[][]): { mode: "none" | "co
   return { mode: rowShares ? "column" : "inline", all: "" };
 }
 
-/** Indices to label on the x axis: the latest year, then evenly back, at most `maxLabels` (a size's xLabels). */
-export function xTickIndices(n: number, maxLabels: number): number[] {
-  const step = Math.max(1, Math.ceil(n / maxLabels));
+/** Rough width of a text label in viewBox units at a size (0.6 em a character, generous for digits). */
+export const labelWidth = (s: string, sz: Size) => s.length * sz.font * 0.6;
+
+/** Indices to label on the x axis: the latest, then evenly back, at most the size's xLabels and no closer than the
+ *  widest label allows. `spacing`: viewBox units between neighbouring positions. `endAnchored`: the latest label
+ *  ends at its position (text-anchor end), so it reaches further left; the label before it is dropped when the
+ *  two would touch. */
+export function xTickIndices(labels: string[], sz: Size, spacing: number, endAnchored: boolean): number[] {
+  const n = labels.length;
+  if (n <= 1) return n ? [0] : [];
+  const w = Math.max(...labels.map((l) => labelWidth(l, sz)));
+  const gap = sz.font * 0.5;
+  const step = Math.max(1, Math.ceil(n / sz.xLabels), Math.ceil((w + gap) / Math.max(spacing, 1e-6)));
   const out: number[] = [];
   for (let i = n - 1; i >= 0; i -= step) out.push(i);
+  if (endAnchored && out.length > 1 && step * spacing < 1.5 * w + gap) out.splice(1, 1);
   return out.reverse();
 }

@@ -38,7 +38,7 @@ export function lineGeometry(sz: Size, years: string[], lines: PlotLine[], ticks
   const x = scale(0, years.length - 1, sz.left, sz.width - right);
   const y = scale(ticks[0], ticks[ticks.length - 1], sz.height - sz.bottom, sz.top);
   const xs = years.map((_, i) => x(i));
-  const xTicks = xTickIndices(years.length, sz.xLabels);
+  const xTicks = xTickIndices(years, sz, xs.length > 1 ? xs[1] - xs[0] : 0, right < 30);
   const charW = sz.font * 0.58;
   const placed: { x0: number; x1: number; row: number }[] = [];
   const notes = (opts.annotations ?? []).flatMap((a) => {

@@ -46,11 +46,11 @@ const charts = SIZES.map((sz) => {
     });
     return { i, segs, x: x(i), band };
   });
-  const xTicks = xTickIndices(years.length, sz.xLabels).map((i) => ({ yr: years[i], i }));
+  const xTicks = xTickIndices(years, sz, band, true).map((i) => ({ yr: years[i], i }));
   return { sz, cols, y, xTicks, right, band, x, w };
 });
 
-// Estimate labels in short form; left out when every year has the same one (said once under the table).
+// Estimate labels in short form; left out when every year has the same one (said once, under the chart).
 const est = years.map((_, i) => estimate(kinds[i]));
 const layout = estimateLayout(est.map((e) => [e.short]));
 const allEst = layout.all ? est[0] : undefined;
@@ -95,6 +95,7 @@ const tipData = safeJson({
     </svg>
   ))}
   <script type="application/json" class="chart-data" set:html={tipData} />
+  {allEst && <p class="muted small est-note">All figures: {allEst.full}.</p>}
   <details class="table-view">
     <summary>Show as table</summary>
     <div class="table-scroll">
@@ -112,7 +113,6 @@ const tipData = safeJson({
         </tbody>
       </table>
     </div>
-    {allEst && <p class="muted small est-note">Every figure in this table: {allEst.full}.</p>}
   </details>
   {source && <p class="source">{source}</p>}
 </figure>
@@ -128,7 +128,7 @@ const tipData = safeJson({
   .plot :global(.tick) { fill: var(--muted); }
   .est { color: var(--ink-2); font-size: 0.85em; }
   .est-col { text-align: left; }
-  .est-note { margin: 6px 0 0; }
+  .est-note { margin: 4px 0 0; }
   .col { cursor: pointer; outline: none; }
   .col:global(.active) path, .col:focus path { opacity: 0.8; }
   .col:focus rect { stroke: var(--accent); stroke-width: 1; }

@@ -509,8 +509,9 @@ def site_json(ds: dict) -> dict:
             "indicators": p["indicators"],
             "rates": table(rate_fields, [[r[f] for f in rate_fields] for r in p["rates"] if not r["left_out"]]),
             "workers": table(wf, [[r[f] for f in wf] for r in workers]),
-            "conditions": table(cf, [[r[f] for f in cf] for r in p["conditions"]]),
-            "earnings": table(ef, [[r[f] for f in ef] for r in p["earnings"]]),
+            # Annual figures only: the site's keys have no period, so quarterly or monthly rows would merge into them.
+            "conditions": table(cf, [[r[f] for f in cf] for r in p["conditions"] if r["frequency"] == "annual"]),
+            "earnings": table(ef, [[r[f] for f in ef] for r in p["earnings"] if r["frequency"] == "annual"]),
         },
         "cpi": {"point_fields": ["month", "index", "inflation"], "all_india": cpi_all, "states": cpi_states},
         "cpialrl": table(ALRL_FIELDS, [[r.get(f) for f in ALRL_FIELDS] for r in ds["cpialrl"]

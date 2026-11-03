@@ -138,3 +138,23 @@ def test_cfpi_complete_final_figures_are_final():
            "2026-02": {"summary": {"current": {}, "previous": {"cfpi_index": [1.1, 2.1, 3.1], "cfpi_inflation": [4.1, 5.1, 6.1]}},
                        "source": "b"}}
     assert build.cfpi_by_month(rel)["2026-01"] == {"index": [1.1, 2.1, 3.1], "inflation": [4.1, 5.1, 6.1], "provisional": False, "source": "b"}
+
+
+def test_site_json_shows_annual_job_conditions_and_earnings_only():
+    # MoSPI's data service lists quarterly and monthly frequencies for indicators 5-8; once it fills them, their
+    # rows must not merge into the site's annual figures (whose keys have no period).
+    def row(freq, period, value, **kw):
+        return {"frequency": freq, "year": "2024", "year_type": "", "period": period, "state": "All India", "sector": "rural",
+                "gender": "male", "age": "", "status": "", "value": value, **kw}
+
+    plfs = {"indicators": {}, "rates": [], "distribution": [],
+            "conditions": [row("annual", "", 50.0, condition="no written contract"),
+                           row("quarterly", "Q2", 51.0, condition="no written contract")],
+            "earnings": [row("annual", "", 20000.0, kind="regular"), row("monthly", "07", 21000.0, kind="regular"),
+                         row("quarterly", "Q3", 22000.0, kind="regular")]}
+    ds = {"description": "", "generated_at": "", "sources": {}, "plfs": plfs, "cpi": [], "cpialrl": [], "hces": [],
+          "cpi2024": {"releases": {}, "latest": None, "series": [], "cfpi": {}, "linking": {}, "weights": []},
+          "rbi": [], "rbi_editions": {}, "hces_overall": [], "source_problems": []}
+    site = build.site_json(ds)["plfs"]
+    for kind, value in (("conditions", 50.0), ("earnings", 20000.0)):
+        assert [r[-1] for r in site[kind]["rows"]] == [value]

@@ -6,6 +6,7 @@ Outputs (in gdp/data/):
 - gdp.json              : the same figures arranged for the site (by series,
                           year and estimate stage), plus the Budget's GDP
                           assumptions and the forecasts.
+- state_accounts.csv, states.json : the state accounts (see states.py).
 
 Nothing here changes a published number. The only arithmetic is:
 - growth for the back series (1950-51 to 2011-12), which MoSPI publishes as
@@ -401,6 +402,9 @@ def main() -> dict:
     }
     (DATA / "gdp.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
     print(f"national_accounts.csv: {len(rows)} rows; gdp.json written; {len(problems)} problems, {len(dup_notes)} duplicate notes")
+
+    from . import states  # imports this module, so not at the top
+    states.build(manifest)
     return dataset
 
 

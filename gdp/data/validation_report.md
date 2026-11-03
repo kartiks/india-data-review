@@ -1,8 +1,8 @@
 # Data validation report
 
-National accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
+National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (12869 checks, 0 failures)
+**Result: PASSED** (54692 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -253,3 +253,45 @@ National accounts (MoSPI), the Union Budget's GDP assumption and published forec
 - 2019-20: real growth first 5.0% (AE1), latest 3.8% (RE3), revised -1.2 points
 - 2020-21: real growth first -7.7% (AE1), latest -5.7% (RE3), revised +2.0 points
 - 2023-24: real growth first 7.3% (AE1), latest 9.1% (RE1), revised +1.8 points
+
+## ✅ State accounts: every published row is understood
+28422 checks, 0 failures.
+
+- Allowed: Karnataka: NSDP per person (second table, ind32) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's second table of NSDP per person repeats Karnataka's GSDP per person at current prices, in both columns, in the years listed. It is left out; Karnataka's NSDP per person comes from the first table (ind25).
+- Allowed: Karnataka: net state value added (ind30) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's net state value added table repeats Karnataka's gross value added at current prices, in both the current- and constant-price columns, in the years listed. Net value added cannot equal gross value added (depreciation is positive), so Karnataka's net value added is left out for those years. Its NSDP and NSDP per person come from the NSDP tables (ind24, ind25), which agree with its GSDP and the RBI's handbook.
+
+## ✅ State accounts: GSDP = GSVA + taxes - subsidies, NSDP = NSVA + taxes - subsidies
+1710 checks, 0 failures.
+
+- Chhattisgarh publishes no subsidies on products; its GSDP and NSDP equal value added plus taxes on products.
+- GSDP worked out as GSVA + taxes - subsidies (no GSDP published): Assam, Haryana, Ladakh, Nagaland.
+
+## ✅ State accounts: industries add up to total value added, and parts to their industry
+7512 checks, 0 failures.
+
+
+## ✅ State accounts: every published growth rate is reproduced from the levels
+2430 checks, 0 failures.
+
+
+## ✅ State accounts: per-person figures agree with each other and with the levels
+1749 checks, 0 failures.
+
+
+## ✅ State accounts: the states' GSDP against India's GDP (for review, not failures)
+0 checks, 0 failures.
+
+- 2011-12: 33 states and UTs add up to 98.9% of India's GDP (ADD estimate)
+- 2012-13: 33 states and UTs add up to 99.0% of India's GDP (ADD estimate)
+- 2013-14: 33 states and UTs add up to 99.4% of India's GDP (ADD estimate)
+- 2014-15: 33 states and UTs add up to 98.4% of India's GDP (RE3 estimate)
+- 2015-16: 33 states and UTs add up to 98.9% of India's GDP (RE3 estimate)
+- 2016-17: 33 states and UTs add up to 99.9% of India's GDP (RE3 estimate)
+- 2017-18: 33 states and UTs add up to 100.0% of India's GDP (RE3 estimate)
+- 2018-19: 33 states and UTs add up to 100.2% of India's GDP (RE3 estimate)
+- 2019-20: 33 states and UTs add up to 101.1% of India's GDP (RE3 estimate)
+- 2020-21: 33 states and UTs add up to 101.7% of India's GDP (RE3 estimate)
+- 2021-22: 33 states and UTs add up to 101.5% of India's GDP (RE2 estimate)
+- 2022-23: 34 states and UTs add up to 101.4% of India's GDP (FINAL estimate)
+- 2023-24: 34 states and UTs add up to 101.6% of India's GDP (RE1 estimate)
+- 2024-25: 32 states and UTs add up to 103.2% of India's GDP (PE estimate)

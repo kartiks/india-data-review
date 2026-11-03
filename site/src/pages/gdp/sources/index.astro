@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Base from "../../../layouts/Base.astro";
 import { DS, GENERATED, SURVEY, RBI, BUDGET } from "../../../lib/gdp/data";
+import { DERIVED_STATES } from "../../../lib/gdp/states";
 
 const report = fs.readFileSync(path.resolve(process.cwd(), "..", "gdp", "data", "validation_report.md"), "utf8");
 const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
@@ -12,6 +13,8 @@ const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
 const files = [
   ["gdp.json", "Everything on this site: national accounts by series, year and estimate stage; Budget assumptions; forecasts"],
   ["national_accounts.csv", "Every row MoSPI published, one value per line, with names as printed and the source URL"],
+  ["states.json", "State accounts by state and year: GSDP, NSDP, income per person, growth, value added by industry"],
+  ["state_accounts.csv", "Every state-accounts row MoSPI published, one value per line, as printed, with the source URL"],
   ["validation_report.md", "Every check and every documented exception"],
 ];
 const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
@@ -19,7 +22,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
 <Base title="Sources and checks" section="about" description="Where every GDP figure on India Data Review comes from, and how it is checked.">
   <h1>Sources and checks</h1>
   <p>
-    National accounts come from the Ministry of Statistics and Programme Implementation (MoSPI), through its official
+    National and state accounts come from the Ministry of Statistics and Programme Implementation (MoSPI), through its official
     data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in).
     Forecasts come from the Economic Survey and the Union Budget (<a href="https://www.indiabudget.gov.in" rel="external noopener">indiabudget.gov.in</a>)
     and the Reserve Bank of India (<a href="https://www.rbi.org.in" rel="external noopener">rbi.org.in</a>). A program
@@ -36,6 +39,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Accounting identities</strong> in every year, estimate and price basis: industries add up to total GVA; GDP = GVA + net product taxes; net taxes = taxes − subsidies; NDP = GDP − depreciation; national income = GDP + income from abroad; investment and saving by sector add up to the totals.</li>
       <li><strong>Growth rates</strong>: every published annual and quarterly growth rate is compared with the GDP levels it should follow from.</li>
       <li><strong>Quarters</strong> add up to the year.</li>
+      <li><strong>State accounts</strong>: each state's GSDP and NSDP add up from its industries, taxes and subsidies; industries add up to total value added; every published state growth rate follows from the levels; the per-person tables agree; and the states together come to within a few percent of India's GDP.</li>
       <li><strong>The long-run back series</strong> (1950-51 to 2011-12) joins the current series in 2011-12.</li>
       <li><strong>Forecasts</strong>: each of the {SURVEY.length} Economic Survey and {RBI.length} RBI forecasts is stored with the sentence it was read from; the program finds that sentence in the downloaded document and checks the numbers in it. The {BUDGET.length} Budget GDP assumptions are read from the Budget at a Glance PDFs and their stated growth is re-computed.</li>
     </ul>
@@ -52,6 +56,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Estimate stages.</strong> A year's GDP is first estimated before the year ends and revised up to five times. Charts use the latest estimate unless they say otherwise; the <a href={link("/gdp/revisions/")}>Revisions</a> page shows every stage.</li>
       <li><strong>Growth rates</strong> are shown as MoSPI published them. For the back series (before 2012-13), which MoSPI publishes as levels only, growth is worked out from constant-price GDP and marked "from levels".</li>
       <li><strong>Shares</strong> (of GDP, of GVA) divide two figures from the same year and the same estimate.</li>
+      <li><strong>State accounts</strong> are on the 2011-12 base, the only one MoSPI publishes them on, with the latest estimate for each year. Where MoSPI's GSDP table leaves a state out but its value-added table covers it ({DERIVED_STATES.join(", ")}), GSDP is worked out as value added plus taxes minus subsidies on products, and marked.</li>
     </ul>
   </section>
 
@@ -64,6 +69,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li>Net product taxes for the first advance and provisional estimates of 2014-15 and 2015-16 do not equal GDP minus GVA. GDP and GVA are shown; net taxes for those releases are not.</li>
       <li>Before 2004-05 the back series' industries do not add up to its total GVA (5% apart in 1950-51, 0.3% in 2000-01), as each industry was linked to the new base separately. Sector shares for those years are of the sum of industries.</li>
       <li>Some published growth rates cannot be reproduced exactly from today's levels, because they were measured against an earlier estimate of the previous year that MoSPI's data service no longer keeps. They are listed in the report.</li>
+      <li>In MoSPI's state accounts, the net state value added table repeats Karnataka's gross value added, and the second table of income per person repeats Karnataka's GSDP per person. A net figure cannot equal the gross one, so both are left out; Karnataka's income per person comes from the first table, which agrees with its GSDP.</li>
       <li>In the Budget 2025-26 PDF, the GDP figures are missing from the text layer; they were read from the page image and confirmed by the 10.1% growth printed beside them.</li>
     </ul>
   </section>
@@ -74,7 +80,6 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Rural and urban split.</strong> MoSPI does not estimate GDP by rural and urban area each year (its last such estimate was for 2004-05). Rural and urban indicators that are published every year, such as consumer prices, unemployment and household spending, are planned.</li>
       <li><strong>Revision history before 2011-12</strong>, from MoSPI's press releases of 2000-01 to 2010-11 on the earlier bases.</li>
       <li><strong>IMF forecasts</strong> (World Economic Outlook).</li>
-      <li><strong>State GDP</strong>, which MoSPI also publishes.</li>
     </ul>
   </section>
 

@@ -6,6 +6,7 @@ import {
   cpi24Rows, CPI24_LATEST, CPI24, monthLabel, stateKey, rbiValue, rbiLatestYear, RBI_EDITION,
 } from "../../../lib/jobs-prices/data";
 import { gpct, pct } from "../../../lib/format";
+import { link } from "../../../lib/url";
 
 const Y = PLFS_LATEST;
 const lastYear = CPI_LAST.slice(0, 4);
@@ -130,7 +131,7 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
       <li><strong>Regular salaried jobs</strong>: share of workers with a regular wage or salary (PLFS). MoSPI's All-India figure for this breakdown does not add up, so it is not shown.</li>
       <li><strong>Inflation, {monthLabel(CPI24_LATEST)}</strong>: new Consumer Price Index (base 2024), on the same month a year earlier, rural and urban combined{now24.provisional ? ", provisional" : ""}, from MoSPI's press release.</li>
       <li><strong>Inflation, {lastYear}</strong>: old series (base 2012), average Consumer Price Index for {lastYear} on {Number(lastYear) - 1}, rural and urban combined (urban where MoSPI publishes no combined index). The old CPI keeps Dadra & Nagar Haveli and Daman & Diu separate, has no index for Ladakh, and has only a rural index for Arunachal Pradesh.</li>
-      <li><strong>Income per person</strong>, <strong>growth</strong> and <strong>rural farm wage</strong>: RBI Handbook of Statistics on Indian States ({RBI_EDITION} edition), Tables 19, 22 and 113, compiled from MoSPI's state accounts and the Labour Bureau's wage survey. Growth is worked out here from constant-price state GDP. The handbook gives no All-India row for state income or state GDP.</li>
+      <li><strong>Income per person</strong>, <strong>growth</strong> and <strong>rural farm wage</strong>: RBI Handbook of Statistics on Indian States ({RBI_EDITION} edition), Tables 19, 22 and 113, compiled from MoSPI's state accounts and the Labour Bureau's wage survey. Growth is worked out here from constant-price state GDP. The handbook gives no All-India row for state income or state GDP. Each state's economy in more detail, from MoSPI's state accounts (size, growth since 2011-12, agriculture, industry and services): <a href={link("/gdp/states/")}>GDP › States</a>.</li>
       <li><strong>Spending per person</strong>: average monthly consumption spending, excluding items received free (HCES). MoSPI publishes rural and urban figures; the overall figure weights them by the survey's estimated persons in each area (MoSPI's report, Table A2).</li>
       <li>A dash, or grey on the map, means MoSPI publishes no figure, or the figure failed the checks (see Sources).</li>
     </ul>

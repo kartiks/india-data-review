@@ -25,7 +25,8 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .sources import BUDGETS, NAS_API, NAS_INDICATORS, NAS_PAGE_LIMIT, NAS_SERIES, budget_glance_urls, fy
+from .sources import (BUDGETS, NAS_API, NAS_INDICATORS, NAS_PAGE_LIMIT, NAS_SERIES, STATE_INDICATORS, STATE_SERIES,
+                      budget_glance_urls, fy)
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
@@ -117,28 +118,37 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
     return True
 
 
-def fetch_all_nas(manifest: dict, force: bool) -> None:
-    vanished = []
+def nas_queries():
+    """(base, series, frequency, indicator code) for every national and state query."""
     for base, series, freq in NAS_SERIES:
         for code in NAS_INDICATORS:
-            key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
-            if key in manifest and not force:
+            yield base, series, freq, code
+    for base, series, freq in STATE_SERIES:
+        for code in STATE_INDICATORS:
+            yield base, series, freq, code
+
+
+def fetch_all_nas(manifest: dict, force: bool) -> None:
+    vanished = []
+    for base, series, freq, code in nas_queries():
+        key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
+        if key in manifest and not force:
+            continue
+        result = fetch_nas(base, series, freq, code)
+        if not result["rows"]:
+            if manifest.get(key, {}).get("sha256"):
+                # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
+                # Keep the saved file, fetch the rest, and fail at the end.
+                print(f"{key}: NO ROWS, but it had data before; keeping the saved file")
+                vanished.append(key)
                 continue
-            result = fetch_nas(base, series, freq, code)
-            if not result["rows"]:
-                if manifest.get(key, {}).get("sha256"):
-                    # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
-                    # Keep the saved file, fetch the rest, and fail at the end.
-                    print(f"{key}: NO ROWS, but it had data before; keeping the saved file")
-                    vanished.append(key)
-                    continue
-                manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
-                print(f"{key}: no data")
-                continue
-            content = (json.dumps(result, ensure_ascii=False, indent=1) + "\n").encode()
-            changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
-            print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
-            time.sleep(0.3)
+            manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
+            print(f"{key}: no data")
+            continue
+        content = (json.dumps(result, ensure_ascii=False, indent=1) + "\n").encode()
+        changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
+        print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
+        time.sleep(0.3)
     if vanished:
         raise RuntimeError(f"MoSPI returned no rows for indicators that had data: {', '.join(vanished)}")
 

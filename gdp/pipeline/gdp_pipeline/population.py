@@ -10,8 +10,9 @@ series and year:
   population on 1 October). MoSPI's population equals the projection in 2020-21 and 2021-22, the years the RBI's
   reprint below covers; for the earlier years it is assumed to be the projection too (MoSPI's latest figures for
   those years were compiled after the 2019 projections were published).
-- Later years, and the 2022-23 series: the population MoSPI's own per-person figures imply (its GDP divided by
-  its GDP per person, to within a few thousand people), from its press notes
+- Later years, and the 2022-23 series: MoSPI's own population, as printed in its National Accounts Statistics
+  per-capita statement (to the thousand; downloaded by hand, NAS_STATEMENTS), or as its own per-person figures
+  imply it (its GDP divided by its GDP per person, to within a few thousand people) in its press notes
   (population_sources/mospi_press_notes.json, each row quoted and found in the document), or, where no press note
   here covers the year, from the RBI's reprint of MoSPI's tables. Per-person figures here then reproduce MoSPI's to
   the rupee whenever the totals are the same estimate; the years where that is checked are listed in gdp.json
@@ -58,12 +59,32 @@ RBI_TABLES = {
     },
 }
 
+# MoSPI's National Accounts Statistics: its per-capita statement gives population to the thousand and unrounded
+# per-person figures for the years the publication covers. MoSPI's publication pages need a browser, so the file is
+# downloaded by hand and added with `uv run python -m gdp_pipeline.population --add <file>` (see gdp/README.md).
+NAS_STATEMENTS = [
+    {
+        "key": "population/nas-2026-statement-1.2",
+        "url": "https://mospi.gov.in/publications-reports/innerpage/2861",
+        "document": "MoSPI, National Accounts Statistics 2026, Statement 1.2: Per capita income, product and final consumption",
+        "date": "2026-08-31",
+        "base": "2022-23",
+    },
+]
+
 MEASURES = {"gdp": "GDP", "gni": "GNI", "nni": "NNI", "pfce": "PFCE"}
 SERIES = ("2011-12", "2022-23")
 
 # Tolerances.
 IMPLIED_TOL = 2e-5  # population implied by different per-person figures in one table (each rounded to ₹1)
 SAME_ESTIMATE_TOL = 2  # ₹ crore: a published total and the API's total are the same estimate
+# A statement that prints population to the thousand but no totals is matched by per person × population; if MoSPI
+# divided by an unrounded population, that total is off by up to half a thousand people's worth (about ₹12 crore).
+POPULATION_ROUNDING = 0.0005  # million
+# For a statement with no printed totals (NAS), a total (per person × population) further than this from the API's
+# is not a revision but a misread (wrong row, unit or section). Press-note totals are quoted and found in the PDF, so
+# they are not tested this way: a large real revision of one (7.5% has happened) must not stop the weekly refresh.
+MISREAD_GAP = 0.25
 PER_PERSON_TOL = 2  # ₹: a per-person figure here and MoSPI's printed one
 LAKH_TOL = 0.501  # lakh: population against the RBI's figure, printed to the nearest lakh
 PROJECTION_TOL = 1e-4  # MoSPI's population (as implied) against the projection, 2011-12 to 2021-22
@@ -106,6 +127,11 @@ def documents() -> list[tuple[str, str, str]]:
 
 def fetch(manifest: dict, force: bool) -> None:
     from .fetch import RAW, get, save
+
+    for n in NAS_STATEMENTS:  # downloaded by hand: never fetched, only reported if missing
+        if n["key"] not in manifest:
+            print(f"{n['key']}: not added. Download it from {n['url']} and run "
+                  "`uv run python -m gdp_pipeline.population --add <file>` (gdp/README.md).")
 
     for key, url, ext in documents():
         if key in manifest and not force:
@@ -237,6 +263,115 @@ def read_rbi(manifest: dict) -> tuple[list[dict], list[str]]:
 
 # ---- population and per-person figures -------------------------------------------
 
+# Labels as printed, without their bracketed units: "Population (in million)", "Per Capita GDP( ₹)".
+NAS_ROWS = {"Population": "population", "Per Capita GDP": "pc_gdp", "Per Capita GNI": "pc_gni",
+            "Per Capita NNI": "pc_nni", "Per Capita PFCE": "pc_pfce"}
+
+
+UNIT = {"population": "million", "pc": "₹"}  # what the bracket after each label must say
+
+
+def parse_nas(rows: list[tuple]) -> tuple[dict, list[str], list[str]]:
+    """Statement rows -> ({"cur"|"con": {row: {year: value}}}, years, problems). Reads the English labels; checks the
+    section headings, units and that no row is read twice, so a changed layout is a problem, not a silent misread."""
+    problems: list[str] = []
+    head = next((r for r in rows if any(isinstance(c, str) and c.strip() == "Item" for c in r)), None)
+    if not head:
+        return {}, [], ["layout changed (no 'Item' header row)"]
+    label = next(i for i, c in enumerate(head) if isinstance(c, str) and c.strip() == "Item")
+    cols = {i: c.strip() for i, c in enumerate(head) if isinstance(c, str) and re.fullmatch(r"\d{4}-\d{2}", c.strip())}
+    odd = [c for i, c in enumerate(head) if i < label and i not in cols and isinstance(c, str) and re.search(r"\d{4}-", c)]
+    if odd:
+        problems.append(f"year headings not understood: {odd}")
+    figures: dict[str, dict] = {"cur": {}, "con": {}}
+    prices = None
+    for r in rows:
+        name = r[label].strip() if len(r) > label and isinstance(r[label], str) else ""
+        low = name.lower()
+        if "percentage" in low or "growth" in low:
+            prices = None  # growth rates follow; not used
+            continue
+        if low.startswith("at current prices"):
+            prices = "cur"
+            continue
+        if low.startswith("at constant"):
+            prices = "con"
+            continue
+        base_name = re.sub(r"\s*\(.*$", "", name)
+        key = NAS_ROWS.get(base_name)
+        if not key or (key != "population" and not prices):
+            continue
+        unit = re.search(r"\(([^)]*)\)", name)
+        want = UNIT["population" if key == "population" else "pc"]
+        if not unit or unit[1].strip().lower().replace("in ", "") != want.lower():
+            problems.append(f"'{name}': unit is not {want}")
+            continue
+        vals = {cols[i]: float(r[i]) for i in cols if isinstance(r[i], (int, float))}
+        for p_ in (("cur", "con") if key == "population" else (prices,)):
+            if key in figures[p_]:
+                problems.append(f"'{name}' read twice at {'current' if p_ == 'cur' else 'constant'} prices")
+            figures[p_][key] = vals
+    for p_, f in figures.items():
+        missing = [k for k in NAS_ROWS.values() if k not in f]
+        if missing:
+            problems.append(f"{', '.join(missing)} not read at {'current' if p_ == 'cur' else 'constant'} prices")
+    return figures, sorted(cols.values()), problems
+
+
+def read_nas(manifest: dict) -> tuple[list[dict], list[str]]:
+    """MoSPI's per-capita statement from National Accounts Statistics: one record per price basis, with the
+    population (to the thousand) and unrounded per-person figures; no totals (see comparisons)."""
+    import openpyxl
+
+    out, problems = [], []
+    for n in NAS_STATEMENTS:
+        path = path_of(manifest, n["key"])
+        if not path:
+            problems.append(f"{n['document']}: not added (download it by hand; gdp/README.md)")
+            continue
+        rows = list(openpyxl.load_workbook(path, data_only=True).active.iter_rows(values_only=True))
+        figures, years, found = parse_nas(rows)
+        problems += [f"{n['document']}: {p}" for p in found]
+        for prices_, f in figures.items():
+            out.append({"document": n["document"], "date": n["date"], "base": n["base"], "url": n["url"],
+                        "statement": "current prices" if prices_ == "cur" else "constant prices", "prices": prices_,
+                        "years": years, "figures": f, "exact_population": True})
+    return out, problems
+
+
+def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
+    """Copy a hand-downloaded NAS statement into sources/ and record it in the manifest. Refuses to put a different
+    file under an edition that already has one (add the new edition to NAS_STATEMENTS first), unless replace."""
+    import hashlib
+
+    from . import fetch as F
+
+    n = next(x for x in NAS_STATEMENTS if x["key"] == key)
+    if not source.is_file():
+        raise SystemExit(f"{source}: no such file")
+    content = source.read_bytes()
+    if not content.startswith(b"PK"):
+        raise SystemExit(f"{source} is not an xlsx file")
+    manifest = F.load_manifest()
+    old = manifest.get(key)
+    if old and old.get("sha256") != hashlib.sha256(content).hexdigest() and not replace:
+        raise SystemExit(f"{key} already holds another file ({old.get('file_name') or old['file']}). For a new edition, "
+                         "add its entry to NAS_STATEMENTS in population.py first; to replace this one, pass --replace.")
+    changed = F.save(manifest, key, F.RAW / f"{key}.xlsx", content, n["url"],
+                     {"downloaded_by_hand": f"from {n['url']} (the publication page needs a browser)",
+                      "file_name": source.name})
+    F.write_manifest(manifest)
+    print(f"{key}: {'added' if changed else 'unchanged'} {source} ({len(content):,} bytes)")
+
+
+def table_population(table: dict, year: str) -> float | None:
+    """MoSPI's population in a table: printed (to the thousand) where it is exact, else implied by its figures."""
+    if table.get("exact_population"):
+        return table["figures"].get("population", {}).get(year)
+    vals = implied(table, year)
+    return vals[0] if vals else None
+
+
 def implied(table: dict, year: str) -> list[float]:
     """Population (million) implied by each total and its per-person figure in a table."""
     f = table["figures"]
@@ -252,25 +387,37 @@ def population(manifest: dict) -> tuple[dict, dict]:
     proj, proj_problems = read_projections(manifest)
     notes, note_problems, note_checked = read_notes(manifest)
     rbi, rbi_problems = read_rbi(manifest)
+    nas, nas_problems = read_nas(manifest)
+    notes = notes + nas  # MoSPI's own documents, ordered by date below
     out: dict[str, dict] = {s: {} for s in SERIES}
     for y, p in proj.items():
         if y <= PROJECTIONS_UNTIL:
             out["2011-12"][y] = {"million": round(p["persons"] / 1000, 3), "source": "projections"}
-    # MoSPI's own figures: press notes first (latest first), then the RBI's reprint for years no note covers.
+    # MoSPI's own figures: its documents first (latest first), then the RBI's reprint for years none covers.
     for t in sorted(notes, key=lambda t: t["date"], reverse=True) + rbi:
         if t["base"] not in out:
             continue
         for y in t["years"]:
-            vals = implied(t, y)
-            if not vals or y in out[t["base"]] or y <= PROJECTIONS_UNTIL:
+            million = table_population(t, y)
+            if million is None or y in out[t["base"]] or y <= PROJECTIONS_UNTIL:
                 continue
-            printed = t["figures"].get("population", {}).get(y)
+            printed = None if t.get("exact_population") else t["figures"].get("population", {}).get(y)
             lakh = t["figures"].get("population_lakh", {}).get(y)
-            out[t["base"]][y] = {"million": round(vals[0], 3), "source": "mospi", "document": t["document"],
+            out[t["base"]][y] = {"million": round(million, 3), "source": "mospi", "document": t["document"],
                                  **({"printed_million": printed} if printed else {}),
                                  **({"printed_lakh": lakh} if lakh else {})}
+    # A newer document's implied population replaces an exact printed one only if they disagree (they agree to within
+    # the implied figure's precision when MoSPI kept its population; then the exact one is used).
+    for t in notes:
+        if not t.get("exact_population") or t["base"] not in out:
+            continue
+        for y in t["years"]:
+            exact, chosen = table_population(t, y), out[t["base"]].get(y)
+            from_exact = chosen and any(x["document"] == chosen["document"] and x.get("exact_population") for x in notes)
+            if exact and chosen and not from_exact and abs(chosen["million"] / exact - 1) <= IMPLIED_TOL:
+                out[t["base"]][y] = {"million": round(exact, 3), "source": "mospi", "document": t["document"]}
     sources = {"projections": proj, "notes": notes, "rbi": rbi, "note_checked": note_checked,
-               "problems": proj_problems + note_problems + rbi_problems}
+               "problems": proj_problems + note_problems + rbi_problems + nas_problems}
     return {s: dict(sorted(v.items())) for s, v in out.items()}, sources
 
 
@@ -329,10 +476,17 @@ def comparisons(data: dict, src: dict):
             for m in MEASURES:
                 pub_total = t["figures"].get(m, {}).get(y)
                 pub_pp = t["figures"].get(f"pc_{m}", {}).get(y)
+                tol = SAME_ESTIMATE_TOL
+                if pub_total is None and pub_pp is not None and t["figures"].get("population", {}).get(y) and t.get("exact_population"):
+                    # No total printed: the unrounded per-person figure times the population gives it back.
+                    pub_total = pub_pp * t["figures"]["population"][y] * 1e6 / 1e7
+                    tol += pub_pp * POPULATION_ROUNDING * 1e6 / 1e7
                 if pub_total is None or pub_pp is None:
                     continue
                 ours_total = totals(node, t["prices"]).get(m)
-                same = ours_total is not None and abs(ours_total - pub_total) <= SAME_ESTIMATE_TOL
+                same = ours_total is not None and abs(ours_total - pub_total) <= tol
+                if t.get("exact_population") and ours_total and not same and abs(pub_total / ours_total - 1) > MISREAD_GAP:
+                    same = None  # not a revision: a misread (reported by the check)
                 ours = node.get("per_person", {}).get(m, {}).get(t["prices"])
                 yield series, y, stage, m, t["prices"], ours, pub_pp, t["document"], same
 
@@ -362,6 +516,7 @@ def build(manifest: dict, tree: dict) -> dict:
             "projections": {k: PROJECTIONS[k] for k in ("title", "table", "url")},
             "press_notes": [{k: n[k] for k in ("document", "date", "base", "url")} for n in press_notes()],
             "rbi": [{k: t[k] for k in ("title", "url")} for t in RBI_TABLES.values()],
+            "nas": [{k: n[k] for k in ("document", "date", "base", "url")} for n in NAS_STATEMENTS],
         },
         "projections_until": PROJECTIONS_UNTIL,
         "checked": {s: dict(sorted(v.items())) for s, v in checked.items()},
@@ -413,6 +568,24 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
             if printed is not None and abs(vals[0] - printed) > 0.5:
                 failures.append(f"{label}: implied population {vals[0]:.3f} million, printed {printed:,.0f}")
 
+    # 2b. MoSPI's documents agree on a year's population within a series (so a revision of the totals, as in
+    #     National Accounts Statistics, kept the population of the earlier press note).
+    by_year: dict[tuple, list] = {}
+    for t in src["notes"] + src["rbi"]:
+        for y in t["years"]:
+            million = table_population(t, y)
+            if million is not None:
+                by_year.setdefault((t["base"], y), []).append((million, t["document"]))
+    for (series, y), vals in sorted(by_year.items()):
+        docs = {d for _, d in vals}
+        if len(docs) < 2:
+            continue
+        checked += 1
+        lo, hi = min(v for v, _ in vals), max(v for v, _ in vals)
+        if hi / lo - 1 > IMPLIED_TOL:
+            failures.append(f"{series} series, {y}: MoSPI's documents (or the RBI's reprint) give different populations: "
+                            + "; ".join(f"{v:.3f} million ({d})" for v, d in vals))
+
     # 3. Population used here, against the RBI's reprint (to the lakh): both the projections and MoSPI's own.
     for t in src["rbi"]:
         for y, lakh in t["figures"].get("population_lakh", {}).items():
@@ -430,12 +603,13 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
     covered = set()
     for t in src["rbi"] + src["notes"]:
         for y in t["years"]:
-            vals = implied(t, y)
-            if not vals or y not in proj:
+            million = table_population(t, y)
+            if million is None or y not in proj:
                 continue
             checked += 1
-            diff = vals[0] / (proj[y]["persons"] / 1000) - 1
-            label = f"{t['base']} series, {y}: MoSPI's population (implied, {vals[0]:.3f} million, {t['document']})"
+            diff = million / (proj[y]["persons"] / 1000) - 1
+            label = (f"{t['base']} series, {y}: MoSPI's population ({'printed' if t.get('exact_population') else 'implied'}, "
+                     f"{million:.3f} million, {t['document']})")
             if y <= PROJECTIONS_UNTIL:
                 covered.add(y)
                 if abs(diff) > PROJECTION_TOL:
@@ -461,6 +635,12 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
     for series, y, stage, m, prices, ours, pub, doc, same in comparisons(data, src):
         if series not in counts:
             continue
+        if same is None:
+            checked += 1
+            failures.append(f"{series} series, {y}, {MEASURES[m]} at {'current' if prices == 'cur' else 'constant'} "
+                            f"prices: the total behind {doc}'s per-person figure ({pub:,.0f}) is more than "
+                            f"{MISREAD_GAP:.0%} from MoSPI's latest; a misread row, unit or section, not a revision")
+            continue
         if not same:
             counts[series][1] += 1
             continue
@@ -482,3 +662,14 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
             notes.append(f"{series} series: no population for {', '.join(sorted(missing))}, so no per-person figures; "
                          "add the year from MoSPI's press note (population_sources/mospi_press_notes.json).")
     report.add("Population and figures per person", checked, failures, notes)
+
+
+if __name__ == "__main__":
+    import sys
+
+    args = sys.argv[1:]
+    if len(args) in (2, 3) and args[0] == "--add" and (len(args) == 2 or args[2] == "--replace"):
+        add_by_hand(Path(args[1]).expanduser(), NAS_STATEMENTS[-1]["key"], replace=len(args) == 3)
+    else:
+        raise SystemExit("usage: uv run python -m gdp_pipeline.population --add <downloaded NAS statement .xlsx> "
+                         "[--replace]\n(the file goes under the last entry of NAS_STATEMENTS)")

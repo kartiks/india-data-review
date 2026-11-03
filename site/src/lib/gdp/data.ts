@@ -37,7 +37,7 @@ interface Dataset {
   duplicate_rows: string[];
   population: {
     by_series: Record<string, Record<string, PopYear>>;
-    sources: { projections: { title: string; table: string; url: string }; press_notes: { document: string; date: string; base: string; url: string }[]; rbi: { title: string; url: string }[] };
+    sources: { projections: { title: string; table: string; url: string }; press_notes: { document: string; date: string; base: string; url: string }[]; rbi: { title: string; url: string }[]; nas: { document: string; date: string; base: string; url: string }[] };
     projections_until: string;
     checked: Record<string, Record<string, string>>; // series -> year -> document whose per-person figures are reproduced
   };

@@ -1915,6 +1915,15 @@
   "fetched_at": "2026-10-30T08:44:59+00:00",
   "records": 13
  },
+ "population/nas-2026-statement-1.2": {
+  "url": "https://mospi.gov.in/publications-reports/innerpage/2861",
+  "file": "sources/raw/population/nas-2026-statement-1.2.xlsx",
+  "sha256": "06f3dbc3afcb2d8b83e47212f1fe1e75fd1fad456768f7aa5b4d59769198cc1a",
+  "bytes": 35925,
+  "fetched_at": "2026-11-03T09:20:02+00:00",
+  "downloaded_by_hand": "from https://mospi.gov.in/publications-reports/innerpage/2861 (the publication page needs a browser)",
+  "file_name": "1.2.xlsx"
+ },
  "population/press-note-1657b26833a1": {
   "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf",
   "file": "sources/raw/population/press-note-1657b26833a1.pdf",

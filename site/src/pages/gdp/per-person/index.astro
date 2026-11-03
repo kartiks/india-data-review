@@ -21,12 +21,17 @@ const popRate = (series: string, y: string) => {
 };
 const popGrowth = popRate(NEW, Y);
 const pending = LATEST_YEAR !== Y ? LATEST_YEAR : undefined;
-// Are the new series' per-person figures checked against MoSPI's own? Not when MoSPI has revised the totals since
-// the latest press note quoted here (the figures then divide the revised totals by that note's population).
-const newNote = POPULATION.sources.press_notes.filter((n) => n.base === NEW).sort((a, b) => b.date.localeCompare(a.date))[0];
+// Are the headline figures checked against MoSPI's own? Not when none of the per-person figures quoted here for the
+// year is for MoSPI's latest totals (the figures then divide the latest totals by the population MoSPI used).
 const newChecked = Boolean(POPULATION.checked[NEW]?.[Y]);
-const oldChecked = Object.keys(POPULATION.checked[OLD] ?? {}).sort();
-const noteDate = newNote ? new Date(newNote.date).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" }) : "";
+// "2022-23 to 2024-25" for consecutive years, else each year listed.
+const span = (ys: string[]) => {
+  const run = ys.every((y, i) => i === 0 || Number(y.slice(0, 4)) === Number(ys[i - 1].slice(0, 4)) + 1);
+  return ys.length > 1 && run ? `${ys[0]} to ${ys[ys.length - 1]}` : ys.length > 1 ? `${ys.slice(0, -1).join(", ")} and ${ys[ys.length - 1]}` : ys.join("");
+};
+const newCheckedYears = Object.keys(POPULATION.checked[NEW] ?? {}).sort();
+const oldCheckedYears = Object.keys(POPULATION.checked[OLD] ?? {}).sort();
+const yPopDoc = popOf(NEW, Y)?.document;
 
 const kind = (series: string, y: string) => { const st = latestStage(series, y); return st ? STAGE_LABEL[st] : ""; };
 const oldYears = yearsOf(OLD).filter((y) => popOf(OLD, y));
@@ -75,10 +80,10 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
       whole: the population grew about {gpct(popGrowth)}.</>
     )}
   </p>
-  {(pending || (!newChecked && newNote)) && (
+  {(pending || !newChecked) && (
     <p class="muted small status">
       {pending && <>MoSPI's {STAGE_LABEL[latestStage(NEW, pending)!].toLowerCase()} for {pending} is out, but its population has not been added here yet, so per-person figures stop at {Y}. </>}
-      {!newChecked && newNote && <>MoSPI has revised the new series' totals since its {newNote.document.replace(/^Press note/, "press note")} of {noteDate}. The new series' per-person figures here divide the revised totals by the population in that note, and are not yet checked against MoSPI's own revised per-person figures. {oldChecked.length > 0 && `The 2011-12 series' figures for ${oldChecked[0]} to ${oldChecked[oldChecked.length - 1]} are checked: they reproduce MoSPI's.`}</>}
+      {!newChecked && <>None of MoSPI's per-person figures for {Y} quoted here is for its latest totals, so the {Y} figures divide those totals by the population MoSPI used{yPopDoc ? `, from its ${yPopDoc.replace(/^MoSPI, /, "").replace(/^Press note/, "press note").replace(/ \(.*\)$/, "")},` : ""} and are not checked against MoSPI's own. {newCheckedYears.length > 0 && `The new series' figures for ${span(newCheckedYears)} reproduce MoSPI's. `}{oldCheckedYears.length > 0 && `The 2011-12 series' figures for ${span(oldCheckedYears)} reproduce MoSPI's too.`}</>}
     </p>
   )}
 
@@ -159,9 +164,9 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
     </div>
     <ul class="small muted notes">
       <li><strong>GDP per person</strong> is gross domestic product divided by the population. <strong>Income per person</strong> is net national income (gross national income, which is GDP plus net income from abroad, less depreciation) divided by the population: what MoSPI calls per capita income. India's net income from abroad is negative, so national income is below GDP. <strong>Household spending</strong> is private final consumption expenditure.</li>
-      <li><strong>Population</strong> is India's population at the middle of each financial year (1 October), as MoSPI uses it. To {until} it is the official projection (<a href={SRC.projections.url} rel="external noopener">{SRC.projections.title}</a>, {SRC.projections.table}); MoSPI's figures equal it in the years they could be checked ({Object.keys(POPULATION.checked[OLD] ?? {}).filter((y) => y <= until).join(" and ") || "none"}). From the next year MoSPI uses its own figures, slightly above the projections; they are taken from its press notes ({SRC.press_notes.map((n, i) => <>{i > 0 && "; "}<a href={n.url} rel="external noopener">{n.document}</a></>)}) and, where no press note here covers the year, from the RBI's reprint of MoSPI's tables ({SRC.rbi.map((t, i) => <>{i > 0 && "; "}<a href={t.url} rel="external noopener">{t.title}</a></>)}). The two series use slightly different populations for the same year, as MoSPI does.</li>
+      <li><strong>Population</strong> is India's population at the middle of each financial year (1 October), as MoSPI uses it. To {until} it is the official projection (<a href={SRC.projections.url} rel="external noopener">{SRC.projections.title}</a>, {SRC.projections.table}); MoSPI's figures equal it in the years they could be checked ({Object.keys(POPULATION.checked[OLD] ?? {}).filter((y) => y <= until).join(" and ") || "none"}). From the next year MoSPI uses its own figures, slightly above the projections; they are taken from its National Accounts Statistics ({SRC.nas.map((n, i) => <>{i > 0 && "; "}<a href={n.url} rel="external noopener">{n.document}</a></>)}) and press notes ({SRC.press_notes.map((n, i) => <>{i > 0 && "; "}<a href={n.url} rel="external noopener">{n.document}</a></>)}) and, where neither covers the year, from the RBI's reprint of MoSPI's tables ({SRC.rbi.map((t, i) => <>{i > 0 && "; "}<a href={t.url} rel="external noopener">{t.title}</a></>)}). The two series use slightly different populations for the same year, as MoSPI does.</li>
       <li><strong>The change of population source</strong> between {until} and the next year is in MoSPI's own figures too. It makes the population grow faster that year in the 2011-12 series ({f(popRate(OLD, range(until, lastYear)[1]), (v) => gpct(v, 2))}, against 0.91% from one projection to the next), so growth per person that year is a little lower than it would be on a single population source.</li>
-      <li><strong>Worked out here</strong>: each figure is MoSPI's latest total divided by that population, and growth per person is worked out from the constant-price figures. Where the total is the one MoSPI printed its per-person figure from, the two agree to the rupee (checked). Where MoSPI has revised the total since the press note quoted here, the figure here uses the revised total with that note's population, and differs a little from the one printed in the note. Per-person figures are for the latest estimate of each year only: MoSPI divided earlier estimates by the population known at the time.</li>
+      <li><strong>Worked out here</strong>: each figure is MoSPI's latest total divided by that population, and growth per person is worked out from the constant-price figures. Where the total is the one MoSPI printed its per-person figure from, the two agree to the rupee (checked). Where MoSPI has revised the total since the document quoted here, the figure here uses the revised total with that document's population, and differs a little from the one printed there. Per-person figures are for the latest estimate of each year only: MoSPI divided earlier estimates by the population known at the time.</li>
       <li>Constant prices are those of each series' base year (2011-12 or 2022-23), so real levels from the two series are not compared; growth rates are. See <a href={link("/gdp/sources/")}>Sources and checks</a>.</li>
     </ul>
   </section>

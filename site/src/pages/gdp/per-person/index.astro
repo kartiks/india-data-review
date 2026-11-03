@@ -77,7 +77,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
   </p>
   {(pending || (!newChecked && newNote)) && (
     <p class="muted small status">
-      {pending && <>MoSPI's first estimate for {pending} is out, but its population has not been added here yet, so per-person figures stop at {Y}. </>}
+      {pending && <>MoSPI's {STAGE_LABEL[latestStage(NEW, pending)!].toLowerCase()} for {pending} is out, but its population has not been added here yet, so per-person figures stop at {Y}. </>}
       {!newChecked && newNote && <>MoSPI has revised the new series' totals since its {newNote.document.replace(/^Press note/, "press note")} of {noteDate}. The new series' per-person figures here divide the revised totals by the population in that note, and are not yet checked against MoSPI's own revised per-person figures. {oldChecked.length > 0 && `The 2011-12 series' figures for ${oldChecked[0]} to ${oldChecked[oldChecked.length - 1]} are checked: they reproduce MoSPI's.`}</>}
     </p>
   )}

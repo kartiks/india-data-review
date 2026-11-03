@@ -133,7 +133,7 @@ divided earlier estimates by the population known at the time, which is not kept
 **The new series is not checked yet.** MoSPI revised every year of the 2022-23 series in *National Accounts
 Statistics 2026* (31 August 2026), after the June press note quoted here, so none of its per-person figures can be
 compared: the figures here divide the revised totals by the June note's population. MoSPI's revised per-person table
-(NAS 2026, Statement 2) is on its website, whose publication pages need a browser; quoting it (or the next press
+(NAS 2026, Statement 2, per the list of statements in MoSPI's press release of 31 August 2026) is on its website, whose publication pages need a browser; quoting it (or the next press
 note) as in [Adding a year's population](#adding-a-years-population) makes the check cover the new series. The
 site's Per person page says so while it is the case (from `population.checked`).
 
@@ -149,6 +149,10 @@ Checks ("Population and figures per person" in the report):
   and from 2022-23 is within 0.5% of it (a quoted row under the wrong year would be about 0.9% off);
 - every per-person figure MoSPI or the RBI printed is reproduced to within ₹2 where its total is the same estimate
   as the API's latest. Totals MoSPI has revised since are not compared; the report says how many, for each series.
+
+The 0.5% limit assumes MoSPI's population stays close to the 2019 projections. When MoSPI moves to population
+figures based on the next census, a correctly quoted year may fail it; check the years first, then raise
+`PROJECTION_GAP_MAX` in `population.py` with a note.
 
 A year in the API with no population yet is listed in the report (not a failure) and has no per-person figures;
 the site's Per person page shows the latest year that has them and says which year is waiting.

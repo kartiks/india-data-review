@@ -16,8 +16,10 @@ interface Props {
   tableFormat?: (v: number) => string;
   source?: string;
   max?: number; // fixed top of the scale, e.g. 100 for shares
+  headingLevel?: 2 | 3; // 2 (default) for a chart card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max } = Astro.props;
+const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 const totals = values.map((row) => row.reduce<number>((s, v) => s + (v ?? 0), 0));
 const ticks = niceTicks(0, max ?? Math.max(...totals), 4);
 const id = "c" + Math.random().toString(36).slice(2, 9);
@@ -58,7 +60,7 @@ const tipData = safeJson({
 ---
 <figure class="chart stacked" id={id}>
   <figcaption>
-    <h3>{title}</h3>
+    <Heading class="chart-title">{title}</Heading>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
   <ul class="legend small" aria-label="Legend">
@@ -109,6 +111,7 @@ const tipData = safeJson({
 
 <style>
   .chart { margin: 0; }
+  .chart figcaption .chart-title { font-size: 1.05rem; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
   .plot { width: 100%; height: auto; display: block; touch-action: pan-y; }

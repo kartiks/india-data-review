@@ -12,8 +12,11 @@ interface Props {
   format: (v: number) => string;
   source?: string;
   zero?: boolean; // start the scale at zero (default true)
+  // 3 (default): these lists sit in cards inside a section with an h2; 2 for a card directly under the page's h1
+  headingLevel?: 2 | 3;
 }
-const { title, subtitle, series, rows, format, source, zero = true } = Astro.props;
+const { title, subtitle, series, rows, format, source, zero = true, headingLevel = 3 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 const all = rows.flatMap((r) => r.values).filter((v): v is number => v != null);
 const lo = zero ? Math.min(0, ...all) : Math.min(...all);
 const hi = Math.max(...all);
@@ -25,7 +28,7 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
 <figure class="chart dot-rows">
   {(title || subtitle) && (
     <figcaption>
-      {title && <h3>{title}</h3>}
+      {title && <Heading class="chart-title">{title}</Heading>}
       {subtitle && <p class="muted small">{subtitle}</p>}
     </figcaption>
   )}
@@ -75,7 +78,7 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
 
 <style>
   .chart { margin: 0; }
-  .chart figcaption h3 { margin-bottom: 2px; }
+  .chart figcaption .chart-title { font-size: 1.05rem; margin-bottom: 2px; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
   .rows { list-style: none; margin: 0; padding: 0; }

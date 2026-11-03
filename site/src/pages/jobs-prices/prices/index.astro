@@ -113,6 +113,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Consumer price inflation, month by month"
+      headingLevel={3}
       subtitle={`All India, change on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}. Hollow marker: provisional.`}
       years={labels}
       series={[
@@ -129,6 +130,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Food and all items"
+      headingLevel={3}
       subtitle="Inflation in the Consumer Food Price Index and in the general index, all India, on both series."
       years={labels}
       series={[
@@ -148,6 +150,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Inflation since January 2026, rural and urban"
+      headingLevel={3}
       subtitle={`All India, base 2024, on the same month a year earlier. ${monthLabel(CPI24_LATEST)} is provisional; earlier months are final.`}
       years={m24.map(monthLabel)}
       series={SECT24.map(([i, name, slot]) => ({ name, slot, points: m24.map((m) => {
@@ -207,6 +210,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Average inflation by fiscal year"
+      headingLevel={3}
       subtitle={`Average index for April to March, on the year before. Highest: ${highFy} (${gpct(averageInflation(general, highFy)!)}); lowest: ${lowFy} (${gpct(averageInflation(general, lowFy)!)}).`}
       years={fys}
       series={fyPoints}
@@ -249,6 +253,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <LineChart
         title="Prices for farm and rural labourers"
+        headingLevel={3}
         subtitle={`Labour Bureau's Consumer Price Index for Agricultural Labourers and for Rural Labourers, all India, inflation on a year earlier. Base 1986-87${lastOldBase ? ` to ${monthLabel(lastOldBase)}` : ""}${newBaseFrom ? `; base 2019 from ${monthLabel(newBaseFrom)}` : ""}.`}
         years={alrlLabels}
         series={[

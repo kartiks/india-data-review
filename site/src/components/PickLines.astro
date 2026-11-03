@@ -26,8 +26,10 @@ interface Props {
   axis: AxisFormat;
   tipFormat: (v: number) => string;
   source?: string;
+  headingLevel?: 2 | 3; // 2 (default) for a chart card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, tipFormat, source } = Astro.props;
+const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, tipFormat, source, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 
 const pack = (o: PickOption) => ({
   key: o.key, name: o.name, note: o.note ?? "",
@@ -52,7 +54,7 @@ const inStart = new Set(start.map((c) => c.key));
 ---
 <figure class="chart pick-lines">
   <figcaption>
-    <h3>{title}</h3>
+    <Heading class="chart-title">{title}</Heading>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
   <ul class="chips small" aria-label={`${noun[0].toUpperCase()}${noun.slice(1)}s shown`}>
@@ -230,7 +232,7 @@ const inStart = new Set(start.map((c) => c.key));
 
 <style>
   .chart { margin: 0; }
-  .chart figcaption h3 { margin-bottom: 2px; }
+  .chart figcaption .chart-title { font-size: 1.05rem; margin-bottom: 2px; }
   .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 8px 0; }
   /* Chips are rebuilt by the script, so their styles are global within the list. */
   .chips :global(.chip) { font: inherit; display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; }

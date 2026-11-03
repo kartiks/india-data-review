@@ -116,16 +116,17 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <LineChart title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart headingLevel={3} title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <LineChart title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart headingLevel={3} title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
   </div>
 
   <section class="card">
     <LineChart
       title="Urban unemployment, quarter by quarter"
+      headingLevel={3}
       subtitle={`Towns and cities, aged 15 and over, current weekly status, ${qLabels[0]} to ${qLabels[qLabels.length - 1]}. ${covidUr ? `In Apr–Jun 2020, during the COVID-19 lockdown, it reached ${pct(covidUr)}.` : ""}`}
       years={qLabels}
       series={qSeries}
@@ -139,6 +140,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
     <section class="card">
       <LineChart
         title="Unemployment, month by month"
+        headingLevel={3}
         subtitle={`Aged 15 and over, current weekly status. MoSPI's monthly survey started in January 2025; latest ${periodLabel(lastM.year, lastM.period)}.`}
         years={mLabels}
         series={mSeries}

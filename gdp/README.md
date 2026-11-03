@@ -64,11 +64,12 @@ Values are ₹ crore; growth rates are %. `cur` = current prices (nominal), `con
 ## Checks
 
 Accounting identities in every estimate (industries add up to GVA, GDP = GVA + net taxes, NDP, GNI, GNDI,
-investment and saving by sector), published growth rates against levels, quarters against years, the back
-series against the current series, the Budget's stated growth, and every forecast quote found in its
-downloaded document. Problems found in the official data are documented in the report and on the site's
-Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labelled "1999", duplicate
-"Additional Revision" rows, inconsistent early net-tax figures, and the back series' non-additivity before 2004-05.
+investment and saving by sector), published GDP and industry growth rates against levels (exactly for the 2022-23
+series), quarters against years, the back series against the current series, the Budget's stated growth, and every
+forecast quote found in its downloaded document. Problems found in the official data are documented in the report
+and on the site's Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labelled "1999", duplicate
+"Additional Revision" rows, inconsistent early net-tax figures, the back series' non-additivity before 2004-05, and
+one mistyped GVA growth rate (2019-20, Second Advance Estimates).
 
 ### State accounts
 

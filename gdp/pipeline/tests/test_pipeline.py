@@ -46,3 +46,62 @@ def test_unit_label_error_not_converted():
 def test_checks_pass_on_saved_data():
     ds = json.loads((ROOT / "data" / "gdp.json").read_text())
     assert checks.main(ds) == 0
+
+
+def row(indicator, industry="", subindustry="", sector="", cur=None, con=None, unit="₹ Crore",
+        series="2022-23", year="2023-24", stage="FINAL"):
+    return {"series": series, "frequency": "annual", "year": year, "quarter": "", "stage": stage,
+            "indicator": indicator, "industry": industry, "subindustry": subindustry, "sector": sector,
+            "current_price": cur, "constant_price": con, "unit": unit}
+
+
+def test_arrange_keeps_industry_growth_when_subindustries_follow():
+    # build.main sorts sub-industry rows after their industry; they must not replace the industry's rate.
+    rows = [row("gva_growth", "manufacturing", con=10.7, cur=9.0, unit="%"),
+            row("gva_growth", "manufacturing", "textiles_apparel_and_leather_products", con=-1.3, cur=-2.0, unit="%")]
+    node = build.arrange(rows)["2022-23"]["annual"]["2023-24"]["FINAL"]
+    assert node["gva_growth"] == {"manufacturing": {"real": 10.7, "nominal": 9.0}}
+
+
+@pytest.mark.parametrize("order", [1, -1])
+def test_arrange_ignores_gva_by_institutional_sector(order):
+    rows = [row("gva", "total", sector="total", cur=100.0, con=90.0),
+            row("gva", sector="households", cur=40.0)][::order]
+    node = build.arrange(rows)["2022-23"]["annual"]["2023-24"]["FINAL"]
+    assert node["gva_by_industry"] == {"total": {"cur": 100.0, "con": 90.0}}
+
+
+def growth_ds(series, year, stage, published_real, level_now=110.0, level_before=100.0):
+    prev_year = f"{int(year[:4]) - 1}-{year[2:4]}"
+    return {"data": {series: {"annual": {
+        prev_year: {"RE1": {"gva_by_industry": {"mining": {"con": level_before}}}},
+        year: {stage: {"gva_by_industry": {"mining": {"con": level_now}},
+                       "gva_growth": {"mining": {"real": published_real}}}},
+    }}}}
+
+
+def industry_growth(ds):
+    report = checks.Report()
+    checks.check_industry_growth(ds, report)
+    (_, checked, failures, notes), = report.sections
+    return checked, failures, notes
+
+
+def test_industry_growth_matching_levels_passes():
+    assert industry_growth(growth_ds("2022-23", "2024-25", "RE1", 10.0))[:2] == (1, [])
+
+
+def test_industry_growth_far_from_levels_fails():
+    _, failures, _ = industry_growth(growth_ds("2011-12", "2018-19", "RE1", -1.3))
+    assert len(failures) == 1 and "mining: published real growth -1.3%, levels give RE1 10.00%" in failures[0]
+
+
+def test_industry_growth_small_gap_fails_only_where_estimates_are_kept():
+    assert len(industry_growth(growth_ds("2022-23", "2024-25", "RE1", 10.4))[1]) == 1
+    _, failures, notes = industry_growth(growth_ds("2011-12", "2018-19", "RE1", 10.4))
+    assert failures == [] and any("within 1.5 points" in n for n in notes)
+
+
+def test_industry_growth_known_exception_is_allowed_with_reason():
+    _, failures, notes = industry_growth(growth_ds("2011-12", "2014-15", "AE1", 4.0))
+    assert failures == [] and any(n.startswith("Allowed (1 rates") and "first releases" in n for n in notes)

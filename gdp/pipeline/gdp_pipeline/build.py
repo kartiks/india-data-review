@@ -303,8 +303,12 @@ def arrange(rows: list[dict]) -> dict:
         if ind == "gdp_growth":
             node.setdefault("growth", {})["gdp"] = growth_pair(r)
         elif ind == "gva_growth":
-            node.setdefault("gva_growth", {})[r["industry"] or "total"] = growth_pair(r)
+            # Sub-industry rates share the industry's key; keep only the industry's own rate.
+            if not r["subindustry"]:
+                node.setdefault("gva_growth", {})[r["industry"] or "total"] = growth_pair(r)
         elif ind == "gva":
+            if r["sector"] and r["sector"] != "total" and not r["industry"]:
+                continue  # GVA by institutional sector: kept in national_accounts.csv, not in the tree
             if r["subindustry"]:
                 node.setdefault("gva_sub", {}).setdefault(r["industry"], {})[r["subindustry"]] = pair(r)
             else:

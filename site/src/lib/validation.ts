@@ -35,7 +35,7 @@ export function validation(area: string): Validation {
 }
 
 export function passed(v: Validation): boolean {
-  return v.result === "PASSED" && v.failures === 0;
+  return v.result === "PASSED" && v.failures === 0 && v.sections.every((s) => s.failures === 0);
 }
 
 /** How many cases are allowed under the reasons that start with `start`. */

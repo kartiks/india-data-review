@@ -51,8 +51,9 @@ def test_get_gives_up_after_the_last_try(no_waiting):
 
 
 def test_get_retries_server_errors_but_not_404(no_waiting):
-    opener, calls = opener_failing(1, http_error(503))
-    assert download.get("https://example.test/x", opener=opener) == b"ok"
+    for code in (503, 408, 429):
+        opener, calls = opener_failing(1, http_error(code))
+        assert download.get("https://example.test/x", opener=opener) == b"ok"
     opener, calls = opener_failing(1, http_error(404))
     with pytest.raises(urllib.error.HTTPError):
         download.get("https://example.test/x", opener=opener)

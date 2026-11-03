@@ -157,7 +157,8 @@ jobs:
           if [ -n "$COMMITTED" ] && [ "$PUSHED" != true ]; then
             git diff --name-only HEAD~1 HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
           fi
-          cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md
+          cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md \
+            gdp/data/validation_summary.json jobs-prices/data/validation_summary.json
           find refresh-artifact -type f | sed -n 1,60p
 
       - uses: actions/upload-artifact@v4

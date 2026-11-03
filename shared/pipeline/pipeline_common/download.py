@@ -43,9 +43,10 @@ def is_type(content: bytes, ext: str) -> bool:
 
 
 def _retryable(exc: Exception) -> bool:
-    """Network faults, timeouts and server errors are tried again; other HTTP errors (404 …) are an answer."""
+    """Network faults, timeouts (incl. HTTP 408), rate limits and server errors are tried again; other HTTP
+    errors (404 …) are an answer."""
     if isinstance(exc, urllib.error.HTTPError):
-        return exc.code >= 500 or exc.code == 429
+        return exc.code >= 500 or exc.code in (408, 429)
     return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError))
 
 

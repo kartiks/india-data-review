@@ -44,7 +44,8 @@ Tests: `uv run pytest` in each `pipeline/` folder, and `npm run check` (type che
 
 Vercel only builds the site. It never runs a pipeline: it reads the `data/` folders committed to this repository.
 Data reaches the site in two ways: a **weekly GitHub Action** re-downloads the sources that are published as data and
-revised in place, and everything else is **updated by hand** when it is released.
+revised in place, and everything else is **updated by hand** when it is released. Data added to the site later gets the
+same decision: see [Adding data](#adding-data).
 
 ### What refreshes itself, and what doesn't
 
@@ -150,18 +151,45 @@ It checks out that commit in a temporary folder (your working folder is not touc
 It downloads no data (npm and uv may download packages) and takes about six minutes, most of it the budget tests.
 The weekly refresh runs the same script on its own commit before pushing.
 
-## Adding a new area
+## Adding data
+
+### Decide how it will be kept up to date
+
+Every time data is added to the site, whether a new area or a new source in an existing one, decide whether the
+weekly refresh will cover it, and record the decision with its reason in the table under
+[What refreshes itself](#what-refreshes-itself-and-what-doesnt) and in the area's README.
+
+- **Weekly**, if the source is published as data and revised in place: an API, or a spreadsheet re-issued at the same
+  address. These lose their old figures when revised, so only a regular download keeps the history.
+- **By hand**, if it is a document published once per release (PDFs, press releases, budget papers), or the site
+  blocks automated downloads. Say in the area's README when to update it and how.
+- **Fixed**, if it will never change (a one-off report table, a map).
+
+Also check the time budget: a weekly run allows each area its own limit (30 minutes for GDP, 150 for jobs and prices,
+which takes about an hour on GitHub) and 240 minutes in all.
+
+### A new source in an existing area
+
+1. Add it to the area's `sources.py` and `fetch.py`, read it in `build.py`, and add checks for it.
+2. If it is refreshed weekly, make the area's refresh option (`--refresh-nas` for GDP, `--refresh-api` for jobs and
+   prices) re-download it, with the same `save()` (which keeps the old file as a snapshot) and the same guard against
+   data that vanishes, and extend `tests/test_fetch.py`. If its download is slow, raise the area's `timeout` in
+   `.github/workflows/data-refresh.yml`.
+3. Update the table and the area's README, as above.
+
+### A new area
 
 1. Create `<area>/` with `pipeline/`, `data/` and `sources/`, following `gdp/` (fetch → build → checks,
    writing `data/validation_report.md`).
 2. Add the area to `AREAS` in `site/scripts/copy-data.mjs`, a data module in `site/src/lib/<area>/`, pages in
    `site/src/pages/<area>/`, and a tab and sub-navigation in `site/src/layouts/Base.astro`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
-4. Add the area to `AREAS` in `scripts/ci.sh`. If its sources are revised in place, give its pipeline an option that
-   re-downloads only those, add a step for it to `.github/workflows/data-refresh.yml` and add the area wherever the
-   workflow names `gdp` and `jobs-prices` (the commit step's `env` and list of areas, the artifact paths and
-   conditions, the final failure check), and add its datasets to the table in
-   [What refreshes itself](#what-refreshes-itself-and-what-doesnt).
+4. Add the area to `AREAS` in `scripts/ci.sh`.
+5. If any of its sources are refreshed weekly, give its pipeline an option that re-downloads only those (with tests in
+   `tests/test_fetch.py`), add a step for it to `.github/workflows/data-refresh.yml` with its own `timeout`, and add
+   the area wherever the workflow names `gdp` and `jobs-prices` (the commit step's `env` and list of areas, the
+   artifact paths and conditions, the final failure check).
+6. Add its datasets to the table, as above.
 
 ## Deployment
 

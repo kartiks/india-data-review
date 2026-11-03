@@ -59,8 +59,12 @@ def test_compact_table_round_trip():
 
 
 @pytest.mark.skipif(not (ROOT / "sources" / "manifest.json").exists(), reason="sources not downloaded")
-def test_checks_pass_on_saved_data():
+def test_checks_pass_on_saved_data(data_dir):
+    # data_dir (conftest) is under tmp_path: the committed data/ is never rewritten.
+    committed = {p.name: p.stat().st_mtime_ns for p in (ROOT / "data").iterdir()}
     assert checks.main() == 0
+    assert (data_dir / "validation_summary.json").exists()
+    assert {p.name: p.stat().st_mtime_ns for p in (ROOT / "data").iterdir()} == committed
 
 
 def test_release_table_reader():

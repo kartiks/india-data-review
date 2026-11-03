@@ -41,7 +41,7 @@ uv run python -m jobs_prices_pipeline             # build data from saved source
 uv run python -m jobs_prices_pipeline --fetch     # also download anything missing
 uv run python -m jobs_prices_pipeline --refresh   # re-download everything, including press releases and report tables
 uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and RBI's tables (what the weekly refresh runs)
-uv run pytest
+uv run pytest                                     # tests write to temporary folders, never to data/
 ```
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a

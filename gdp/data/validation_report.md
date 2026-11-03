@@ -154,8 +154,33 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 ## ✅ Published industry growth rates follow from industry GVA levels
 2222 checks, 0 failures.
 
-- Allowed (24 rates, e.g. 2011-12 series, 2014-15 AE1, construction: published real growth 4.5%, levels give RE2 -3.16%, RE3 -1.59%, ADD -1.01%). Reason: The First Advance and Provisional Estimates of 2014-15 were the first releases on the 2011-12 base. Their industry growth rates were measured against 2013-14 as estimated at the time; MoSPI's API keeps 2013-14 only as later revised (RE2, RE3 and the additional revision of 2011-12 to 2013-14), which moved some industries' levels by several percent. The site shows the latest estimate of 2014-15.
-- Allowed (1 rates, e.g. 2011-12 series, 2019-20 AE2, total: published nominal growth 3.3%, levels give AE1 9.03%, AE2 7.26%, PE 7.52%, RE1 7.90%, RE2 7.76%, RE3 7.68%). Reason: MoSPI's API gives 3.3% for nominal GVA growth in the Second Advance Estimates of 2019-20, but the same release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is 7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.
+- Allowed (24 rates). Reason: The First Advance and Provisional Estimates of 2014-15 were the first releases on the 2011-12 base. Their industry growth rates were measured against 2013-14 as estimated at the time; MoSPI's API keeps 2013-14 only as later revised (RE2, RE3 and the additional revision of 2011-12 to 2013-14), which moved some industries' levels by several percent. The site shows the latest estimate of 2014-15.
+- 2011-12 series, 2014-15 AE1, construction: published real growth 4.5%, levels give RE2 -3.16%, RE3 -1.59%, ADD -1.01%
+- 2011-12 series, 2014-15 AE1, construction: published nominal growth 8.0%, levels give RE2 0.69%, RE3 2.05%, ADD 1.81%
+- 2011-12 series, 2014-15 AE1, finance_realestate: published real growth 13.7%, levels give RE2 11.48%, RE3 10.27%, ADD 10.08%
+- 2011-12 series, 2014-15 AE1, manufacturing: published real growth 6.8%, levels give RE2 12.06%, RE3 12.86%, ADD 13.42%
+- 2011-12 series, 2014-15 AE1, manufacturing: published nominal growth 10.1%, levels give RE2 16.12%, RE3 16.21%, ADD 16.21%
+- 2011-12 series, 2014-15 AE1, mining: published real growth 2.3%, levels give RE2 5.69%, RE3 5.60%, ADD 7.41%
+- 2011-12 series, 2014-15 AE1, public_other: published real growth 9.0%, levels give RE2 13.11%, RE3 13.62%, ADD 13.62%
+- 2011-12 series, 2014-15 AE1, public_other: published nominal growth 15.9%, levels give RE2 20.08%, RE3 20.73%, ADD 20.69%
+- 2011-12 series, 2014-15 AE1, trade_transport: published real growth 8.4%, levels give RE2 11.70%, RE3 12.75%, ADD 12.90%
+- 2011-12 series, 2014-15 AE1, trade_transport: published nominal growth 12.1%, levels give RE2 15.52%, RE3 16.41%, ADD 16.41%
+- 2011-12 series, 2014-15 AE1, utilities: published real growth 9.6%, levels give RE2 15.64%, RE3 16.63%, ADD 16.37%
+- 2011-12 series, 2014-15 AE1, utilities: published nominal growth 17.3%, levels give RE2 12.00%, RE3 10.27%, ADD 10.13%
+- 2011-12 series, 2014-15 PE, construction: published real growth 4.8%, levels give RE2 -2.86%, RE3 -1.29%, ADD -0.71%
+- 2011-12 series, 2014-15 PE, construction: published nominal growth 6.9%, levels give RE2 -0.35%, RE3 1.00%, ADD 0.75%
+- 2011-12 series, 2014-15 PE, finance_realestate: published real growth 11.5%, levels give RE2 9.32%, RE3 8.13%, ADD 7.95%
+- 2011-12 series, 2014-15 PE, manufacturing: published real growth 7.1%, levels give RE2 12.45%, RE3 13.26%, ADD 13.82%
+- 2011-12 series, 2014-15 PE, manufacturing: published nominal growth 9.7%, levels give RE2 15.71%, RE3 15.80%, ADD 15.80%
+- 2011-12 series, 2014-15 PE, mining: published real growth 2.4%, levels give RE2 5.87%, RE3 5.77%, ADD 7.58%
+- 2011-12 series, 2014-15 PE, public_other: published real growth 7.2%, levels give RE2 11.22%, RE3 11.72%, ADD 11.72%
+- 2011-12 series, 2014-15 PE, public_other: published nominal growth 13.7%, levels give RE2 17.79%, RE3 18.43%, ADD 18.39%
+- 2011-12 series, 2014-15 PE, trade_transport: published real growth 10.7%, levels give RE2 14.03%, RE3 15.11%, ADD 15.26%
+- 2011-12 series, 2014-15 PE, trade_transport: published nominal growth 13.3%, levels give RE2 16.75%, RE3 17.65%, ADD 17.65%
+- 2011-12 series, 2014-15 PE, utilities: published real growth 7.9%, levels give RE2 13.80%, RE3 14.78%, ADD 14.52%
+- 2011-12 series, 2014-15 PE, utilities: published nominal growth 14.1%, levels give RE2 8.91%, RE3 7.22%, ADD 7.09%
+- Allowed (1 rate). Reason: MoSPI's API gives 3.3% for nominal GVA growth in the Second Advance Estimates of 2019-20, but the same release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is 7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.
+- 2011-12 series, 2019-20 AE2, total: published nominal growth 3.3%, levels give AE1 9.03%, AE2 7.26%, PE 7.52%, RE1 7.90%, RE2 7.76%, RE3 7.68%
 - 717 published rates in the 2011-12 series are within 1.5 points of the levels but not exact: as for GDP, each was measured against an estimate of the year before that MoSPI's API no longer keeps. The 20 furthest apart, for review:
 - 2011-12 series, 2014-15 AE1, agriculture: published nominal growth 5.4%, levels give RE2 4.20%, RE3 2.57%, ADD 2.90%
 - 2011-12 series, 2016-17 PE, mining: published real growth 1.8%, levels give AE1 4.32%, PE 3.80%, RE1 -4.20%, RE2 0.62%, RE3 3.93%

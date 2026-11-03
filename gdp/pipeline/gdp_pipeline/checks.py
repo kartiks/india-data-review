@@ -246,7 +246,7 @@ def check_growth(ds: dict, report: Report) -> None:
                         opts = ", ".join(f"{ps} {v:.2f}%" for ps, v in calcs.items())
                         msg = f"{series} series, {year} {stage}: published {key} growth {g[key]}%, levels give {opts}"
                         gap = min(abs(v - g[key]) for v in calcs.values())
-                        if gap > GROSS_GROWTH_GAP:
+                        if gap > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
                             reason = allowed("growth", msg)
                             (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
                         else:
@@ -297,7 +297,10 @@ def check_industry_growth(ds: dict, report: Report) -> None:
                             failures.append(msg)
                     else:
                         unreproduced.append((gap, msg))
-    notes = [f"Allowed ({len(msgs)} rates, e.g. {msgs[0]}). Reason: {reason}" for reason, msgs in allowed_by_reason.items()]
+    notes = []
+    for reason, msgs in allowed_by_reason.items():
+        notes.append(f"Allowed ({len(msgs)} {'rate' if len(msgs) == 1 else 'rates'}). Reason: {reason}")
+        notes += msgs
     if uncheckable:
         notes.append(f"{uncheckable} published rates not checkable (no levels for the year before).")
     if unreproduced:

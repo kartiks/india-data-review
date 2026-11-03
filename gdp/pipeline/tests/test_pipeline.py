@@ -104,4 +104,37 @@ def test_industry_growth_small_gap_fails_only_where_estimates_are_kept():
 
 def test_industry_growth_known_exception_is_allowed_with_reason():
     _, failures, notes = industry_growth(growth_ds("2011-12", "2014-15", "AE1", 4.0))
-    assert failures == [] and any(n.startswith("Allowed (1 rates") and "first releases" in n for n in notes)
+    assert failures == [] and any(n.startswith("Allowed (1 rate)") and "first releases" in n for n in notes)
+
+
+def test_industry_growth_quarters_compare_with_the_same_quarter_a_year_earlier():
+    ds = {"data": {"2022-23": {"annual": {}, "quarterly": {
+        "2023-24 Q2": {"LATEST": {"gva_by_industry": {"mining": {"con": 100.0}}}},
+        "2024-25 Q2": {"LATEST": {"gva_by_industry": {"mining": {"con": 104.0}},
+                                  "gva_growth": {"mining": {"real": 4.0}}}},
+        "2024-25 Q1": {"LATEST": {"gva_by_industry": {"mining": {"con": 50.0}},
+                                  "gva_growth": {"mining": {"real": 9.0}}}},
+    }}}}
+    checked, failures, notes = industry_growth(ds)
+    assert (checked, failures) == (1, []) and any("1 published rates not checkable" in n for n in notes)
+
+
+def test_industry_growth_mistyped_2019_20_rate_is_allowed():
+    ds = growth_ds("2011-12", "2019-20", "AE2", 3.3, level_now=107.26)
+    ds["data"]["2011-12"]["annual"]["2019-20"]["AE2"]["gva_growth"] = {"total": {"nominal": 3.3}}
+    ds["data"]["2011-12"]["annual"]["2019-20"]["AE2"]["gva_by_industry"] = {"total": {"cur": 107.26}}
+    ds["data"]["2011-12"]["annual"]["2018-19"]["RE1"]["gva_by_industry"] = {"total": {"cur": 100.0}}
+    _, failures, notes = industry_growth(ds)
+    assert failures == [] and any(n.startswith("Allowed (1 rate)") and "mistyped" in n for n in notes)
+
+
+def test_gdp_growth_exact_for_the_new_series():
+    def ds(series, published):
+        return {"data": {series: {"annual": {
+            "2023-24": {"FINAL": {"gdp": {"con": 100.0}}},
+            "2024-25": {"RE1": {"gdp": {"con": 106.0}, "growth": {"gdp": {"real": published}}}},
+        }}}}
+    for series, failures in (("2022-23", 1), ("2011-12", 0)):
+        report = checks.Report()
+        checks.check_growth(ds(series, 6.5), report)
+        assert len(report.sections[0][2]) == failures

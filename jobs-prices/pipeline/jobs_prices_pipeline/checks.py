@@ -16,7 +16,23 @@
    - no month is missing.
 4. Household spending (HCES):
    - the 12 spending classes, averaged with their population shares, give the
-     overall average; item shares add up to 100%.
+     overall average; item categories add up to the food and non-food totals,
+     and those to the average (or 100%);
+   - Table A2 of the full report agrees with the data service, its states add
+     up to All India, and each overall (rural + urban) average lies between
+     the rural and urban ones.
+5. RBI Handbook of Statistics on Indian States:
+   - every table read, in its expected unit and sub-titles;
+   - its state inflation agrees with MoSPI's monthly indices;
+   - overall unemployment between men's and women's; the All-India wage within
+     the states' range;
+   - state GDP and income per person agree at current and constant prices.
+6. Consumer prices, base 2024 (press releases):
+   - every release read in full; headline, summary and annexures agree;
+   - inflation reproduced from the index a year earlier; combined between
+     rural and urban; only provisional figures revised;
+   - the linking factor equals the 2025 average, new base / old base;
+   - the release page's tables match its PDF.
 
 Exceptions are allowed only through the rules below, each with a reason.
 Writes jobs-prices/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
@@ -71,7 +87,9 @@ HCES_MISMATCH = (
 BAD_VALUE = "MoSPI's data service returns characters instead of a number for this figure. It is left out."
 INFLATION_TOL = 0.12  # points: indices are published to one decimal, so a recomputed rate can differ this much
 INTRO = ("Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official "
-         "data service. Every allowed exception lists its reason.")
+         "data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and "
+         "state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists "
+         "its reason.")
 
 
 def cell(d: dict, keys=("frequency", "year", "period", "state", "sector", "gender", "age", "status")) -> str:

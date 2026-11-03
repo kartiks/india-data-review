@@ -25,7 +25,7 @@ const total = areas.reduce((s, a) => s + a.checks, 0);
   <section class="card">
     <h2>Principles</h2>
     <ul>
-      <li><strong>Official sources only.</strong> Budget documents (indiabudget.gov.in), MoSPI's national accounts and surveys (labour force, consumer prices, household spending), the Economic Survey and the Reserve Bank of India. No news reports, no estimates of our own.</li>
+      <li><strong>Official sources only.</strong> Budget documents (indiabudget.gov.in), MoSPI's national accounts and surveys (labour force, consumer prices, household spending) and its press releases on pib.gov.in, the Labour Bureau's price indices for farm and rural labourers, the Economic Survey and the Reserve Bank of India. No news reports, no estimates of our own.</li>
       <li><strong>Every figure traceable.</strong> Each number links back to the document or data release it came from; the downloaded files are kept with their SHA-256 fingerprints.</li>
       <li><strong>Checked automatically.</strong> {total.toLocaleString("en-IN")} checks across all areas{areas.every((a) => a.passed) ? ", all passing" : ""}. The site cannot be built if any fails. Problems found in the official data are listed with a reason, not hidden.</li>
       <li><strong>Nothing changed.</strong> The site picks, adds up and divides published figures, and says so wherever it does. Estimates are labelled as estimates.</li>

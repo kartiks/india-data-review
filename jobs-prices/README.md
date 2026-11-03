@@ -1,12 +1,15 @@
 # Jobs, prices and household spending
 
 The jobs and prices area of [India Data Review](../README.md): India's rural and urban indicators from MoSPI's
-surveys, checked automatically. This folder holds the data pipeline (`pipeline/`), the datasets (`data/`) and the
+surveys and price releases, the Labour Bureau's prices for farm and rural labourers and the RBI's Handbook of
+Statistics on Indian States, checked automatically. This folder holds the data pipeline (`pipeline/`), the datasets (`data/`) and the
 downloaded source files (`sources/`). The website pages are under `/jobs-prices/` in `../site/`.
 
 ## What's covered
 
-All from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mospi.gov.in; no key):
+Mostly from MoSPI's official data service (api.mospi.gov.in, behind esankhyiki.mospi.gov.in; no key), which also
+serves the Labour Bureau's CPI-AL/RL; the base-2024 CPI from MoSPI's press releases on PIB; HCES Table A2 from
+mospi.gov.in; and state comparisons from the RBI's handbook:
 
 - **Jobs: Periodic Labour Force Survey (PLFS)**, `/api/plfs/getData`
   - participation, worker ratio and unemployment by state, sex, age, area, education, religion and social group:

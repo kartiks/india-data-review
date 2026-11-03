@@ -5,13 +5,16 @@ Outputs (in jobs-prices/data/):
 - plfs_workers.csv     distribution of workers (type of work, industry, employer, occupation)
 - plfs_conditions.csv  regular employees without a written contract, paid leave or social security
 - plfs_earnings.csv    average earnings (regular wage, casual wage, self-employment)
-- cpi.csv, cpialrl.csv consumer price indices and inflation
+- cpi.csv, cpialrl.csv consumer price indices and inflation (base 2012; farm and rural labourers)
+- cpi2024.csv          every figure read from the base-2024 CPI press releases, with the release it came from
 - hces.csv             household spending
+- hces_overall.csv     rural + urban spending per person, weighted by HCES Table A2's estimated persons
+- rbi_states.csv       every value read from the RBI handbook's state tables
 - sources.csv          every downloaded file: key, URL, SHA-256, date (each CSV row names its source key)
 - jobs_prices.json     what the site uses, in compact form
 
-Every CSV keeps MoSPI's values and names as printed. Nothing here changes a
-published number.
+Every CSV keeps the publisher's values and names as printed. Nothing here
+changes a published number.
 
 Run: uv run python -m jobs_prices_pipeline.build
 """
@@ -554,7 +557,9 @@ def assemble() -> dict:
     manifest = json.loads(MANIFEST.read_text())
     problems: list[str] = []
     ds: dict = {
-        "description": "Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data API.",
+        "description": ("Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data API; "
+                        "the base-2024 CPI from MoSPI's press releases; state comparisons from the RBI's Handbook of "
+                        "Statistics on Indian States."),
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "sources": {k: {"url": v["url"], "sha256": v["sha256"], "fetched_at": v["fetched_at"], "records": v.get("records")}
                     for k, v in sorted(manifest.items()) if not v.get("empty")},

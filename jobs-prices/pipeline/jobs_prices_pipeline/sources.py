@@ -1,8 +1,11 @@
 """Where every figure comes from.
 
-All of it is from MoSPI's official data service (api.mospi.gov.in, the service
-behind esankhyiki.mospi.gov.in). Free, no key. Specs for each dataset:
+Items 1-4 are from MoSPI's official data service (api.mospi.gov.in, the service
+behind esankhyiki.mospi.gov.in), free, no key; item 3 is the Labour Bureau's,
+served by it. Specs for each dataset:
 https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
+Items 5-7 are documents: MoSPI's press releases on PIB, a table of MoSPI's HCES
+report, and the RBI's Handbook of Statistics on Indian States.
 
 1. Jobs: Periodic Labour Force Survey (PLFS), /api/plfs/getData
    - indicators 1-3: labour force participation rate, worker population ratio,
@@ -10,7 +13,8 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
      5: conditions of regular employees (written contract, paid leave, social
      security); 6-8: earnings (regular wage, casual wage, self-employment).
    - annual (calendar years from 2022; job conditions by July-June year from
-     2017-18), quarterly (urban, from 2018) and monthly (from 2025).
+     2017-18), quarterly (urban from April-June 2018, rural too from 2025)
+     and monthly (from 2025).
 2. Consumer prices: CPI (base 2012 = 100), /api/cpi/getCPIIndex, Jan 2013 to
    Dec 2025. Every group and subgroup for All India; the general index for
    every state. The new 2024-base series (from Jan 2026) is item 5.
@@ -24,6 +28,10 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
    tables on each release's page (divisions, groups, states, and the All-India
    series from January 2025) and checked against the release's PDF where it
    has one. Add each new month's release page below.
+6. Household spending, overall (rural + urban): Table A2 of MoSPI's full HCES
+   2023-24 report (Excel, mospi.gov.in), the estimated persons used as weights.
+7. State comparisons: the RBI Handbook of Statistics on Indian States, the
+   tables listed in rbi.RBI_STATE_TABLES (Excel, rbi.org.in).
 """
 
 from datetime import date

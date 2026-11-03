@@ -155,9 +155,10 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
         )}
         {area === "jobs-prices" && (
           <p>
-            Jobs, prices and household spending come from the Ministry of Statistics and Programme Implementation
-            (MoSPI): the Periodic Labour Force Survey, the Consumer Price Index and the Household Consumption
-            Expenditure Survey. Every figure is checked automatically. <a href={link("/jobs-prices/sources/")}>Sources and checks</a>.
+            Jobs, prices and household spending come mostly from the Ministry of Statistics and Programme
+            Implementation (MoSPI): the Periodic Labour Force Survey, the Consumer Price Index (its data service and
+            press releases) and the Household Consumption Expenditure Survey; prices for farm and rural labourers from
+            the Labour Bureau, and state comparisons from the Reserve Bank of India. Every figure is checked automatically. <a href={link("/jobs-prices/sources/")}>Sources and checks</a>.
           </p>
         )}
         {!AREA_LABEL[area] && (

@@ -31,10 +31,11 @@ const nFiles = Object.keys(SOURCES).length;
 <Base title="Sources and checks" section="about" description="Where every jobs, prices and spending figure on India Data Review comes from, how it is checked, and the errors found in the official data.">
   <h1>Sources and checks</h1>
   <p>
-    All figures in this section come from the Ministry of Statistics and Programme Implementation (MoSPI): through its
+    Most figures in this section come from the Ministry of Statistics and Programme Implementation (MoSPI): through its
     official data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in),
     and, for the new Consumer Price Index, from MoSPI's monthly press releases on the Press Information Bureau's site
-    (pib.gov.in). A program downloads {nFiles} files, keeps a copy of each with its fingerprint (SHA-256), builds the data and checks
+    (pib.gov.in). Prices for farm and rural labourers are the Labour Bureau's (through MoSPI's data service), and the
+    state comparisons come from the Reserve Bank of India's Handbook of Statistics on Indian States. A program downloads {nFiles} files, keeps a copy of each with its fingerprint (SHA-256), builds the data and checks
     it. Data last built {updated}.
   </p>
 
@@ -59,7 +60,7 @@ const nFiles = Object.keys(SOURCES).length;
     <ul>
       <li><strong>Jobs</strong>: the three rates are tied together (worker ratio = participation × (1 − unemployment rate)), and every published combination is tested; the figure for everyone must lie between women's and men's, and the rural + urban figure between rural and urban; shares of workers by industry, type of work or employer must add up to 100%.</li>
       <li><strong>Prices</strong>: every published inflation rate is worked out again from the index a year earlier; the combined index must lie between the rural and urban index; no month may be missing.</li>
-      <li><strong>RBI handbook</strong>: the handbook's average inflation for every state and year must equal the figure worked out from MoSPI's own monthly indices; overall unemployment must lie between men's and women's; the All-India rural wage must lie within the states' range.</li>
+      <li><strong>RBI handbook</strong>: every table must be in its expected unit; the handbook's average inflation for every state and year must equal the figure worked out from MoSPI's own monthly indices; overall unemployment must lie between men's and women's; the All-India rural wage must lie within the states' range; state GDP and income per person at current and constant prices must agree with each other.</li>
       <li><strong>New price series</strong>: each release's headline sentence, summary table and annexures must give the same inflation; every table on the release page must match the release PDF; a later release may revise only the previous month's provisional figures; and the linking factors MoSPI published must equal the 2025 average of the new index divided by that of the old.</li>
       <li><strong>Spending</strong>: the twelve spending classes, weighted by the share of people in each, must give the average; item categories must add up to the food and non-food totals, and those to the average.</li>
     </ul>

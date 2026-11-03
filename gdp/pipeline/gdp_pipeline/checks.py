@@ -427,7 +427,8 @@ def check_revisions(ds: dict, report: Report) -> None:
     report.add("Large revisions to growth (for review, not failures)", 0, [], notes)
 
 
-def main(ds: dict | None = None) -> int:
+def main(ds: dict | None = None, out: Path | None = None) -> int:
+    """Run every check on ds (default: the saved gdp.json) and write the report to out (default: gdp/data/)."""
     ds = ds or json.loads((DATA / "gdp.json").read_text())
     report = Report(INTRO)
     check_source(ds, report)
@@ -442,7 +443,7 @@ def main(ds: dict | None = None) -> int:
     check_revisions(ds, report)
     population.check(ds, report)
     states.check(ds, report)
-    return report.write(DATA)
+    return report.write(out or DATA)
 
 
 if __name__ == "__main__":

@@ -43,9 +43,12 @@ def test_unit_label_error_not_converted():
 
 
 @pytest.mark.skipif(not (ROOT / "data" / "gdp.json").exists(), reason="data not built")
-def test_checks_pass_on_saved_data():
+def test_checks_pass_on_saved_data(tmp_path):
+    # The report goes to tmp_path: gdp/data/validation_report.md and validation_summary.json are the site's build
+    # gate and are written only by the pipeline.
     ds = json.loads((ROOT / "data" / "gdp.json").read_text())
-    assert checks.main(ds) == 0
+    assert checks.main(ds, out=tmp_path) == 0
+    assert json.loads((tmp_path / "validation_summary.json").read_text())["result"] == "PASSED"
 
 
 def row(indicator, industry="", subindustry="", sector="", cur=None, con=None, unit="₹ Crore",

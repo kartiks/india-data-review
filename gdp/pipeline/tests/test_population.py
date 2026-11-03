@@ -59,7 +59,7 @@ def test_check_reproduces_published_per_person_figures_of_the_same_estimate(monk
     pop.check(ds_with(node), report, manifest={})
     _, checked, failures, notes = report.sections[0]
     assert failures == []
-    assert any("1 published per-person figures reproduced" in n for n in notes)
+    assert any("2011-12 series: 1 published per-person figures reproduced" in n for n in notes)
 
     node["per_person"]["gdp"]["cur"] = 2010
     report = Report()
@@ -75,7 +75,8 @@ def test_check_skips_published_figures_for_an_earlier_estimate(monkeypatch):
     report = Report()
     pop.check(ds_with(node), report, manifest={})
     assert report.sections[0][2] == []
-    assert any("1 others are for an earlier estimate" in n for n in report.sections[0][3])
+    assert any("2011-12 series: 0 published per-person figures reproduced" in n and "1 are for an earlier estimate" in n
+               for n in report.sections[0][3])
 
 
 def test_check_fails_when_one_table_implies_two_populations(monkeypatch):
@@ -107,12 +108,54 @@ def test_years_without_population_are_listed_not_failed(monkeypatch):
     assert any("2022-23 series: no population for 2026-27" in n for n in notes)
 
 
-def test_build_adds_per_person_only_where_there_is_a_population(monkeypatch):
-    fake_sources(monkeypatch, population={"2011-12": {"2021-22": {"million": 1000.0, "source": "projections"}},
-                                          "2022-23": {}})
-    tree = {"2011-12": {"annual": {"2021-22": {"RE3": {"gdp": {"cur": 2_00_000.0}}},
+def test_build_adds_per_person_to_the_latest_estimate_where_there_is_a_population(monkeypatch):
+    note = {"document": "Press note", "statement": "S1", "base": "2011-12", "prices": "cur", "years": ["2021-22"],
+            "figures": {"gdp": {"2021-22": 2_00_000.0}, "pc_gdp": {"2021-22": 2000.0}}}
+    fake_sources(monkeypatch, notes=[note], population={"2011-12": {"2021-22": {"million": 1000.0, "source": "projections"}},
+                                                        "2022-23": {}})
+    tree = {"2011-12": {"annual": {"2021-22": {"RE2": {"gdp": {"cur": 1_90_000.0}}, "RE3": {"gdp": {"cur": 2_00_000.0}}},
                                    "2022-23": {"RE2": {"gdp": {"cur": 2_20_000.0}}}}}}
     block = pop.build({}, tree)
     assert tree["2011-12"]["annual"]["2021-22"]["RE3"]["per_person"] == {"gdp": {"cur": 2000}}
-    assert "per_person" not in tree["2011-12"]["annual"]["2022-23"]["RE2"]
+    assert "per_person" not in tree["2011-12"]["annual"]["2021-22"]["RE2"]  # earlier estimate: population of its time
+    assert "per_person" not in tree["2011-12"]["annual"]["2022-23"]["RE2"]  # no population
     assert block["projections_until"] == pop.PROJECTIONS_UNTIL
+    assert block["checked"] == {"2011-12": {"2021-22": "Press note"}, "2022-23": {}}
+
+
+def test_check_fails_when_a_quoted_row_is_under_the_wrong_year(monkeypatch):
+    # The fixture projects 1,004 million for 2025-26; 1,014 million (ten years on, as if the row were mislabelled)
+    # is 1% off.
+    note = {"document": "Press note", "statement": "S1", "base": "2022-23", "prices": "con", "years": ["2025-26"],
+            "figures": {"gdp": {"2025-26": 1_01_400.0}, "pc_gdp": {"2025-26": 1000.0}}}
+    fake_sources(monkeypatch, notes=[note])
+    report = Report()
+    pop.check({"data": {}}, report, manifest={})
+    assert any("check the years of the quoted statement" in f for f in report.sections[0][2])
+
+
+def test_population_prefers_projections_then_the_newest_note_then_the_rbi(monkeypatch):
+    proj = {pop.fy(y): {"persons": 1_000_000.0 + (y - 2021) * 10_000, "male": 0.0, "female": 0.0} for y in range(2011, 2037)}
+    older = {"document": "January note", "date": "2026-01-07", "base": "2011-12", "prices": "con", "years": ["2021-22", "2023-24"],
+             "statement": "", "figures": {"gdp": {"2021-22": 99_900.0, "2023-24": 1_02_000.0}, "pc_gdp": {"2021-22": 1000.0, "2023-24": 1000.0}}}
+    newer = {**older, "document": "June note", "date": "2026-06-05", "years": ["2023-24"],
+             "figures": {"gdp": {"2023-24": 1_02_100.0}, "pc_gdp": {"2023-24": 1000.0}}}
+    rbi = {**older, "document": "RBI", "date": None, "years": ["2022-23"],
+           "figures": {"gdp": {"2022-23": 1_01_100.0}, "pc_gdp": {"2022-23": 1000.0}}}
+    monkeypatch.setattr(pop, "read_projections", lambda m: (proj, []))
+    monkeypatch.setattr(pop, "read_notes", lambda m: ([older, newer], [], 0))
+    monkeypatch.setattr(pop, "read_rbi", lambda m: ([rbi], []))
+    by_series, _ = pop.population({})
+    old = by_series["2011-12"]
+    assert old["2021-22"] == {"million": 1000.0, "source": "projections"}  # projection, not the note's 999
+    assert old["2023-24"]["million"] == 1021.0 and old["2023-24"]["document"] == "June note"
+    assert old["2022-23"]["million"] == 1011.0 and old["2022-23"]["document"] == "RBI"
+
+
+def test_a_year_read_twice_from_the_projections_table_is_a_problem(monkeypatch, tmp_path):
+    page = "Projected Total Population by Sex as on 1st October INDIA\n2011 12,20,116 6,27,946 5,92,170 1\n2011 12,20,116 6,27,946 5,92,170 1\n"
+    monkeypatch.setattr(pop, "path_of", lambda m, k: tmp_path)
+    monkeypatch.setattr(pop, "page_text", lambda path, n: page)
+    proj, problems = pop.read_projections({})
+    assert proj["2011-12"] == {"persons": 1220116, "male": 627946, "female": 592170}
+    assert problems == ["projections: year 2011 read twice on page 125"]

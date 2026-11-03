@@ -17,7 +17,8 @@ and the downloaded source files (`sources/`). The website is in `../site/` (page
   2011-12 base (latest estimate only; MoSPI publishes no state figures on the 2022-23 base yet): GSDP and NSDP,
   income per person, growth, and value added by industry and sub-industry. Shown on the site's GDP › States page.
 - **Figures per person**: GDP, GNI, net national income and household spending per person, at current and constant
-  prices, for every estimate of both series from 2011-12 ([Population](#population)). Shown on GDP › Per person.
+  prices, for the latest estimate of every year of both series from 2011-12 ([Population](#population)). Shown on
+  GDP › Per person.
 - **Union Budget GDP assumption**, Budgets 2011-12 to 2026-27 (Budget at a Glance).
 - **Forecasts**: the Economic Survey's projection for each year 2011-12 to 2026-27, and every RBI monetary
   policy projection for the same years (93 statements), each with the sentence it was quoted from.
@@ -51,9 +52,9 @@ refreshed totals every week.
 
 | File | What it is |
 |---|---|
-| `gdp.json` | Everything the site uses: national accounts by series → frequency → year → estimate stage (with `per_person` figures in ₹); the population used; the long-run series; Budget assumptions; forecasts; build notes |
+| `gdp.json` | Everything the site uses: national accounts by series → frequency → year → estimate stage (the latest estimate of each year has `per_person` figures in ₹); the population used and the years whose per-person figures reproduce a published one (`population.checked`); the long-run series; Budget assumptions; forecasts; build notes |
 | `national_accounts.csv` | Every row MoSPI published, one value per line, names as printed plus our ids, source URL and SHA-256 |
-| `per_person.csv` | GDP, GNI, net national income and household spending per person (₹, current and constant prices), with the population used, by series, year and estimate |
+| `per_person.csv` | GDP, GNI, net national income and household spending per person (₹, current and constant prices), with the population used, by series and year (latest estimate; earlier estimates were divided by the population known at the time, which is not kept) |
 | `states.json` | The state accounts the site uses: base → state → year, levels in ₹ crore, per-person figures in ₹ |
 | `state_accounts.csv` | Every state-accounts row MoSPI published, one value per line, as printed, with our ids and the source URL; rows left out are marked |
 | `validation_report.md` | Every check, and the reason for every allowed exception |
@@ -119,13 +120,22 @@ between the two series, so it is kept per series and year:
 
 | Years | Population | Source |
 |---|---|---|
-| 2011-12 series, 2011-12 to 2021-22 | The official projection for 1 October | *Population Projections for India and States 2011-2036*, Report of the Technical Group on Population Projections (National Commission on Population, November 2019), Table 14, PDF page 125 |
-| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2022-23 to 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to about a thousand people) | MoSPI's press notes, rows quoted in `population_sources/mospi_press_notes.json` |
+| 2011-12 series, 2011-12 to 2021-22 | The official projection for 1 October. MoSPI's figures equal it in 2020-21 and 2021-22, the years the RBI's reprint covers; earlier years are assumed to be the projection too | *Population Projections for India and States 2011-2036*, Report of the Technical Group on Population Projections (National Commission on Population, November 2019), Table 14, PDF page 125 |
+| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2022-23 to 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `population_sources/mospi_press_notes.json` |
 | 2011-12 series, 2022-23 | The same, where no press note here covers the year | RBI, *Handbook of Statistics on the Indian Economy* 2025-26, Tables 1 and 2 (reprinting MoSPI's) |
 
-From 2022-23 MoSPI's population is about 0.1–0.2% above the 2019 projections. Net national income is not in the
-API; it is GNI less depreciation, worked out as NDP + GNI − GDP, which also works in years with no depreciation
-figure.
+From 2022-23 MoSPI's population is about 0.1–0.2% above the 2019 projections, so population grows 1.05% in
+2022-23 in the 2011-12 series (0.91% from one projection to the next); MoSPI's own per-person figures have the same
+step. Net national income is not in the API; it is GNI less depreciation, worked out as NDP + GNI − GDP, which also
+works in years with no depreciation figure. Per-person figures are for the latest estimate of each year only: MoSPI
+divided earlier estimates by the population known at the time, which is not kept here.
+
+**The new series is not checked yet.** MoSPI revised every year of the 2022-23 series in *National Accounts
+Statistics 2026* (31 August 2026), after the June press note quoted here, so none of its per-person figures can be
+compared: the figures here divide the revised totals by the June note's population. MoSPI's revised per-person table
+(NAS 2026, Statement 2) is on its website, whose publication pages need a browser; quoting it (or the next press
+note) as in [Adding a year's population](#adding-a-years-population) makes the check cover the new series. The
+site's Per person page says so while it is the case (from `population.checked`).
 
 Checks ("Population and figures per person" in the report):
 
@@ -135,24 +145,27 @@ Checks ("Population and figures per person" in the report):
   rounds to the printed one;
 - the population used agrees with the RBI's, printed to the lakh, in every year the RBI covers, for both the
   projections (2020-21, 2021-22) and MoSPI's own figures;
-- MoSPI's population equals the projection up to 2021-22;
+- MoSPI's population equals the projection in the years up to 2021-22 that a source covers (2020-21 and 2021-22),
+  and from 2022-23 is within 0.5% of it (a quoted row under the wrong year would be about 0.9% off);
 - every per-person figure MoSPI or the RBI printed is reproduced to within ₹2 where its total is the same estimate
-  as the API's latest. Totals MoSPI has revised since are not compared; the report says how many.
+  as the API's latest. Totals MoSPI has revised since are not compared; the report says how many, for each series.
 
-A year in the API with no population yet is listed in the report (not a failure) and has no per-person figures.
+A year in the API with no population yet is listed in the report (not a failure) and has no per-person figures;
+the site's Per person page shows the latest year that has them and says which year is waiting.
 
 ### Adding a year's population
 
 Each January MoSPI's First Advance Estimates add a new year. Until its population is added, that year has no
 per-person figures, and the report lists it. To add it:
 
-1. In the new press note's statement at **constant prices**, copy four rows exactly as printed, without the growth
-   rates at the end: population, GDP, net national income (NNI), and per capita GDP and NNI.
+1. In the new press note's statement at **constant prices**, copy five rows exactly as printed, without the growth
+   rates at the end: population, GDP, net national income (NNI), per capita GDP and per capita NNI.
 2. Add a record to `population_sources/mospi_press_notes.json` like the ones there: `document`, `date`, `base`,
    `url`, `years` (the statement's columns), and a `tables` entry with `statement`, `pdf_page` and the rows.
    Check that the page's text extracts in reading order (some MoSPI statements do not; quote another one then).
 3. Run `uv run python -m gdp_pipeline --fetch`. It downloads the note, checks every row and the implied population,
-   and uses the newest note for each year.
+   and uses the newest note for each year. The same steps add a revised per-person table (a later press note, or
+   MoSPI's National Accounts Statistics), which makes the check cover the revised totals.
 
 When the RBI publishes a new *Handbook of Statistics on the Indian Economy* (each July or August), the addresses of
 Tables 1 and 2 in `population.py` (`RBI_TABLES`) can be updated so that the checks cover the newest years too.

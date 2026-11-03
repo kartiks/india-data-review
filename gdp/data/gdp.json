@@ -1,7 +1,7 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-03T07:13:14+00:00",
+ "generated_at": "2026-11-03T08:04:25+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
@@ -479,24 +479,6 @@
       },
       "saving": {
        "cur": 3026724.0
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 71600,
-        "con": 71600
-       },
-       "gni": {
-        "cur": 70970,
-        "con": 70970
-       },
-       "pfce": {
-        "cur": 40246,
-        "con": 40246
-       },
-       "nni": {
-        "cur": 63454,
-        "con": 63454
-       }
       }
      },
      "ADD": {
@@ -1191,24 +1173,6 @@
         "real": 5.6,
         "nominal": 13.9
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 80513,
-        "con": 74652
-       },
-       "gni": {
-        "cur": 79568,
-        "con": 73776
-       },
-       "pfce": {
-        "cur": 45882,
-        "con": 41831
-       },
-       "nni": {
-        "cur": 70992,
-        "con": 65611
-       }
       }
      },
      "RE3": {
@@ -1548,24 +1512,6 @@
        "gdp": {
         "real": 5.4,
         "nominal": 13.8
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 80475,
-        "con": 74557
-       },
-       "gni": {
-        "cur": 79530,
-        "con": 73680
-       },
-       "pfce": {
-        "cur": 45846,
-        "con": 41849
-       },
-       "nni": {
-        "cur": 70954,
-        "con": 65515
        }
       }
      },
@@ -2278,24 +2224,6 @@
         "real": 6.6,
         "nominal": 13.3
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 90048,
-        "con": 78598
-       },
-       "gni": {
-        "cur": 88930,
-        "con": 77620
-       },
-       "pfce": {
-        "cur": 51986,
-        "con": 44095
-       },
-       "nni": {
-        "cur": 79357,
-        "con": 68820
-       }
       }
      },
      "RE3": {
@@ -2635,24 +2563,6 @@
        "gdp": {
         "real": 6.5,
         "nominal": 12.9
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 89759,
-        "con": 78425
-       },
-       "gni": {
-        "cur": 88642,
-        "con": 77448
-       },
-       "pfce": {
-        "cur": 52232,
-        "con": 44378
-       },
-       "nni": {
-        "cur": 79091,
-        "con": 68669
        }
       }
      },
@@ -3150,24 +3060,6 @@
         "real": 7.4,
         "nominal": 11.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 99813,
-        "con": 84062
-       },
-       "gni": {
-        "cur": 98590,
-        "con": 83045
-       },
-       "pfce": {
-        "cur": 60286,
-        "con": 48184
-       },
-       "nni": {
-        "cur": 88481,
-        "con": 74150
-       }
       }
      },
      "PE": {
@@ -3298,24 +3190,6 @@
        "gdp": {
         "real": 7.3,
         "nominal": 10.5
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 98925,
-        "con": 83960
-       },
-       "gni": {
-        "cur": 97685,
-        "con": 82928
-       },
-       "pfce": {
-        "cur": 59430,
-        "con": 47835
-       },
-       "nni": {
-        "cur": 87696,
-        "con": 74061
        }
       }
      },
@@ -3696,24 +3570,6 @@
         "real": 7.2,
         "nominal": 10.8
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 98507,
-        "con": 83236
-       },
-       "gni": {
-        "cur": 97344,
-        "con": 82254
-       },
-       "pfce": {
-        "cur": 56739,
-        "con": 46258
-       },
-       "nni": {
-        "cur": 86828,
-        "con": 72846
-       }
       }
      },
      "RE2": {
@@ -4092,24 +3948,6 @@
        "gdp": {
         "real": 7.1,
         "nominal": 10.6
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 98078,
-        "con": 83003
-       },
-       "gni": {
-        "cur": 96915,
-        "con": 82022
-       },
-       "pfce": {
-        "cur": 57368,
-        "con": 46788
-       },
-       "nni": {
-        "cur": 86462,
-        "con": 72669
        }
       }
      },
@@ -4641,24 +4479,6 @@
         "real": 7.6,
         "nominal": 8.6
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 105695,
-        "con": 88429
-       },
-       "gni": {
-        "cur": 104469,
-        "con": 87363
-       },
-       "pfce": {
-        "cur": 63196,
-        "con": 49162
-       },
-       "nni": {
-        "cur": 93186,
-        "con": 77393
-       }
       }
      },
      "PE": {
@@ -4789,24 +4609,6 @@
        "gdp": {
         "real": 7.6,
         "nominal": 8.7
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 105764,
-        "con": 88424
-       },
-       "gni": {
-        "cur": 104538,
-        "con": 87357
-       },
-       "pfce": {
-        "cur": 62928,
-        "con": 49089
-       },
-       "nni": {
-        "cur": 93247,
-        "con": 77397
        }
       }
      },
@@ -5187,24 +4989,6 @@
         "real": 7.9,
         "nominal": 9.9
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 106537,
-        "con": 88480
-       },
-       "gni": {
-        "cur": 105292,
-        "con": 87432
-       },
-       "pfce": {
-        "cur": 61541,
-        "con": 49594
-       },
-       "nni": {
-        "cur": 94133,
-        "con": 77486
-       }
       }
      },
      "RE2": {
@@ -5583,24 +5367,6 @@
        "gdp": {
         "real": 8.1,
         "nominal": 10.3
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 107228,
-        "con": 88703
-       },
-       "gni": {
-        "cur": 105984,
-        "con": 87654
-       },
-       "pfce": {
-        "cur": 63035,
-        "con": 49478
-       },
-       "nni": {
-        "cur": 94686,
-        "con": 77788
        }
       }
      },
@@ -6132,24 +5898,6 @@
         "real": 7.1,
         "nominal": 11.9
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 116998,
-        "con": 93604
-       },
-       "gni": {
-        "cur": 115534,
-        "con": 92365
-       },
-       "pfce": {
-        "cur": 69097,
-        "con": 51698
-       },
-       "nni": {
-        "cur": 103044,
-        "con": 81834
-       }
       }
      },
      "AE2": {
@@ -6281,24 +6029,6 @@
         "real": 7.1,
         "nominal": 11.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 117448,
-        "con": 93686
-       },
-       "gni": {
-        "cur": 116158,
-        "con": 92629
-       },
-       "pfce": {
-        "cur": 68073,
-        "con": 52564
-       },
-       "nni": {
-        "cur": 103855,
-        "con": 82141
-       }
       }
      },
      "PE": {
@@ -6429,24 +6159,6 @@
        "gdp": {
         "real": 7.1,
         "nominal": 11.0
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 116930,
-        "con": 93874
-       },
-       "gni": {
-        "cur": 115470,
-        "con": 92679
-       },
-       "pfce": {
-        "cur": 68747,
-        "con": 52418
-       },
-       "nni": {
-        "cur": 103257,
-        "con": 82299
        }
       }
      },
@@ -6827,24 +6539,6 @@
         "real": 7.1,
         "nominal": 10.8
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 117469,
-        "con": 93922
-       },
-       "gni": {
-        "cur": 116111,
-        "con": 92809
-       },
-       "pfce": {
-        "cur": 69347,
-        "con": 52462
-       },
-       "nni": {
-        "cur": 103907,
-        "con": 82259
-       }
       }
      },
      "RE2": {
@@ -7223,24 +6917,6 @@
        "gdp": {
         "real": 8.1,
         "nominal": 11.5
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 118306,
-        "con": 94710
-       },
-       "gni": {
-        "cur": 116947,
-        "con": 93596
-       },
-       "pfce": {
-        "cur": 70201,
-        "con": 53168
-       },
-       "nni": {
-        "cur": 104697,
-        "con": 82961
        }
       }
      },
@@ -7772,24 +7448,6 @@
         "real": 6.5,
         "nominal": 9.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 126662,
-        "con": 98917
-       },
-       "gni": {
-        "cur": 125225,
-        "con": 97772
-       },
-       "pfce": {
-        "cur": 74458,
-        "con": 55138
-       },
-       "nni": {
-        "cur": 112059,
-        "con": 86874
-       }
       }
      },
      "AE2": {
@@ -7921,24 +7579,6 @@
         "real": 6.6,
         "nominal": 9.8
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 127607,
-        "con": 99058
-       },
-       "gni": {
-        "cur": 126271,
-        "con": 98004
-       },
-       "pfce": {
-        "cur": 75100,
-        "con": 55037
-       },
-       "nni": {
-        "cur": 113043,
-        "con": 86903
-       }
       }
      },
      "PE": {
@@ -8069,24 +7709,6 @@
        "gdp": {
         "real": 6.7,
         "nominal": 10.0
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 127771,
-        "con": 99111
-       },
-       "gni": {
-        "cur": 126355,
-        "con": 97994
-       },
-       "pfce": {
-        "cur": 75524,
-        "con": 55297
-       },
-       "nni": {
-        "cur": 113114,
-        "con": 86883
        }
       }
      },
@@ -8467,24 +8089,6 @@
         "real": 7.1,
         "nominal": 11.2
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 130223,
-        "con": 100399
-       },
-       "gni": {
-        "cur": 128815,
-        "con": 99288
-       },
-       "pfce": {
-        "cur": 76809,
-        "con": 56503
-       },
-       "nni": {
-        "cur": 115242,
-        "con": 87840
-       }
       }
      },
      "RE2": {
@@ -8863,24 +8467,6 @@
        "gdp": {
         "real": 7.0,
         "nominal": 11.1
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 130248,
-        "con": 100363
-       },
-       "gni": {
-        "cur": 128840,
-        "con": 99252
-       },
-       "pfce": {
-        "cur": 76867,
-        "con": 56216
-       },
-       "nni": {
-        "cur": 115403,
-        "con": 87911
        }
       }
      },
@@ -9412,24 +8998,6 @@
         "real": 7.2,
         "nominal": 12.3
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 141983,
-        "con": 105140
-       },
-       "gni": {
-        "cur": 140506,
-        "con": 104025
-       },
-       "pfce": {
-        "cur": 82884,
-        "con": 58225
-       },
-       "nni": {
-        "cur": 125872,
-        "con": 92269
-       }
       }
      },
      "AE2": {
@@ -9561,24 +9129,6 @@
         "real": 7.0,
         "nominal": 11.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 143590,
-        "con": 106258
-       },
-       "gni": {
-        "cur": 142130,
-        "con": 105164
-       },
-       "pfce": {
-        "cur": 85408,
-        "con": 60536
-       },
-       "nni": {
-        "cur": 127179,
-        "con": 93069
-       }
       }
      },
      "PE": {
@@ -9709,24 +9259,6 @@
        "gdp": {
         "real": 6.8,
         "nominal": 11.2
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 143260,
-        "con": 106088
-       },
-       "gni": {
-        "cur": 141800,
-        "con": 104993
-       },
-       "pfce": {
-        "cur": 85081,
-        "con": 60413
-       },
-       "nni": {
-        "cur": 126884,
-        "con": 92916
        }
       }
      },
@@ -10107,24 +9639,6 @@
         "real": 6.1,
         "nominal": 11.0
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 142966,
-        "con": 105363
-       },
-       "gni": {
-        "cur": 141441,
-        "con": 104215
-       },
-       "pfce": {
-        "cur": 84810,
-        "con": 59595
-       },
-       "nni": {
-        "cur": 126523,
-        "con": 92087
-       }
       }
      },
      "RE2": {
@@ -10503,24 +10017,6 @@
        "gdp": {
         "real": 6.5,
         "nominal": 10.5
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 142331,
-        "con": 105528
-       },
-       "gni": {
-        "cur": 140806,
-        "con": 104379
-       },
-       "pfce": {
-        "cur": 84569,
-        "con": 59417
-       },
-       "nni": {
-        "cur": 125885,
-        "con": 92243
        }
       }
      },
@@ -11052,24 +10548,6 @@
         "real": 5.0,
         "nominal": 7.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 152418,
-        "con": 110192
-       },
-       "gni": {
-        "cur": 150905,
-        "con": 109085
-       },
-       "pfce": {
-        "cur": 91763,
-        "con": 63232
-       },
-       "nni": {
-        "cur": 135030,
-        "con": 96549
-       }
       }
      },
      "AE2": {
@@ -11201,24 +10679,6 @@
         "real": 5.0,
         "nominal": 7.4
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 151989,
-        "con": 109483
-       },
-       "gni": {
-        "cur": 150338,
-        "con": 108283
-       },
-       "pfce": {
-        "cur": 91554,
-        "con": 62111
-       },
-       "nni": {
-        "cur": 134412,
-        "con": 95692
-       }
       }
      },
      "PE": {
@@ -11349,24 +10809,6 @@
        "gdp": {
         "real": 4.2,
         "nominal": 7.2
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 151655,
-        "con": 108604
-       },
-       "gni": {
-        "cur": 150003,
-        "con": 107407
-       },
-       "pfce": {
-        "cur": 91426,
-        "con": 62078
-       },
-       "nni": {
-        "cur": 134207,
-        "con": 94940
        }
       }
      },
@@ -11747,24 +11189,6 @@
         "real": 4.0,
         "nominal": 7.7
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 151738,
-        "con": 108629
-       },
-       "gni": {
-        "cur": 150298,
-        "con": 107573
-       },
-       "pfce": {
-        "cur": 91776,
-        "con": 62047
-       },
-       "nni": {
-        "cur": 134166,
-        "con": 94552
-       }
       }
      },
      "RE2": {
@@ -12143,24 +11567,6 @@
        "gdp": {
         "real": 3.7,
         "nominal": 6.2
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 149679,
-        "con": 108231
-       },
-       "gni": {
-        "cur": 148239,
-        "con": 107175
-       },
-       "pfce": {
-        "cur": 91240,
-        "con": 61585
-       },
-       "nni": {
-        "cur": 132096,
-        "con": 94256
        }
       }
      },
@@ -12692,24 +12098,6 @@
         "real": -7.7,
         "nominal": -4.2
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 143734,
-        "con": 99155
-       },
-       "gni": {
-        "cur": 141945,
-        "con": 97899
-       },
-       "pfce": {
-        "cur": 85359,
-        "con": 55609
-       },
-       "nni": {
-        "cur": 126968,
-        "con": 86456
-       }
       }
      },
      "AE2": {
@@ -12841,24 +12229,6 @@
         "real": -8.0,
         "nominal": -3.8
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 144503,
-        "con": 98928
-       },
-       "gni": {
-        "cur": 143143,
-        "con": 97979
-       },
-       "pfce": {
-        "cur": 85329,
-        "con": 55885
-       },
-       "nni": {
-        "cur": 127768,
-        "con": 85929
-       }
       }
      },
      "PE": {
@@ -12989,24 +12359,6 @@
        "gdp": {
         "real": -7.2,
         "nominal": -2.9
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 145680,
-        "con": 99694
-       },
-       "gni": {
-        "cur": 144320,
-        "con": 98749
-       },
-       "pfce": {
-        "cur": 85348,
-        "con": 55783
-       },
-       "nni": {
-        "cur": 128829,
-        "con": 86659
        }
       }
      },
@@ -13387,24 +12739,6 @@
         "real": -6.5,
         "nominal": -1.3
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 146087,
-        "con": 100032
-       },
-       "gni": {
-        "cur": 144120,
-        "con": 98629
-       },
-       "pfce": {
-        "cur": 88775,
-        "con": 57279
-       },
-       "nni": {
-        "cur": 126855,
-        "con": 85110
-       }
       }
      },
      "RE2": {
@@ -13783,24 +13117,6 @@
        "gdp": {
         "real": -5.8,
         "nominal": -1.3
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 146301,
-        "con": 100981
-       },
-       "gni": {
-        "cur": 144334,
-        "con": 99578
-       },
-       "pfce": {
-        "cur": 89641,
-        "con": 57728
-       },
-       "nni": {
-        "cur": 127065,
-        "con": 86054
        }
       }
      },
@@ -14332,24 +13648,6 @@
         "real": 9.1,
         "nominal": 17.5
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 169625,
-        "con": 107801
-       },
-       "gni": {
-        "cur": 168340,
-        "con": 106975
-       },
-       "pfce": {
-        "cur": 97563,
-        "con": 59043
-       },
-       "nni": {
-        "cur": 150326,
-        "con": 93973
-       }
       }
      },
      "AE2": {
@@ -14481,24 +13779,6 @@
         "real": 8.9,
         "nominal": 19.4
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 172761,
-        "con": 107934
-       },
-       "gni": {
-        "cur": 170070,
-        "con": 106217
-       },
-       "pfce": {
-        "cur": 102476,
-        "con": 61054
-       },
-       "nni": {
-        "cur": 149848,
-        "con": 91723
-       }
       }
      },
      "PE": {
@@ -14629,24 +13909,6 @@
        "gdp": {
         "real": 8.6,
         "nominal": 19.5
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 172913,
-        "con": 107670
-       },
-       "gni": {
-        "cur": 170222,
-        "con": 105955
-       },
-       "pfce": {
-        "cur": 102992,
-        "con": 61215
-       },
-       "nni": {
-        "cur": 150007,
-        "con": 91481
        }
       }
      },
@@ -15026,24 +14288,6 @@
        "gdp": {
         "real": 9.0,
         "nominal": 18.3
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 171498,
-        "con": 109060
-       },
-       "gni": {
-        "cur": 168066,
-        "con": 106822
-       },
-       "pfce": {
-        "cur": 104811,
-        "con": 63595
-       },
-       "nni": {
-        "cur": 148524,
-        "con": 92583
        }
       }
      },
@@ -15575,24 +14819,6 @@
         "real": 6.9,
         "nominal": 15.3
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 197468,
-        "con": 113967
-       },
-       "gni": {
-        "cur": 193791,
-        "con": 111807
-       },
-       "pfce": {
-        "cur": 118580,
-        "con": 65237
-       },
-       "nni": {
-        "cur": 170620,
-        "con": 96522
-       }
       }
      },
      "AE2": {
@@ -15724,24 +14950,6 @@
         "real": 7.0,
         "nominal": 15.9
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 196716,
-        "con": 115491
-       },
-       "gni": {
-        "cur": 192777,
-        "con": 113145
-       },
-       "pfce": {
-        "cur": 119106,
-        "con": 67555
-       },
-       "nni": {
-        "cur": 172000,
-        "con": 98118
-       }
       }
      },
      "PE": {
@@ -15872,24 +15080,6 @@
        "gdp": {
         "real": 7.2,
         "nominal": 16.0
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 196984,
-        "con": 115746
-       },
-       "gni": {
-        "cur": 193044,
-        "con": 113395
-       },
-       "pfce": {
-        "cur": 119277,
-        "con": 67675
-       },
-       "nni": {
-        "cur": 172276,
-        "con": 98374
        }
       }
      },
@@ -16269,24 +15459,6 @@
        "gdp": {
         "real": 6.9,
         "nominal": 14.2
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 194879,
-        "con": 116216
-       },
-       "gni": {
-        "cur": 192201,
-        "con": 114478
-       },
-       "pfce": {
-        "cur": 118755,
-        "con": 67423
-       },
-       "nni": {
-        "cur": 169496,
-        "con": 99404
        }
       }
      },
@@ -16829,24 +16001,6 @@
         "real": 7.3,
         "nominal": 8.8
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 212601,
-        "con": 123145
-       },
-       "gni": {
-        "cur": 208072,
-        "con": 120469
-       },
-       "pfce": {
-        "cur": 129400,
-        "con": 70066
-       },
-       "nni": {
-        "cur": 185854,
-        "con": 104551
-       }
       }
      },
      "AE2": {
@@ -16978,24 +16132,6 @@
         "real": 7.5,
         "nominal": 9.0
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 210680,
-        "con": 123945
-       },
-       "gni": {
-        "cur": 207588,
-        "con": 122111
-       },
-       "pfce": {
-        "cur": 127126,
-        "con": 68857
-       },
-       "nni": {
-        "cur": 183237,
-        "con": 106135
-       }
       }
      },
      "PE": {
@@ -17126,24 +16262,6 @@
        "gdp": {
         "real": 8.1,
         "nominal": 9.5
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 211726,
-        "con": 124601
-       },
-       "gni": {
-        "cur": 208634,
-        "con": 122767
-       },
-       "pfce": {
-        "cur": 127761,
-        "con": 69529
-       },
-       "nni": {
-        "cur": 184206,
-        "con": 106744
        }
       }
      },
@@ -17686,24 +16804,6 @@
         "real": 6.3,
         "nominal": 9.7
        }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 230194,
-        "con": 131309
-       },
-       "gni": {
-        "cur": 226627,
-        "con": 129250
-       },
-       "pfce": {
-        "cur": 142255,
-        "con": 73899
-       },
-       "nni": {
-        "cur": 200162,
-        "con": 112358
-       }
       }
      },
      "AE2": {
@@ -17834,24 +16934,6 @@
        "gdp": {
         "real": 6.4,
         "nominal": 9.8
-       }
-      },
-      "per_person": {
-       "gdp": {
-        "cur": 235108,
-        "con": 133488
-       },
-       "gni": {
-        "cur": 231711,
-        "con": 131543
-       },
-       "pfce": {
-        "cur": 144561,
-        "con": 75723
-       },
-       "nni": {
-        "cur": 205579,
-        "con": 114705
        }
       }
      },
@@ -41148,11 +40230,13 @@
     {
      "document": "Press note on Provisional Estimates of GDP for 2025-26 and Q4 2025-26 (new series, base 2022-23)",
      "date": "2026-06-05",
+     "base": "2022-23",
      "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1780655857536_5ac01869-ca4a-422d-b7a7-57b81da60932_Press_Note_on_GDP_Estimates_for_Q4_2025-26_and_PE_FY_2025-26_F.pdf"
     },
     {
      "document": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)",
      "date": "2026-01-07",
+     "base": "2011-12",
      "url": "https://www.mospi.gov.in/uploads/latestReleases/latest_release_1767781372753_1380ce82-f5a5-440d-99e6-e6b35af0deb5_GDP_Press_Note_on_FAE_2025-26.pdf"
     }
    ],
@@ -41167,7 +40251,18 @@
     }
    ]
   },
-  "projections_until": "2021-22"
+  "projections_until": "2021-22",
+  "checked": {
+   "2011-12": {
+    "2020-21": "RBI, Handbook of Statistics on the Indian Economy 2025-26, Table 1: Macro-Economic Aggregates (at current prices)",
+    "2021-22": "RBI, Handbook of Statistics on the Indian Economy 2025-26, Table 1: Macro-Economic Aggregates (at current prices)",
+    "2022-23": "RBI, Handbook of Statistics on the Indian Economy 2025-26, Table 1: Macro-Economic Aggregates (at current prices)",
+    "2023-24": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)",
+    "2024-25": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)",
+    "2025-26": "Press note on First Advance Estimates of GDP for 2025-26 (base 2011-12, the last annual release on that base)"
+   },
+   "2022-23": {}
+  }
  },
  "long_run": [
   {

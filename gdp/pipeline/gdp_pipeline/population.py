@@ -7,20 +7,23 @@ series and year:
 
 - 2011-12 series, 2011-12 to 2021-22: the official projections (Census of India 2011, Population Projections for
   India and States 2011-2036, Report of the Technical Group on Population Projections, November 2019, Table 14:
-  population on 1 October). MoSPI's population for these years is the projection (checked against the RBI's
-  reprint below).
+  population on 1 October). MoSPI's population equals the projection in 2020-21 and 2021-22, the years the RBI's
+  reprint below covers; for the earlier years it is assumed to be the projection too (MoSPI's latest figures for
+  those years were compiled after the 2019 projections were published).
 - Later years, and the 2022-23 series: the population MoSPI's own per-person figures imply (its GDP divided by
-  its GDP per person, to about a thousand people), from its press notes (population_sources/mospi_press_notes.json,
-  each row quoted and found in the document), or, where no press note here covers the year, from the RBI's reprint
-  of MoSPI's tables. Per-person figures here then reproduce MoSPI's to the rupee whenever the totals are the same
-  estimate.
+  its GDP per person, to within a few thousand people), from its press notes
+  (population_sources/mospi_press_notes.json, each row quoted and found in the document), or, where no press note
+  here covers the year, from the RBI's reprint of MoSPI's tables. Per-person figures here then reproduce MoSPI's to
+  the rupee whenever the totals are the same estimate; the years where that is checked are listed in gdp.json
+  (population.checked).
 
-Per-person figures are worked out for every estimate of both series: the total (from MoSPI's API, refreshed weekly)
-divided by the population. Net national income is not in the API; it is GNI less depreciation, worked out as
-NDP + GNI − GDP (the same thing, and available in the years MoSPI's API gives no depreciation figure).
+Per-person figures are worked out for the latest estimate of each year (earlier estimates were divided by the
+population known at the time, which is not kept here): the total (from MoSPI's API, refreshed weekly) divided by the
+population. Net national income is not in the API; it is GNI less depreciation, worked out as NDP + GNI − GDP (the
+same thing, and available in the years MoSPI's API gives no depreciation figure).
 
 A year with national accounts but no population yet (a new year's first estimate) has no per-person figures; the
-validation report lists it, to be added from MoSPI's press note.
+validation report lists it, to be added from MoSPI's press note, and the site shows the latest year that has one.
 """
 
 import json
@@ -64,6 +67,9 @@ SAME_ESTIMATE_TOL = 2  # ₹ crore: a published total and the API's total are th
 PER_PERSON_TOL = 2  # ₹: a per-person figure here and MoSPI's printed one
 LAKH_TOL = 0.501  # lakh: population against the RBI's figure, printed to the nearest lakh
 PROJECTION_TOL = 1e-4  # MoSPI's population (as implied) against the projection, 2011-12 to 2021-22
+# MoSPI's own population from 2022-23 is 0.1-0.2% above the projection; a year's figure further away than this
+# means a quoted row is under the wrong year (a year's population growth is about 0.9%).
+PROJECTION_GAP_MAX = 0.005
 
 
 def fy_start(y: str) -> int:
@@ -109,6 +115,9 @@ def fetch(manifest: dict, force: bool) -> None:
         except Exception as exc:  # noqa: BLE001 - report and carry on; the checks will fail
             print(f"{key}: {url} -> {exc}")
             continue
+        if not content.startswith(b"%PDF" if ext == "pdf" else b"PK"):
+            print(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
+            continue
         save(manifest, key, RAW / f"{key}.{ext}", content, url)
         print(f"{key}: saved {url} ({len(content):,} bytes)")
 
@@ -140,6 +149,8 @@ def read_projections(manifest: dict) -> tuple[dict, list[str]]:
     for line in text.splitlines():
         m = re.match(r"^(20[1-3]\d) ([\d,]+) ([\d,]+) ([\d,]+) ", line)
         if m:
+            if fy(int(m[1])) in out:
+                problems.append(f"projections: year {m[1]} read twice on page {PROJECTIONS['pdf_page']}")
             out[fy(int(m[1]))] = {"persons": num(m[2]), "male": num(m[3]), "female": num(m[4])}
     return out, problems
 
@@ -305,28 +316,55 @@ def write_csv(tree: dict, pop: dict, path: Path) -> int:
     return len(rows)
 
 
+def comparisons(data: dict, src: dict):
+    """Every published per-person figure against ours: (series, year, stage, measure, prices, ours, published,
+    document, same_estimate). same_estimate: the published total equals the API's latest (so ours should equal it)."""
+    for t in src["notes"] + src["rbi"]:
+        series = t["base"]
+        for y in t["years"]:
+            stages = data.get(series, {}).get("annual", {}).get(y)
+            if not stages:
+                continue
+            stage, node = latest(stages)
+            for m in MEASURES:
+                pub_total = t["figures"].get(m, {}).get(y)
+                pub_pp = t["figures"].get(f"pc_{m}", {}).get(y)
+                if pub_total is None or pub_pp is None:
+                    continue
+                ours_total = totals(node, t["prices"]).get(m)
+                same = ours_total is not None and abs(ours_total - pub_total) <= SAME_ESTIMATE_TOL
+                ours = node.get("per_person", {}).get(m, {}).get(t["prices"])
+                yield series, y, stage, m, t["prices"], ours, pub_pp, t["document"], same
+
+
 def build(manifest: dict, tree: dict) -> dict:
-    """Adds per_person to every annual estimate that has a population; returns the population block."""
-    pop, _ = population(manifest)
+    """Adds per_person to the latest estimate of every year that has a population; returns the population block."""
+    pop, src = population(manifest)
     for series in SERIES:
         for year, stages in tree.get(series, {}).get("annual", {}).items():
             p = pop[series].get(year)
             if not p:
                 continue
-            for node in stages.values():
-                pp = per_person(node, p["million"])
-                if pp:
-                    node["per_person"] = pp
+            _, node = latest(stages)
+            pp = per_person(node, p["million"])
+            if pp:
+                node["per_person"] = pp
+    # Years whose per-person figures reproduce a published one (same estimate, within the tolerance).
+    checked: dict[str, dict[str, str]] = {s: {} for s in SERIES}
+    for series, y, _, _, _, ours, pub, doc, same in comparisons(tree, src):
+        if same and ours is not None and abs(ours - pub) <= PER_PERSON_TOL:
+            checked[series].setdefault(y, doc)
     return {
         "description": "Population at the middle of the financial year (1 October), in millions, as MoSPI uses it "
                        "for figures per person. Per-person figures are in rupees.",
         "by_series": pop,
         "sources": {
             "projections": {k: PROJECTIONS[k] for k in ("title", "table", "url")},
-            "press_notes": [{k: n[k] for k in ("document", "date", "url")} for n in press_notes()],
+            "press_notes": [{k: n[k] for k in ("document", "date", "base", "url")} for n in press_notes()],
             "rbi": [{k: t[k] for k in ("title", "url")} for t in RBI_TABLES.values()],
         },
         "projections_until": PROJECTIONS_UNTIL,
+        "checked": {s: dict(sorted(v.items())) for s, v in checked.items()},
     }
 
 
@@ -386,19 +424,28 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
                 failures.append(f"{t['base']} series, {y}: population {p['million']:.3f} million here, "
                                 f"RBI {lakh:,.0f} lakh")
 
-    # 4. Where MoSPI's own figure and the projection both exist, they agree up to 2021-22 (so the projections are
-    #    MoSPI's population for the earlier years); from 2022-23 the difference is listed.
+    # 4. MoSPI's own population against the projection: equal up to 2021-22 (checked for the years a source covers,
+    #    so the projections are taken as MoSPI's population for the earlier years too); from 2022-23 a little above,
+    #    and never far off (which would mean a quoted row under the wrong year).
+    covered = set()
     for t in src["rbi"] + src["notes"]:
         for y in t["years"]:
             vals = implied(t, y)
             if not vals or y not in proj:
                 continue
+            checked += 1
             diff = vals[0] / (proj[y]["persons"] / 1000) - 1
+            label = f"{t['base']} series, {y}: MoSPI's population (implied, {vals[0]:.3f} million, {t['document']})"
             if y <= PROJECTIONS_UNTIL:
-                checked += 1
+                covered.add(y)
                 if abs(diff) > PROJECTION_TOL:
-                    failures.append(f"{t['base']} series, {y}: MoSPI's population (implied, {vals[0]:.3f} million) "
-                                    f"differs from the projection ({proj[y]['persons'] / 1000:.3f}) by {diff:+.3%}")
+                    failures.append(f"{label} differs from the projection ({proj[y]['persons'] / 1000:.3f}) by {diff:+.3%}")
+            elif abs(diff) > PROJECTION_GAP_MAX:
+                failures.append(f"{label} is {diff:+.2%} from the projection ({proj[y]['persons'] / 1000:.3f}): "
+                                "check the years of the quoted statement")
+    yrs = sorted(covered)
+    notes.append(f"MoSPI's population equals the projection in {' and '.join([', '.join(yrs[:-1]), yrs[-1]] if len(yrs) > 1 else yrs) or 'no year'} (the years a "
+                 f"source here covers); earlier years up to {PROJECTIONS_UNTIL} use the projection without a check.")
     for series, years_ in pop.items():
         later = [(y, p) for y, p in years_.items() if p["source"] == "mospi" and y in proj]
         if later:
@@ -407,34 +454,26 @@ def check(ds: dict, report, manifest: dict | None = None) -> None:
                                      for y, p in later) + ").")
 
     # 5. Per-person figures here reproduce every published one where the published total is the same estimate as
-    #    the API's latest.
+    #    the API's latest. Totals revised since are not compared (the per-person figure then uses the revised total
+    #    and the published population).
     data = ds["data"]
-    reproduced = newer = 0
-    for t in src["notes"] + src["rbi"]:
-        series = t["base"]
-        for y in t["years"]:
-            stages = data.get(series, {}).get("annual", {}).get(y)
-            if not stages:
-                continue
-            stage, node = latest(stages)
-            for m in MEASURES:
-                pub_total = t["figures"].get(m, {}).get(y)
-                pub_pp = t["figures"].get(f"pc_{m}", {}).get(y)
-                if pub_total is None or pub_pp is None:
-                    continue
-                ours_total = totals(node, t["prices"]).get(m)
-                if ours_total is None or abs(ours_total - pub_total) > SAME_ESTIMATE_TOL:
-                    newer += 1
-                    continue
-                checked += 1
-                reproduced += 1
-                ours = node.get("per_person", {}).get(m, {}).get(t["prices"])
-                if ours is None or abs(ours - pub_pp) > PER_PERSON_TOL:
-                    failures.append(f"{series} series, {y} ({stage}), {MEASURES[m]} per person at "
-                                    f"{'current' if t['prices'] == 'cur' else 'constant'} prices: {ours} here, "
-                                    f"{pub_pp:,.0f} in {t['document']}")
-    notes.append(f"{reproduced} published per-person figures reproduced to within ₹{PER_PERSON_TOL}; {newer} others "
-                 "are for an earlier estimate than the API's latest and are not compared.")
+    counts: dict[str, list[int]] = {s: [0, 0] for s in SERIES}
+    for series, y, stage, m, prices, ours, pub, doc, same in comparisons(data, src):
+        if series not in counts:
+            continue
+        if not same:
+            counts[series][1] += 1
+            continue
+        checked += 1
+        counts[series][0] += 1
+        if ours is None or abs(ours - pub) > PER_PERSON_TOL:
+            failures.append(f"{series} series, {y} ({stage}), {MEASURES[m]} per person at "
+                            f"{'current' if prices == 'cur' else 'constant'} prices: {ours} here, {pub:,.0f} in {doc}")
+    for series, (done, skipped) in counts.items():
+        yrs = sorted(ds.get("population", {}).get("checked", {}).get(series, {}))
+        notes.append(f"{series} series: {done} published per-person figures reproduced to within ₹{PER_PERSON_TOL}"
+                     f"{' (' + ', '.join(yrs) + ')' if yrs else ''}; {skipped} are for an earlier estimate than the "
+                     "API's latest and are not compared.")
 
     # 6. Years with national accounts but no population (for review: add the year from MoSPI's press note).
     for series in SERIES:

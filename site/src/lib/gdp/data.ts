@@ -37,8 +37,9 @@ interface Dataset {
   duplicate_rows: string[];
   population: {
     by_series: Record<string, Record<string, PopYear>>;
-    sources: { projections: { title: string; table: string; url: string }; press_notes: { document: string; date: string; url: string }[]; rbi: { title: string; url: string }[] };
+    sources: { projections: { title: string; table: string; url: string }; press_notes: { document: string; date: string; base: string; url: string }[]; rbi: { title: string; url: string }[] };
     projections_until: string;
+    checked: Record<string, Record<string, string>>; // series -> year -> document whose per-person figures are reproduced
   };
 }
 export interface BudgetAssumption {
@@ -203,6 +204,12 @@ export const GENERATED = DS.generated_at;
 
 export const POPULATION = DS.population;
 export const popOf = (series: string, year: string): PopYear | undefined => POPULATION.by_series[series]?.[year];
+/** The latest year of the new series with per-person figures (a new year's first estimate has none until its
+ *  population is added). */
+export const PP_YEAR = [...NEW_YEARS].reverse().find((y) => {
+  const st = latestStage(NEW, y);
+  return st && annual(NEW)[y][st].per_person?.gdp?.cur !== undefined;
+});
 
 /** Real growth of a per-person figure: its constant-price level in the latest estimate of the year, on the latest
  *  estimate of the year before, in the same series. Worked out here (MoSPI publishes per-person growth only in its

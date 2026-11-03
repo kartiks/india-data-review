@@ -6,13 +6,14 @@ import LineChart from "../../../components/LineChart.astro";
 import { link } from "../../../lib/url";
 import { stateKey } from "../../../lib/jobs-prices/data";
 import {
-  STATES, STATE_YEARS, FIRST_YEAR, SECTORS, SECTOR_LABEL, sNode, latestYear, countWith, gsdpCur, realGrowth,
-  incomePerPerson, gsdpPerPerson, sectorShares, averageGrowth, isDerived, india, indiaAverageGrowth,
+  STATES, STATE_YEARS, FIRST_YEAR, SECTORS, SECTOR_LABEL, LATEST, NOT_COVERED, BOUNDARY, sNode, countWith, gsdpCur,
+  realGrowth, incomePerPerson, gsdpPerPerson, sectorShares, averageGrowth, isDerived, india, indiaAverageGrowth,
 } from "../../../lib/gdp/states";
 import { axisPct, gpct, money, pct } from "../../../lib/format";
 
-// One year for every measure, so states are compared like with like: the latest year most states have published.
-const Y = latestYear(gsdpCur);
+// One year for every measure, so states are compared like with like: the latest year in which the states that have
+// published made up at least 97% of the states' economy the year before.
+const Y = LATEST;
 const NEXT = STATE_YEARS[STATE_YEARS.indexOf(Y) + 1];
 const nextCount = NEXT ? countWith(NEXT, gsdpCur) : 0;
 const rupees = (v: number) => `₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 0 }).format(v)}`;
@@ -29,6 +30,7 @@ const rows = STATES.map((st) => {
     growth: n ? realGrowth(n) ?? null : null,
     growthWorkedOut: n?.growth?.gsdp?.published === false,
     avg: averageGrowth(st, FIRST_YEAR, Y) ?? null,
+    boundary: BOUNDARY[st] && BOUNDARY[st].until >= FIRST_YEAR && BOUNDARY[st].until < Y,
     income: n ? incomePerPerson(n) ?? null : null,
     gsdpPP: n ? gsdpPerPerson(n) ?? null : null,
     shares: sectorShares(n),
@@ -67,7 +69,8 @@ const incomeRows = richest.map((r, i) => ({ label: `${i + 1}. ${r.st}`, value: r
   .filter((_, i) => i < 6 || i >= richest.length - 6);
 const top = richest[0], bottom = richest[richest.length - 1];
 const gap = (Number(top.income) / Number(bottom.income)).toFixed(1);
-const sumShare = IN ? pct((total / IN.gdp) * 100) : "–";
+const sumShare = IN ? pct((total / IN.gdp) * 100) : undefined;
+const boundaryNotes = rows.filter((r) => r.boundary).map((r) => BOUNDARY[r.st].note);
 
 // Growth over time, six largest economies.
 const gyears = STATE_YEARS.filter((y) => y > FIRST_YEAR && y <= Y);
@@ -82,7 +85,7 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
   <h1>States</h1>
   <p class="lede">
     The size, growth and make-up of each state's economy, from MoSPI's state accounts: gross state domestic product
-    (GSDP), the state counterpart of GDP. Figures are for {Y}, the latest year most states have published, on the
+    (GSDP), the state counterpart of GDP. Figures are for {Y}, the latest year nearly all states have published, on the
     2011-12 base{nextCount ? `; ${nextCount} states have published ${NEXT} so far` : ""}.
   </p>
 
@@ -102,6 +105,7 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
         label={`States by GSDP, ${Y}`}
         rows={sizeRows}
       />
+      {missing.length > 0 && <p class="small muted">Not yet published for {Y}: {list(missing)}.</p>}
     </section>
     <section class="card">
       <h2>Income per person, {Y}</h2>
@@ -156,7 +160,7 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
                 <td>{r.st}</td>
                 <td>{f(r.gsdp, money)}{r.derived && <sup title="Worked out as GSVA + taxes − subsidies">†</sup>}</td>
                 <td>{f(r.growth, gpct)}{r.growthWorkedOut && <sup title="Worked out from the levels">†</sup>}</td>
-                <td>{f(r.avg, gpct)}</td>
+                <td>{f(r.avg, gpct)}{r.boundary && <sup title="Area changed during the period">‡</sup>}</td>
                 <td>{f(r.income, rupees)}</td>
                 <td>{f(r.gsdpPP, rupees)}</td>
                 {SECTORS.map((s) => <td>{f(r.shares?.[s], pct)}</td>)}
@@ -170,9 +174,10 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
       <li><strong>GSDP</strong>: gross state domestic product, current prices. <strong>Real growth</strong>: at constant 2011-12 prices, as MoSPI publishes it. <strong>Average growth</strong>: the yearly rate that takes constant-price GSDP from {FIRST_YEAR} to {Y}.</li>
       <li><strong>Income per person</strong>: net state domestic product (GSDP less depreciation) per person, current prices. <strong>GSDP per person</strong> is the gross figure.</li>
       <li><strong>Agriculture, industry and services</strong>: shares of the state's gross value added at current prices. Industry is mining, manufacturing, utilities and construction.</li>
-      {derived.length > 0 && <li>† MoSPI's GSDP table does not include {list(derived)}. Their GSDP is worked out as gross value added plus taxes on products minus subsidies, MoSPI's own definition (for every other state the two agree exactly), and their growth from those levels.</li>}
-      <li><strong>All India</strong>: national accounts on the same 2011-12 base ({IN?.stageLabel}). The states do not add up exactly to India's GDP: together they come to {sumShare} of it in {Y}. State figures are compiled by each state's statistics office and released at different times; national figures are compiled separately by MoSPI.</li>
-      <li>A dash, or grey on the map, means MoSPI publishes no figure for {Y}{missing.length ? ` (${list(missing)})` : ""}. Lakshadweep and Dadra & Nagar Haveli and Daman & Diu are not in MoSPI's state accounts.</li>
+      {derived.length > 0 && <li>† MoSPI's GSDP table does not include {list(derived)}. Their GSDP is worked out as gross value added plus taxes on products minus subsidies, MoSPI's own definition (for every other state the two agree, to within rounding), and their growth from those levels.</li>}
+      {boundaryNotes.map((n) => <li>‡ {n}</li>)}
+      {IN && <li><strong>All India</strong>: national accounts on the same 2011-12 base ({IN.stageLabel}). The states do not add up exactly to India's GDP: together they come to {sumShare} of it in {Y}. State figures are compiled by each state's statistics office and released at different times; national figures are compiled separately by MoSPI.</li>}
+      <li>A dash, or grey on the map, means MoSPI publishes no figure for {Y}{missing.length ? ` (${list(missing)})` : ""}. {NOT_COVERED.length > 0 && `Not in MoSPI's state accounts: ${NOT_COVERED.join("; ")}.`}</li>
       <li>Every figure is checked before the site is built: GSDP adds up from industries, taxes and subsidies; growth follows from the levels; the per-person figures agree. See <a href={link("/gdp/sources/")}>Sources and checks</a>.</li>
     </ul>
   </section>

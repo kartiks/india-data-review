@@ -2,7 +2,7 @@
 
 National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (54667 checks, 0 failures)
+**Result: PASSED** (54692 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -257,8 +257,8 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 ## ✅ State accounts: every published row is understood
 28422 checks, 0 failures.
 
-- Allowed: Karnataka: NSDP per person (second table, ind32) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's second table of NSDP per person repeats Karnataka's GSDP per person at current prices, in both columns. It is left out; Karnataka's NSDP per person comes from the first table (ind25).
-- Allowed: Karnataka: net state value added (ind30) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's net state value added table repeats Karnataka's gross value added at current prices, in both the current- and constant-price columns, for every year and industry. Net value added cannot equal gross value added (depreciation is positive), so Karnataka's net value added is left out. Its NSDP and NSDP per person come from the NSDP tables (ind24, ind25), which agree with its GSDP and the RBI's handbook.
+- Allowed: Karnataka: NSDP per person (second table, ind32) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's second table of NSDP per person repeats Karnataka's GSDP per person at current prices, in both columns, in the years listed. It is left out; Karnataka's NSDP per person comes from the first table (ind25).
+- Allowed: Karnataka: net state value added (ind30) is not below the gross figure, 2011-12 to 2025-26 (15 years), 2011-12 base; left out. Reason: MoSPI's net state value added table repeats Karnataka's gross value added at current prices, in both the current- and constant-price columns, in the years listed. Net value added cannot equal gross value added (depreciation is positive), so Karnataka's net value added is left out for those years. Its NSDP and NSDP per person come from the NSDP tables (ind24, ind25), which agree with its GSDP and the RBI's handbook.
 
 ## ✅ State accounts: GSDP = GSVA + taxes - subsidies, NSDP = NSVA + taxes - subsidies
 1710 checks, 0 failures.
@@ -275,11 +275,11 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 
 
 ## ✅ State accounts: per-person figures agree with each other and with the levels
-1710 checks, 0 failures.
+1749 checks, 0 failures.
 
 
-## ✅ State accounts: the states add up to close to India's GDP (95% to 106%)
-14 checks, 0 failures.
+## ✅ State accounts: the states' GSDP against India's GDP (for review, not failures)
+0 checks, 0 failures.
 
 - 2011-12: 33 states and UTs add up to 98.9% of India's GDP (ADD estimate)
 - 2012-13: 33 states and UTs add up to 99.0% of India's GDP (ADD estimate)

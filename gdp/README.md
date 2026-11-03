@@ -70,22 +70,36 @@ Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labe
 up from value added, taxes and subsidies on products; industries add up to total value added and sub-industries to
 their industry; every published growth rate follows from the levels (allowing for the levels' rounding, which
 matters for small states); the two tables of income per person agree, and GSDP and NSDP per person imply the same
-population; and the states together come to 95-106% of India's GDP (2011-12 base, latest estimate) in each year
-at least 32 states report. What MoSPI publishes, and what is done with it:
+population; every state is one of the 34 in `KNOWN_STATES` and appears in the data; no row is published twice with
+different values; and a state with value added always gets a GSDP. These checks fail the run.
+
+For review only (listed in the report, never a failure): the states' GSDP against India's GDP on the same base, in
+each year whose national figure is at least provisional and whose reporting states made up 97% of the states'
+economy the year before (98-103% so far). It is not a hard check because the national 2011-12 series stopped in
+February 2026 while the states keep revising theirs, so the two will drift apart. The report also lists any
+known exception that is no longer needed.
+
+What MoSPI publishes, and what is done with it:
 
 - Value added, taxes and subsidies are labelled ₹ lakh (correctly, unlike the national table) and divided by 100.
 - There is no All-India row; the site compares the states with the national accounts on the same base.
 - MoSPI's GSDP table leaves out Assam, Haryana, Ladakh and Nagaland, which its value-added table covers. Their
   GSDP is worked out as GSVA + taxes - subsidies (MoSPI's definition; for every other state the two agree) and
   marked `derived`; their growth is worked out from those levels and marked `published: false`. These derived
-  figures match the RBI's Handbook of Statistics on Indian States, which compiles the same state accounts.
+  figures match the RBI's Handbook of Statistics on Indian States, which compiles the same state accounts. As there
+  is no published total to check them against, the population they imply with MoSPI's GSDP per person must move by
+  less than 3% a year.
+- Jammu & Kashmir's figures up to 2018-19 include Ladakh (a separate union territory from October 2019; the implied
+  population falls 1.4% in 2019-20). The site marks J&K's growth since 2011-12 (`BOUNDARY` in
+  `site/src/lib/gdp/states.ts`).
 - A net figure that is not below the gross one is a copying error and is left out. MoSPI's net value added table
   repeats Karnataka's gross value added, and its second table of income per person repeats Karnataka's GSDP per
   person; both are listed, with reasons, in `KNOWN_EXCEPTIONS` in `states.py`. A new case fails the checks until it
   is looked at.
 - Chhattisgarh publishes no subsidies on products; its GSDP equals value added plus taxes.
 
-The site shows the 2011-12 base (`STATE_BASE` in `site/src/lib/gdp/states.ts`). When MoSPI publishes state accounts
+The site shows the 2011-12 base (`STATE_BASE` in `site/src/lib/gdp/states.ts`), for the latest year whose
+reporting states made up 97% of the states' economy the year before, and names any state missing from it. When MoSPI publishes state accounts
 on the 2022-23 base, the weekly refresh downloads them and the validation report says so; switch the site over
 then, after checking the new figures.
 

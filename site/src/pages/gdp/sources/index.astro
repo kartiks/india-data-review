@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import Base from "../../../layouts/Base.astro";
 import { DS, GENERATED, SURVEY, RBI, BUDGET } from "../../../lib/gdp/data";
+import { DERIVED_STATES } from "../../../lib/gdp/states";
 
 const report = fs.readFileSync(path.resolve(process.cwd(), "..", "gdp", "data", "validation_report.md"), "utf8");
 const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
@@ -55,7 +56,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>Estimate stages.</strong> A year's GDP is first estimated before the year ends and revised up to five times. Charts use the latest estimate unless they say otherwise; the <a href={link("/gdp/revisions/")}>Revisions</a> page shows every stage.</li>
       <li><strong>Growth rates</strong> are shown as MoSPI published them. For the back series (before 2012-13), which MoSPI publishes as levels only, growth is worked out from constant-price GDP and marked "from levels".</li>
       <li><strong>Shares</strong> (of GDP, of GVA) divide two figures from the same year and the same estimate.</li>
-      <li><strong>State accounts</strong> are on the 2011-12 base, the only one MoSPI publishes them on, with the latest estimate for each year. Where MoSPI's GSDP table leaves a state out but its value-added table covers it (Assam, Haryana, Ladakh, Nagaland), GSDP is worked out as value added plus taxes minus subsidies on products, and marked.</li>
+      <li><strong>State accounts</strong> are on the 2011-12 base, the only one MoSPI publishes them on, with the latest estimate for each year. Where MoSPI's GSDP table leaves a state out but its value-added table covers it ({DERIVED_STATES.join(", ")}), GSDP is worked out as value added plus taxes minus subsidies on products, and marked.</li>
     </ul>
   </section>
 

@@ -4,6 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { OLD, annual, industrySum, latestStage, STAGE_LABEL } from "./data";
+import { stateKey } from "../jobs-prices/data";
 
 export interface SPair { cur?: number; con?: number; derived?: boolean }
 export interface SGrowth { real?: number; nominal?: number; published?: boolean }
@@ -39,10 +40,18 @@ export const SECTOR_LABEL = SDS.sector_labels;
 
 export const sNode = (state: string, year: string): SNode | undefined => DATA[state]?.[year];
 
-/** The latest year in which at least `min` states have the figure. */
-export function latestYear(get: (n: SNode) => number | undefined, min = 28): string {
-  return [...STATE_YEARS].reverse().find((y) => STATES.filter((s) => { const n = sNode(s, y); return n && get(n) != null; }).length >= min)!;
+const prevYear = (y: string) => { const s = Number(y.slice(0, 4)) - 1; return `${s}-${String(s + 1).slice(-2)}`; };
+
+/** Share of all states' GSDP the year before that the states reporting `year` made up (as in the pipeline's checks). */
+export function coverage(year: string): number {
+  const before = STATES.map((s) => [s, sNode(s, prevYear(year))?.gsdp?.cur] as const).filter(([, v]) => v != null);
+  const total = before.reduce((a, [, v]) => a + v!, 0);
+  const now = new Set(STATES.filter((s) => sNode(s, year)?.gsdp?.cur != null));
+  return total ? before.filter(([s]) => now.has(s)).reduce((a, [, v]) => a + v!, 0) / total : 0;
 }
+/** The latest year whose reporting states made up at least 97% of the states' economy the year before, so that
+ *  rankings and comparisons do not silently leave out a large state. */
+export const LATEST = [...STATE_YEARS].reverse().find((y) => y !== STATE_YEARS[0] && coverage(y) >= 0.97)!;
 export const countWith = (year: string, get: (n: SNode) => number | undefined) =>
   STATES.filter((s) => { const n = sNode(s, year); return n && get(n) != null; }).length;
 
@@ -72,6 +81,21 @@ export function averageGrowth(state: string, from: string, to: string): number |
 }
 
 export const isDerived = (state: string, year: string) => !!sNode(state, year)?.gsdp?.derived;
+/** States whose GSDP is worked out (not published) in any year. */
+export const DERIVED_STATES = STATES.filter((s) => STATE_YEARS.some((y) => isDerived(s, y)));
+
+/** Map regions MoSPI's state accounts do not cover. */
+const mapFile = path.resolve(process.cwd(), "src", "data", "india-states.json");
+const mapNames: string[] = JSON.parse(fs.readFileSync(mapFile, "utf8")).states.map((s: { name: string }) => s.name);
+export const NOT_COVERED = mapNames.filter((m) => !STATES.some((s) => stateKey(s) === stateKey(m)));
+
+/** Boundary changes inside a state's series: its figures up to `until` cover a larger area. */
+export const BOUNDARY: Record<string, { until: string; note: string }> = {
+  "Jammu & Kashmir": {
+    until: "2018-19",
+    note: "Jammu & Kashmir's figures up to 2018-19 include Ladakh, which became a separate union territory in October 2019 (the population MoSPI's figures imply falls by 1.4% in 2019-20). Growth across that change understates the present territory's growth slightly.",
+  },
+};
 
 // ---- All India, from the national accounts on the same 2011-12 base -------------------------------------
 

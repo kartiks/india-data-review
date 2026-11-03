@@ -57,3 +57,43 @@ def test_net_figure_equal_to_gross_is_left_out():
     assert len(notes) == 2 and all(n.startswith("Karnataka: ") for n in notes)
     assert all(states.allowed("source", n) for n in notes)  # both are known, explained source errors
     assert [r["indicator_code"] for r in rows if r["left_out"]] == [32, 30, 30]
+
+
+def raw(state, year, cur, con=None, unit="₹ Crore"):
+    return {"state": state, "year": year, "indicator": "Gross State Domestic Product", "current_price": cur,
+            "constant_price": con if con is not None else cur, "unit": unit}
+
+
+def load_from(tmp_path, monkeypatch, rows):
+    import json
+    monkeypatch.setattr(states, "ROOT", tmp_path)
+    monkeypatch.setattr(states, "STATE_SERIES", [("2011-12", "Current", "Annually")])
+    monkeypatch.setattr(states, "STATE_INDICATORS", [23])
+    monkeypatch.setattr(states, "KNOWN_STATES", ["Goa", "Kerala"])
+    f = tmp_path / "ind23.json"
+    f.write_text(json.dumps({"rows": rows}))
+    return states.load({"nas/2011-12/Current/Annually/ind23": {"file": "ind23.json", "url": "u", "sha256": "s"}})
+
+
+def test_unknown_or_missing_state_is_a_problem(tmp_path, monkeypatch):
+    rows, problems = load_from(tmp_path, monkeypatch, [raw("Goa", "2020-21", "100"), raw("Goa & Daman", "2020-21", "5")])
+    assert [r["state"] for r in rows] == ["Goa"]
+    assert any("unknown state" in p and "Goa & Daman" in p for p in problems)
+    assert any("no rows at all for Kerala" in p for p in problems)
+
+
+def test_conflicting_duplicate_is_a_problem_and_identical_one_is_dropped(tmp_path, monkeypatch):
+    rows, problems = load_from(tmp_path, monkeypatch, [
+        raw("Goa", "2020-21", "100"), raw("Goa", "2020-21", "100"),  # identical: kept once
+        raw("Kerala", "2020-21", "200"), raw("Kerala", "2020-21", "210"),  # different: a problem
+    ])
+    assert len([r for r in rows if r["state"] == "Goa"]) == 1
+    assert any("published twice with different values" in p and "Kerala" in p for p in problems)
+
+
+def test_coverage_counts_last_years_weight_of_the_states_reporting():
+    data = {
+        "Big": {"2023-24": {"gsdp": {"cur": 90}}, "2024-25": {"gsdp": {"cur": 99}}},
+        "Small": {"2023-24": {"gsdp": {"cur": 10}}},
+    }
+    assert states.coverage(data, "2024-25") == 0.9

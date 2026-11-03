@@ -1,31 +1,47 @@
 ---
 import { link } from "../lib/url";
 // Ranked horizontal bars in plain HTML (reads well on phones; every value is labelled, so no tooltip needed).
+// When any value is negative the list diverges like PromiseGap: a zero line, positive bars to its right in
+// --div-pos and negative bars to its left in --div-neg (the tone is not used, so an orange or red tone can't be
+// confused with the negative colour). Lists with no negative value draw from the left edge in the tone colour.
 export interface Row {
   label: string;
   value: number;
-  display: string; // main value text, e.g. "24 paise"
+  display: string; // main value text, e.g. "24 paise"; carries the sign, since the bars are hidden from screen readers
   sub?: string; // secondary text, e.g. "₹12.3 lakh crore"
   href?: string;
   note?: string;
 }
 interface Props {
   rows: Row[];
-  tone?: number; // categorical color slot 1..8
-  max?: number;
+  tone?: number; // categorical color slot 1..8 (lists with no negative value)
+  max?: number; // value at the full track width (a diverging list: the span from most negative to most positive)
   label?: string; // accessible name for the list
 }
-const { rows, tone = 1, max = Math.max(...rows.map((r) => Math.abs(r.value))), label } = Astro.props;
+const { rows, tone = 1, label } = Astro.props;
+const posMax = Math.max(0, ...rows.map((r) => r.value));
+const negMax = Math.max(0, ...rows.map((r) => -r.value));
+const diverging = negMax > 0;
+const span = (Astro.props.max ?? posMax + negMax) || 1;
+const zero = diverging ? (negMax / span) * 100 : 0; // position of the zero line, % from the left
+const width = (v: number) => Math.max(0.5, (Math.abs(v) / span) * 100).toFixed(2);
+const barStyle = (v: number) =>
+  !diverging
+    ? `width:${width(v)}%;background:var(--s${tone})`
+    : v < 0
+      ? `right:${(100 - zero).toFixed(2)}%;width:${width(v)}%`
+      : `left:${zero.toFixed(2)}%;width:${width(v)}%`;
 ---
-<ol class="barlist" aria-label={label}>
+<ol class:list={["barlist", { diverging }]} aria-label={label}>
   {rows.map((r) => (
     <li>
       <div class="line">
         {r.href ? <a href={link(r.href)} class="name">{r.label}</a> : <span class="name">{r.label}</span>}
-        <span class="val"><strong>{r.display}</strong>{r.sub && <span class="sub">{r.sub}</span>}</span>
+        <span class="val"><strong>{r.display}</strong>{r.sub && <span class="sub">{r.sub.split(" · ").map((part, i) => <>{i > 0 && " · "}<span class="part">{part}</span></>)}</span>}</span>
       </div>
       <div class="track" aria-hidden="true">
-        <div class="bar" style={`width:${Math.max(0.5, (Math.abs(r.value) / (max || 1)) * 100).toFixed(2)}%;background:var(--s${tone})`} />
+        {diverging && <span class="zero" style={`left:${zero.toFixed(2)}%`} />}
+        <div class:list={["bar", { neg: diverging && r.value < 0 }]} style={barStyle(r.value)} />
       </div>
       {r.note && <p class="row-note small muted">{r.note}</p>}
     </li>
@@ -36,11 +52,20 @@ const { rows, tone = 1, max = Math.max(...rows.map((r) => Math.abs(r.value))), l
   .barlist { list-style: none; margin: 0; padding: 0; }
   .barlist li { padding: 7px 0; }
   .line { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 0.92rem; }
-  .name { color: var(--ink); }
+  .name { color: var(--ink); min-width: 0; }
   a.name { color: var(--link); }
-  .val { text-align: right; white-space: nowrap; }
+  /* On phones the value column takes at most half the row and its sub-line wraps, so a long sub-line
+     can neither push the row past the card nor squeeze the name to a word per line. */
+  .val { text-align: right; flex: 0 1 auto; max-width: 50%; }
+  .val strong { white-space: nowrap; }
   .val .sub { display: block; font-size: 0.78rem; color: var(--ink-2); }
+  .val .part { white-space: nowrap; } /* a sub-line wraps only between its " · " parts */
+  @media (min-width: 640px) { .val { max-width: none; white-space: nowrap; } }
   .track { margin-top: 4px; height: 10px; }
   .bar { height: 10px; border-radius: 0 4px 4px 0; }
+  .diverging .track { position: relative; }
+  .diverging .bar { position: absolute; top: 0; background: var(--div-pos); }
+  .diverging .bar.neg { background: var(--div-neg); border-radius: 4px 0 0 4px; }
+  .zero { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--axis); }
   .row-note { margin: 2px 0 0; }
 </style>

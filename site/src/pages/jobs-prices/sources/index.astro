@@ -1,19 +1,14 @@
 ---
 import { link } from "../../../lib/url";
-import fs from "node:fs";
-import path from "node:path";
+import { allowedCases, passed, validation } from "../../../lib/validation";
 import Base from "../../../layouts/Base.astro";
 import { GENERATED, SOURCES, CPI_FIRST, CPI_LAST, monthLabel, PLFS_YEARS, HCES_YEARS, CPI24_LATEST, CPI24_RELEASES, RBI_EDITION } from "../../../lib/jobs-prices/data";
 
-const report = fs.readFileSync(path.resolve(process.cwd(), "..", "jobs-prices", "data", "validation_report.md"), "utf8");
-const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
-const sections = [...report.matchAll(/^## (✅|❌) (.+)$/gm)].map((x) => ({ ok: x[1] === "✅", title: x[2] }));
-const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
+const v = validation("jobs-prices");
+const sections = v.sections.map((s) => ({ ok: s.failures === 0, title: s.title }));
+const checks = v.checks.toLocaleString("en-IN");
 /** How many cases the report lists under the reason that starts with `start`. */
-const count = (start: string) => {
-  const hit = [...report.matchAll(/Allowed \((\d+)\): (.{0,80})/g)].filter((x) => x[2].startsWith(start));
-  return hit.reduce((n, x) => n + Number(x[1]), 0).toLocaleString("en-IN");
-};
+const count = (start: string) => allowedCases(v, start).toLocaleString("en-IN");
 const files = [
   ["jobs_prices.json", "What the site shows, in compact form"],
   ["plfs_rates.csv", "Participation, worker ratio and unemployment: every published combination, with the reason where one is left out"],
@@ -28,6 +23,7 @@ const files = [
   ["hces_overall.csv", "Rural + urban spending per person and food share, with the estimated persons used as weights"],
   ["sources.csv", "Every downloaded file: address, fingerprint (SHA-256) and date"],
   ["validation_report.md", "Every check and every documented exception"],
+  ["validation_summary.json", "The result of each group of checks, for programs: checks, failures and allowed exceptions"],
 ];
 const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 const nFiles = Object.keys(SOURCES).length;
@@ -57,7 +53,7 @@ const nFiles = Object.keys(SOURCES).length;
   <section class="card">
     <h2>Checked automatically</h2>
     <p>
-      <strong>{checks} checks{m && m[1] === "PASSED" ? ", all passing" : ""}.</strong> The site cannot be built unless
+      <strong>{checks} checks{passed(v) ? ", all passing" : ""}.</strong> The site cannot be built unless
       every check passes. Known problems in the official data are allowed only with a written reason, listed in the report.
     </p>
     <ul>

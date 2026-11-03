@@ -12,19 +12,15 @@ before being replaced, so revisions build up over time.
 Run: uv run python -m jobs_prices_pipeline.fetch [--force | --force-api]
 """
 
-import hashlib
 import json
-import shutil
-import ssl
+import re
 import sys
 import time
-import urllib.error
 import urllib.parse
-import urllib.request
-from datetime import datetime, timezone
 from pathlib import Path
 
-import re
+from pipeline_common import download
+from pipeline_common.download import fetch_pages, get, is_type, now
 
 from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, queries
 
@@ -32,31 +28,24 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 SNAPSHOTS = ROOT / "sources" / "snapshots"
 MANIFEST = ROOT / "sources" / "manifest.json"
-HEADERS = {"User-Agent": "india-data-review-data-pipeline/0.1 (python-urllib)"}
 SOURCE = "Ministry of Statistics and Programme Implementation (MoSPI), official data API"
 
-# api.mospi.gov.in needs TLS legacy renegotiation, which Python turns off by default.
-# Certificates are still verified.
-_CTX = ssl.create_default_context()
-_CTX.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
+
+def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None) -> bool:
+    """Write the file and its manifest entry, keeping the previous version as a snapshot if it changed (see
+    pipeline_common.download.save), then the manifest: a run cut short keeps what it downloaded. Returns True if
+    new/changed."""
+    changed = download.save(manifest, key, dest, content, url, extra, root=ROOT, raw=RAW, snapshots=SNAPSHOTS)
+    write_manifest(manifest)
+    return changed
 
 
-def now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+def load_manifest() -> dict:
+    return download.load_manifest(MANIFEST)
 
 
-def get(url: str, tries: int = 5) -> bytes:
-    for attempt in range(tries):
-        try:
-            req = urllib.request.Request(url, headers=HEADERS)
-            with urllib.request.urlopen(req, timeout=120, context=_CTX) as resp:
-                return resp.read()
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
-            if attempt == tries - 1:
-                raise
-            print(f"  retry {attempt + 1} for {url}: {exc}")
-            time.sleep(5 * (attempt + 1))
-    raise AssertionError
+def write_manifest(manifest: dict) -> None:
+    download.write_manifest(MANIFEST, manifest)
 
 
 def url_for(path: str, params: dict, **extra) -> str:
@@ -65,24 +54,7 @@ def url_for(path: str, params: dict, **extra) -> str:
 
 def fetch_query(path: str, params: dict) -> dict:
     """Every row for one query, across all pages."""
-    rows: list[dict] = []
-    page, total = 1, None
-    while True:
-        body = json.loads(get(url_for(path, params, limit=PAGE_LIMIT, page=page)))
-        data = body.get("data") or []
-        meta = body.get("meta_data") or {}
-        if total is None:
-            total = meta.get("totalRecords") or 0
-        rows += data
-        if not data or page >= (meta.get("totalPages") or 1):
-            break
-        if page % 20 == 0:
-            print(f"  {path} {params}: page {page} of {meta.get('totalPages')}", flush=True)
-        page += 1
-        time.sleep(0.3)
-    if len(rows) != total:
-        raise RuntimeError(f"{path} {params}: got {len(rows)} rows, API says {total}")
-    rows.sort(key=lambda r: json.dumps(r, sort_keys=True, ensure_ascii=False))
+    rows = fetch_pages(lambda page: url_for(path, params, limit=PAGE_LIMIT, page=page), f"{path} {params}")
     return {"source": SOURCE, "query": {"endpoint": path, **params}, "url": url_for(path, params),
             "total_records": len(rows), "rows": rows}
 
@@ -94,33 +66,6 @@ def encode(result: dict) -> bytes:
     text = json.dumps(head, ensure_ascii=False, indent=1)[:-2] + ',\n "rows": [\n' + ",\n".join(lines) + "\n ]\n}\n"
     assert json.loads(text) == result
     return text.encode()
-
-
-def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None) -> bool:
-    """Write the file and its manifest entry. Keeps the previous version if it changed. Returns True if new/changed."""
-    sha = hashlib.sha256(content).hexdigest()
-    old = manifest.get(key)
-    if old and old.get("sha256") == sha and dest.exists():
-        old["checked_at"] = now()
-        return False
-    history = old.get("history", []) if old else []
-    if old and old.get("sha256") and dest.exists():
-        snap = SNAPSHOTS / old["fetched_at"][:10] / dest.relative_to(RAW)
-        snap.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(dest, snap)
-        history.append({"sha256": old["sha256"], "fetched_at": old["fetched_at"], "file": str(snap.relative_to(ROOT))})
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(content)
-    manifest[key] = {
-        "url": url,
-        "file": str(dest.relative_to(ROOT)),
-        "sha256": sha,
-        "bytes": len(content),
-        "fetched_at": now(),
-        **(extra or {}),
-        **({"history": history} if history else {}),
-    }
-    return True
 
 
 def release_content(html: str) -> str:
@@ -152,7 +97,7 @@ def fetch_cpi2024(manifest: dict, force: bool) -> None:
             raise RuntimeError(f"{key}: more than one PDF on {page}: {links}")
         if links:
             pdf = get(links[0])
-            if not pdf.startswith(b"%PDF"):
+            if not is_type(pdf, "pdf"):
                 raise RuntimeError(f"{key}: {links[0]} is not a PDF")
             save(manifest, f"{key}/pdf", RAW / f"{key}.pdf", pdf, links[0], {"release_page": page})
             print(f"{key}: PDF {len(pdf):,} bytes", flush=True)
@@ -168,7 +113,7 @@ def fetch_hces_tables(manifest: dict, force: bool) -> None:
         if key in manifest and not force:
             continue
         content = get(url)
-        if not content.startswith(b"PK"):
+        if not is_type(content, "xlsx"):
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url)
         print(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
@@ -191,21 +136,12 @@ def fetch_rbi(manifest: dict, force: bool) -> None:
         if words not in title.upper():
             raise RuntimeError(f"{key}: expected a title with {words!r}, found {title!r}")
         content = get(url)
-        if not content.startswith(b"PK"):
+        if not is_type(content, "xlsx"):
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url,
                        {"edition": edition, "title": title, "page": rbi.HANDBOOK_PAGE})
         print(f"{key}: {title} ({edition}){' (changed)' if changed else ''}", flush=True)
         time.sleep(0.5)
-
-
-def load_manifest() -> dict:
-    return json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
-
-
-def write_manifest(manifest: dict) -> None:
-    MANIFEST.parent.mkdir(parents=True, exist_ok=True)
-    MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=1, ensure_ascii=False) + "\n")
 
 
 def main(force: bool = False, force_api: bool = False) -> None:
@@ -232,7 +168,6 @@ def main(force: bool = False, force_api: bool = False) -> None:
             changed = save(manifest, key, RAW / f"{key}.json", encode(result), result["url"],
                            {"records": result["total_records"]})
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}", flush=True)
-            write_manifest(manifest)
             time.sleep(0.3)
         fetch_cpi2024(manifest, force)
         fetch_hces_tables(manifest, force)

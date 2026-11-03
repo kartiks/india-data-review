@@ -26,7 +26,7 @@ Interim budgets (election years) are skipped: the full budget later that year
 replaces their estimates.
 """
 
-BASE = "https://www.indiabudget.gov.in"
+from pipeline_common import budget_glance
 
 FIRST_BUDGET = 2000  # 2000-01
 LATEST_BUDGET = 2026  # 2026-27
@@ -54,18 +54,9 @@ def fy(start: int) -> str:
     return f"{start}-{str(start + 1)[-2:]}"
 
 
-def _site(start: int) -> str:
-    y = fy(start)
-    if start <= 2010:
-        return f"{BASE}/budget_archive/ub{y}"
-    if start <= 2018:
-        return f"{BASE}/budget{start}-{start + 1}/ub{y}"
-    return (BASE if start == LATEST_BUDGET else f"{BASE}/budget{y}") + "/doc"
-
-
 def candidate_urls(start: int, doc: str) -> list[str]:
     """Every URL where this table might be, in any format."""
-    site = _site(start)
+    site = budget_glance.site(start, LATEST_BUDGET)
     if start <= 2010:
         exts = ("pdf", "xls", "htm")
     elif start <= 2018:
@@ -74,17 +65,10 @@ def candidate_urls(start: int, doc: str) -> list[str]:
         exts = ("pdf", "xlsx", "xls")
 
     if doc == "summary":
-        if start <= 2018:
-            names = ["bag/bag11" if start == 2016 else "bag/bag1"]  # 2016-17 names this PDF bag11.pdf
-        else:
-            names = ["Budget_at_Glance/bag1"]
+        names = [budget_glance.table(start, 1)]
     elif doc == "receipts":
-        if start <= 2016:
-            names = ["bag/bag2"]
-        elif start <= 2018:
-            names = ["bag/bag5"]  # 2017-18 and 2018-19: bag2 is "Deficit Statistics"
-        else:
-            names = ["Budget_at_Glance/bag5"]
+        # Table 2 to 2016-17; from 2017-18 table 2 is "Deficit Statistics" and the receipts are table 5.
+        names = [budget_glance.table(start, 2 if start <= 2016 else 5)]
     elif doc == "ministries":
         names = ["eb/stat02"] if start <= 2016 else ["eb/stat3a", "eb/stat3"]
     elif doc == "receipt_budget":
@@ -99,7 +83,7 @@ def candidate_urls(start: int, doc: str) -> list[str]:
         raise ValueError(doc)
     urls = [f"{site}/{n}.{e}" for n in names for e in exts]
     if doc == "summary" and start == 2016:
-        urls += [f"{site}/bag/bag1.xls"]
+        urls += [f"{site}/bag/bag1.xls"]  # its PDF is bag11, its Excel copy bag1
     return urls
 
 

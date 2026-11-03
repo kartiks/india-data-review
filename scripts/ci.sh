@@ -29,6 +29,9 @@ step() { printf '\n== %s\n' "$*"; }
 echo "Local CI for $REF ($(git -C "$REPO" log -1 --format='%h %s' "$SHA"))"
 git -C "$REPO" worktree add --quiet --detach "$WORK" "$SHA"
 
+step "shared pipeline code: tests"
+(cd "$WORK/shared/pipeline" && uv run --locked pytest -q)
+
 for area in "${AREAS[@]}"; do
   pkg="${area//-/_}_pipeline"
   step "$area: build data and run every check"

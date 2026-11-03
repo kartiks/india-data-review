@@ -72,6 +72,7 @@ interim one, which the pipeline skips):
 | `schemes.json` | Spending per scheme (Revenue/Capital/Total), with demand subtotals and grand totals. |
 | `*.csv` / `observations.csv` | Every number read from every document (most figures appear in two budgets), with the label as printed and the source URL. |
 | `validation_report.md` | Result of every check, and the reason for each allowed exception. |
+| `validation_summary.json` | The same results for programs (the site reads it): PASSED or FAILED, and checks and failures per group of checks. |
 | `format_comparison.json` | Where PDF, Excel and HTML copies of the headline table agree or differ. |
 
 Values are in ₹ crore. A missing figure is left out, never stored as 0.
@@ -156,7 +157,7 @@ pipeline/budget_pipeline/
   schemes.py      Statements 4A / 4B (own position-based PDF reader)
   build.py        headline dataset
   datasets.py     detailed datasets, scheme↔ministry and PRS cross-checks
-  checks.py       all checks -> data/validation_report.md
+  checks.py       all checks -> data/validation_report.md, validation_summary.json
   reference.py    RBI Handbook download and reader
   annotations.py  reviewed exceptions and notes for the headline data
   data_maps/      reviewed name maps for ministries and schemes

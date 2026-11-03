@@ -1,14 +1,12 @@
 ---
 import { link } from "../../../lib/url";
-import fs from "node:fs";
-import path from "node:path";
+import { passed, validation } from "../../../lib/validation";
 import Base from "../../../layouts/Base.astro";
 import { YEARS, LATEST_YEAR } from "../../../lib/budget/data";
 
-const report = fs.readFileSync(path.resolve(process.cwd(), "..", "budget", "data", "validation_report.md"), "utf8");
-const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
-const sections = [...report.matchAll(/^## (✅|❌) (.+)$/gm)].map((x) => ({ ok: x[1] === "✅", title: x[2] }));
-const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
+const v = validation("budget");
+const sections = v.sections.map((s) => ({ ok: s.failures === 0, title: s.title }));
+const checks = v.checks.toLocaleString("en-IN");
 const files = [
   ["fiscal.json", "Headline figures: receipts, spending, deficits"],
   ["taxes.json", "Taxes by type, states' share, non-tax revenue"],
@@ -16,6 +14,7 @@ const files = [
   ["schemes.json", "Spending by scheme (from 2017-18)"],
   ["observations.csv", "Every headline number read, from every document"],
   ["validation_report.md", "Every check and every documented exception"],
+  ["validation_summary.json", "The result of each group of checks, for programs: checks and failures"],
 ];
 ---
 <Base title="Sources and methods" section="about" description="Where every budget figure on India Data Review comes from, and how it is checked.">
@@ -30,7 +29,7 @@ const files = [
   <section class="card">
     <h2>Checked automatically</h2>
     <p>
-      <strong>{checks} checks{m && m[1] === "PASSED" ? ", all passing" : ""}.</strong> The data is rebuilt from the
+      <strong>{checks} checks{passed(v) ? ", all passing" : ""}.</strong> The data is rebuilt from the
       original documents and checked whenever they change, and the site cannot be built unless every check passes.
     </p>
     <ul>

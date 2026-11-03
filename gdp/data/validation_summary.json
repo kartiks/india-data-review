@@ -1,0 +1,127 @@
+{
+ "result": "PASSED",
+ "checks": 57077,
+ "failures": 0,
+ "allowed": 0,
+ "sections": [
+  {
+   "title": "Every published row is understood",
+   "checks": 10272,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Accounting identities hold in every estimate",
+   "checks": 1959,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Published GDP growth rates follow from published GDP levels",
+   "checks": 134,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Published industry growth rates follow from industry GVA levels",
+   "checks": 2222,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Quarters add up to the year; quarterly growth follows from levels",
+   "checks": 170,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Back series joins the current series",
+   "checks": 3,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Budget GDP assumption found and consistent",
+   "checks": 24,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Every forecast is quoted from its official document",
+   "checks": 224,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Spending side: size of the statistical discrepancy (for review, not failures)",
+   "checks": 83,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Large revisions to growth (for review, not failures)",
+   "checks": 0,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Population and figures per person",
+   "checks": 163,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: every published row is understood",
+   "checks": 28422,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: GSDP = GSVA + taxes - subsidies, NSDP = NSVA + taxes - subsidies",
+   "checks": 1710,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: industries add up to total value added, and parts to their industry",
+   "checks": 7512,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: every published growth rate is reproduced from the levels",
+   "checks": 2430,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: per-person figures agree with each other and with the levels",
+   "checks": 1749,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "State accounts: the states' GSDP against India's GDP (for review, not failures)",
+   "checks": 0,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  }
+ ]
+}

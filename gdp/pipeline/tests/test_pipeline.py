@@ -81,10 +81,10 @@ def growth_ds(series, year, stage, published_real, level_now=110.0, level_before
 
 
 def industry_growth(ds):
-    report = checks.Report()
+    report = checks.Report(checks.INTRO)
     checks.check_industry_growth(ds, report)
-    (_, checked, failures, notes), = report.sections
-    return checked, failures, notes
+    (s,) = report.sections
+    return s.checks, s.failures, s.notes
 
 
 def test_industry_growth_matching_levels_passes():
@@ -135,6 +135,6 @@ def test_gdp_growth_exact_for_the_new_series():
             "2024-25": {"RE1": {"gdp": {"con": 106.0}, "growth": {"gdp": {"real": published}}}},
         }}}}
     for series, failures in (("2022-23", 1), ("2011-12", 0)):
-        report = checks.Report()
+        report = checks.Report(checks.INTRO)
         checks.check_growth(ds(series, 6.5), report)
-        assert len(report.sections[0][2]) == failures
+        assert len(report.sections[0].failures) == failures

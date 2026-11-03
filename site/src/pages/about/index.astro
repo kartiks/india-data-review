@@ -1,18 +1,16 @@
 ---
 import { link } from "../../lib/url";
-import fs from "node:fs";
-import path from "node:path";
+import { passed, validation } from "../../lib/validation";
 import Base from "../../layouts/Base.astro";
 
-// Read each area's validation report: the site is only built when all of them pass.
+// Read each area's check results: the site is only built when all of them pass.
 const areas = [
   { id: "budget", name: "Union Budget", sources: "/budget/sources/" },
   { id: "gdp", name: "GDP", sources: "/gdp/sources/" },
   { id: "jobs-prices", name: "Jobs and prices", sources: "/jobs-prices/sources/" },
 ].map((a) => {
-  const report = fs.readFileSync(path.resolve(process.cwd(), "..", a.id, "data", "validation_report.md"), "utf8");
-  const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
-  return { ...a, passed: m?.[1] === "PASSED", checks: m ? Number(m[2]) : 0 };
+  const v = validation(a.id);
+  return { ...a, passed: passed(v), checks: v.checks };
 });
 const total = areas.reduce((s, a) => s + a.checks, 0);
 ---

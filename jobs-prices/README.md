@@ -127,6 +127,7 @@ in `data/validation_report.md`, compare the figure with MoSPI's own publication,
 | `hces_overall.csv` | Rural + urban spending per person and food share, with the persons used as weights |
 | `sources.csv` | Every downloaded file: key, URL, SHA-256, date. Each CSV row names its source key |
 | `validation_report.md` | Every check and the reason for every allowed exception |
+| `validation_summary.json` | The same results for programs (the site reads it): PASSED or FAILED, and checks, failures and allowed exceptions per group of checks |
 
 Columns ending `_as_printed` are filled only where MoSPI's text is not simply the number (`NaN`, `l0.8` …).
 

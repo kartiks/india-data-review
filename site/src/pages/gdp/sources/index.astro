@@ -1,15 +1,13 @@
 ---
 import { link } from "../../../lib/url";
-import fs from "node:fs";
-import path from "node:path";
+import { passed, validation } from "../../../lib/validation";
 import Base from "../../../layouts/Base.astro";
 import { DS, GENERATED, SURVEY, RBI, BUDGET } from "../../../lib/gdp/data";
 import { DERIVED_STATES } from "../../../lib/gdp/states";
 
-const report = fs.readFileSync(path.resolve(process.cwd(), "..", "gdp", "data", "validation_report.md"), "utf8");
-const m = report.match(/\*\*Result: (\w+)\*\* \(([\d,]+) checks, ([\d,]+) failures\)/);
-const sections = [...report.matchAll(/^## (✅|❌) (.+)$/gm)].map((x) => ({ ok: x[1] === "✅", title: x[2] }));
-const checks = m ? Number(m[2]).toLocaleString("en-IN") : "?";
+const v = validation("gdp");
+const sections = v.sections.map((s) => ({ ok: s.failures === 0, title: s.title }));
+const checks = v.checks.toLocaleString("en-IN");
 const files = [
   ["gdp.json", "Everything on this site: national accounts by series, year and estimate stage; Budget assumptions; forecasts"],
   ["national_accounts.csv", "Every row MoSPI published, one value per line, with names as printed and the source URL"],
@@ -17,6 +15,7 @@ const files = [
   ["states.json", "State accounts by state and year: GSDP, NSDP, income per person, growth, value added by industry"],
   ["state_accounts.csv", "Every state-accounts row MoSPI published, one value per line, as printed, with the source URL"],
   ["validation_report.md", "Every check and every documented exception"],
+  ["validation_summary.json", "The result of each group of checks, for programs: checks, failures and allowed exceptions"],
 ];
 const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 ---
@@ -35,7 +34,7 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
   <section class="card">
     <h2>Checked automatically</h2>
     <p>
-      <strong>{checks} checks{m && m[1] === "PASSED" ? ", all passing" : ""}.</strong> The site cannot be built unless
+      <strong>{checks} checks{passed(v) ? ", all passing" : ""}.</strong> The site cannot be built unless
       every check passes. Known problems in the official data are allowed only with a written reason, listed in the report.
     </p>
     <ul>

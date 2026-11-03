@@ -19,13 +19,15 @@
      overall average; item shares add up to 100%.
 
 Exceptions are allowed only through the rules below, each with a reason.
-Writes jobs-prices/data/validation_report.md and exits non-zero on any failure.
+Writes jobs-prices/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 """
 
 import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+from pipeline_common.report import Allowed, Report
 
 from .build import MISSING, RATE_DIMS, SMALL_GAP, identity_gap
 
@@ -68,49 +70,8 @@ HCES_MISMATCH = (
 )
 BAD_VALUE = "MoSPI's data service returns characters instead of a number for this figure. It is left out."
 INFLATION_TOL = 0.12  # points: indices are published to one decimal, so a recomputed rate can differ this much
-
-
-class Report:
-    def __init__(self) -> None:
-        self.sections: list[tuple[str, int, list[str], list[str]]] = []
-
-    def add(self, title: str, checked: int, failures: list[str], notes: list[str]) -> None:
-        self.sections.append((title, checked, failures, notes))
-
-    @property
-    def failed(self) -> bool:
-        return any(f for _, _, f, _ in self.sections)
-
-    def markdown(self) -> str:
-        total = sum(c for _, c, _, _ in self.sections)
-        nfail = sum(len(f) for _, _, f, _ in self.sections)
-        out = ["# Data validation report", "",
-               "Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official "
-               "data service. Every allowed exception lists its reason.", "",
-               f"**Result: {'FAILED' if nfail else 'PASSED'}** ({total} checks, {nfail} failures)", ""]
-        for title, checked, failures, notes in self.sections:
-            out += [f"## {'❌' if failures else '✅'} {title}", f"{checked} checks, {len(failures)} failures.", ""]
-            out += [f"- FAIL: {f}" for f in failures]
-            out += [f"- {n}" for n in notes]
-            out.append("")
-        return "\n".join(out)
-
-
-class Allowed:
-    """Allowed exceptions grouped under their reason, so each reason is printed once with its cases."""
-
-    def __init__(self) -> None:
-        self.cases: dict[str, list[str]] = defaultdict(list)
-
-    def add(self, reason: str, case: str) -> None:
-        self.cases[reason].append(case)
-
-    def notes(self, limit: int = 60) -> list[str]:
-        out = []
-        for reason, cases in self.cases.items():
-            shown = "; ".join(cases[:limit]) + (f"; and {len(cases) - limit} more (see the CSV)" if len(cases) > limit else "")
-            out.append(f"Allowed ({len(cases)}): {reason} Cases: {shown}")
-        return out
+INTRO = ("Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official "
+         "data service. Every allowed exception lists its reason.")
 
 
 def cell(d: dict, keys=("frequency", "year", "period", "state", "sector", "gender", "age", "status")) -> str:
@@ -150,7 +111,7 @@ def check_source(ds: dict, report: Report) -> None:
     for u in p.get("unlabelled", []):
         checked += 1
         allowed.add(UNLABELLED, u)
-    report.add("Every published value is understood", checked, failures, allowed.notes(limit=20))
+    report.add("Every published value is understood", checked, failures, allowed=allowed, limit=20)
 
 
 # ---- jobs ---------------------------------------------------------------------------------------
@@ -172,7 +133,7 @@ def check_rates(ds: dict, report: Report) -> None:
                 notes.append(f"Within {SMALL_GAP} points, shown: {msg}")
             else:
                 failures.append(msg)
-    report.add("Jobs: worker ratio = participation × (1 − unemployment rate)", checked, failures, allowed.notes() + notes)
+    report.add("Jobs: worker ratio = participation × (1 − unemployment rate)", checked, failures, notes, allowed)
 
 
 def brackets(rows: list[dict], key_fields: list[str], value: str = "value", tol: float = 0.1):
@@ -266,7 +227,7 @@ def check_distribution(ds: dict, report: Report) -> None:
                 notes.append(f"Not shown on the site: {msg}")
             else:
                 failures.append(msg)
-    report.add("Jobs: shares of workers add up to 100%", checked, failures, allowed.notes() + notes)
+    report.add("Jobs: shares of workers add up to 100%", checked, failures, notes, allowed)
 
 
 # ---- prices -------------------------------------------------------------------------------------
@@ -435,7 +396,7 @@ def check_hces(ds: dict, report: Report) -> None:
                 checked += 1
                 if abs(total - target) > (0.1 if unit == "%" else max(2.0, target * 0.002)):
                     failures.append(f"HCES {where(k)} {unit}: food + non-food = {total:.2f}, expected {target}")
-    report.add("Household spending (HCES): classes and categories add up", checked, failures, allowed.notes() + notes)
+    report.add("Household spending (HCES): classes and categories add up", checked, failures, notes, allowed)
 
 
 # ---- consumer prices, base 2024 ------------------------------------------------------------------
@@ -468,7 +429,7 @@ def check_cpi2024(ds: dict, report: Report) -> None:
             failures.append(f"{m}: no All-India series")
         for prob in r["problems"]:
             (allowed.add(BACKTICK, prob) if "`" in prob else failures.append(prob))
-    report.add("Prices, new series (base 2024): every release read in full", checked, failures, allowed.notes())
+    report.add("Prices, new series (base 2024): every release read in full", checked, failures, allowed=allowed)
 
     # 2. the headline sentence, the summary table and the annexures agree
     failures, checked = [], 0
@@ -693,7 +654,7 @@ def main(ds: dict | None = None) -> int:
         from .build import assemble
 
         ds = assemble()
-    report = Report()
+    report = Report(INTRO)
     check_source(ds, report)
     check_rates(ds, report)
     check_brackets(ds, report)
@@ -704,10 +665,7 @@ def main(ds: dict | None = None) -> int:
     check_hces_overall(ds, report)
     check_rbi(ds, report)
     check_cpi2024(ds, report)
-    (DATA / "validation_report.md").write_text(report.markdown())
-    for title, checked, failures, _ in report.sections:
-        print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")
-    return 1 if report.failed else 0
+    return report.write(DATA)
 
 
 if __name__ == "__main__":

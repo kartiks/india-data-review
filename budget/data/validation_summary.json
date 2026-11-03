@@ -1,0 +1,246 @@
+{
+ "result": "PASSED",
+ "checks": 117426,
+ "failures": 0,
+ "allowed": 0,
+ "sections": [
+  {
+   "title": "Accounting rules hold in every source column",
+   "checks": 1066,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Same figure agrees across documents (BE restated in the next budget)",
+   "checks": 423,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "% of GDP figures agree with the amounts",
+   "checks": 376,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Other copies of the same table (Excel/HTML) agree with the primary file",
+   "checks": 16,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Every year has the figures it should",
+   "checks": 1092,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Matches the RBI Handbook of Statistics (independent series)",
+   "checks": 270,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Large year-on-year changes (for review, not failures)",
+   "checks": 0,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes: totals equal their printed parts",
+   "checks": 434,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes: net tax, non-tax and revenue receipts match the headline table",
+   "checks": 297,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes: same figure agrees across budgets",
+   "checks": 480,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes: other copies (Excel/HTML) agree with the primary file",
+   "checks": 15,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes (Receipt Budget actuals 2000-01..2007-08): totals equal their printed parts",
+   "checks": 72,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes (Receipt Budget actuals): net tax, non-tax, revenue receipts match the headline table's Actuals",
+   "checks": 24,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes (Receipt Budget): its RE/BE columns match the Budget at a Glance Receipts table",
+   "checks": 192,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Taxes (Receipt Budget): actuals present for 2000-01..2007-08",
+   "checks": 64,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: plan + non_plan = total on every line",
+   "checks": 15803,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: revenue + capital = total on every line",
+   "checks": 14689,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: Revenue line + Capital line = department line",
+   "checks": 18039,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: sub-lines add up to the demand",
+   "checks": 12132,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: 'Total:' line repeats the demand total",
+   "checks": 328,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: departments add up to the grand total",
+   "checks": 291,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: each spending category adds up across demands",
+   "checks": 648,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: grand total = Budget at a Glance",
+   "checks": 291,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: same line agrees in both budgets that print it",
+   "checks": 1712,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Ministries: Excel copies agree with the PDF",
+   "checks": 12,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Schemes: revenue + capital = total in every row",
+   "checks": 32912,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Schemes add up to their subtotals and the Grand Total",
+   "checks": 9468,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Same scheme figure agrees across the two budgets that print it",
+   "checks": 5915,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Scheme tables: other copies agree with the PDF",
+   "checks": 12,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Scheme spending as a share of total expenditure (context only)",
+   "checks": 0,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Schemes: grand totals match the scheme lines of the ministries statement",
+   "checks": 80,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Matches PRS Legislative Research, Union Budget 2026-27 Analysis (independent)",
+   "checks": 117,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Published ministries.json: lines add up to the grand total for every year and estimate",
+   "checks": 78,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Published taxes.json: net tax = gross tax - states' share - other deductions",
+   "checks": 78,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  }
+ ]
+}

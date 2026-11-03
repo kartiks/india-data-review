@@ -12,6 +12,7 @@ def sandbox(tmp_path, monkeypatch):
     monkeypatch.setattr(fetch, "ROOT", tmp_path)
     monkeypatch.setattr(fetch, "RAW", tmp_path / "sources" / "raw")
     monkeypatch.setattr(fetch, "SNAPSHOTS", tmp_path / "sources" / "snapshots")
+    monkeypatch.setattr(fetch, "MANIFEST", tmp_path / "sources" / "manifest.json")
     monkeypatch.setattr(fetch, "NAS_SERIES", [("2022-23", "Current", "Annual")])
     monkeypatch.setattr(fetch, "NAS_INDICATORS", [1, 2])
     monkeypatch.setattr(fetch, "STATE_SERIES", [])
@@ -50,6 +51,7 @@ def test_refresh_snapshots_a_revision(sandbox, monkeypatch):
     assert json.loads(snap.read_text())["rows"] == [{"v": 1}]
     assert manifest[KEY1]["history"][0]["file"] == str(snap.relative_to(sandbox))
     assert not (fetch.SNAPSHOTS / first / f"{KEY2}.json").exists()  # unchanged: no snapshot
+    assert json.loads(fetch.MANIFEST.read_text()) == manifest  # written after each file
 
 
 def test_without_force_only_missing_indicators_are_fetched(sandbox, monkeypatch):

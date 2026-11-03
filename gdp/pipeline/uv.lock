@@ -243,6 +243,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "openpyxl" },
     { name = "pdfplumber" },
+    { name = "pipeline-common" },
     { name = "pytest" },
 ]
 
@@ -250,6 +251,7 @@ dependencies = [
 requires-dist = [
     { name = "openpyxl", specifier = ">=3.1.5" },
     { name = "pdfplumber", specifier = ">=0.11.10" },
+    { name = "pipeline-common", editable = "../../shared/pipeline" },
     { name = "pytest", specifier = ">=9.2.0" },
 ]
 
@@ -359,6 +361,20 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/60/d4/0062e6005e9b270b165015aafd343364ac378ec5a685431ea42baad33357/pillow-13.0.0-cp315-cp315t-win_amd64.whl", hash = "sha256:adb3c2124c68e480f4632d06cb7caa3b48a51678475f483b4edb1c6dee29ea43", size = 7287488, upload-time = "2026-10-16T22:17:45.56Z" },
     { url = "https://files.pythonhosted.org/packages/e4/81/b8eb349746be7bce47dd95337c6634e84910af91b59aaa9159c034c614fa/pillow-13.0.0-cp315-cp315t-win_arm64.whl", hash = "sha256:4a25756244bdcce3b50580baadf320fa48297f0eeb8e114ba64139a40d4d0fc8", size = 2698073, upload-time = "2026-10-16T22:17:47.556Z" },
 ]
+
+[[package]]
+name = "pipeline-common"
+version = "0.1.0"
+source = { editable = "../../shared/pipeline" }
+dependencies = [
+    { name = "pdfplumber" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "pdfplumber", specifier = ">=0.11.10" }]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pytest", specifier = ">=9.2.0" }]
 
 [[package]]
 name = "pluggy"

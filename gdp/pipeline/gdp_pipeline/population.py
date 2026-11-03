@@ -126,7 +126,7 @@ def documents() -> list[tuple[str, str, str]]:
 
 
 def fetch(manifest: dict, force: bool) -> None:
-    from .fetch import RAW, get, save
+    from .fetch import RAW, get, is_type, save
 
     for n in NAS_STATEMENTS:  # downloaded by hand: never fetched, only reported if missing
         if n["key"] not in manifest:
@@ -141,7 +141,7 @@ def fetch(manifest: dict, force: bool) -> None:
         except Exception as exc:  # noqa: BLE001 - report and carry on; the checks will fail
             print(f"{key}: {url} -> {exc}")
             continue
-        if not content.startswith(b"%PDF" if ext == "pdf" else b"PK"):
+        if not is_type(content, ext):
             print(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
             continue
         save(manifest, key, RAW / f"{key}.{ext}", content, url)
@@ -350,7 +350,7 @@ def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
     if not source.is_file():
         raise SystemExit(f"{source}: no such file")
     content = source.read_bytes()
-    if not content.startswith(b"PK"):
+    if not F.is_type(content, "xlsx"):
         raise SystemExit(f"{source} is not an xlsx file")
     manifest = F.load_manifest()
     old = manifest.get(key)

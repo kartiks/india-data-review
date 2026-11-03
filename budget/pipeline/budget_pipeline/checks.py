@@ -12,7 +12,7 @@
 6. Other copies of each table (Excel/HTML) must agree with the PDF used.
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS below, each with a reason.
-Writes budget/data/validation_report.md and exits non-zero on any failure.
+Writes budget/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 
 Run: uv run python -m budget_pipeline.checks
 """
@@ -23,6 +23,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common.report import Report
+
 from .annotations import FINAL_ACCOUNTS, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, KNOWN_REFERENCE_DIFFS
 from .reference import load_rbi
 from .parse import fy
@@ -30,6 +32,8 @@ from .sources import FIRST_BUDGET, LATEST_BUDGET
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
+
+INTRO = "Headline figures, taxes, ministries and schemes. Every allowed exception lists its reason."
 
 # Rounding: documents say items "may not sum up to the totals due to rounding off".
 TOLERANCE_CRORE = 5
@@ -64,37 +68,6 @@ def load_observations() -> list[dict]:
         r["value_crore"] = float(r["value_crore"]) if r["value_crore"] else None
         r["pct_gdp"] = float(r["pct_gdp"]) if r["pct_gdp"] else None
     return rows
-
-
-class Report:
-    def __init__(self) -> None:
-        self.sections: list[tuple[str, int, list[str], list[str]]] = []
-
-    def add(self, title: str, checked: int, failures: list[str], notes: list[str] | None = None) -> None:
-        self.sections.append((title, checked, failures, notes or []))
-
-    @property
-    def failed(self) -> bool:
-        return any(f for _, _, f, _ in self.sections)
-
-    def markdown(self) -> str:
-        out = ["# Data validation report", "",
-           "Headline figures, taxes, ministries and schemes. Every allowed exception lists its reason.", ""]
-        total_fail = sum(len(f) for _, _, f, _ in self.sections)
-        out.append(f"**Result: {'FAILED' if total_fail else 'PASSED'}** "
-                   f"({sum(c for _, c, _, _ in self.sections)} checks, {total_fail} failures)")
-        out.append("")
-        for title, checked, failures, notes in self.sections:
-            status = "✅" if not failures else "❌"
-            out.append(f"## {status} {title}")
-            out.append(f"{checked} checks, {len(failures)} failures.")
-            out.append("")
-            for line in failures:
-                out.append(f"- ❌ {line}")
-            for line in notes:
-                out.append(f"- {line}")
-            out.append("")
-        return "\n".join(out)
 
 
 def check_identities(rows: list[dict], report: Report) -> None:
@@ -285,7 +258,7 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
         detailed_sections = build_all()
     rows = load_observations()
     dataset = json.loads((DATA / "fiscal.json").read_text())
-    report = Report()
+    report = Report(INTRO)
     check_identities(rows, report)
     check_cross_document(rows, report)
     check_pct_gdp(rows, dataset["gdp_stated_in_budget"], report)
@@ -295,10 +268,7 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
     check_jumps(dataset, report)
     for title, checked, failures, notes in detailed_sections:
         report.add(title, checked, failures, notes)
-    (DATA / "validation_report.md").write_text(report.markdown())
-    for title, checked, failures, _ in report.sections:
-        print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")
-    return 1 if report.failed else 0
+    return report.write(DATA)
 
 
 if __name__ == "__main__":

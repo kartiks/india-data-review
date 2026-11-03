@@ -14,14 +14,13 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-import requests
+from pipeline_common.download import get
 
 from .readers import read_xlsx
 
 ROOT = Path(__file__).resolve().parents[2]
 REF_DIR = ROOT / "sources" / "reference" / "rbi"
 REF_MANIFEST = ROOT / "sources" / "reference" / "manifest.json"
-HEADERS = {"User-Agent": "india-data-review-budget-pipeline/0.1 (python-requests)"}
 
 RBI_HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy"
 RBI_TABLES = {
@@ -46,21 +45,18 @@ RBI_TABLES = {
 
 def fetch() -> None:
     REF_DIR.mkdir(parents=True, exist_ok=True)
-    session = requests.Session()
-    session.headers.update(HEADERS)
     manifest = {}
     for name, spec in RBI_TABLES.items():
-        resp = session.get(spec["url"], timeout=60)
-        resp.raise_for_status()
+        content = get(spec["url"])
         dest = REF_DIR / f"{name}.xlsx"
-        dest.write_bytes(resp.content)
+        dest.write_bytes(content)
         manifest[name] = {
             "title": spec["title"],
             "publisher": "Reserve Bank of India, Handbook of Statistics on Indian Economy",
             "index_page": RBI_HANDBOOK_PAGE,
             "url": spec["url"],
             "file": str(dest.relative_to(ROOT)),
-            "sha256": hashlib.sha256(resp.content).hexdigest(),
+            "sha256": hashlib.sha256(content).hexdigest(),
             "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         }
         print(f"saved {dest.name}")

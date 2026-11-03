@@ -237,7 +237,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 ## ✅ Prices, new series (base 2024): every release read in full
 9 checks, 0 failures.
 
-- Allowed (1): MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). The next month's release repeats it as final, and that figure is used. Cases: 2026-07: summary table, cfpi index: not a number as printed: ['109.`39']
+- Allowed (1): MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). It is read as missing and the rest of its row is kept; the next month's release repeats it as final, and that figure is used. Cases: 2026-07: summary table, cfpi index: not a number as printed, read as missing: ['109.`39']
 
 ## ✅ Prices, new series: headline, summary and annexures agree
 9 checks, 0 failures.

@@ -85,6 +85,9 @@ def test_release_table_reader():
     assert r["summary"]["current"]["general_inflation"] == [4.25, 3.53, 3.93]  # column order read from the header
     assert r["summary"]["previous"]["general_inflation"] == [3.74, 3.16, 3.48]
     assert any("`" in p for p in r["problems"])  # the stray backtick is reported, not read as a number
+    # ... and only that figure is missing: the rest of the row is read
+    assert r["summary"]["current"]["cfpi_inflation"] == [4.85, 4.66, 4.78]
+    assert r["summary"]["previous"]["cfpi_inflation"] == [4.26, None, 4.20]
     assert [s["name"] for s in r["states"]] == ["Andhra Pradesh", "Uttar Pradesh", "Chandigarh"]  # trailing empty cells dropped
     assert r["states"][2]["values"][0] is None
 
@@ -108,3 +111,30 @@ def test_rbi_table_links():
     edition, links = rbi.table_links(page)
     assert edition == "2024-25"
     assert links[21] == ("Table 21: Gross State Domestic Product (Current Prices)", "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_1112.XLSX")
+
+
+def test_cfpi_final_figures_replace_provisional_ones_figure_by_figure():
+    def release(month, current, previous=None):
+        summary = {"current": {"cfpi_index": current}}
+        if previous is not None:
+            summary["previous"] = {"cfpi_index": previous}
+        return {"summary": summary, "source": f"cpi2024/{month}"}
+
+    cfpi = build.cfpi_by_month({
+        "2026-05": release("2026-05", [105.0, 105.8, 105.3]),
+        "2026-06": release("2026-06", [106.8, 107.7, 107.1], previous=[105.1, 105.8, 105.4]),
+        "2026-07": release("2026-07", [109.2, 109.7, None], previous=[106.9, None, 107.2]),  # a figure not printed as a number
+        "2026-08": release("2026-08", [110.7, 110.7, 110.7], previous=None),  # no final figures at all
+    })
+    assert cfpi["2026-05"] == {"index": [105.1, 105.8, 105.4], "inflation": None, "provisional": True, "source": "cpi2024/2026-06"}
+    # Final where the next release gives it, provisional otherwise, and still marked provisional
+    assert cfpi["2026-06"]["index"] == [106.9, 107.7, 107.2] and cfpi["2026-06"]["provisional"] is True
+    assert cfpi["2026-07"] == {"index": [109.2, 109.7, None], "inflation": None, "provisional": True, "source": "cpi2024/2026-07"}
+    assert cfpi["2026-08"]["provisional"] is True
+
+
+def test_cfpi_complete_final_figures_are_final():
+    rel = {"2026-01": {"summary": {"current": {"cfpi_index": [1.0, 2.0, 3.0], "cfpi_inflation": [4.0, 5.0, 6.0]}}, "source": "a"},
+           "2026-02": {"summary": {"current": {}, "previous": {"cfpi_index": [1.1, 2.1, 3.1], "cfpi_inflation": [4.1, 5.1, 6.1]}},
+                       "source": "b"}}
+    assert build.cfpi_by_month(rel)["2026-01"] == {"index": [1.1, 2.1, 3.1], "inflation": [4.1, 5.1, 6.1], "provisional": False, "source": "b"}

@@ -136,17 +136,21 @@ def parse(html: str, month: str) -> dict:
             kind = None
             for r in t:
                 cells = [c for c in r if c]
-                label = " ".join(c for c in cells if num(c) is None)
-                vals = [num(c) for c in cells if num(c) is not None]
+                # A figure is a cell with a digit; one that is not a number as printed (e.g. '109.`39') is read as
+                # missing, so the rest of its row is kept.
+                figures = [c for c in cells if re.search(r"\d", c)]
+                label = " ".join(c for c in cells if c not in figures)
+                vals = [num(c) for c in figures]
                 if "Inflation" in label:
                     kind = "inflation"
                 elif "Index" in label:
                     kind = "index"
                 what = "cfpi" if "CFPI" in label else "general"
-                bad = [c for c in cells if re.search(r"\d", c) and num(c) is None]
+                bad = [c for c in figures if num(c) is None]
                 if kind and bad and ("CFPI" in label or "CPI" in label):
-                    out["problems"].append(f"{month}: summary table, {what} {kind}: not a number as printed: {bad}")
-                elif kind and len(vals) in (3, 6):
+                    out["problems"].append(f"{month}: summary table, {what} {kind}: not a number as printed, read as "
+                                           f"missing: {bad}")
+                if kind and len(vals) in (3, 6):
                     blocks = order[: len(vals) // 3] or ["current"]
                     for b, start in zip(blocks, range(0, len(vals), 3)):
                         out["summary"].setdefault(b, {})[f"{what}_{kind}"] = vals[start:start + 3]

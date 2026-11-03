@@ -402,8 +402,8 @@ def check_hces(ds: dict, report: Report) -> None:
 # ---- consumer prices, base 2024 ------------------------------------------------------------------
 
 BACKTICK = (
-    "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). The next "
-    "month's release repeats it as final, and that figure is used."
+    "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). It is read as "
+    "missing and the rest of its row is kept; the next month's release repeats it as final, and that figure is used."
 )
 
 

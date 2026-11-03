@@ -281,20 +281,32 @@ def cpi2024(manifest: dict) -> dict:
         releases[month] = r
     latest = max(releases) if releases else None
     series = [{**s, "source": f"cpi2024/{latest}"} for s in releases[latest]["series"]] if latest else []
+    jan = releases.get(min(releases)) if releases else None
+    return {"releases": releases, "latest": latest, "series": series, "cfpi": cfpi_by_month(releases),
+            "linking": jan["linking"] if jan else {}, "weights": jan["weights"] if jan else []}
+
+
+def cfpi_by_month(releases: dict[str, dict]) -> dict[str, dict]:
+    """The food price index (CFPI), index and inflation (rural, urban, combined), for each month: as first published
+    (provisional), then replaced figure by figure with the final ones in the next release. A figure the next release
+    does not give (not printed as a number) keeps its provisional value, and the month stays provisional until the
+    next release gives every final figure."""
     cfpi: dict[str, dict] = {}
     for month, r in sorted(releases.items()):
         cur, prev = r["summary"].get("current", {}), r["summary"].get("previous", {})
         if "cfpi_index" in cur or "cfpi_inflation" in cur:
             cfpi.setdefault(month, {"index": cur.get("cfpi_index"), "inflation": cur.get("cfpi_inflation"), "provisional": True,
                                     "source": r["source"]})
-        if prev:
-            pm = f"{int(month[:4]) - (month[5:] == '01')}-{(int(month[5:]) - 2) % 12 + 1:02d}"
-            if pm in cfpi:
-                cfpi[pm] = {"index": prev.get("cfpi_index") or cfpi[pm]["index"], "inflation": prev.get("cfpi_inflation") or cfpi[pm]["inflation"],
-                            "provisional": False, "source": r["source"]}
-    jan = releases.get(min(releases)) if releases else None
-    return {"releases": releases, "latest": latest, "series": series, "cfpi": cfpi,
-            "linking": jan["linking"] if jan else {}, "weights": jan["weights"] if jan else []}
+        pm = f"{int(month[:4]) - (month[5:] == '01')}-{(int(month[5:]) - 2) % 12 + 1:02d}"
+        final = {k: prev.get(f"cfpi_{k}") for k in ("index", "inflation")}
+        if pm not in cfpi or all(v is None or set(v) == {None} for v in final.values()):
+            continue  # no final figure read: the month stays as first published
+        old = cfpi[pm]
+        merged = {k: [f if f is not None else p for f, p in zip(v, old[k] or [None] * len(v))] if v else old[k]
+                  for k, v in final.items()}
+        complete = all(v and None not in v for v in final.values())
+        cfpi[pm] = {**merged, "provisional": not complete, "source": r["source"]}
+    return cfpi
 
 
 def cpi2024_rows(c: dict) -> list[dict]:

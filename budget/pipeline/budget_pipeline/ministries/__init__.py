@@ -23,7 +23,7 @@ readers), table (the parser), ids (stable ids), load (every budget and copy),
 checks.
 """
 
-from .validate import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks, internal_checks
+from .validate import EXCEPTIONS, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks, internal_checks
 from .common import MANIFEST, NAME_MAP, ROOT, Line
 from .ids import assign_ids, load_name_map, lookup
 from .load import load_all, observations, parse_file
@@ -31,7 +31,7 @@ from .read import _split_number, read_pdf_lines
 from .table import detect_header, parse_ministries
 
 __all__ = [
-    "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "MANIFEST", "NAME_MAP", "ROOT", "Line", "_split_number",
+    "EXCEPTIONS", "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "MANIFEST", "NAME_MAP", "ROOT", "Line", "_split_number",
     "assign_ids", "checks", "detect_header", "internal_checks", "load_all", "load_name_map", "lookup",
     "observations", "parse_file", "parse_ministries", "read_pdf_lines",
 ]

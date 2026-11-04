@@ -11,8 +11,9 @@
    same accounts) must match, apart from documented differences.
 6. Other copies of each table (Excel/HTML) must agree with the PDF used.
 
-Exceptions are allowed only through KNOWN_EXCEPTIONS below, each with a reason.
-Writes budget/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
+Exceptions are allowed only through EXCEPTIONS below (built from the reviewed lists in annotations.py), each
+with a reason; the report lists every allowed case under its reason and the summary counts them. The taxes,
+ministries and schemes checks keep their own lists the same way. Writes budget/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 
 Run: uv run python -m budget_pipeline.checks
 """
@@ -24,7 +25,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from pipeline_common.numbers import blank_or_number
-from pipeline_common.report import Report
+from pipeline_common.report import Allowed, Exceptions, Report
 from pipeline_common.text import fy
 
 from .annotations import FINAL_ACCOUNTS, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, KNOWN_REFERENCE_DIFFS
@@ -38,6 +39,22 @@ INTRO = "Headline figures, taxes, ministries and schemes. Every allowed exceptio
 
 # Rounding: documents say items "may not sum up to the totals due to rounding off".
 TOLERANCE_CRORE = 5
+
+# Every known exception to the headline checks, as (check, start of its message) -> reason. Besides
+# KNOWN_EXCEPTIONS: "format" (another copy of the table differs from the PDF) and "rbi" (a difference from the RBI
+# Handbook series larger than 1%).
+EXCEPTIONS = Exceptions({
+    **KNOWN_EXCEPTIONS,
+    **{("format", f"Budget {budget}: {ext.upper()} differs"): reason
+       for (budget, ext), reason in KNOWN_FORMAT_ISSUES.items()},
+    **{("rbi", f"{'Actual' if kind == 'actual' else kind.upper()} {year} {field}:"): reason
+       for (year, field, kind), reason in KNOWN_REFERENCE_DIFFS.items()},
+})
+
+
+def allowed() -> Allowed:
+    """A section's allowed exceptions, looked up in EXCEPTIONS (no CSV lists the cases left out of the report)."""
+    return Allowed(EXCEPTIONS, more_hint="")
 
 
 RULES = [
@@ -75,7 +92,7 @@ def check_identities(rows: list[dict], report: Report) -> None:
     cols: dict[tuple[str, str, str], dict[str, float | None]] = defaultdict(dict)
     for r in rows:
         cols[(r["source_budget"], r["fiscal_year"], r["kind"])][r["field"]] = r["value_crore"]
-    failures, excused, checked = [], [], 0
+    failures, ok, checked = [], allowed(), 0
     for (doc, year, kind), v in sorted(cols.items()):
         for name, lhs, plus, minus in RULES:
             needed = [lhs, *plus, *minus]
@@ -91,14 +108,11 @@ def check_identities(rows: list[dict], report: Report) -> None:
             diff = vals[lhs] - expected
             checked += 1
             if abs(diff) > TOLERANCE_CRORE:
-                key = (doc, year, kind, name)
                 msg = (f"Budget {doc}, {kind} {year}: {name} — printed {vals[lhs]:,.0f}, "
                        f"components give {expected:,.0f} (off by {diff:,.0f})")
-                if key in KNOWN_EXCEPTIONS:
-                    excused.append(f"Allowed: {msg}. Reason: {KNOWN_EXCEPTIONS[key]}")
-                else:
+                if not ok.file("identity", msg):
                     failures.append(msg)
-    report.add("Accounting rules hold in every source column", checked, failures, excused)
+    report.add("Accounting rules hold in every source column", checked, failures, allowed=ok)
 
 
 def check_cross_document(rows: list[dict], report: Report) -> None:
@@ -106,7 +120,7 @@ def check_cross_document(rows: list[dict], report: Report) -> None:
     for r in rows:
         if r["value_crore"] is not None:
             by_key[(r["fiscal_year"], r["kind"], r["field"])].append(r)
-    notes, failures, checked = [], [], 0
+    notes, failures, checked, ok = [], [], 0, allowed()
     for (year, kind, field), rs in sorted(by_key.items()):
         if len(rs) < 2:
             continue
@@ -119,22 +133,21 @@ def check_cross_document(rows: list[dict], report: Report) -> None:
             msg = (f"{kind} {year} {field}: {a[1]:,.0f} in budget {a[0]} vs {b[1]:,.0f} in budget {b[0]} "
                    f"({diff:+,.0f}, {rel:.1%})")
             # Restatements happen (reclassification); only large ones need a person to look.
-            reason = KNOWN_EXCEPTIONS.get(("cross", year, kind, f"field:{field}"))
-            if reason:
-                notes.append(f"{msg}. Explained: {reason}")
-            elif rel > 0.02 and abs(diff) > 500:
+            if ok.file("cross", msg):
+                continue
+            if rel > 0.02 and abs(diff) > 500:
                 failures.append(msg)
             else:
                 notes.append(msg)
     report.add("Same figure agrees across documents (BE restated in the next budget)", checked, failures,
-               [f"Restated: {n}" for n in notes])
+               [f"Restated: {n}" for n in notes], ok)
 
 
 def check_pct_gdp(rows: list[dict], gdp: dict, report: Report) -> None:
     cols: dict[tuple[str, str, str], dict[str, tuple[float | None, float | None]]] = defaultdict(dict)
     for r in rows:
         cols[(r["source_budget"], r["fiscal_year"], r["kind"])][r["field"]] = (r["value_crore"], r["pct_gdp"])
-    failures, checked = [], 0
+    failures, checked, ok = [], 0, allowed()
     for (doc, year, kind), v in sorted(cols.items()):
         fd, fd_pct = v.get("fiscal_deficit", (None, None))
         stated = gdp.get(doc)
@@ -153,16 +166,16 @@ def check_pct_gdp(rows: list[dict], gdp: dict, report: Report) -> None:
             checked += 1
             calc = amount * 100 / base
             if abs(calc - pct) > tol:
-                if (doc, year, kind, f"pct:{field}") in KNOWN_EXCEPTIONS:
-                    continue
-                failures.append(f"Budget {doc}, {kind} {year}: {field} printed {pct}% of GDP, "
-                                f"but {amount:,.0f} / {base_name} = {calc:.2f}%")
-    report.add("% of GDP figures agree with the amounts", checked, failures)
+                msg = (f"Budget {doc}, {kind} {year}: {field} printed {pct}% of GDP, "
+                       f"but {amount:,.0f} / {base_name} = {calc:.2f}%")
+                if not ok.file("pct", msg):
+                    failures.append(msg)
+    report.add("% of GDP figures agree with the amounts", checked, failures, allowed=ok)
 
 
 def check_formats(report: Report) -> None:
     comparisons = json.loads((DATA / "format_comparison.json").read_text())
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, allowed()
     for c in comparisons:
         budget, primary = c["budget"], c["primary"]
         for ext, o in c["others"].items():
@@ -170,15 +183,15 @@ def check_formats(report: Report) -> None:
             n = len(o["differences"])
             if n == 0:
                 notes.append(f"Budget {budget}: {primary.upper()} and {ext.upper()} agree on all {o['compared']} values.")
-            elif (budget, ext) in KNOWN_FORMAT_ISSUES:
-                notes.append(f"Budget {budget}: {ext.upper()} differs from {primary.upper()} in {n} values "
-                             f"(known): {KNOWN_FORMAT_ISSUES[(budget, ext)]}")
-            else:
+                continue
+            msg = f"Budget {budget}: {ext.upper()} differs from {primary.upper()} in {n} values"
+            if not ok.file("format", msg):
                 sample = "; ".join(f"{d['item']}: {d[primary]} vs {d[ext]}" for d in o["differences"][:3])
-                failures.append(f"Budget {budget}: {ext.upper()} differs from {primary.upper()} in {n} values ({sample})")
+                failures.append(f"{msg} ({sample})")
         for ext, err in c["unparseable"].items():
             notes.append(f"Budget {budget}: {ext.upper()} copy could not be read ({err}).")
-    report.add("Other copies of the same table (Excel/HTML) agree with the primary file", checked, failures, notes)
+    report.add("Other copies of the same table (Excel/HTML) agree with the primary file", checked, failures, notes,
+               ok)
 
 
 def check_completeness(dataset: dict, report: Report) -> None:
@@ -204,7 +217,7 @@ def check_completeness(dataset: dict, report: Report) -> None:
 def check_reference(dataset: dict, report: Report) -> None:
     """Compare with the RBI Handbook series, an independent compilation of the same accounts."""
     rbi = load_rbi()
-    failures, notes, checked, exact = [], [], 0, 0
+    failures, notes, checked, exact, ok = [], [], 0, 0, allowed()
     for (year, field, kind), ref in sorted(rbi.items()):
         if year < fy(FIRST_BUDGET):
             continue
@@ -220,15 +233,14 @@ def check_reference(dataset: dict, report: Report) -> None:
             continue
         rel = abs(diff) / max(abs(ref["value"]), 1)
         msg = f"{label}: ours {ours['value']:,.0f} vs RBI {ref['value']:,.0f} ({diff:+,.0f}, {rel:.2%})"
-        reason = KNOWN_REFERENCE_DIFFS.get((year, field, kind))
-        if reason:
-            notes.append(f"{msg}. Explained: {reason}")
-        elif rel <= 0.01:
+        if ok.file("rbi", msg):
+            continue
+        if rel <= 0.01:
             notes.append(f"{msg}. Small difference: {FINAL_ACCOUNTS}")
         else:
             failures.append(msg)
     notes.insert(0, f"{exact} of {checked} figures match the RBI series exactly (within Rs {TOLERANCE_CRORE} crore).")
-    report.add("Matches the RBI Handbook of Statistics (independent series)", checked, failures, notes)
+    report.add("Matches the RBI Handbook of Statistics (independent series)", checked, failures, notes, ok)
 
 
 def check_jumps(dataset: dict, report: Report) -> None:
@@ -246,12 +258,33 @@ def check_jumps(dataset: dict, report: Report) -> None:
     report.add("Large year-on-year changes (for review, not failures)", 0, [], notes)
 
 
+def area_exceptions() -> dict[str, Exceptions]:
+    """Every list of known exceptions in the budget area, by the checks that use it."""
+    from . import datasets, ministries, schemes, taxes
+
+    return {"headline": EXCEPTIONS, "taxes": taxes.EXCEPTIONS, "ministries": ministries.EXCEPTIONS,
+            "schemes": schemes.EXCEPTIONS, "schemes vs ministries": datasets.CROSSCHECK_EXCEPTIONS}
+
+
+def check_unused_exceptions(report: Report, exceptions: dict[str, Exceptions] | None = None) -> None:
+    """Known exceptions no message matched in this run (the source was corrected, or the message changed), for
+    review, as in the gdp area. Run after every check: each group of checks resets its own list when it starts."""
+    def show(check) -> str:
+        return " / ".join(map(str, check)) if isinstance(check, tuple) else str(check)
+
+    unused = [f"{name}: {show(c)}: {k}" for name, exc in (exceptions or area_exceptions()).items()
+              for c, k in exc.unused()]
+    if unused:
+        report.add("Known exceptions no longer needed (for review: remove them)", 0, [], unused)
+
+
 def main(detailed_sections: list[tuple] | None = None) -> int:
     """Run every check and write the report.
 
     detailed_sections: check results for the tax, ministry and scheme tables,
-    as returned by datasets.build_all(). If not given, those tables are
-    rebuilt here (slower) so the report is always complete.
+    as returned by datasets.build_all(): (title, checked, failures, notes,
+    allowed or None). If not given, those tables are rebuilt here (slower) so
+    the report is always complete.
     """
     if detailed_sections is None:
         from .datasets import build_all
@@ -260,6 +293,7 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
     rows = load_observations()
     dataset = json.loads((DATA / "fiscal.json").read_text())
     report = Report(INTRO)
+    EXCEPTIONS.reset()
     check_identities(rows, report)
     check_cross_document(rows, report)
     check_pct_gdp(rows, dataset["gdp_stated_in_budget"], report)
@@ -267,8 +301,9 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
     check_completeness(dataset, report)
     check_reference(dataset, report)
     check_jumps(dataset, report)
-    for title, checked, failures, notes in detailed_sections:
-        report.add(title, checked, failures, notes)
+    for title, checked, failures, notes, ok in detailed_sections:
+        report.add(title, checked, failures, notes, ok)
+    check_unused_exceptions(report)
     return report.write(DATA)
 
 

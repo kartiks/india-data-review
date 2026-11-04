@@ -98,6 +98,9 @@ def test_every_budget_parses_in_every_format(everything):
 def test_all_checks_pass(everything):
     summary = list(csv.DictReader((DATA / "observations.csv").open()))
     results = M.checks(everything, summary)
-    failures = {title: fails for title, _, fails, _ in results if fails}
+    failures = {title: fails for title, _, fails, _, _ in results if fails}
     assert failures == {}
-    assert sum(n for _, n, _, _ in results) > 50000
+    assert sum(n for _, n, _, _, _ in results) > 50000
+    # Each listed exception is filed under its reason.
+    allowed = {r for *_, ok in results for r in ok.cases}
+    assert M.validate.UT_CAPITAL_LINE in allowed

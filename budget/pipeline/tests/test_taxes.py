@@ -118,7 +118,7 @@ def test_every_budget_has_a_receipts_table(taxes):
 
 def test_all_tax_checks_pass(taxes):
     results = checks(taxes, load_summary_observations())
-    failures = [f for _, _, fs, _ in results for f in fs]
+    failures = [f for _, _, fs, _, _ in results for f in fs]
     assert failures == []
 
 

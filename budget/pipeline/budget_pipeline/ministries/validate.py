@@ -6,6 +6,7 @@ from collections import defaultdict
 from typing import Callable
 
 from pipeline_common.numbers import blank_or_number
+from pipeline_common.report import Allowed, Exceptions
 
 TOL = 0.05  # values are printed to 2 decimals; allow rounding on sums of a few cells
 
@@ -131,41 +132,46 @@ ACTUAL_1998_99 = (
     "the published range (2000-01 onwards)."
 )
 
-# (budget, check title, message fragment) -> reason. A failure is excused only if its
-# message contains the fragment.
-KNOWN_EXCEPTIONS: dict[tuple[str, str, str], str] = {
-    **{(b, "Revenue line + Capital line = department line", "'III. UNION TERRITORIES (A + B)'"): UT_CAPITAL_LINE
+# ((budget, check title), message fragment) -> reason. A failure is allowed only if its message contains the
+# fragment (the longest matching fragment wins).
+KNOWN_EXCEPTIONS: dict[tuple[tuple[str, str], str], str] = {
+    **{((b, "Revenue line + Capital line = department line"), "'III. UNION TERRITORIES (A + B)'"): UT_CAPITAL_LINE
        for b in ("2011-12", "2012-13", "2013-14", "2014-15", "2015-16", "2016-17")},
-    ("2023-24", "revenue + capital = total on every line", "'Grand Total' / central_sector_schemes"): GRAND_2023_CSS,
-    ("2023-24", "each spending category adds up across demands", "central_sector_schemes revenue"): GRAND_2023_CSS,
-    ("2023-24", "revenue + capital = total on every line", "'Grand Total' / other_transfers"): GRAND_2023_OTHER,
-    ("2023-24", "each spending category adds up across demands", "other_transfers revenue"): GRAND_2023_OTHER,
-    ("2000-01", "departments add up to the grand total", "Actual 1998-99"): ACTUAL_1998_99,
-    ("2000-01", "grand total = Budget at a Glance", "Actual 1998-99"): ACTUAL_1998_99,
+    (("2023-24", "revenue + capital = total on every line"), "'Grand Total' / central_sector_schemes"): GRAND_2023_CSS,
+    (("2023-24", "each spending category adds up across demands"), "central_sector_schemes revenue"): GRAND_2023_CSS,
+    (("2023-24", "revenue + capital = total on every line"), "'Grand Total' / other_transfers"): GRAND_2023_OTHER,
+    (("2023-24", "each spending category adds up across demands"), "other_transfers revenue"): GRAND_2023_OTHER,
+    (("2000-01", "departments add up to the grand total"), "Actual 1998-99"): ACTUAL_1998_99,
+    (("2000-01", "grand total = Budget at a Glance"), "Actual 1998-99"): ACTUAL_1998_99,
 }
 
 # Same table in another format (Excel) that disagrees with the PDF: (budget, ext) -> reason.
 KNOWN_FORMAT_ISSUES: dict[tuple[str, str], str] = {}
 
-# Lines present in only one copy, explained: (budget, ext) -> reason.
+# Grand Total category lines present in only one copy, explained: (budget, ext) -> reason.
 ONE_COPY_ONLY: dict[tuple[str, str], str] = {
-    ("2017-18", "xlsx"): "the Excel copy mislabels the six category lines under Grand Total (all read "
-                         "\"Centre's expenditure\" / \"Transfers to ...\"), so they cannot be matched; the PDF labels them correctly.",
-    ("2025-26", "xlsx"): "the PDF has no category lines under Grand Total; the Excel copy adds them.",
+    ("2017-18", "xlsx"): "The Excel copy mislabels the six category lines under Grand Total (all read "
+                         "\"Centre's expenditure\" / \"Transfers to ...\"), so they cannot be matched; the PDF labels "
+                         "them correctly.",
+    ("2025-26", "xlsx"): "The PDF has no category lines under Grand Total; the Excel copy adds them.",
 }
+
+# Every known exception: KNOWN_EXCEPTIONS by fragment; the other copies' differences ("format") and Grand Total
+# lines in only one copy ("one copy") by the start of their message.
+EXCEPTIONS = Exceptions(
+    known={
+        **{("format", f"Budget {budget}: {ext.upper()} differs"): reason
+           for (budget, ext), reason in KNOWN_FORMAT_ISSUES.items()},
+        **{("one copy", f"Budget {budget}: {ext.upper()} "): reason for (budget, ext), reason in ONE_COPY_ONLY.items()},
+    },
+    contains=KNOWN_EXCEPTIONS,
+)
 
 # Budget 2017-18 abolished the Plan/Non-plan split. Its Statement 3A restates 2016-17 under the new
 # structure: central assistance for State Plans is folded into the department it was routed through,
 # and Police, Cabinet, Pensions, Direct/Indirect Taxes and others become separate demands. Lines of
 # Budget 2016-17 and Budget 2017-18 are therefore not like-for-like; only the grand total must agree.
 STRUCTURE_BREAK = ("2016-17", "2017-18")
-
-
-def _excused(budget: str, title: str, msg: str) -> str | None:
-    for (b, t, frag), reason in KNOWN_EXCEPTIONS.items():
-        if b == budget and t == title and frag in msg:
-            return reason
-    return None
 
 
 def _cmp_formats(primary: dict, other: dict) -> list[str]:
@@ -189,19 +195,14 @@ def _cmp_formats(primary: dict, other: dict) -> list[str]:
     return diffs
 
 
-Sections = dict[str, list]  # title -> [checked, failures, notes]
+Sections = dict[str, list]  # title -> [checked, failures, notes, allowed exceptions]
 
 
 def _record(sections: Sections, title: str, budget: str, checked: int, failures: list[str]) -> None:
-    """Add a group's counts and failures, turning a listed exception into an Allowed note."""
+    """Add a group's counts and failures, filing each listed exception under its reason."""
     sec = sections[title]
     sec[0] += checked
-    for f in failures:
-        reason = _excused(budget, title, f)
-        if reason:
-            sec[2].append(f"Allowed: {f}. Reason: {reason}")
-        else:
-            sec[1].append(f)
+    sec[1].extend(sec[3].sort_out((budget, title), failures))
 
 
 def _identities(all_parsed: dict, sections: Sections) -> None:
@@ -306,27 +307,25 @@ def _other_copies(all_parsed: dict, sections: Sections) -> None:
             diffs = [d for d in diffs if not d.endswith("only in one copy")]
             grand_only = [d for d in only if d.startswith("('grand_total/")]
             line_only = [d for d in only if d not in grand_only]
-            if grand_only and (budget, ext) in ONE_COPY_ONLY:
-                sections[title][2].append(f"Budget {budget}: {len(grand_only)} values in only one copy: "
-                                          f"{ONE_COPY_ONLY[(budget, ext)]}")
-            elif grand_only:
+            ok = sections[title][3]
+            if grand_only and not ok.file("one copy", f"Budget {budget}: {ext.upper()} vs {b['primary'].upper()}: "
+                                                      f"{len(grand_only)} values of the Grand Total's category lines "
+                                                      "are in only one of the two copies"):
                 line_only += grand_only
             diffs += line_only
+            msg = f"Budget {budget}: {ext.upper()} differs from {b['primary'].upper()} in {len(diffs)} values"
             if not diffs:
                 sections[title][2].append(f"Budget {budget}: {ext.upper()} matches {b['primary'].upper()} exactly.")
-            elif (budget, ext) in KNOWN_FORMAT_ISSUES:
-                sections[title][2].append(f"Budget {budget}: {ext.upper()} differs in {len(diffs)} values (known): "
-                                          f"{KNOWN_FORMAT_ISSUES[(budget, ext)]}")
-            else:
-                sections[title][1].append(f"Budget {budget}: {ext.upper()} differs from {b['primary'].upper()} in "
-                                          f"{len(diffs)} values: " + "; ".join(diffs[:4]))
+            elif not ok.file("format", msg):
+                sections[title][1].append(f"{msg}: " + "; ".join(diffs[:4]))
         for ext, err in b["errors"].items():
             sections[title][1].append(f"Budget {budget}: {ext.upper()} copy could not be read: {err}")
 
 
-def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple[str, int, list[str], list[str]]]:
-    """All ministry checks. Returns [(title, checked, failures, notes)]."""
-    sections: Sections = defaultdict(lambda: [0, [], []])
+def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple]:
+    """All ministry checks. Returns [(title, checked, failures, notes, allowed exceptions)]."""
+    EXCEPTIONS.reset()
+    sections: Sections = defaultdict(lambda: [0, [], [], Allowed(EXCEPTIONS, more_hint="")])
     _identities(all_parsed, sections)
     _against_summary(all_parsed, summary_observations, sections)
     _across_budgets(all_parsed, sections)

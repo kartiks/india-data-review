@@ -107,7 +107,7 @@ def test_all_scheme_checks_pass():
     data = load_all()
     with (ROOT / "data" / "observations.csv").open() as f:
         summary = list(csv.DictReader(f))
-    failures = [x for _, _, fails, _ in checks(data, summary) for x in fails]
+    failures = [x for _, _, fails, _, _ in checks(data, summary) for x in fails]
     assert failures == []
     # Every statement was read from its PDF.
     assert all(e["primary"] == "pdf" for by_type in data["budgets"].values() for e in by_type.values())

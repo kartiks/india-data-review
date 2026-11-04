@@ -1,9 +1,12 @@
 """Reviewed exceptions: differences the checks allow, each with its reason, and fixes to column headings."""
 
-# (budget, fiscal year, kind, check name) -> reason. Each was checked against the
-# source file, its footnotes and the other copy of the table.
-KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
-    ("cross", "2010-11", "BE", "income_tax"): (
+from pipeline_common.report import Exceptions
+
+# (check, start of the check's message) -> reason. Each was checked against the source file, its footnotes and
+# the other copy of the table. Checks (validate.py): "identity", "summary" and "cross" for the Receipts tables;
+# "rb identity", "rb headline" and "rb receipts" for Receipt Budget Annex 7.
+KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
+    ("cross", "BE 2010-11 income_tax:"): (
         "Budget 2011-12 restated the 2010-11 Budget Estimate: Budget 2010-11 printed income tax 1,20,566 and "
         "'Other taxes and duties' 8,103; Budget 2011-12 has no 'Other taxes' row and prints income tax 1,28,066 "
         "(+7,500) and wealth tax 603 (= 8,103 - 7,500). Gross tax is 7,46,651 in both, so this is a "
@@ -40,6 +43,13 @@ KNOWN_FORMAT_ISSUES[("2017-18", "xlsx")] = (
     "2015-16) for BE/RE 2016-17 and BE 2017-18. All other values agree. Its header also mislabels the "
     "Actuals column '2016-2016' (fixed via HEADER_FIXES)."
 )
+
+# Every known exception, with the other copies' differences as check "format".
+EXCEPTIONS = Exceptions({
+    **KNOWN_EXCEPTIONS,
+    **{("format", f"Budget {budget}: {ext.upper()} differs"): reason
+       for (budget, ext), reason in KNOWN_FORMAT_ISSUES.items()},
+})
 
 # Typos in a copy's column headings, fixed before reading: (budget, format) -> [(printed, corrected)]
 HEADER_FIXES: dict[tuple[str, str], list[tuple[str, str]]] = {

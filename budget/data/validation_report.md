@@ -387,7 +387,7 @@ Headline figures, taxes, ministries and schemes. Every allowed exception lists i
 5915 checks, 0 failures.
 
 - 100 scheme rows not compared: the same name appears twice under one department in that budget, so they cannot be matched across budgets by name.
-- Restated: central_sector 'Grand Total' BE 2017-18: 666,644.02 in budget 2017-18 vs 663,663.02 in budget 2018-19 (-2,981.00, 0.4%)
+- central_sector 'Grand Total' BE 2017-18: 666,644.02 in budget 2017-18 vs 663,663.02 in budget 2018-19 (-2,981.00, 0.4%). Explained: Budget 2018-19 prints the central sector schemes' Grand Total for BE 2017-18 as 6,63,663.02, against 6,66,644.02 in Budget 2017-18 itself (-2,981.00, 0.4%). The statement was reorganised between the two budgets (36 rows printed only in Budget 2017-18, 60 only in Budget 2018-19), so the restatement cannot be traced to single rows; the rows printed in both agree.
 - Restated: central_sector 'National AIDS and STD Control Programme' BE 2022-23: 2,622.75 in budget 2022-23 vs 3,027.02 in budget 2023-24 (+404.27, 13.4%)
 - Restated: css 'National Health Mission' BE 2022-23: 37,800.23 in budget 2022-23 vs 37,159.73 in budget 2023-24 (-640.50, 1.7%)
 - css 'Others (including amount Met from & Transfer to va' BE 2024-25: -8,634.42 in budget 2024-25 vs -8,034.42 in budget 2025-26 (+600.00, 6.9%). Explained: Budget 2025-26 Statement 4A restates BE 2024-25 with PMKSY split up: Flood Management and Border Areas Programme (449.57) and Irrigation Census (40.00) become rows of their own, and 600.00 moves to 'Others (including amount met from & transfer to various funds)', -8,634.42 becoming -8,034.42. 9,339.37 - 449.57 - 40.00 - 600.00 = 8,249.80; no other row changes and the Grand Total for BE 2024-25 is the same in both budgets (5,05,978.07).

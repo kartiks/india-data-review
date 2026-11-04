@@ -46,9 +46,18 @@ PMKSY_2024 = (
     "budgets (5,05,978.07)."
 )
 
-# A BE reprinted in the next budget may be restated. A difference above both limits fails unless listed below.
+# A BE reprinted in the next budget may be restated. A scheme row's difference above both limits fails unless
+# listed below; a Grand Total fails on any difference beyond rounding unless listed (the reasons for scheme rows
+# rely on the Grand Total being unchanged).
 RESTATED_REL = 0.02
 RESTATED_CRORE = 500
+
+CENTRAL_SECTOR_2017 = (
+    "Budget 2018-19 prints the central sector schemes' Grand Total for BE 2017-18 as 6,63,663.02, against 6,66,644.02 "
+    "in Budget 2017-18 itself (-2,981.00, 0.4%). The statement was reorganised between the two budgets (36 rows "
+    "printed only in Budget 2017-18, 60 only in Budget 2018-19), so the restatement cannot be traced to single rows; "
+    "the rows printed in both agree."
+)
 
 # (budget, scheme_type, check, key) -> reason. Keys: rct "<level> <number>|<kind> <year>",
 # group "<level> <number>|<kind> <year>" or "<level> <number>|*", grand "<kind> <year>|<part>".
@@ -69,6 +78,7 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
     ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2023-24"): PMKSY_2023,
     ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2024-25"): PMKSY_2024,
     ("cross", "css", "css:others_including_amount_met_from_transfer_to_various_funds", "BE 2024-25"): PMKSY_2024,
+    ("cross", "central_sector", "central_sector:grand_total", "BE 2017-18"): CENTRAL_SECTOR_2017,
 }
 
 # (budget, scheme_type, ext) -> why a secondary copy differs from the PDF (the PDF is used).
@@ -213,24 +223,23 @@ def _across_budgets(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                     ambiguous += 1
                     continue
                 for pk, v in i["values"].items():
-                    if pk[1] == "BE" and pk[0] == year:
-                        # The new year's BE is printed again next year: compare.
-                        pass
-                    seen[(t, i["item_id"], pk)].append((year, _v(v["total"]), i["label_as_printed"]))
+                    seen[(t, i["item_id"], pk)].append((year, _v(v["total"]), i["label_as_printed"], i["level"]))
     for (t, iid, pk), obs in sorted(seen.items(), key=lambda x: str(x[0])):
         if len(obs) < 2:
             continue
         checked += 1
-        vals = {round(v, 2) for _, v, _ in obs}
+        vals = {round(v, 2) for _, v, _, _ in obs}
         if len(vals) > 1:
-            (a_year, a, lab), (b_year, b, _) = obs[0], obs[1]
+            (a_year, a, lab, level), (b_year, b, _, _) = obs[0], obs[1]
             rel = abs(a - b) / max(abs(a), abs(b), 1)
             msg = (f"{t} {lab[:50]!r} {pk[1]} {pk[0]}: {a:,.2f} in budget {a_year} vs {b:,.2f} in budget {b_year} "
                    f"({b - a:+,.2f}, {rel:.1%})")
             reason = _exc("cross", t, iid, _per(pk))
             if reason:
                 notes.append(msg + f". Explained: {reason}")
-            elif pk[1] == "BE" and (rel <= RESTATED_REL or abs(a - b) <= RESTATED_CRORE):
+            elif level == "grand_total" and abs(a - b) <= TOLERANCE:
+                notes.append("Rounding: " + msg)
+            elif pk[1] == "BE" and level != "grand_total" and (rel <= RESTATED_REL or abs(a - b) <= RESTATED_CRORE):
                 # The next budget may restate a BE (reclassification); a small change is only noted.
                 notes.append("Restated: " + msg)
             else:

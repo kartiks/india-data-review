@@ -239,3 +239,15 @@ def test_scheme_rows_must_add_up_to_the_grand_total():
     data["budgets"]["2010-11"]["css"]["parsed"]["items"][-1]["values"][("2010-11", "BE")]["total"] = 1200
     _, _, fails, _ = scheme_section(data, "Schemes add up")
     assert fails == ["Budget 2010-11 css BE 2010-11 total: groups sum to 1,000.00, Grand Total 1,200.00"]
+
+
+def test_grand_total_restated_by_a_small_share_still_fails():
+    # Scheme A grows by 10 (1%) in the second budget and nothing offsets it, so the Grand Total moves by 10 too:
+    # a scheme row may be restated a little, the Grand Total may not.
+    pk = ("2010-11", "BE")
+    data = budgets(("2010-11", [item("css:a", {pk: (1000, 0, 1000)}, label="Scheme A")]),
+                   ("2011-12", [item("css:a", {pk: (1010, 0, 1010)}, label="Scheme A")]))
+    _, _, fails, notes = scheme_section(data, "Same scheme figure agrees")
+    assert fails == ["css 'Grand Total' BE 2010-11: 1,000.00 in budget 2010-11 vs 1,010.00 in budget 2011-12 "
+                     "(+10.00, 1.0%)"]
+    assert any(n.startswith("Restated: css 'Scheme A'") for n in notes)

@@ -19,7 +19,7 @@ Every value row must have exactly one value per column (blanks only where the
 document leaves a cell empty), otherwise parsing stops with ParseError.
 
 Modules: common (paths, label meanings), exceptions (reviewed exceptions), receipts (the Receipts table
-parser), annex7 (Receipt Budget actuals), load (every budget and copy), checks.
+parser), annex7 (Receipt Budget actuals), load (every budget and copy), validate (the checks).
 
 Public functions:
 - parse_receipts(rows, start, cell_based) -> {"columns", "items", "unknown_rows"}
@@ -28,7 +28,7 @@ Public functions:
 """
 
 from .annex7 import annex7_columns, annex7_header_text, load_receipt_budgets, parse_annex7
-from .checks import checks
+from .validate import checks
 from .common import DATA, MANIFEST, ROOT, TOLERANCE_CRORE, english, match_item, printed_label, slug
 from .exceptions import HEADER_FIXES, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES
 from .load import load_all, load_summary_observations, observations

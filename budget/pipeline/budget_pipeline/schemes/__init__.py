@@ -21,11 +21,11 @@ points higher than the rest. Every row must end up with all 12 cells filled
 (a "..." counts as filled) or parsing stops with an error.
 
 Modules: common (constants, the text line), read (PDF and spreadsheet readers), text_layer (cells read from the
-page image), items (lines -> items), ids (stable ids), load (every budget and copy), checks.
+page image), items (lines -> items), ids (stable ids), load (every budget and copy), validate (the checks).
 Public functions: parse_schemes(), parse_file(), load_all(), checks().
 """
 
-from .checks import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks
+from .validate import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks
 from .common import MANIFEST, NAME_MAP, PARTS, ROOT, SCHEME_TYPES, TOLERANCE, Line
 from .ids import build_name_map, item_id, load_name_map, normalise_name, slug
 from .items import lines_to_items, parse_schemes, parse_value

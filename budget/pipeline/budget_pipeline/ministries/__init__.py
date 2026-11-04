@@ -23,7 +23,7 @@ readers), table (the parser), ids (stable ids), load (every budget and copy),
 checks.
 """
 
-from .checks import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks, internal_checks
+from .validate import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks, internal_checks
 from .common import MANIFEST, NAME_MAP, ROOT, Line
 from .ids import assign_ids, load_name_map, lookup
 from .load import load_all, observations, parse_file

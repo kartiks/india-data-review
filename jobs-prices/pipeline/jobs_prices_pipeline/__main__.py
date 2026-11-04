@@ -7,10 +7,11 @@
     uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and the RBI handbook
                                                          # tables (what the weekly refresh runs)
 
-Exits non-zero if any check fails, so it can gate a website build. --refresh and
---refresh-api also exit non-zero when the base-2024 CPI releases, added by hand,
-are out of date (sources.cpi2024_overdue), so the weekly refresh fails until the
-new month is added. The data written is the same either way.
+Exits non-zero if any check fails, so it can gate a website build. When every check
+passes but the base-2024 CPI releases, added by hand, are out of date
+(sources.cpi2024_overdue), --refresh and --refresh-api exit with STALE (10) instead:
+the weekly refresh still commits the other data, then fails the run so someone adds
+the new month. The data written is the same either way.
 """
 
 import sys
@@ -21,6 +22,7 @@ from .sources import cpi2024_overdue
 
 OPTIONS = {"--fetch", "--refresh", "--refresh-api"}
 REFRESH = {"--refresh", "--refresh-api"}
+STALE = 10  # every check passed, but the base-2024 CPI is out of date (data-refresh.yml commits, then fails)
 
 
 def main(today: date | None = None) -> int:
@@ -37,7 +39,7 @@ def main(today: date | None = None) -> int:
     code = checks.main(ds)
     if REFRESH & set(args) and (why := cpi2024_overdue(ds["cpi2024"]["latest"], today or date.today())):
         print(f"FAIL: out of date: {why}", file=sys.stderr)
-        code = code or 1
+        code = code or STALE
     return code
 
 

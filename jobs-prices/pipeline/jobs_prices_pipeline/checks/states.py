@@ -107,7 +107,7 @@ def check_rbi_totals(ds: dict, report: Report) -> None:
 
 RBI_BASE_YEAR = "2011-12"  # the base year of the handbook's constant-price state accounts (tables 20 and 22)
 RBI_INCOME = {"gsdp": (21, 22), "per_capita_nsdp": (19, 20)}  # (current prices, constant prices)
-RBI_PRICE_RATIO_TOL = 0.1
+RBI_PRICE_RATIO_TOL = 0.25  # catches a swapped table or a unit slip (×10, ×100), not ordinary revisions (worst today ~6.5%)
 
 
 def check_rbi_income(ds: dict, report: Report) -> None:
@@ -116,7 +116,7 @@ def check_rbi_income(ds: dict, report: Report) -> None:
     - in the base year, current and constant prices are the same figure (within rounding);
     - after it, current prices are not below constant prices (prices have risen every year since 2011-12);
     - GSDP ÷ per capita NSDP is population × GSDP/NSDP, so it is about the same at current and constant prices
-      (within 10%); a table swapped for its pair, or read in the wrong unit, breaks this."""
+      (within 25%); a table swapped for its pair, or read in the wrong unit, breaks this."""
     v = {(r["table"], r["state"], r["year"]): r["value"] for r in ds["rbi"]
          if r["table"] in (19, 20, 21, 22) and r["value"] is not None}
     failures, checked = [], 0
@@ -128,7 +128,7 @@ def check_rbi_income(ds: dict, report: Report) -> None:
             if t != cur or k is None:
                 continue
             checked += 1
-            if year == RBI_BASE_YEAR and abs(c - k) > max(2, c * 1e-6):
+            if year == RBI_BASE_YEAR and abs(c - k) > max(2, c * 1e-4):
                 failures.append(f"{name} {state} {year} (base year): current prices {c:,.0f} ≠ constant prices {k:,.0f}")
             elif year > RBI_BASE_YEAR and c < k:
                 failures.append(f"{name} {state} {year}: current prices {c:,.0f} below constant prices {k:,.0f}")

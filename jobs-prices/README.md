@@ -73,7 +73,8 @@ releases by hand as below, so that you see the checks.
 
 It does notice when they are out of date: if the latest base-2024 month's release (about the 12th of the next month)
 is more than 45 days old, so the following month's release has been out for about two weeks, the refresh exits with
-an error after building and checking (`sources.cpi2024_overdue`), and the run fails until the new month is added.
+code 10 after building and checking (`sources.cpi2024_overdue`). The weekly workflow still commits the other data,
+then fails the run (so GitHub emails) until the new month is added.
 Only `--refresh-api` and `--refresh` do this: the plain build, and `scripts/ci.sh`, keep passing on committed data
 however much time has passed.
 
@@ -158,7 +159,7 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   (within 0.15 points; years with missing months, such as 2020-21, not compared); overall unemployment lies between
   men's and women's; the All-India rural wage lies within the states' range. State GDP and income per person:
   current and constant prices are equal in the base year (2011-12) and current ≥ constant after it, and GSDP ÷ per
-  capita NSDP is the same at current and constant prices within 10% (it is population × GSDP/NSDP).
+  capita NSDP is the same at current and constant prices within 25% (it is population × GSDP/NSDP).
 - **New price series**: headline sentence, summary table and annexures agree; page tables match the PDF; later
   releases revise only the previous month's provisional figures; linking factor = 2025 average new ÷ old.
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food

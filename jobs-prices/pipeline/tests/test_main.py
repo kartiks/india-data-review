@@ -57,7 +57,7 @@ def test_cpi2024_overdue():
     assert cpi2024_overdue(None, date(2026, 1, 1))
 
 
-@pytest.mark.parametrize("args, code", [([], 0), (["--fetch"], 0), (["--refresh"], 1), (["--refresh-api"], 1)])
+@pytest.mark.parametrize("args, code", [([], 0), (["--fetch"], 0), (["--refresh"], 10), (["--refresh-api"], 10)])
 def test_out_of_date_cpi2024_fails_only_the_refresh(monkeypatch, capsys, calls, args, code):
     # The offline build (and scripts/ci.sh) must keep passing on committed data however much time has passed.
     assert run(monkeypatch, *args, today=date(2027, 3, 1)) == code

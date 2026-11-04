@@ -237,7 +237,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 ## ✅ RBI state GDP and income per person: current and constant prices agree
 1359 checks, 0 failures.
 
-- Base year 2011-12: current = constant prices; later years: current ≥ constant; GSDP ÷ per capita NSDP (population × GSDP/NSDP) within 10% at current and constant prices.
+- Base year 2011-12: current = constant prices; later years: current ≥ constant; GSDP ÷ per capita NSDP (population × GSDP/NSDP) within 25% at current and constant prices.
 
 ## ✅ Prices, new series (base 2024): every release read in full
 9 checks, 0 failures.

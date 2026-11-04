@@ -3,7 +3,9 @@
 
 from collections import defaultdict
 
-from .common import ROOT, load, number
+from pipeline_common.numbers import number
+
+from .common import ROOT, load
 
 HCES_MPCE = "Average monthly per capita consumption expenditure (MPCE)"
 HCES_CATEGORIES = ("Monthly Per Capita Consumption Expenditure (MPCE) over Broad Categories in 30 Days",

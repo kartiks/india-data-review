@@ -107,7 +107,7 @@ def test_industry_growth_small_gap_fails_only_where_estimates_are_kept():
 
 def test_industry_growth_known_exception_is_allowed_with_reason():
     _, failures, notes = industry_growth(growth_ds("2011-12", "2014-15", "AE1", 4.0))
-    assert failures == [] and any(n.startswith("Allowed (1 rate)") and "first releases" in n for n in notes)
+    assert failures == [] and any(n.startswith("Allowed (1): ") and "first releases" in n for n in notes)
 
 
 def test_industry_growth_quarters_compare_with_the_same_quarter_a_year_earlier():
@@ -128,7 +128,7 @@ def test_industry_growth_mistyped_2019_20_rate_is_allowed():
     ds["data"]["2011-12"]["annual"]["2019-20"]["AE2"]["gva_by_industry"] = {"total": {"cur": 107.26}}
     ds["data"]["2011-12"]["annual"]["2018-19"]["RE1"]["gva_by_industry"] = {"total": {"cur": 100.0}}
     _, failures, notes = industry_growth(ds)
-    assert failures == [] and any(n.startswith("Allowed (1 rate)") and "mistyped" in n for n in notes)
+    assert failures == [] and any(n.startswith("Allowed (1): ") and "mistyped" in n for n in notes)
 
 
 def test_gdp_growth_exact_for_the_new_series():

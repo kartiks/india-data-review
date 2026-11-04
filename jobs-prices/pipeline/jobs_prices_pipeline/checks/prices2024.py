@@ -35,7 +35,10 @@ def check_releases_read(ds: dict, report: Report) -> None:
         if not (r["series"] or r["series_combined"]):
             failures.append(f"{m}: no All-India series")
         for prob in r["problems"]:
-            (allowed.add(BACKTICK, prob) if "`" in prob else failures.append(prob))
+            if "`" in prob:
+                allowed.add(BACKTICK, prob)
+            else:
+                failures.append(prob)
     report.add("Prices, new series (base 2024): every release read in full", checked, failures, allowed=allowed)
 
 
@@ -111,7 +114,10 @@ def check_revisions(ds: dict, report: Report) -> None:
             checked += 1
             if x["values"] != final[x["month"]]:
                 diff = f"{x['month']} in the {m} release {x['values']} vs latest {final[x['month']]}"
-                (notes.append(f"Provisional figure revised: {diff}") if x["month"] == m else failures.append(f"Final figure changed: {diff}"))
+                if x["month"] == m:
+                    notes.append(f"Provisional figure revised: {diff}")
+                else:
+                    failures.append(f"Final figure changed: {diff}")
     report.add("Prices, new series: only provisional figures are revised", checked, failures, notes)
 
 

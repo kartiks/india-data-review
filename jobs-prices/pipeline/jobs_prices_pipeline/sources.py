@@ -36,6 +36,8 @@ report, and the RBI's Handbook of Statistics on Indian States.
 
 from datetime import date
 
+from pipeline_common.text import slug
+
 API = "https://api.mospi.gov.in/api"
 PAGE_LIMIT = 200  # the API refuses larger pages
 
@@ -101,13 +103,6 @@ def cpi2024_overdue(latest: str | None, today: date) -> str | None:
     return (f"the latest base-2024 CPI month is {latest}, released about {released.isoformat()}, {age} days ago "
             f"(more than {CPI2024_MAX_AGE_DAYS}): add the newer monthly releases to CPI2024_RELEASES in sources.py "
             "and run --fetch (see the README, 'Each month')")
-
-
-def slug(text: str) -> str:
-    out = "".join(c if c.isalnum() else "_" for c in text.lower()).strip("_")
-    while "__" in out:
-        out = out.replace("__", "_")
-    return out
 
 
 def queries() -> list[tuple[str, str, dict]]:

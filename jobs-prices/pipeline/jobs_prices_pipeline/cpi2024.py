@@ -17,6 +17,8 @@ uses (the All-India series, the food index by month), cpi2024.csv and the site's
 import re
 from html.parser import HTMLParser
 
+from pipeline_common.numbers import number
+
 from .common import ROOT
 from .sources import CPI2024_RELEASES
 
@@ -66,13 +68,9 @@ def text_of(html: str) -> str:
 
 
 def num(s: str) -> float | None:
-    s = s.replace(",", "").replace("*", "").strip()
-    if s in ("", "-", "–"):
-        return None
-    try:
-        return float(s)
-    except ValueError:
-        return None
+    """A figure in a press release table: footnote marks ('*') ignored; '-', blanks and anything else not a
+    number are None."""
+    return number(s, strip="*")
 
 
 def numbers(row: list[str]) -> list[float | None]:

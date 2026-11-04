@@ -112,7 +112,8 @@ def test_back_series_before_2004_05_may_not_add_up_but_later_years_must():
     report = checks.Report(checks.INTRO)
     checks.check_identities({"data": {"2011-12-back": {"annual": {"2003-04": {"BACK": scaled(node)}}}}}, report)
     (s,) = report.sections
-    assert s.failures == [] and any(n.startswith("Allowed (1 figures") and "back series" in n for n in s.notes)
+    assert s.failures == [] and any(n.startswith("Allowed (1): ") and "back series" in n for n in s.notes)
+    assert s.allowed == [{"reason": checks.BACK_ADDITIVITY, "cases": 1}]  # counted in validation_summary.json
     (f,) = identity_failures(node, "2011-12-back", "2004-05", "BACK")
     assert "8 industries = total GVA" in f
 
@@ -224,7 +225,8 @@ def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monke
     unknown = "nas/2022-23/Current/Annually/ind05: unknown estimate stage 'Third Advance Estimates'"
     checked, failures, notes = run(checks.check_source, {"source_problems": [known, unknown], "duplicate_rows": []})
     assert checked == 1 and failures == [unknown]
-    assert notes[0].startswith(f"Allowed: {known}. Reason: MoSPI's API returns one Gross National Disposable Income")
+    assert notes[0].startswith("Allowed (1): MoSPI's API returns one Gross National Disposable Income")
+    assert notes[0].endswith(f" Cases:\n  - {known}")
 
 
 # ---- forecasts --------------------------------------------------------------------------------------------------
@@ -263,10 +265,10 @@ def test_forecast_document_not_downloaded_fails(monkeypatch):
 
 def test_back_series_rule_never_allows_a_missing_or_unknown_subindustry():
     structural = "2011-12-back series, 1990-91, BACK: sub-industries of transport_comm: missing storage"
-    assert checks.allowed("identity", structural) is None
+    assert checks.EXCEPTIONS.reason("identity", structural) is None
     off_sum = ("2011-12-back series, 1990-91, BACK, constant prices: sub-industries = industry — printed 100, "
                "parts give 95 (+5)")
-    assert checks.allowed("identity", off_sum) == checks.BACK_ADDITIVITY
+    assert checks.EXCEPTIONS.reason("identity", off_sum) == checks.BACK_ADDITIVITY
 
 
 def test_quarterly_rate_matches_rounded_or_truncated():
@@ -274,3 +276,18 @@ def test_quarterly_rate_matches_rounded_or_truncated():
     assert checks.quarterly_rate_matches(7.66, 7.6)   # truncated, as in the 2011-12 series
     assert checks.quarterly_rate_matches(-2.36, -2.3)  # truncated toward zero
     assert not checks.quarterly_rate_matches(7.66, 7.5)
+
+
+def test_known_exceptions_no_longer_needed_are_listed():
+    def sections():
+        report = checks.Report(checks.INTRO)
+        checks.check_unused_exceptions(report)
+        return report.sections
+
+    checks.EXCEPTIONS.reset()
+    (s,) = sections()
+    assert "no longer needed" in s.title and s.failures == [] and len(s.notes) == len(checks.KNOWN_EXCEPTIONS)
+    for check, prefix in checks.KNOWN_EXCEPTIONS:
+        assert checks.EXCEPTIONS.reason(check, prefix + " (as printed)")
+    assert sections() == []
+    checks.EXCEPTIONS.reset()

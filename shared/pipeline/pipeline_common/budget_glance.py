@@ -12,11 +12,10 @@ own (page_texts).
 import re
 from pathlib import Path
 
+from .numbers import strict_number
+from .text import fy
+
 INDIABUDGET = "https://www.indiabudget.gov.in"
-
-
-def _fy(start: int) -> str:
-    return f"{start}-{str(start + 1)[-2:]}"
 
 
 # ---- where the tables are ------------------------------------------------------------------------
@@ -24,7 +23,7 @@ def _fy(start: int) -> str:
 def site(start: int, latest: int) -> str:
     """The folder of a budget's documents. The latest budget (`latest`, its first year) is at the site's root,
     earlier ones under budget<year>/, and those before 2011-12 under budget_archive/."""
-    y = _fy(start)
+    y = fy(start)
     if start <= 2010:
         return f"{INDIABUDGET}/budget_archive/ub{y}"
     if start <= 2018:
@@ -68,24 +67,20 @@ IMAGE_READ = {
 }
 
 
-def _num(s: str) -> float:
-    return float(s.replace(",", ""))
-
-
 def parse_sentence(text: str, growth: bool = True) -> dict | None:
     """The first GDP sentence in text: {"gdp_crore", "printed_year", "text"}, and with growth=True, when the
     sentence states it, {"growth_pct", "over", "base_gdp_crore"}, with "text" running to the end of that part."""
     m = SENTENCE_RE.search(text)
     if not m:
         return None
-    out = {"gdp_crore": _num(m.group("gdp")), "printed_year": re.sub(r"\s", "", m.group("year"))}
+    out = {"gdp_crore": strict_number(m.group("gdp")), "printed_year": re.sub(r"\s", "", m.group("year"))}
     sentence = text[m.start(): m.end("crore")]
     g = GROWTH_RE.search(m.group("rest")) if growth else None
     if g:
         out.update(
             growth_pct=float(g.group("pct")),
             over=re.sub(r"\s+", " ", g.group("basis")).strip(" ,"),
-            base_gdp_crore=_num(g.group("base")),
+            base_gdp_crore=strict_number(g.group("base")),
         )
         sentence = text[m.start(): m.start("rest") + g.end()]
     out["text"] = sentence.strip()

@@ -23,10 +23,11 @@ from pathlib import Path
 
 from pipeline_common import download
 from pipeline_common.download import fetch_pages, get, is_type, now
+from pipeline_common.text import fy
 
 from . import forecasts, population_read
 from .sources import (BUDGETS, NAS_API, NAS_INDICATORS, NAS_PAGE_LIMIT, NAS_SERIES, STATE_INDICATORS, STATE_SERIES,
-                      budget_glance_urls, fy)
+                      budget_glance_urls)
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"

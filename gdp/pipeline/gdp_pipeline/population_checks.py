@@ -15,10 +15,11 @@ Each check returns (checks, failures, notes).
 import json
 from pathlib import Path
 
+from pipeline_common.text import fy
+
 from . import population as P
 from .population import (IMPLIED_TOL, MEASURES, MISREAD_GAP, PER_PERSON_TOL, PROJECTIONS_UNTIL, SERIES, implied,
                          table_population)
-from .sources import fy
 
 ROOT = Path(__file__).resolve().parents[2]
 

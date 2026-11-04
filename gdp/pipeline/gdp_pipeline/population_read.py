@@ -7,7 +7,9 @@ import json
 import re
 from pathlib import Path
 
-from .sources import fy
+from pipeline_common.numbers import strict_number
+from pipeline_common.text import fy
+
 
 ROOT = Path(__file__).resolve().parents[2]
 CURATED = Path(__file__).resolve().parent / "population_sources"
@@ -46,10 +48,6 @@ NAS_STATEMENTS = [
         "base": "2022-23",
     },
 ]
-
-
-def num(s: str) -> float:
-    return float(s.replace(",", ""))
 
 
 def press_notes() -> list[dict]:
@@ -97,14 +95,14 @@ def read_projections(manifest: dict) -> tuple[dict, list[str]]:
         if m:
             if fy(int(m[1])) in out:
                 problems.append(f"projections: year {m[1]} read twice on page {PROJECTIONS['pdf_page']}")
-            out[fy(int(m[1]))] = {"persons": num(m[2]), "male": num(m[3]), "female": num(m[4])}
+            out[fy(int(m[1]))] = {"persons": strict_number(m[2]), "male": strict_number(m[3]), "female": strict_number(m[4])}
     return out, problems
 
 
 def numbers(quote: str) -> list[float]:
     """The figures in a quoted statement row, leaving out its row number."""
     body = re.sub(r"^\d+\s+", "", quote)
-    return [num(x) for x in re.findall(r"(?<![\w.,])\d[\d,]*(?![\w.])", body)]
+    return [strict_number(x) for x in re.findall(r"(?<![\w.,])\d[\d,]*(?![\w.])", body)]
 
 
 def read_notes(manifest: dict) -> tuple[list[dict], list[str], int]:

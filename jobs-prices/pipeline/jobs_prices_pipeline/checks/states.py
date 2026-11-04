@@ -5,6 +5,7 @@ import re
 from collections import defaultdict
 
 from pipeline_common.report import Report
+from pipeline_common.text import fy_start, prev_fy
 
 from ..rbi import RBI_STATE_TABLES
 
@@ -42,7 +43,7 @@ def check_rbi_read(ds: dict, report: Report) -> None:
 
 def fy_average(months: dict[str, float], fy: str) -> float | None:
     """The average index over a financial year ('2023-24': April 2023 to March 2024), if every month has one."""
-    y = int(fy[:4])
+    y = fy_start(fy)
     vals = [months.get(m) for m in [f"{y}-{m:02d}" for m in range(4, 13)] + [f"{y + 1}-{m:02d}" for m in range(1, 4)]]
     return None if None in vals else sum(vals) / 12
 
@@ -60,7 +61,7 @@ def check_rbi_inflation(ds: dict, report: Report) -> None:
         if r["table"] != 108 or r["value"] is None:
             continue
         k, fy = state_key(r["state"]), r["year"]
-        prev = f"{int(fy[:4]) - 1}-{fy[2:4]}"
+        prev = prev_fy(fy)
         a, b = fy_average(idx[k], fy), fy_average(idx[k], prev)
         if a is None or b is None:
             skipped[fy] += 1

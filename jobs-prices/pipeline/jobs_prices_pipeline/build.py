@@ -24,8 +24,10 @@ import json
 from collections import defaultdict
 from datetime import datetime, timezone
 
+from pipeline_common.numbers import number
+
 from . import cpi2024, hces, plfs, prices, rbi
-from .common import MANIFEST, ROOT, number
+from .common import MANIFEST, ROOT
 from .plfs import RATE_DIMS, STATE_BREAKDOWNS
 
 DATA = ROOT / "data"

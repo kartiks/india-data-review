@@ -1,9 +1,6 @@
 """MoSPI's names, and the ids the datasets use for them: indicators, estimate stages, industries and institutional
 sectors. Shared by the national accounts (build.py), the state accounts (states.py), population and the checks."""
 
-import math
-import re
-
 INDICATORS = {
     1: ("gva", "Gross value added (GVA)"),
     2: ("net_taxes", "Net taxes on products"),
@@ -110,21 +107,6 @@ SECTOR_LABELS = {
     "households": "Households",
     "total": "Total",
 }
-
-
-def slug(text: str) -> str:
-    """'Trade & Repair Services' -> 'trade_repair_services': lower case, every run of other characters one '_'."""
-    return re.sub("_+", "_", "".join(c if c.isalnum() else "_" for c in text.lower())).strip("_")
-
-
-def number(v) -> float | None:
-    if v is None:
-        return None
-    try:
-        x = float(str(v).replace(",", ""))
-    except ValueError:
-        return None
-    return None if math.isnan(x) else x
 
 
 def latest_stage(stages: dict) -> str:

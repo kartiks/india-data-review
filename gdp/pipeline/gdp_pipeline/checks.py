@@ -24,7 +24,8 @@ figure on the site can be traced to an official source.
 10. State accounts: identities, growth, per-person figures and the sum of states
    against India's GDP (see states_checks.py).
 
-Exceptions are allowed only through KNOWN_EXCEPTIONS, each with a reason.
+Exceptions are allowed only through KNOWN_EXCEPTIONS and KNOWN_RULES, each with a reason, and are counted in
+validation_summary.json.
 Writes gdp/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 """
 
@@ -34,12 +35,13 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from pipeline_common.report import Report
+from pipeline_common.report import Allowed, Exceptions, Report
+from pipeline_common.text import fy, fy_start, prev_fy
 
 from . import population_checks, states_checks
 from .ids import BROAD, GROUPS, STAGE_ORDER
 from .forecasts import verify_quotes
-from .sources import BUDGETS, fy
+from .sources import BUDGETS
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -52,8 +54,9 @@ GROSS_GROWTH_GAP = 1.5
 # GDP and industries) must match the levels to within rounding.
 EXACT_GROWTH_SERIES = {"2022-23"}
 
-# The sub-industries MoSPI publishes for each industry (ids from ids.slug), as one or more complete sets. An
-# estimate that has sub-industries for an industry must have exactly one of its sets, and they must add up to it.
+# The sub-industries MoSPI publishes for each industry (ids from pipeline_common.text.slug), as one or more
+# complete sets. An estimate that has sub-industries for an industry must have exactly one of its sets, and they
+# must add up to it.
 SUBINDUSTRIES = {
     "agriculture": [["crops", "livestock", "forestry_and_logging", "fishing_and_aquaculture"]],
     "manufacturing": [["food_products_beverages_and_tobacco", "textiles_apparel_and_leather_products",
@@ -111,16 +114,13 @@ KNOWN_RULES = [
     ("identity", lambda m: any(m.startswith(f"2011-12 series, {y}, {s},") for y in ("2014-15", "2015-16") for s in ("AE1", "PE"))
      and "GDP = GVA + net taxes" in m, EARLY_NET_TAXES),
 ]
+EXCEPTIONS = Exceptions(KNOWN_EXCEPTIONS, KNOWN_RULES)
 
 
-def allowed(check: str, msg: str) -> str | None:
-    for (c, key), reason in KNOWN_EXCEPTIONS.items():
-        if c == check and msg.startswith(key):
-            return reason
-    for c, test, reason in KNOWN_RULES:
-        if c == check and test(msg):
-            return reason
-    return None
+def allowed() -> Allowed:
+    """A section's allowed exceptions, looked up in EXCEPTIONS. No CSV lists the cases a section leaves out of the
+    report, so the report does not point to one."""
+    return Allowed(EXCEPTIONS, more_hint="")
 
 
 def nodes(ds: dict, freq: str = "annual"):
@@ -136,17 +136,15 @@ def where(series: str, period: str, stage: str, price: str) -> str:
 
 
 def check_source(ds: dict, report: Report) -> None:
-    failures, notes = [], []
-    for p in ds["source_problems"]:
-        reason = allowed("source", p)
-        (notes.append(f"Allowed: {p}. Reason: {reason}") if reason else failures.append(p))
-    notes += [f"Left out: {d}" for d in ds["duplicate_rows"]]
+    known = allowed()
+    failures = known.sort_out("source", ds["source_problems"])
+    notes = [f"Left out: {d}" for d in ds["duplicate_rows"]]
     notes += [f"Read from the download of {e['fetched_on']} (since revised; sources/snapshots/): {e['series']} "
               f"series, {e['year']}{' ' + e['quarter'] if e['quarter'] else ''} {e['stage']}, {len(e['indicators'])} "
               "indicators" for e in ds.get("earlier_releases", [])]
     with open(DATA / "national_accounts.csv", encoding="utf-8") as f:
         rows = sum(1 for _ in f) - 1
-    report.add("Every published row is understood", rows, failures, notes)
+    report.add("Every published row is understood", rows, failures, notes, known)
 
 
 def sum_check(target: dict | None, parts: list[dict | None], price: str) -> tuple[bool, float, float] | None:
@@ -176,7 +174,7 @@ def check_identities(ds: dict, report: Report) -> None:
     failures, notes = [], []
     checked = 0
     stats: dict[str, int] = defaultdict(int)
-    allowed_by_reason: dict[str, list[str]] = defaultdict(list)
+    known = allowed()
 
     def test(name: str, loc: str, res) -> None:
         nonlocal checked
@@ -187,8 +185,7 @@ def check_identities(ds: dict, report: Report) -> None:
         ok, printed, computed = res
         if not ok:
             msg = f"{loc}: {name} — printed {printed:,.0f}, parts give {computed:,.0f} ({printed - computed:+,.0f})"
-            reason = allowed("identity", msg)
-            (allowed_by_reason[reason].append(msg) if reason else failures.append(msg))
+            failures.extend(known.sort_out("identity", [msg]))
 
     for freq in ("annual", "quarterly"):
         for series, period, stage, n in nodes(ds, freq):
@@ -232,21 +229,21 @@ def check_identities(ds: dict, report: Report) -> None:
                     if by:
                         sectors = ["public_nonfin", "private_nonfin", "public_fin", "private_fin", "government", "households"]
                         test(f"{ind} by sector = total", loc, sum_check(n.get(ind), [by.get(s) for s in sectors], price))
-    for reason, msgs in allowed_by_reason.items():
-        notes.append(f"Allowed ({len(msgs)} figures, e.g. {msgs[0]}). Reason: {reason}")
     notes.insert(0, "Checks run: " + "; ".join(f"{k} ({v})" for k, v in sorted(stats.items())))
-    report.add("Accounting identities hold in every estimate", checked, failures, notes)
+    # One example of each reason: the back series alone has hundreds of cases.
+    report.add("Accounting identities hold in every estimate", checked, failures, notes, known, limit=1)
 
 
 def check_growth(ds: dict, report: Report) -> None:
     """Each published growth rate must follow from the levels: this year's estimate vs an estimate of last year."""
     failures, notes, unreproduced = [], [], []
+    known = allowed()
     checked = 0
     pairing: dict[tuple[str, str], int] = defaultdict(int)
     for series, freqs in ds["data"].items():
         annual = freqs.get("annual", {})
         for year, stages in annual.items():
-            prev_year = f"{int(year[:4]) - 1}-{year[2:4]}"
+            prev_year = prev_fy(year)
             prev = annual.get(prev_year, {})
             for stage, n in stages.items():
                 g = n.get("growth", {}).get("gdp")
@@ -270,8 +267,7 @@ def check_growth(ds: dict, report: Report) -> None:
                         msg = f"{series} series, {year} {stage}: published {key} growth {g[key]}%, levels give {opts}"
                         gap = min(abs(v - g[key]) for v in calcs.values())
                         if gap > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
-                            reason = allowed("growth", msg)
-                            (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
+                            failures.extend(known.sort_out("growth", [msg]))
                         else:
                             unreproduced.append(msg)
     notes.insert(0, "Which estimate of the previous year each stage's growth is measured against: "
@@ -282,19 +278,19 @@ def check_growth(ds: dict, report: Report) -> None:
                      "keeps (it keeps one figure per year and stage, after later revisions). The site shows growth "
                      "rates as MoSPI announced them. Listed for review:")
         notes[2:2] = unreproduced
-    report.add("Published GDP growth rates follow from published GDP levels", checked, failures, notes)
+    report.add("Published GDP growth rates follow from published GDP levels", checked, failures, notes, known)
 
 
 def check_industry_growth(ds: dict, report: Report) -> None:
     """Each published industry growth rate (annual and quarterly) must follow from that industry's GVA levels:
     this period's estimate vs an estimate of the same period a year earlier."""
     failures, unreproduced = [], []
-    allowed_by_reason: dict[str, list[str]] = defaultdict(list)
+    known = allowed()
     checked = uncheckable = 0
     for freq in ("annual", "quarterly"):
         for series, period, stage, n in nodes(ds, freq):
             year, _, quarter = period.partition(" ")
-            prev_period = f"{int(year[:4]) - 1}-{year[2:4]}" + (f" {quarter}" if quarter else "")
+            prev_period = prev_fy(year) + (f" {quarter}" if quarter else "")
             prev = ds["data"][series][freq].get(prev_period, {})
             levels = n.get("gva_by_industry", {})
             for ind, g in n.get("gva_growth", {}).items():
@@ -313,17 +309,10 @@ def check_industry_growth(ds: dict, report: Report) -> None:
                     opts = ", ".join(f"{ps} {v:.2f}%" for ps, v in calcs.items())
                     msg = f"{series} series, {period} {stage}, {ind}: published {key} growth {g[key]}%, levels give {opts}"
                     if gap > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
-                        reason = allowed("industry_growth", msg)
-                        if reason:
-                            allowed_by_reason[reason].append(msg)
-                        else:
-                            failures.append(msg)
+                        failures.extend(known.sort_out("industry_growth", [msg]))
                     else:
                         unreproduced.append((gap, msg))
     notes = []
-    for reason, msgs in allowed_by_reason.items():
-        notes.append(f"Allowed ({len(msgs)} {'rate' if len(msgs) == 1 else 'rates'}). Reason: {reason}")
-        notes += msgs
     if uncheckable:
         notes.append(f"{uncheckable} published rates not checkable (no levels for the year before).")
     if unreproduced:
@@ -331,11 +320,12 @@ def check_industry_growth(ds: dict, report: Report) -> None:
                      "the levels but not exact: as for GDP, each was measured against an estimate of the year before "
                      "that MoSPI's API no longer keeps. The 20 furthest apart, for review:")
         notes += [m for _, m in sorted(unreproduced, reverse=True)[:20]]
-    report.add("Published industry growth rates follow from industry GVA levels", checked, failures, notes)
+    report.add("Published industry growth rates follow from industry GVA levels", checked, failures, notes, known)
 
 
 def check_quarters(ds: dict, report: Report) -> None:
     failures, notes = [], []
+    known = allowed()
     checked = 0
     for series, freqs in ds["data"].items():
         q = freqs.get("quarterly", {})
@@ -357,10 +347,9 @@ def check_quarters(ds: dict, report: Report) -> None:
                     if hits:
                         notes.append(f"{msg}; they match the {', '.join(hits)} instead")
                     else:
-                        reason = allowed("quarters", msg)
-                        (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
+                        failures.extend(known.sort_out("quarters", [msg]))
             # quarterly growth vs same quarter a year earlier
-            py = f"{int(y[:4]) - 1}-{y[2:4]}"
+            py = prev_fy(y)
             for i in range(1, 5):
                 n, p = q.get(f"{y} Q{i}", {}).get("LATEST"), q.get(f"{py} Q{i}", {}).get("LATEST")
                 g = (n or {}).get("growth", {}).get("gdp")
@@ -372,15 +361,11 @@ def check_quarters(ds: dict, report: Report) -> None:
                         calc = (n["gdp"][price] / p["gdp"][price] - 1) * 100
                         if not quarterly_rate_matches(calc, g[key]):
                             msg = f"{series} series, {y} Q{i}: published {key} growth {g[key]}%, levels give {calc:.2f}%"
-                            reason = allowed("quarters", msg)
-                            if reason:
-                                notes.append(f"Allowed: {msg}. Reason: {reason}")
-                            else:
-                                failures.append(msg)
+                            failures.extend(known.sort_out("quarters", [msg]))
     notes.append("Quarterly growth must match the levels exactly: MoSPI's API rewrites quarterly rates with the "
                  "quarterly levels, and in the 2011-12 series it truncates them to one decimal instead of rounding, "
                  "so either is accepted.")
-    report.add("Quarters add up to the year; quarterly growth follows from levels", checked, failures, notes)
+    report.add("Quarters add up to the year; quarterly growth follows from levels", checked, failures, notes, known)
 
 
 def quarterly_rate_matches(calc: float, published: float) -> bool:
@@ -400,7 +385,7 @@ def check_join(ds: dict, report: Report) -> None:
         msg = f"2011-12 GDP ({price}): back series {a:,.0f}, current series {latest} {b:,.0f}"
         (notes if abs(a - b) <= LEVEL_TOL else failures).append(msg)
     years = [r["year"] for r in ds["long_run"]]
-    gaps = [f"{a} → {b}" for a, b in zip(years, years[1:]) if int(b[:4]) != int(a[:4]) + 1]
+    gaps = [f"{a} → {b}" for a, b in zip(years, years[1:]) if fy_start(b) != fy_start(a) + 1]
     checked += 1
     if gaps:
         failures.append(f"long-run series has gaps: {gaps}")
@@ -471,10 +456,19 @@ def check_revisions(ds: dict, report: Report) -> None:
     report.add("Large revisions to growth (for review, not failures)", 0, [], notes)
 
 
+def check_unused_exceptions(report: Report) -> None:
+    """KNOWN_EXCEPTIONS entries no message matched in this run (MoSPI fixed the figure, or the message changed), for
+    review, as for the state accounts. Run after every check that uses EXCEPTIONS."""
+    unused = [f"{c}: {k}" for c, k in EXCEPTIONS.unused()]
+    if unused:
+        report.add("Known exceptions no longer needed (for review: remove them)", 0, [], unused)
+
+
 def main(ds: dict | None = None, out: Path | None = None) -> int:
     """Run every check on ds (default: the saved gdp.json) and write the report to out (default: gdp/data/)."""
     ds = ds or json.loads((DATA / "gdp.json").read_text())
     report = Report(INTRO)
+    EXCEPTIONS.reset()
     check_source(ds, report)
     check_identities(ds, report)
     check_growth(ds, report)
@@ -485,6 +479,7 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
     check_forecasts(ds, report)
     check_expenditure(ds, report)
     check_revisions(ds, report)
+    check_unused_exceptions(report)
     population_checks.check(ds, report)
     states_checks.check(ds, report)
     return report.write(out or DATA)

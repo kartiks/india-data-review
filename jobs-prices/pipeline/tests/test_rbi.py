@@ -9,7 +9,7 @@ from jobs_prices_pipeline import rbi
 from jobs_prices_pipeline.checks import states
 
 
-def workbook(path, notes: list[str]) -> None:
+def workbook(path, notes: list[str], years=("2022-23", "2023-24")) -> None:
     """One sheet laid out like the handbook's: title, notes in brackets, header row, states, a footnote."""
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -17,7 +17,7 @@ def workbook(path, notes: list[str]) -> None:
     ws.append([None, "TABLE 8: STATE-WISE UNEMPLOYMENT RATE"])
     for n in notes:
         ws.append([None, f"({n})"])
-    ws.append([None, "State/Union Territory", "2022-23", "2023-24"])
+    ws.append([None, "State/Union Territory", *years])
     ws.append([1, "Andhra Pradesh", 41, "45*"])
     ws.append([2, "ALL INDIA", 24, "-"])
     ws.append([None, "Note: * provisional."])
@@ -53,6 +53,16 @@ def test_reader_reports_an_unexpected_unit_or_sub_title(tmp_path, notes, problem
     workbook(tmp_path / "t.xlsx", notes)
     _, problems = rbi.read_table(tmp_path / "t.xlsx", 8, SPEC)
     assert any(problem in p for p in problems), problems
+
+
+def test_reader_leaves_out_a_year_that_is_not_a_fiscal_year(tmp_path):
+    # '2023-25' looks like a year to the header pattern, but no year before it could be found later
+    workbook(tmp_path / "t.xlsx", ["Rural Male", "Per Thousands"], years=("2022-23", "2023-25"))
+    recs, problems = rbi.read_table(tmp_path / "t.xlsx", 8, SPEC)
+    assert problems == ["Table 8 sheet T8: year '2023-25' in the header is not a fiscal year; its column is left out"]
+    assert {r["year"] for r in recs} == {"2022-23"}
+    assert problems[0] in failures_of(states.check_rbi_read, rbi_ds(recs, problems))  # a failure, not a crash
+    assert failures_of(states.check_rbi_inflation, rbi_ds(recs, problems)) == []
 
 
 def rbi_ds(rows, problems=()):

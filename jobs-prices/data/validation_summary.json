@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 592165,
+ "checks": 593524,
  "failures": 0,
  "allowed": 7430,
  "sections": [
@@ -132,13 +132,20 @@
    "allowed_reasons": []
   },
   {
+   "title": "RBI state GDP and income per person: current and constant prices agree",
+   "checks": 1359,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
    "title": "Prices, new series (base 2024): every release read in full",
    "checks": 9,
    "failures": 0,
    "allowed": 1,
    "allowed_reasons": [
     {
-     "reason": "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). The next month's release repeats it as final, and that figure is used.",
+     "reason": "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). It is read as missing and the rest of its row is kept; the next month's release repeats it as final, and that figure is used.",
      "cases": 1
     }
    ]
@@ -192,7 +199,7 @@
   "cpialrl.csv": "7b275129d770fad9a69b48676c0f7b7b671886b9b4eee6410d9949616c322565",
   "hces.csv": "6a7560779e72b2469b1dcadd3404e059d52df947d7b69519ce2c512ade4f23f7",
   "hces_overall.csv": "6c40823fb05b17c0517d5d205356a3b4dc27248fda24efb1cd410d40154fc106",
-  "jobs_prices.json": "aaa19e25f64125bdb243fd49ea92c363132683276e9379aa52a2f9967acb67c8",
+  "jobs_prices.json": "727b0619720d4bfd10adeb3a1ac2e90c7a3b66a661535a25f682b4f95fca5ea6",
   "plfs_conditions.csv": "03b8c8dc6b3c1c5eda884f703a30c0c980469f47b54b0e6b389fa390681f0a2d",
   "plfs_earnings.csv": "fe84dcb0a48937f0c46540e55b8b67f66f3d0733087f6e84642edaafb4f61750",
   "plfs_rates.csv": "6af787592650fedbc771376a8a9ac23d764e1edb180023ddb71c2f33b047e538",

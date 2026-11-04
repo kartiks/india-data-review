@@ -98,6 +98,26 @@ def fetch_pages(page_url: Callable[[int], str], what: str) -> list[dict]:
     return rows
 
 
+MAX_DROP = 0.05  # a re-download with more than 5% fewer records than the saved file is refused
+
+
+class RecordsDropped(RuntimeError):
+    """A re-download has far fewer records than the file saved before."""
+
+
+def check_records(manifest: dict, key: str, records: int, max_drop: float = MAX_DROP) -> None:
+    """Raise RecordsDropped if a re-download of `key` has more than max_drop (a fraction) fewer records than the
+    saved file (the manifest's "records"). Revisions add or change rows; a much shorter answer is more likely a
+    partial or faulty one, so the caller keeps the saved file. If the source really did drop the rows, remove the
+    entry's "records" from the manifest and download again."""
+    before = (manifest.get(key) or {}).get("records")
+    if before and records < before * (1 - max_drop):
+        raise RecordsDropped(
+            f"{key}: {records:,} records, {before:,} before ({(before - records) / before:.0%} fewer, more than "
+            f"{max_drop:.0%}); kept the saved file. If the source really dropped them, remove \"records\" from this "
+            "entry in sources/manifest.json and download again.")
+
+
 def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None, *,
          root: Path, raw: Path, snapshots: Path) -> bool:
     """Write the file (dest, under raw) and its manifest entry; paths in the manifest are relative to root. If the

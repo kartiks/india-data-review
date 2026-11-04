@@ -1,8 +1,11 @@
 """Where every figure comes from.
 
-All of it is from MoSPI's official data service (api.mospi.gov.in, the service
-behind esankhyiki.mospi.gov.in). Free, no key. Specs for each dataset:
+Items 1-4 are from MoSPI's official data service (api.mospi.gov.in, the service
+behind esankhyiki.mospi.gov.in), free, no key; item 3 is the Labour Bureau's,
+served by it. Specs for each dataset:
 https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
+Items 5-7 are documents: MoSPI's press releases on PIB, a table of MoSPI's HCES
+report, and the RBI's Handbook of Statistics on Indian States.
 
 1. Jobs: Periodic Labour Force Survey (PLFS), /api/plfs/getData
    - indicators 1-3: labour force participation rate, worker population ratio,
@@ -10,7 +13,8 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
      5: conditions of regular employees (written contract, paid leave, social
      security); 6-8: earnings (regular wage, casual wage, self-employment).
    - annual (calendar years from 2022; job conditions by July-June year from
-     2017-18), quarterly (urban, from 2018) and monthly (from 2025).
+     2017-18), quarterly (urban from April-June 2018, rural too from 2025)
+     and monthly (from 2025).
 2. Consumer prices: CPI (base 2012 = 100), /api/cpi/getCPIIndex, Jan 2013 to
    Dec 2025. Every group and subgroup for All India; the general index for
    every state. The new 2024-base series (from Jan 2026) is item 5.
@@ -24,7 +28,13 @@ https://api.mospi.gov.in/layout/swagger_user_<dataset>.yaml
    tables on each release's page (divisions, groups, states, and the All-India
    series from January 2025) and checked against the release's PDF where it
    has one. Add each new month's release page below.
+6. Household spending, overall (rural + urban): Table A2 of MoSPI's full HCES
+   2023-24 report (Excel, mospi.gov.in), the estimated persons used as weights.
+7. State comparisons: the RBI Handbook of Statistics on Indian States, the
+   tables listed in rbi.RBI_STATE_TABLES (Excel, rbi.org.in).
 """
+
+from datetime import date
 
 API = "https://api.mospi.gov.in/api"
 PAGE_LIMIT = 200  # the API refuses larger pages
@@ -70,6 +80,27 @@ CPI2024_RELEASES = {
     "2026-08": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2310058&reg=3&lang=1",
     "2026-09": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2322244&reg=3&lang=1",
 }
+CPI2024_RELEASE_DAY = 12  # MoSPI releases each month's CPI on about the 12th of the next month
+CPI2024_MAX_AGE_DAYS = 45  # the refresh fails when the latest release is older: the next one is ~2 weeks overdue
+
+
+def cpi2024_overdue(latest: str | None, today: date) -> str | None:
+    """Why the base-2024 CPI is out of date, or None. latest = the latest month read ('2026-09'). Its release came
+    out about the 12th of the next month; more than CPI2024_MAX_AGE_DAYS after that, the following month's release
+    (due a month later) has been out for about two weeks and has not been added to CPI2024_RELEASES.
+
+    Run only by the weekly refresh (--refresh-api, --refresh), not by the offline build: the committed data must
+    keep building and passing its checks however much time passes."""
+    if latest is None:
+        return "no base-2024 CPI release read"
+    y, m = map(int, latest.split("-"))
+    released = date(y + m // 12, m % 12 + 1, CPI2024_RELEASE_DAY)
+    age = (today - released).days
+    if age <= CPI2024_MAX_AGE_DAYS:
+        return None
+    return (f"the latest base-2024 CPI month is {latest}, released about {released.isoformat()}, {age} days ago "
+            f"(more than {CPI2024_MAX_AGE_DAYS}): add the newer monthly releases to CPI2024_RELEASES in sources.py "
+            "and run --fetch (see the README, 'Each month')")
 
 
 def slug(text: str) -> str:

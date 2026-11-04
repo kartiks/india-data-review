@@ -58,7 +58,16 @@ jobs:
         id: jobs
         continue-on-error: true
         working-directory: jobs-prices/pipeline
-        run: timeout 150m uv run --locked python -m jobs_prices_pipeline --refresh-api
+        # Exit 10: every check passed but the base-2024 CPI is out of date. The data is still committed;
+        # the last step fails the run so someone adds the new month (jobs-prices/README.md).
+        run: |
+          code=0
+          timeout 150m uv run --locked python -m jobs_prices_pipeline --refresh-api || code=$?
+          if [ "$code" -eq 10 ]; then
+            echo "cpi_stale=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          exit "$code"
 
       - name: Commit the areas whose sources changed and whose checks passed
         id: commit
@@ -175,4 +184,10 @@ jobs:
         if: steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
         run: |
           echo "::error::GDP: ${{ steps.gdp.outcome }}, jobs and prices: ${{ steps.jobs.outcome }}. Read that step's log; the run's artifact has each area's validation report and any downloads not pushed."
+          exit 1
+
+      - name: Fail if the base-2024 CPI is out of date
+        if: steps.jobs.outputs.cpi_stale == 'true'
+        run: |
+          echo "::error::The base-2024 CPI is out of date: add the latest PIB release to CPI2024_RELEASES in jobs-prices/pipeline/jobs_prices_pipeline/sources.py. The other jobs and prices data was committed."
           exit 1

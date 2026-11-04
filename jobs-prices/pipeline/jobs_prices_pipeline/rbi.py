@@ -6,28 +6,41 @@ RBI_STATE_TABLES by their number, checks each title, and keeps the Excel files. 
 
 Each sheet has a title, an optional sub-title ("(Rural Male)"), a unit ("(₹ Lakh)", "(Per Thousands)"), a header
 row starting "State/Union Territory" with the years (on that row or the next), one row per state and often an
-"ALL INDIA" row, then footnotes. "-" means not available, "." not applicable; a "*" marks a footnote.
+"ALL INDIA" row, then footnotes. "-" means not available, "." not applicable; a "*" marks a footnote. Each table's
+unit and sub-titles are listed in RBI_STATE_TABLES, and a sheet with any other is reported as a problem (a failure in
+the checks).
 """
 
 import re
+from typing import NamedTuple
+
+from .common import ROOT
 
 HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
 
-# table number -> (our id, words the title must contain)
+class Table(NamedTuple):
+    id: str  # our id for the table
+    words: str  # words the title must contain
+    unit: str  # the unit the sheet must give (spelled as UNIT_SPELLINGS maps it)
+    variants: tuple[str, ...] = ("",)  # the sub-titles its sheets may have ("" for none)
+
+
+UNEMPLOYMENT = "UNEMPLOYMENT RATE"
 RBI_STATE_TABLES = {
-    8: ("unemployment_rural", "UNEMPLOYMENT RATE"),
-    9: ("unemployment_urban", "UNEMPLOYMENT RATE"),
-    19: ("nsdp_per_capita_current", "PER CAPITA NET STATE DOMESTIC PRODUCT"),
-    20: ("nsdp_per_capita_constant", "PER CAPITA NET STATE DOMESTIC PRODUCT"),
-    21: ("gsdp_current", "GROSS STATE DOMESTIC PRODUCT"),
-    22: ("gsdp_constant", "GROSS STATE DOMESTIC PRODUCT"),
-    108: ("cpi_inflation", "AVERAGE INFLATION (CPI) - GENERAL"),
-    112: ("wage_construction", "CONSTRUCTION WORKERS"),
-    113: ("wage_agriculture", "GENERAL AGRICULTURAL LABOURERS"),
-    114: ("wage_horticulture", "HORTICULTURE WORKERS"),
-    115: ("wage_non_agriculture", "NON-AGRICULTURAL LABOURERS"),
+    8: Table("unemployment_rural", UNEMPLOYMENT, "Per Thousands", ("Rural Male", "Rural Female", "Rural Overall")),
+    9: Table("unemployment_urban", UNEMPLOYMENT, "Per Thousands", ("Urban Male", "Urban Female", "Urban Overall")),
+    19: Table("nsdp_per_capita_current", "PER CAPITA NET STATE DOMESTIC PRODUCT", "₹"),
+    20: Table("nsdp_per_capita_constant", "PER CAPITA NET STATE DOMESTIC PRODUCT", "₹"),
+    21: Table("gsdp_current", "GROSS STATE DOMESTIC PRODUCT", "₹ Lakh"),
+    22: Table("gsdp_constant", "GROSS STATE DOMESTIC PRODUCT", "₹ Lakh"),
+    108: Table("cpi_inflation", "AVERAGE INFLATION (CPI) - GENERAL", "Per cent"),
+    112: Table("wage_construction", "CONSTRUCTION WORKERS", "₹"),
+    113: Table("wage_agriculture", "GENERAL AGRICULTURAL LABOURERS", "₹"),
+    114: Table("wage_horticulture", "HORTICULTURE WORKERS", "₹"),
+    115: Table("wage_non_agriculture", "NON-AGRICULTURAL LABOURERS", "₹"),
 }
-UNITS = ("₹", "₹ Lakh", "Per Thousands", "Per cent", "Per Cent", "Rs.", "Rs. Lakh")
+# Other spellings RBI has used for the same units
+UNIT_SPELLINGS = {"Rs.": "₹", "Rs. Lakh": "₹ Lakh", "Per Cent": "Per cent", "Per Thousand": "Per Thousands"}
 YEAR = re.compile(r"^\d{4}-\d{2}$")
 
 
@@ -66,8 +79,10 @@ def cell(v) -> tuple[float | None, str, str]:
         return None, s, "unreadable"
 
 
-def read_table(path, number: int, table_id: str) -> tuple[list[dict], list[str]]:
-    """Every value of one table, one record each, and any problems."""
+def read_table(path, number: int, spec: Table) -> tuple[list[dict], list[str]]:
+    """Every value of one table, one record each, and any problems. Each sheet's notes under the title (in brackets)
+    must be the table's unit and one of its variants: anything else is a problem, since the site looks figures up
+    by variant and shows them in that unit."""
     import openpyxl
 
     wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
@@ -81,8 +96,13 @@ def read_table(path, number: int, table_id: str) -> tuple[list[dict], list[str]]
             problems.append(f"Table {number} sheet {ws.title}: no 'State/Union Territory' header")
             continue
         notes = [x.strip("()") for x in b[1:head] if x.startswith("(")]
-        unit = next((x for x in notes if x in UNITS), "")
-        variant = " ".join(x for x in notes if x not in UNITS)
+        units = [UNIT_SPELLINGS.get(x, x) for x in notes if UNIT_SPELLINGS.get(x, x) == spec.unit]
+        variant = " ".join(x for x in notes if UNIT_SPELLINGS.get(x, x) != spec.unit)
+        unit = units[0] if units else ""
+        if not units:
+            problems.append(f"Table {number} sheet {ws.title}: unit ({spec.unit}) not found; notes under the title: {notes}")
+        if variant not in spec.variants:
+            problems.append(f"Table {number} sheet {ws.title}: sub-title {variant!r} is not one of {list(spec.variants)}")
         cols = {j: str(c).strip() for j, c in enumerate(rows[head]) if c is not None and YEAR.match(str(c).strip())}
         start = head + 1
         if not cols:
@@ -99,7 +119,24 @@ def read_table(path, number: int, table_id: str) -> tuple[list[dict], list[str]]
                 v, printed, flag = cell(r[j] if j < len(r) else None)
                 if flag == "unreadable":
                     problems.append(f"Table {number} {variant} {state} {year}: value {printed!r} is not a number")
-                out.append({"table": number, "table_id": table_id, "title": title, "variant": variant, "unit": unit,
+                out.append({"table": number, "table_id": spec.id, "title": title, "variant": variant, "unit": unit,
                             "state": "All India" if state.upper() == "ALL INDIA" else state, "year": year, "value": v,
                             "value_as_printed": printed, "flag": flag, "sheet": ws.title})
     return out, problems
+
+
+def read_all(manifest: dict) -> tuple[list[dict], list[str], dict]:
+    """Every value of the chosen handbook tables, the reader's problems, and {table number: edition}."""
+    out, problems, editions = [], [], {}
+    for n, spec in RBI_STATE_TABLES.items():
+        e = manifest.get(f"rbi/table{n:03d}")
+        if not e or e.get("empty"):
+            problems.append(f"RBI table {n} not downloaded")
+            continue
+        recs, probs = read_table(ROOT / e["file"], n, spec)
+        for r in recs:
+            r["source"] = f"rbi/table{n:03d}"
+        out += recs
+        problems += probs
+        editions[n] = e.get("edition", "")
+    return out, problems, editions

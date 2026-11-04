@@ -99,12 +99,18 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
             manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
             print(f"{key}: no data")
             continue
+        try:  # far fewer rows than before: kept, like a vanished indicator
+            download.check_records(manifest, key, result["total_records"])
+        except download.RecordsDropped as e:
+            print(e)
+            vanished.append(key)
+            continue
         content = (json.dumps(result, ensure_ascii=False, indent=1) + "\n").encode()
         changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
         print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
         time.sleep(0.3)
     if vanished:
-        raise RuntimeError(f"MoSPI returned no rows for indicators that had data: {', '.join(vanished)}")
+        raise RuntimeError(f"MoSPI returned no rows, or far fewer than before, for indicators that had data: {', '.join(vanished)}")
 
 
 def fetch_budgets(manifest: dict, force: bool) -> None:

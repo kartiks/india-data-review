@@ -6,6 +6,8 @@ Outputs (in gdp/data/):
 - gdp.json              : the same figures arranged for the site (by series,
                           year and estimate stage), plus the Budget's GDP
                           assumptions and the forecasts.
+- per_person.csv        : GDP, national income and household spending per
+                          person, with the population used (see population.py).
 - state_accounts.csv, states.json : the state accounts (see states.py).
 
 Nothing here changes a published number. The only arithmetic is:
@@ -22,201 +24,123 @@ Run: uv run python -m gdp_pipeline.build
 
 import csv
 import json
-import math
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from . import budget, forecasts
+from . import budget, forecasts, population, states
+from .ids import (BROAD, GROUPS, INDICATORS, INDUSTRIES, INDUSTRY_LABELS, SECTOR_LABELS, SECTORS, STAGE_BY_LABEL,
+                  STAGE_ORDER, STAGES, latest_stage, number, slug)
 from .sources import BUDGETS, NAS_INDICATORS, NAS_SERIES
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MANIFEST = ROOT / "sources" / "manifest.json"
 
-INDICATORS = {
-    1: ("gva", "Gross value added (GVA)"),
-    2: ("net_taxes", "Net taxes on products"),
-    3: ("product_taxes", "Taxes on products"),
-    4: ("product_subsidies", "Subsidies on products"),
-    5: ("gdp", "Gross domestic product (GDP)"),
-    6: ("cfc", "Consumption of fixed capital (depreciation)"),
-    7: ("ndp", "Net domestic product"),
-    8: ("gcf_by_industry", "Gross capital formation by industry of use"),
-    9: ("gfcf", "Gross fixed capital formation (investment in fixed assets)"),
-    10: ("pfce", "Private final consumption expenditure (household spending)"),
-    11: ("gfce", "Government final consumption expenditure"),
-    12: ("stocks", "Change in stocks"),
-    13: ("valuables", "Valuables"),
-    14: ("exports", "Exports of goods and services"),
-    15: ("imports", "Imports of goods and services"),
-    16: ("primary_income_row", "Primary income receivable, net, from rest of world"),
-    17: ("gni", "Gross national income"),
-    18: ("transfers_row", "Other current transfers, net, from rest of world"),
-    19: ("gndi", "Gross national disposable income"),
-    20: ("saving", "Gross saving"),
-    21: ("gva_growth", "GVA growth rate"),
-    22: ("gdp_growth", "GDP growth rate"),
-}
-GROWTH_INDICATORS = {21, 22}
-
-# Official estimate stages, in the order they are published.
-STAGES = [
-    ("AE1", "First Advance Estimates", "First Advance Estimate", "about 1 week after the year's 9th month (early January)"),
-    ("AE2", "Second Advance Estimates", "Second Advance Estimate", "end of February, before the year ends"),
-    ("PE", "Provisional Estimates", "Provisional Estimate", "end of May, 2 months after the year ends"),
-    ("RE1", "First Revised Estimates", "First Revised Estimate", "about 1 year after the year ends"),
-    ("RE2", "Second Revised Estimates", "Second Revised Estimate", "about 2 years after the year ends"),
-    ("RE3", "Third Revised Estimates", "Third Revised Estimate", "about 3 years after the year ends"),
-    ("ADD", "Additional Revision", "Additional revision", "special revision of 2011-12 to 2013-14"),
-    ("FINAL", "Final Estimates", "Final Estimate", "the last revision under MoSPI's current revision policy"),
-]
-STAGE_BY_LABEL = {label: sid for sid, label, _, _ in STAGES}
-STAGE_ORDER = {sid: i for i, (sid, _, _, _) in enumerate(STAGES)}
-
-INDUSTRIES = {
-    "Agriculture, Livestock, Forestry and Fishing": "agriculture",
-    "Mining and Quarrying": "mining",
-    "Manufacturing": "manufacturing",
-    "Electricity, Gas, Water Supply & Other Utility Services": "utilities",
-    "Construction": "construction",
-    "Trade, Hotels, Transport, Communication & Services Related to Broadcasting": "trade_transport",
-    "Trade, Repair, Hotels and Restaurants": "trade_hotels",
-    "Transport, Storage, Communication & Services Related to Broadcasting": "transport_comm",
-    "Financial, Real Estate & Professional Services": "finance_realestate",
-    "Financial Services": "financial",
-    "Real Estate, Ownership of Dwelling & Professional Services": "real_estate",
-    "Public Administration, Defence & Other Services": "public_other",
-    "Public Administration and Defence": "public_admin",
-    "Other Services": "other_services",
-    "Total Gross Value Added": "total",
-    "Total Gross Capital Formation": "total",
-    "Total GVA Growth Rate": "total",
-}
-# The eight broad groups MoSPI uses in its press notes, and the finer industries that make up three of them.
-GROUPS = {
-    "trade_transport": ["trade_hotels", "transport_comm"],
-    "finance_realestate": ["financial", "real_estate"],
-    "public_other": ["public_admin", "other_services"],
-}
-BROAD = ["agriculture", "mining", "manufacturing", "utilities", "construction",
-         "trade_transport", "finance_realestate", "public_other"]
-INDUSTRY_LABELS = {
-    "agriculture": "Agriculture, forestry & fishing",
-    "mining": "Mining & quarrying",
-    "manufacturing": "Manufacturing",
-    "utilities": "Electricity, gas, water & utilities",
-    "construction": "Construction",
-    "trade_transport": "Trade, hotels, transport & communication",
-    "trade_hotels": "Trade, repair, hotels & restaurants",
-    "transport_comm": "Transport, storage & communication",
-    "finance_realestate": "Finance, real estate & professional services",
-    "financial": "Financial services",
-    "real_estate": "Real estate, dwellings & professional services",
-    "public_other": "Public administration, defence & other services",
-    "public_admin": "Public administration & defence",
-    "other_services": "Other services",
-    "total": "Total GVA",
-}
-SECTORS = {
-    "Public Non-Financial Corporations": "public_nonfin",
-    "Private Non-Financial Corporations": "private_nonfin",
-    "Public Financial Corporations": "public_fin",
-    "Private Financial Corporations": "private_fin",
-    "General Government": "government",
-    "Household Sector": "households",
-    "Households Including NPISH": "households",
-    "Total Gross Fixed Capital Formation": "total",
-    "Total Gross Saving": "total",
-    "Total Consumption of Fixed Capital": "total",
-    "Total Gross Value Added": "total",
-}
-SECTOR_LABELS = {
-    "public_nonfin": "Public non-financial companies",
-    "private_nonfin": "Private non-financial companies",
-    "public_fin": "Public financial companies",
-    "private_fin": "Private financial companies",
-    "government": "Government",
-    "households": "Households",
-    "total": "Total",
-}
-
-
-def slug(text: str) -> str:
-    return "".join(c if c.isalnum() else "_" for c in text.lower()).strip("_").replace("__", "_")
-
-
-def number(v) -> float | None:
-    if v is None:
-        return None
-    try:
-        x = float(str(v).replace(",", ""))
-    except ValueError:
-        return None
-    return None if math.isnan(x) else x
-
 
 def series_key(base: str, series: str) -> str:
     return base if series == "Current" else f"{base}-back"
 
 
-def load_rows(manifest: dict) -> tuple[list[dict], list[str]]:
-    """Every published row with ids attached. Returns (rows, problems)."""
+def versions(entry: dict) -> list[dict]:
+    """The file a manifest entry points to, then each earlier version of it kept in sources/snapshots/ (the entry's
+    history), newest first: {file, sha256, fetched_at}.
+
+    An estimate MoSPI later withdraws is still read back from a snapshot. If that ever happens, remove the
+    snapshot's entry from the history in sources/manifest.json (and its file) rather than keep it."""
+    current = {"file": entry["file"], "sha256": entry["sha256"], "fetched_at": entry.get("fetched_at")}
+    earlier = [{k: h.get(k) for k in ("file", "sha256", "fetched_at")} for h in reversed(entry.get("history", []))]
+    return [current] + earlier
+
+
+def read_row(r: dict, key: str, base: str, series: str, freq: str, code: int, url: str,
+             sha: str) -> tuple[dict | None, list[str]]:
+    """One API row with our ids attached, or None if it cannot be used; and the problems found in it."""
+    if not re.fullmatch(r"\d{4}-(\d{2}|2000)", str(r.get("year"))):
+        return None, [f"{key}: row with year {r.get('year')!r} left out (not a fiscal year): {r.get('indicator')} "
+                      f"{r.get('revision')} {r.get('current_price')}"]
+    stage_label = r.get("revision")
+    stage = STAGE_BY_LABEL.get(stage_label) if stage_label else ("BACK" if series == "Back" else "LATEST")
+    if stage is None:
+        return None, [f"{key}: unknown estimate stage {stage_label!r}"]
+    problems = []
+    industry = r.get("industry")
+    sector = r.get("institutional_sector")
+    ind = INDUSTRIES.get(industry) if industry else None
+    if industry and ind is None:
+        problems.append(f"{key}: unknown industry {industry!r}")
+    sec = SECTORS.get(sector) if sector else None
+    if sector and sec is None:
+        problems.append(f"{key}: unknown institutional sector {sector!r}")
+    return {
+        "series": series_key(base, series),
+        "base_year": base,
+        "frequency": "annual" if freq == "Annually" else "quarterly",
+        "year": r["year"],
+        "quarter": r.get("quarter") or "",
+        "indicator_code": code,
+        "indicator": INDICATORS[code][0],
+        "indicator_as_printed": r.get("indicator"),
+        "stage": stage,
+        "stage_as_printed": stage_label or "",
+        "industry": ind or "",
+        "industry_as_printed": industry or "",
+        "subindustry": slug(r["subindustry"]) if r.get("subindustry") else "",
+        "subindustry_as_printed": r.get("subindustry") or "",
+        "sector": sec or "",
+        "sector_as_printed": sector or "",
+        "current_price": number(r.get("current_price")),
+        "constant_price": number(r.get("constant_price")),
+        "unit": r.get("unit") or "",
+        "source_url": url,
+        "source_sha256": sha,
+    }, problems
+
+
+def load_rows(manifest: dict) -> tuple[list[dict], list[str], list[dict]]:
+    """Every published row with ids attached. Returns (rows, problems, earlier): earlier lists the estimates read from
+    an earlier version of a file.
+
+    MoSPI's API keeps only the latest estimate of each year in the 2022-23 series: when a year moves from the
+    Provisional to the First Revised Estimate, its Provisional Estimate is gone from the API. fetch.py keeps every
+    replaced file in sources/snapshots/ (the manifest entry's history), so an official estimate (year, quarter and
+    stage) that the current file no longer has is read from the newest earlier version that has it. Where versions
+    share an estimate, the newest wins. Rows without a stage of their own (the quarters' and the back series' latest
+    figures) come from the current file only. Each row's source_sha256 is that of the version it was read from."""
     out: list[dict] = []
     problems: list[str] = []
+    earlier: dict[tuple, set[str]] = {}
     for base, series, freq in NAS_SERIES:
         for code in NAS_INDICATORS:
             key = f"nas/{base}/{series}/{freq}/ind{code:02d}"
             entry = manifest.get(key)
             if not entry or entry.get("empty"):
                 continue
-            body = json.loads((ROOT / entry["file"]).read_text())
-            ind_id, _ = INDICATORS[code]
-            for r in body["rows"]:
-                if not re.fullmatch(r"\d{4}-(\d{2}|2000)", str(r.get("year"))):
-                    problems.append(f"{key}: row with year {r.get('year')!r} left out (not a fiscal year): {r.get('indicator')} "
-                                    f"{r.get('revision')} {r.get('current_price')}")
-                    continue
-                stage_label = r.get("revision")
-                stage = STAGE_BY_LABEL.get(stage_label) if stage_label else ("BACK" if series == "Back" else "LATEST")
-                if stage is None:
-                    problems.append(f"{key}: unknown estimate stage {stage_label!r}")
-                    continue
-                industry = r.get("industry")
-                sector = r.get("institutional_sector")
-                ind = INDUSTRIES.get(industry) if industry else None
-                if industry and ind is None:
-                    problems.append(f"{key}: unknown industry {industry!r}")
-                sec = SECTORS.get(sector) if sector else None
-                if sector and sec is None:
-                    problems.append(f"{key}: unknown institutional sector {sector!r}")
-                unit = r.get("unit") or ""
-                cur, con = number(r.get("current_price")), number(r.get("constant_price"))
-                out.append({
-                    "series": series_key(base, series),
-                    "base_year": base,
-                    "frequency": "annual" if freq == "Annually" else "quarterly",
-                    "year": r["year"],
-                    "quarter": r.get("quarter") or "",
-                    "indicator_code": code,
-                    "indicator": ind_id,
-                    "indicator_as_printed": r.get("indicator"),
-                    "stage": stage,
-                    "stage_as_printed": stage_label or "",
-                    "industry": ind or "",
-                    "industry_as_printed": industry or "",
-                    "subindustry": slug(r["subindustry"]) if r.get("subindustry") else "",
-                    "subindustry_as_printed": r.get("subindustry") or "",
-                    "sector": sec or "",
-                    "sector_as_printed": sector or "",
-                    "current_price": cur,
-                    "constant_price": con,
-                    "unit": unit,
-                    "source_url": entry["url"],
-                    "source_sha256": entry["sha256"],
-                })
-    return out, problems
+            have: set[tuple] = set()  # (year, quarter, stage as printed) already read from a newer version
+            for n, version in enumerate(versions(entry)):
+                found = set()
+                if not version["file"] or not (ROOT / version["file"]).exists():
+                    raise FileNotFoundError(f"{key}: version {version['sha256']} of {version['fetched_at']} is "
+                                            f"listed in sources/manifest.json but its file {version['file']!r} is missing")
+                for r in json.loads((ROOT / version["file"]).read_text())["rows"]:
+                    estimate = (r.get("year"), r.get("quarter") or "", r.get("revision"))
+                    if n and (r.get("revision") not in STAGE_BY_LABEL or estimate in have):
+                        continue
+                    row, why = read_row(r, key, base, series, freq, code, entry["url"], version["sha256"])
+                    problems += why
+                    if row is None:
+                        continue
+                    out.append(row)
+                    found.add(estimate)
+                    if n:
+                        k = (row["series"], row["frequency"], row["year"], row["quarter"], row["stage"],
+                             (version["fetched_at"] or "")[:10])
+                        earlier.setdefault(k, set()).add(row["indicator"])
+                have |= found
+    earlier_list = [{"series": s, "frequency": f, "year": y, "quarter": q, "stage": st, "fetched_on": at,
+                     "indicators": sorted(inds)} for (s, f, y, q, st, at), inds in sorted(earlier.items())]
+    return out, list(dict.fromkeys(problems)), earlier_list
 
 
 def dedupe(rows: list[dict]) -> tuple[list[dict], list[str]]:
@@ -333,10 +257,6 @@ def arrange(rows: list[dict]) -> dict:
     return json.loads(json.dumps(tree))
 
 
-def latest_stage(stages: dict) -> str:
-    return max(stages, key=lambda s: STAGE_ORDER.get(s, 99))
-
-
 def long_run(tree: dict) -> list[dict]:
     """One row per year, 1950-51 onward, on the 2011-12 base: back series to 2010-11, then the latest estimate."""
     back = tree["2011-12-back"]["annual"]
@@ -368,7 +288,7 @@ def long_run(tree: dict) -> list[dict]:
 
 def main() -> dict:
     manifest = json.loads(MANIFEST.read_text())
-    rows, problems = load_rows(manifest)
+    rows, problems, earlier = load_rows(manifest)
     rows, dup_notes = dedupe(rows)
     rows.sort(key=lambda r: (r["series"], r["frequency"], r["year"], r["quarter"], r["indicator_code"],
                              STAGE_ORDER.get(r["stage"], 99), r["industry"], r["subindustry"], r["sector"]))
@@ -379,8 +299,6 @@ def main() -> dict:
         w.writerows(rows)
 
     tree = arrange(rows)
-    from . import population  # imports this module, so not at the top
-
     pop = population.build(manifest, tree)  # adds per_person to every estimate with a population
     assumptions = [a for s in BUDGETS if (a := budget.assumption(s, manifest))]
     dataset = {
@@ -390,7 +308,8 @@ def main() -> dict:
         "series": {
             "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
             "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
-            "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only.",
+            "2022-23": "Base year 2022-23, released 27 February 2026. MoSPI's API keeps the latest estimate per year only; "
+                       "earlier estimates come from the downloads this site saved before each revision (earlier_releases).",
         },
         "stages": [{"id": sid, "as_printed": label, "label": short, "when": when} for sid, label, short, when in STAGES]
         + [{"id": "BACK", "as_printed": "", "label": "Back series", "when": "recomputed on the 2011-12 base"},
@@ -407,13 +326,13 @@ def main() -> dict:
         "forecasts": forecasts.build(manifest),
         "source_problems": problems,
         "duplicate_rows": dup_notes,
+        "earlier_releases": earlier,
     }
     n = population.write_csv(tree, pop["by_series"], DATA / "per_person.csv")
     print(f"per_person.csv: {n} rows")
     (DATA / "gdp.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
     print(f"national_accounts.csv: {len(rows)} rows; gdp.json written; {len(problems)} problems, {len(dup_notes)} duplicate notes")
 
-    from . import states  # imports this module, so not at the top
     states.build(manifest)
     return dataset
 

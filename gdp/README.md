@@ -41,7 +41,10 @@ The command exits with an error if any check fails, and the website (`../site/`)
 changed and pushes it to `main` once every check and the local CI pass (see
 [Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
 estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<date>/`, so the revision history of the new series builds up over time.
+`sources/snapshots/<date>/`, so the revision history of the new series builds up over time: the build reads an
+estimate stage (say a year's Provisional Estimate) from the newest saved file that has it once the current file no
+longer does, and lists those estimates in `gdp.json` (`earlier_releases`) and the validation report. Quarters have no
+stage of their own, so only their latest figures are used.
 
 Not refreshed by it, and updated by hand: the Budget's GDP assumption (with each new budget), the Economic Survey
 and RBI growth projections ([Adding a forecast](#adding-a-forecast)), and the population for a new year
@@ -74,7 +77,7 @@ one mistyped GVA growth rate (2019-20, Second Advance Estimates).
 
 ### State accounts
 
-`pipeline/gdp_pipeline/states.py` builds and checks them. For every state, year and price basis: GSDP and NSDP add
+`pipeline/gdp_pipeline/states.py` builds them and `states_checks.py` checks them. For every state, year and price basis: GSDP and NSDP add
 up from value added, taxes and subsidies on products; industries add up to total value added and sub-industries to
 their industry; every published growth rate follows from the levels (allowing for the levels' rounding, which
 matters for small states); the two tables of income per person agree, and GSDP and NSDP per person imply the same
@@ -104,7 +107,7 @@ What MoSPI publishes, and what is done with it:
   `site/src/lib/gdp/states.ts`).
 - A net figure that is not below the gross one is a copying error and is left out. MoSPI's net value added table
   repeats Karnataka's gross value added, and its second table of income per person repeats Karnataka's GSDP per
-  person; both are listed, with reasons, in `KNOWN_EXCEPTIONS` in `states.py`. A new case fails the checks until it
+  person; both are listed, with reasons, in `KNOWN_EXCEPTIONS` in `states_checks.py`. A new case fails the checks until it
   is looked at.
 - Chhattisgarh publishes no subsidies on products; its GSDP equals value added plus taxes (and would be worked out
   that way if its GSDP were ever missing).
@@ -161,7 +164,7 @@ Checks ("Population and figures per person" in the report):
 
 The 0.5% limit assumes MoSPI's population stays close to the 2019 projections. When MoSPI moves to population
 figures based on the next census, a correctly quoted year may fail it; check the years first, then raise
-`PROJECTION_GAP_MAX` in `population.py` with a note.
+`PROJECTION_GAP_MAX` in `population_checks.py` with a note.
 
 A year in the API with no population yet is listed in the report (not a failure) and has no per-person figures;
 the site's Per person page shows the latest year that has them and says which year is waiting.
@@ -184,7 +187,7 @@ new series), add its per-capita statement, which makes the check cover the revis
 
 1. On MoSPI's page for the publication (mospi.gov.in › Publications & Reports; it needs a browser), download the
    statement *Per Capita Income, Product and Final Consumption* (Statement 1.2 in 2026) as xlsx.
-2. Add an entry to `NAS_STATEMENTS` in `population.py` (key, the publication page's address, title, date, base), as
+2. Add an entry to `NAS_STATEMENTS` in `population_read.py` (key, the publication page's address, title, date, base), as
    the last entry.
 3. Run `uv run python -m gdp_pipeline.population --add ~/Downloads/<file>.xlsx`. It copies the file into
    `sources/raw/population/` and records it in the manifest (with its SHA-256 and that it was downloaded by hand).
@@ -201,7 +204,7 @@ edition's entry first. MoSPI divided by the printed population in NAS 2026; the 
 population rounded to the thousand in case a later edition does not.
 
 When the RBI publishes a new *Handbook of Statistics on the Indian Economy* (each July or August), the addresses of
-Tables 1 and 2 in `population.py` (`RBI_TABLES`) can be updated so that the checks cover the newest years too.
+Tables 1 and 2 in `population_read.py` (`RBI_TABLES`) can be updated so that the checks cover the newest years too.
 
 ## Forecast sources
 
@@ -252,7 +255,7 @@ Then run `uv run python -m gdp_pipeline --fetch`: it downloads the new documents
 ### When a check fails after a refresh
 
 Allowed exceptions are written in `pipeline/gdp_pipeline/checks.py`: one-off cases in `KNOWN_EXCEPTIONS` and whole
-families of known differences in `KNOWN_RULES`, each with its reason. Errors found in MoSPI's rows themselves
+families of known differences in `KNOWN_RULES`, each with its reason (state accounts: `states_checks.py`). Errors found in MoSPI's rows themselves
 (unit labels, odd years, duplicate rows) are handled in `build.py` and listed on the site's Sources page.
 
 ## Not yet covered

@@ -43,9 +43,12 @@ def test_unit_label_error_not_converted():
 
 
 @pytest.mark.skipif(not (ROOT / "data" / "gdp.json").exists(), reason="data not built")
-def test_checks_pass_on_saved_data():
+def test_checks_pass_on_saved_data(tmp_path):
+    # The report goes to tmp_path: gdp/data/validation_report.md and validation_summary.json are the site's build
+    # gate and are written only by the pipeline.
     ds = json.loads((ROOT / "data" / "gdp.json").read_text())
-    assert checks.main(ds) == 0
+    assert checks.main(ds, out=tmp_path) == 0
+    assert json.loads((tmp_path / "validation_summary.json").read_text())["result"] == "PASSED"
 
 
 def row(indicator, industry="", subindustry="", sector="", cur=None, con=None, unit="₹ Crore",
@@ -138,3 +141,68 @@ def test_gdp_growth_exact_for_the_new_series():
         report = checks.Report(checks.INTRO)
         checks.check_growth(ds(series, 6.5), report)
         assert len(report.sections[0].failures) == failures
+
+
+@pytest.mark.parametrize("text, expected", [
+    ("Trade & Repair Services", "trade_repair_services"),
+    ("Communication & Services Related to Broadcasting", "communication_services_related_to_broadcasting"),
+    ("Food Products, Beverages and Tobacco", "food_products_beverages_and_tobacco"),
+    (" -- Odd -- spacing -- ", "odd_spacing"),
+])
+def test_slug_collapses_every_run_of_separators(text, expected):
+    assert build.slug(text) == expected
+
+
+def identities(node):
+    report = checks.Report(checks.INTRO)
+    checks.check_identities({"data": {"2022-23": {"annual": {"2023-24": {"FINAL": node}}}}}, report)
+    (s,) = report.sections
+    return s.failures
+
+
+def trade_node(**subs):
+    return {"gva_by_industry": {"trade_hotels": {"cur": 100.0}}, "gva_sub": {"trade_hotels": subs}}
+
+
+def test_subindustries_that_add_up_pass():
+    assert identities(trade_node(trade_repair_services={"cur": 80.0}, hotels_restaurants={"cur": 20.0})) == []
+
+
+def test_subindustries_that_do_not_add_up_fail():
+    (f,) = identities(trade_node(trade_repair_services={"cur": 80.0}, hotels_restaurants={"cur": 40.0}))
+    assert "sub-industries = industry — printed 100, parts give 120 (-20)" in f
+
+
+def test_missing_subindustry_fails_instead_of_skipping_the_sum():
+    (f,) = identities(trade_node(trade_repair_services={"cur": 80.0}))
+    assert "sub-industries of trade_hotels: missing hotels_restaurants" in f
+
+
+def test_unexpected_subindustry_fails():
+    (f,) = identities(trade_node(trade__repair_services={"cur": 80.0}, hotels_restaurants={"cur": 20.0}))
+    assert "missing trade_repair_services; unexpected trade__repair_services" in f
+
+
+def test_subindustry_without_the_price_basis_fails():
+    (f,) = identities(trade_node(trade_repair_services={"cur": 80.0}, hotels_restaurants={"con": 20.0}))
+    assert "current prices: sub-industries of trade_hotels: no figure for hotels_restaurants" in f
+
+
+def test_subindustries_of_an_unlisted_industry_fail():
+    node = {"gva_by_industry": {"mining": {"cur": 10.0}}, "gva_sub": {"mining": {"coal": {"cur": 10.0}}}}
+    (f,) = identities(node)
+    assert "sub-industries of mining: not expected" in f
+
+
+def test_subindustries_without_their_industry_fail():
+    node = trade_node(trade_repair_services={"cur": 80.0}, hotels_restaurants={"cur": 20.0})
+    node["gva_by_industry"] = {}
+    (f,) = identities(node)
+    assert "2023-24, FINAL: sub-industries of trade_hotels: published, but trade_hotels itself is not" in f
+
+
+def test_either_set_of_transport_subindustries_is_accepted():
+    old = ["railways", "transport_by_other_means", "storage", "communication_services_related_to_broadcasting"]
+    node = {"gva_by_industry": {"transport_comm": {"cur": 40.0}},
+            "gva_sub": {"transport_comm": {k: {"cur": 10.0} for k in old}}}
+    assert identities(node) == []

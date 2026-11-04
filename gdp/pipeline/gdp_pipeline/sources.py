@@ -15,9 +15,13 @@
 2. Union Budget GDP assumption: "GDP for BE ... has been projected at ...",
    printed under the Budget at a Glance headline table (indiabudget.gov.in).
 
-3. Forecasts: IMF World Economic Outlook (historical forecasts file), and the
-   Economic Survey and RBI projections in forecasts.py (each with the exact
-   sentence and the official document it is quoted from).
+3. Forecasts: the Economic Survey's and the RBI's growth projections, listed
+   by hand in forecast_sources/*.json (each with the exact sentence and the
+   official document it is quoted from; see forecasts.py).
+
+4. Population, for figures per person: the 2019 population projections,
+   MoSPI's press notes and National Accounts Statistics, and the RBI's
+   handbook (see population_read.py).
 """
 
 from pipeline_common import budget_glance

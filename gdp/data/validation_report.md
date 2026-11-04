@@ -2,7 +2,7 @@
 
 National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (57077 checks, 0 failures)
+**Result: PASSED** (57473 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -29,8 +29,8 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, other_services: published twice with different real growth (6.2 and 6.3); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, public_admin: published twice with different real growth (1.6 and 2); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, total: published twice with different nominal growth (13.5 and 13.6); neither is used
-- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (3.2 and 3.3); neither is used
-- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (11.8 and 11.9); neither is used
+- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (3.2 and 3.3); neither is used
+- Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (11.8 and 11.9); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, trade_hotels: published twice with different real growth (10.9 and 11); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, transport_comm, air_transport: published twice with different real growth (-4.7 and -7); neither is used
 - Left out: 2011-12 series, 2012-13, gva_growth, ADD, transport_comm, railways: published twice with different real growth (12.7 and 12.8); neither is used
@@ -73,14 +73,14 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different nominal growth (12.6 and 12.7); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.2); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, total: published twice with different real growth (6 and 6.3); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 0); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels__restaurants: published twice with different real growth (-0.4 and 2.4); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 6.4); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade__repair_services: published twice with different real growth (5.9 and 7.7); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 0); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, hotels_restaurants: published twice with different real growth (-0.4 and 2.4); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 6.4); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels, trade_repair_services: published twice with different real growth (5.9 and 7.7); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 5.8); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, trade_hotels: published twice with different real growth (5.3 and 7.2); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used
-- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication__services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 16); neither is used
+- Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, communication_services_related_to_broadcasting: published twice with different real growth (15.9 and 18); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, railways: published twice with different real growth (6 and 6.5); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, road_transport: published twice with different real growth (6.2 and 6.4); neither is used
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, transport_comm, services_incidental_to_transport: published twice with different real growth (5 and 5.5); neither is used
@@ -93,11 +93,11 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - Left out: 2011-12 series, 2013-14, gva_growth, ADD, utilities: published twice with different real growth (4 and 4.7); neither is used
 
 ## ✅ Accounting identities hold in every estimate
-1959 checks, 0 failures.
+2355 checks, 0 failures.
 
-- Checks run: 8 industries = total GVA (222); GDP = GVA + net taxes on products (414); GNDI = GNI + net current transfers from abroad (99); GNI = GDP + net primary income from abroad (198); NDP = GDP − depreciation (198); cfc by sector = total (37); finer industries = total GVA (where groups are not published) (192); gfcf by sector = total (74); industry group = its parts (18); net taxes = taxes − subsidies (74); saving by sector = total (37); sub-industries = industry (396)
+- Checks run: 8 industries = total GVA (222); GDP = GVA + net taxes on products (414); GNDI = GNI + net current transfers from abroad (99); GNI = GDP + net primary income from abroad (198); NDP = GDP − depreciation (198); cfc by sector = total (37); finer industries = total GVA (where groups are not published) (192); gfcf by sector = total (74); industry group = its parts (18); net taxes = taxes − subsidies (74); saving by sector = total (37); sub-industries = industry (792)
 - Allowed (8 figures, e.g. 2011-12 series, 2014-15, AE1, current prices: GDP = GVA + net taxes on products — printed 12,653,762, parts give 13,000,302 (-346,540)). Reason: In MoSPI's API, net taxes on products for the First Advance and Provisional Estimates of 2014-15 and 2015-16 do not equal GDP minus GVA from the same release. GDP and GVA are the published headline figures (the February 2015 release put 2014-15 real GVA at ₹98.58 lakh crore, as here), so they are shown; net taxes for these four releases are not used.
-- Allowed (320 figures, e.g. 2011-12-back series, 1950-51, BACK, current prices: finer industries = total GVA (where groups are not published) — printed 9,809, parts give 10,280 (-471)). Reason: MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01; exact from 2004-05, where the back series was recompiled in full). Industry shares on the site for these years are shares of the sum of industries.
+- Allowed (507 figures, e.g. 2011-12-back series, 1950-51, BACK, current prices: finer industries = total GVA (where groups are not published) — printed 9,809, parts give 10,280 (-471)). Reason: MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01), nor the sub-industries to their industry (up to about 19% for transport's parts in the 1950s); both are exact from 2004-05, where the back series was recompiled in full. Industry shares on the site for these years are shares of the sum of industries.
 
 ## ✅ Published GDP growth rates follow from published GDP levels
 134 checks, 0 failures.
@@ -206,62 +206,7 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 ## ✅ Quarters add up to the year; quarterly growth follows from levels
 170 checks, 0 failures.
 
-- 55 quarterly growth rates are within 1.5 points of the levels but not exact: MoSPI's API keeps only the latest quarterly levels, while each growth rate was announced against the year-earlier quarter as estimated at the time. Listed for review:
-- 2011-12 series, 2012-13 Q1: published real growth 4.8%, levels give 4.87%
-- 2011-12 series, 2012-13 Q1: published nominal growth 13.1%, levels give 13.20%
-- 2011-12 series, 2012-13 Q2: published real growth 7.4%, levels give 7.49%
-- 2011-12 series, 2012-13 Q3: published real growth 5.3%, levels give 5.38%
-- 2011-12 series, 2012-13 Q4: published real growth 4.2%, levels give 4.30%
-- 2011-12 series, 2012-13 Q4: published nominal growth 12.6%, levels give 12.69%
-- 2011-12 series, 2013-14 Q2: published nominal growth 13.9%, levels give 13.97%
-- 2011-12 series, 2014-15 Q2: published nominal growth 13.6%, levels give 13.69%
-- 2011-12 series, 2014-15 Q4: published nominal growth 8.2%, levels give 8.29%
-- 2011-12 series, 2015-16 Q1: published real growth 7.5%, levels give 7.59%
-- 2011-12 series, 2015-16 Q1: published nominal growth 11.2%, levels give 11.29%
-- 2011-12 series, 2015-16 Q2: published nominal growth 9.8%, levels give 9.89%
-- 2011-12 series, 2015-16 Q3: published real growth 7.1%, levels give 7.20%
-- 2011-12 series, 2015-16 Q3: published nominal growth 9.1%, levels give 9.16%
-- 2011-12 series, 2015-16 Q4: published real growth 9.0%, levels give 9.09%
-- 2011-12 series, 2015-16 Q4: published nominal growth 11.4%, levels give 11.50%
-- 2011-12 series, 2016-17 Q1: published real growth 8.6%, levels give 8.68%
-- 2011-12 series, 2016-17 Q2: published real growth 9.6%, levels give 9.67%
-- 2011-12 series, 2016-17 Q2: published nominal growth 11.8%, levels give 11.87%
-- 2011-12 series, 2016-17 Q3: published real growth 8.5%, levels give 8.58%
-- 2011-12 series, 2016-17 Q3: published nominal growth 11.4%, levels give 11.46%
-- 2011-12 series, 2016-17 Q4: published real growth 6.2%, levels give 6.29%
-- 2011-12 series, 2016-17 Q4: published nominal growth 11.5%, levels give 11.55%
-- 2011-12 series, 2017-18 Q3: published real growth 6.6%, levels give 6.67%
-- 2011-12 series, 2017-18 Q3: published nominal growth 11.9%, levels give 11.98%
-- 2011-12 series, 2018-19 Q1: published real growth 7.4%, levels give 7.50%
-- 2011-12 series, 2018-19 Q1: published nominal growth 13.9%, levels give 13.98%
-- 2011-12 series, 2018-19 Q2: published real growth 6.4%, levels give 6.46%
-- 2011-12 series, 2018-19 Q2: published nominal growth 11.9%, levels give 12.00%
-- 2011-12 series, 2019-20 Q1: published real growth 5.0%, levels give 5.10%
-- 2011-12 series, 2019-20 Q1: published nominal growth 8.3%, levels give 8.36%
-- 2011-12 series, 2019-20 Q2: published real growth 4.2%, levels give 4.30%
-- 2011-12 series, 2019-20 Q2: published nominal growth 4.5%, levels give 4.56%
-- 2011-12 series, 2019-20 Q3: published real growth 3.2%, levels give 3.26%
-- 2011-12 series, 2019-20 Q3: published nominal growth 5.3%, levels give 5.38%
-- 2011-12 series, 2020-21 Q1: published nominal growth -21.3%, levels give -21.36%
-- 2011-12 series, 2020-21 Q2: published nominal growth -2.8%, levels give -2.87%
-- 2011-12 series, 2020-21 Q3: published real growth 1.7%, levels give 1.78%
-- 2011-12 series, 2020-21 Q3: published nominal growth 6.5%, levels give 6.60%
-- 2011-12 series, 2020-21 Q4: published real growth 3.2%, levels give 3.29%
-- 2011-12 series, 2021-22 Q1: published nominal growth 32.9%, levels give 32.98%
-- 2011-12 series, 2021-22 Q2: published real growth 9.8%, levels give 9.87%
-- 2011-12 series, 2021-22 Q4: published real growth 4.4%, levels give 4.45%
-- 2011-12 series, 2022-23 Q1: published real growth 13.4%, levels give 13.49%
-- 2011-12 series, 2022-23 Q2: published real growth 5.9%, levels give 5.96%
-- 2011-12 series, 2022-23 Q2: published nominal growth 14.7%, levels give 14.76%
-- 2011-12 series, 2022-23 Q4: published real growth 6.8%, levels give 6.90%
-- 2011-12 series, 2023-24 Q1: published real growth 9.6%, levels give 9.66%
-- 2011-12 series, 2023-24 Q4: published real growth 8.3%, levels give 8.35%
-- 2011-12 series, 2024-25 Q1: published nominal growth 9.6%, levels give 9.65%
-- 2011-12 series, 2024-25 Q2: published nominal growth 8.2%, levels give 8.28%
-- 2011-12 series, 2024-25 Q3: published real growth 6.3%, levels give 6.37%
-- 2011-12 series, 2024-25 Q3: published nominal growth 10.2%, levels give 10.28%
-- 2011-12 series, 2024-25 Q4: published real growth 7.3%, levels give 7.38%
-- 2011-12 series, 2024-25 Q4: published nominal growth 10.7%, levels give 10.76%
+- Quarterly growth must match the levels exactly: MoSPI's API rewrites quarterly rates with the quarterly levels, and in the 2011-12 series it truncates them to one decimal instead of rounding, so either is accepted.
 
 ## ✅ Back series joins the current series
 3 checks, 0 failures.

@@ -261,8 +261,9 @@ def stated_gdp(text: str) -> dict | None:
     return {"fiscal_year": p["printed_year"], "value": p["gdp_crore"], "text": p["text"]} if p else None
 
 
-def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
-    # 1. Find the first data row and the column layout above it.
+def _find_table(rows: list[list[str]], start: int, cell_based: bool) -> tuple:
+    """The first data row (Revenue Receipts) and the column layout above it: (row index, columns, cell positions
+    for spreadsheets, right edges of the value columns for PDFs)."""
     first = None
     for i, cells in enumerate(rows):
         if any(match_field(c) == "revenue_receipts" for c in cells) and any(
@@ -281,7 +282,24 @@ def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
         xs = getattr(rows[first], "xs", None)
         if xs and len(xs) == ncols:
             anchors = xs  # right edges of the value columns, from the Revenue Receipts line
+    return first, columns, positions, anchors
 
+
+def _observations(found: dict[str, Row], labels: dict[str, str], columns: list[Column]) -> list[Observation]:
+    observations = []
+    for field, row in found.items():
+        for c, col in enumerate(columns):
+            pct = row.pcts[c] if row.pcts else None
+            amount = row.amounts[c]
+            if pct is not None and amount is not None and amount < 0:
+                pct = -abs(pct)  # surpluses print as a positive % in some years
+            observations.append(Observation(field, col.fiscal_year, col.kind, amount, pct, labels[field]))
+    return observations
+
+
+def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
+    first, columns, positions, anchors = _find_table(rows, start, cell_based)
+    ncols = len(columns)
     found: dict[str, Row] = {}
     labels: dict[str, str] = {}
     unknown: list[str] = []
@@ -340,15 +358,6 @@ def parse_document(rows: list[list[str]], start: int, cell_based: bool) -> dict:
         if field == "total_expenditure":
             after_total = True
 
-    observations = []
-    for field, row in found.items():
-        for c, col in enumerate(columns):
-            pct = row.pcts[c] if row.pcts else None
-            amount = row.amounts[c]
-            if pct is not None and amount is not None and amount < 0:
-                pct = -abs(pct)  # surpluses print as a positive % in some years
-            observations.append(Observation(field, col.fiscal_year, col.kind, amount, pct, labels[field]))
-
     gdp = stated_gdp(" ".join(" ".join(c) for c in rows))
-
-    return {"columns": columns, "observations": observations, "gdp": gdp, "unknown_rows": unknown}
+    return {"columns": columns, "observations": _observations(found, labels, columns), "gdp": gdp,
+            "unknown_rows": unknown}

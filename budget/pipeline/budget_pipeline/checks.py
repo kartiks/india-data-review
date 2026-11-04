@@ -13,7 +13,8 @@
 
 Exceptions are allowed only through EXCEPTIONS below (built from the reviewed lists in annotations.py), each
 with a reason; the report lists every allowed case under its reason and the summary counts them. The taxes,
-ministries and schemes checks keep their own lists the same way. Writes budget/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
+ministries and schemes checks keep their own lists the same way. Writes budget/data/validation_report.md and
+validation_summary.json; exits non-zero on any failure.
 
 Run: uv run python -m budget_pipeline.checks
 """

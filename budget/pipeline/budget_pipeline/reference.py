@@ -87,8 +87,10 @@ def load_rbi() -> dict[tuple[str, str, str], dict]:
         pos = {int(c): i for i, c in enumerate(number_row) if c.isdigit()}
         for r in rows:
             year = r[1]
+            if not (len(year) == 7 and year[4] == "-"):
+                continue  # not a year row
             if not is_fy(year, short=True):
-                continue
+                raise ValueError(f"{name}.xlsx: year {year!r} is not a fiscal year; the table's layout has changed")
             for field, col in spec["columns"].items():
                 value = number(r[pos[col]]) if pos[col] < len(r) else None
                 if value is None:

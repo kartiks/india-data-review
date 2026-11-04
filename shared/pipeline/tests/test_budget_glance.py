@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from pipeline_common import budget_glance as bg
+from pipeline_common.text import fy
 
 REPO = Path(__file__).resolve().parents[3]
 
@@ -27,10 +28,10 @@ def test_urls_match_the_committed_manifests():
     gdp = json.loads((REPO / "gdp" / "sources" / "manifest.json").read_text())
     budget = json.loads((REPO / "budget" / "sources" / "manifest.json").read_text())
     for start in range(2011, 2027):
-        y = bg._fy(start)
+        y = fy(start)
         assert gdp[f"budget/{y}/bag1"]["url"] == bg.url(start, 2026)
     for start in range(2004, 2027):
-        pdf = budget[bg._fy(start)]["summary"]["files"].get("pdf")
+        pdf = budget[fy(start)]["summary"]["files"].get("pdf")
         if pdf:
             assert pdf["url"] == bg.url(start, 2026)
 

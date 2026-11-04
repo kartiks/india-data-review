@@ -29,9 +29,12 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pipeline_common.numbers import number
+from pipeline_common.text import slug
+
 from . import budget, forecasts, population, states
 from .ids import (BROAD, GROUPS, INDICATORS, INDUSTRIES, INDUSTRY_LABELS, SECTOR_LABELS, SECTORS, STAGE_BY_LABEL,
-                  STAGE_ORDER, STAGES, latest_stage, number, slug)
+                  STAGE_ORDER, STAGES, latest_stage)
 from .sources import BUDGETS, NAS_INDICATORS, NAS_SERIES
 
 ROOT = Path(__file__).resolve().parents[2]

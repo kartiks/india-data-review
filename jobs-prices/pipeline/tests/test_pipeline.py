@@ -4,8 +4,9 @@ from pathlib import Path
 
 import pytest
 
-from jobs_prices_pipeline import build, checks, common, cpi2024, plfs, prices
+from jobs_prices_pipeline import build, checks, cpi2024, plfs, prices
 from jobs_prices_pipeline.checks.spending import order_fractiles
+from pipeline_common.numbers import number
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -18,9 +19,9 @@ def test_month_of_agricultural_year():
 
 
 def test_numbers_and_missing_markers():
-    assert common.number("12.5") == 12.5
-    assert common.number("NaN") is None
-    assert common.number("l0.8") is None  # transcription error in MoSPI's data
+    assert number("12.5") == 12.5
+    assert number("NaN") is None
+    assert number("l0.8") is None  # transcription error in MoSPI's data
     assert "**" in plfs.MISSING and "-" in plfs.MISSING
 
 

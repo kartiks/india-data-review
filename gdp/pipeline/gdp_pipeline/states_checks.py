@@ -12,8 +12,10 @@ and a derived GSDP implies a population that moves smoothly with MoSPI's GSDP pe
 
 import json
 
+from pipeline_common.text import prev_fy
+
 from .ids import STAGE_ORDER
-from .states import DATA, KNOWN_STATES, SITE_BASE, prev_year
+from .states import DATA, KNOWN_STATES, SITE_BASE
 
 LEVEL_TOL = 2  # ₹ crore: GSDP is printed to the crore and its parts to the lakh
 GROWTH_TOL = 0.05  # growth rates are printed to one decimal ...
@@ -143,7 +145,7 @@ def check_industries(st: dict, report) -> None:
 def check_growth(st: dict, report) -> None:
     messages, n = [], 0
     for base, state, year, node in nodes(st):
-        before = st["data"][base][state].get(prev_year(year), {})
+        before = st["data"][base][state].get(prev_fy(year), {})
         for level, g in node.get("growth", {}).items():
             if g.get("published") is False:
                 continue
@@ -180,7 +182,7 @@ def check_per_person(st: dict, report) -> None:
                                     f"NSDP per person {p2 * 100:.1f} lakh")
         # Derived GSDP has no published total to check against. The population it implies with MoSPI's GSDP per
         # person should move smoothly from year to year; a slip in taxes or subsidies would show as a jump.
-        before = st["data"][base][state].get(prev_year(year), {})
+        before = st["data"][base][state].get(prev_fy(year), {})
         g0, p0 = before.get("gsdp"), before.get("pc_gsdp")
         if gsdp and gsdp.get("derived") and pg and g0 and p0 and all("cur" in x for x in (gsdp, pg, g0, p0)):
             n += 1
@@ -193,7 +195,7 @@ def check_per_person(st: dict, report) -> None:
 
 def coverage(states: dict, year: str) -> float:
     """Share of all states' GSDP (current prices) the year before that the states reporting `year` made up."""
-    before = {s: y[prev_year(year)]["gsdp"]["cur"] for s, y in states.items() if "cur" in y.get(prev_year(year), {}).get("gsdp", {})}
+    before = {s: y[prev_fy(year)]["gsdp"]["cur"] for s, y in states.items() if "cur" in y.get(prev_fy(year), {}).get("gsdp", {})}
     total = sum(before.values())
     now = [s for s, y in states.items() if "cur" in y.get(year, {}).get("gsdp", {})]
     return sum(before.get(s, 0) for s in now) / total if total else 0.0

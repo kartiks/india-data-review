@@ -25,7 +25,10 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
-from .ids import INDUSTRY_LABELS, number, slug
+from pipeline_common.numbers import number
+from pipeline_common.text import prev_fy, slug
+
+from .ids import INDUSTRY_LABELS
 from .sources import STATE_INDICATORS, STATE_SERIES
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -96,11 +99,6 @@ KNOWN_STATES = [
     "Ladakh", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry",
     "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
 ]
-
-
-def prev_year(y: str) -> str:
-    start = int(y[:4]) - 1
-    return f"{start}-{str(start + 1)[-2:]}"
 
 
 def load(manifest: dict) -> tuple[list[dict], list[str]]:
@@ -248,7 +246,7 @@ def derive_gsdp(tree: dict) -> None:
                 if gsdp:
                     node["gsdp"] = {**gsdp, "derived": True}
             for year, node in years.items():
-                g, before = node.get("gsdp"), years.get(prev_year(year), {}).get("gsdp")
+                g, before = node.get("gsdp"), years.get(prev_fy(year), {}).get("gsdp")
                 if not g or not g.get("derived") or not before or "growth" in node and "gsdp" in node["growth"]:
                     continue
                 growth = {}

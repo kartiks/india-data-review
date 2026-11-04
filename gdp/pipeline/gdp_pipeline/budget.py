@@ -13,8 +13,8 @@ budget area uses for the same figure.
 from pathlib import Path
 
 from pipeline_common.budget_glance import parse_sentence, texts
+from pipeline_common.text import fy
 
-from .sources import fy
 
 ROOT = Path(__file__).resolve().parents[2]
 

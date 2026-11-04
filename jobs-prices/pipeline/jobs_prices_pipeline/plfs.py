@@ -3,7 +3,9 @@ the combinations the site must not show (flag_rates)."""
 
 from collections import defaultdict
 
-from .common import MONTH_NO, load, number
+from pipeline_common.numbers import number
+
+from .common import MONTH_NO, load
 
 QUARTERS = {"Jan-Mar": 1, "Apr-Jun": 2, "Jul-Sep": 3, "Oct-Dec": 4}
 

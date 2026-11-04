@@ -1,7 +1,6 @@
-"""What the readers of the downloaded files share: where the files are, numbers as printed, and month names."""
+"""What the readers of the downloaded files share: where the files are, the files themselves, and month names."""
 
 import json
-import math
 from pathlib import Path
 
 from .sources import queries
@@ -12,16 +11,6 @@ MANIFEST = ROOT / "sources" / "manifest.json"
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December"]
 MONTH_NO = {m: i + 1 for i, m in enumerate(MONTHS)}
-
-
-def number(v) -> float | None:
-    if v is None or v == "":
-        return None
-    try:
-        x = float(str(v).replace(",", ""))
-    except ValueError:
-        return None
-    return None if math.isnan(x) else x
 
 
 def load(manifest: dict, prefix: str) -> list[tuple[str, dict, dict]]:

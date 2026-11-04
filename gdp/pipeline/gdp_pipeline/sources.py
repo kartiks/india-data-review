@@ -52,11 +52,6 @@ FIRST_BUDGET = 2011  # 2011-12: first budget whose GDP assumption is on the 2011
 LATEST_BUDGET = 2026  # 2026-27
 
 
-def fy(start: int) -> str:
-    """2011 -> '2011-12'."""
-    return f"{start}-{str(start + 1)[-2:]}"
-
-
 def budget_glance_urls(start: int) -> list[str]:
     """Budget at a Glance headline table (the page that states the GDP assumption)."""
     return [budget_glance.url(start, LATEST_BUDGET)]

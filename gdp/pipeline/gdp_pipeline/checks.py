@@ -35,11 +35,12 @@ from collections import defaultdict
 from pathlib import Path
 
 from pipeline_common.report import Report
+from pipeline_common.text import fy, fy_start, prev_fy
 
 from . import population_checks, states_checks
 from .ids import BROAD, GROUPS, STAGE_ORDER
 from .forecasts import verify_quotes
-from .sources import BUDGETS, fy
+from .sources import BUDGETS
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -52,8 +53,9 @@ GROSS_GROWTH_GAP = 1.5
 # GDP and industries) must match the levels to within rounding.
 EXACT_GROWTH_SERIES = {"2022-23"}
 
-# The sub-industries MoSPI publishes for each industry (ids from ids.slug), as one or more complete sets. An
-# estimate that has sub-industries for an industry must have exactly one of its sets, and they must add up to it.
+# The sub-industries MoSPI publishes for each industry (ids from pipeline_common.text.slug), as one or more
+# complete sets. An estimate that has sub-industries for an industry must have exactly one of its sets, and they
+# must add up to it.
 SUBINDUSTRIES = {
     "agriculture": [["crops", "livestock", "forestry_and_logging", "fishing_and_aquaculture"]],
     "manufacturing": [["food_products_beverages_and_tobacco", "textiles_apparel_and_leather_products",
@@ -246,7 +248,7 @@ def check_growth(ds: dict, report: Report) -> None:
     for series, freqs in ds["data"].items():
         annual = freqs.get("annual", {})
         for year, stages in annual.items():
-            prev_year = f"{int(year[:4]) - 1}-{year[2:4]}"
+            prev_year = prev_fy(year)
             prev = annual.get(prev_year, {})
             for stage, n in stages.items():
                 g = n.get("growth", {}).get("gdp")
@@ -294,7 +296,7 @@ def check_industry_growth(ds: dict, report: Report) -> None:
     for freq in ("annual", "quarterly"):
         for series, period, stage, n in nodes(ds, freq):
             year, _, quarter = period.partition(" ")
-            prev_period = f"{int(year[:4]) - 1}-{year[2:4]}" + (f" {quarter}" if quarter else "")
+            prev_period = prev_fy(year) + (f" {quarter}" if quarter else "")
             prev = ds["data"][series][freq].get(prev_period, {})
             levels = n.get("gva_by_industry", {})
             for ind, g in n.get("gva_growth", {}).items():
@@ -360,7 +362,7 @@ def check_quarters(ds: dict, report: Report) -> None:
                         reason = allowed("quarters", msg)
                         (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
             # quarterly growth vs same quarter a year earlier
-            py = f"{int(y[:4]) - 1}-{y[2:4]}"
+            py = prev_fy(y)
             for i in range(1, 5):
                 n, p = q.get(f"{y} Q{i}", {}).get("LATEST"), q.get(f"{py} Q{i}", {}).get("LATEST")
                 g = (n or {}).get("growth", {}).get("gdp")
@@ -400,7 +402,7 @@ def check_join(ds: dict, report: Report) -> None:
         msg = f"2011-12 GDP ({price}): back series {a:,.0f}, current series {latest} {b:,.0f}"
         (notes if abs(a - b) <= LEVEL_TOL else failures).append(msg)
     years = [r["year"] for r in ds["long_run"]]
-    gaps = [f"{a} → {b}" for a, b in zip(years, years[1:]) if int(b[:4]) != int(a[:4]) + 1]
+    gaps = [f"{a} → {b}" for a, b in zip(years, years[1:]) if fy_start(b) != fy_start(a) + 1]
     checked += 1
     if gaps:
         failures.append(f"long-run series has gaps: {gaps}")

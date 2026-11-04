@@ -14,6 +14,8 @@ the checks).
 import re
 from typing import NamedTuple
 
+from pipeline_common.numbers import number
+
 from .common import ROOT
 
 HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States"
@@ -72,11 +74,10 @@ def cell(v) -> tuple[float | None, str, str]:
         return None, s, "not available"
     if s == ".":
         return None, s, "not applicable"
-    flag = "footnote" if "*" in s else ""
-    try:
-        return float(s.replace("*", "").replace(",", "").strip()), s, flag
-    except ValueError:
+    x = number(s, strip="*")
+    if x is None:
         return None, s, "unreadable"
+    return x, s, "footnote" if "*" in s else ""
 
 
 def read_table(path, number: int, spec: Table) -> tuple[list[dict], list[str]]:

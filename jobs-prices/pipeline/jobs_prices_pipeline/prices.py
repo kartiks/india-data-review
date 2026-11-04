@@ -1,7 +1,9 @@
 """Consumer price indices from MoSPI's data service: CPI (base 2012) and the Labour Bureau's CPI for agricultural
 and rural labourers (CPI-AL/RL)."""
 
-from .common import MONTH_NO, load, number
+from pipeline_common.numbers import number
+
+from .common import MONTH_NO, load
 
 
 def ym(r: dict) -> str:

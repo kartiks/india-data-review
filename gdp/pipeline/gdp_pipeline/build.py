@@ -45,7 +45,10 @@ def series_key(base: str, series: str) -> str:
 
 def versions(entry: dict) -> list[dict]:
     """The file a manifest entry points to, then each earlier version of it kept in sources/snapshots/ (the entry's
-    history), newest first: {file, sha256, fetched_at}."""
+    history), newest first: {file, sha256, fetched_at}.
+
+    An estimate MoSPI later withdraws is still read back from a snapshot. If that ever happens, remove the
+    snapshot's entry from the history in sources/manifest.json (and its file) rather than keep it."""
     current = {"file": entry["file"], "sha256": entry["sha256"], "fetched_at": entry.get("fetched_at")}
     earlier = [{k: h.get(k) for k in ("file", "sha256", "fetched_at")} for h in reversed(entry.get("history", []))]
     return [current] + earlier
@@ -117,6 +120,9 @@ def load_rows(manifest: dict) -> tuple[list[dict], list[str], list[dict]]:
             have: set[tuple] = set()  # (year, quarter, stage as printed) already read from a newer version
             for n, version in enumerate(versions(entry)):
                 found = set()
+                if not version["file"] or not (ROOT / version["file"]).exists():
+                    raise FileNotFoundError(f"{key}: version {version['sha256']} of {version['fetched_at']} is "
+                                            f"listed in sources/manifest.json but its file {version['file']!r} is missing")
                 for r in json.loads((ROOT / version["file"]).read_text())["rows"]:
                     estimate = (r.get("year"), r.get("quarter") or "", r.get("revision"))
                     if n and (r.get("revision") not in STAGE_BY_LABEL or estimate in have):

@@ -31,9 +31,9 @@ def test_quarterly_growth_off_by_a_tenth_fails_in_the_new_series():
     assert failures == ["2022-23 series, 2024-25 Q1: published real growth 7.1%, levels give 7.00%"]
 
 
-def test_quarterly_growth_off_by_a_tenth_is_listed_for_review_in_the_old_series():
-    _, failures, notes = run(checks.check_quarters, quarters_ds("2011-12", 7.1))
-    assert failures == [] and any("within 1.5 points" in n for n in notes)
+def test_quarterly_growth_off_by_a_tenth_fails_in_the_old_series_too():
+    _, failures, _ = run(checks.check_quarters, quarters_ds("2011-12", 7.1))
+    assert failures == ["2011-12 series, 2024-25 Q1: published real growth 7.1%, levels give 7.00%"]
 
 
 def test_quarterly_growth_far_from_levels_fails_in_the_old_series():
@@ -259,3 +259,18 @@ def test_forecast_figure_not_in_its_quote_fails(monkeypatch):
 def test_forecast_document_not_downloaded_fails(monkeypatch):
     _, failures, _ = forecast_run(monkeypatch, None)
     assert failures == ["RBI, April 2025 → 2025-26: document not downloaded (https://rbi.example/p.pdf)"]
+
+
+def test_back_series_rule_never_allows_a_missing_or_unknown_subindustry():
+    structural = "2011-12-back series, 1990-91, BACK: sub-industries of transport_comm: missing storage"
+    assert checks.allowed("identity", structural) is None
+    off_sum = ("2011-12-back series, 1990-91, BACK, constant prices: sub-industries = industry — printed 100, "
+               "parts give 95 (+5)")
+    assert checks.allowed("identity", off_sum) == checks.BACK_ADDITIVITY
+
+
+def test_quarterly_rate_matches_rounded_or_truncated():
+    assert checks.quarterly_rate_matches(7.66, 7.7)   # rounded
+    assert checks.quarterly_rate_matches(7.66, 7.6)   # truncated, as in the 2011-12 series
+    assert checks.quarterly_rate_matches(-2.36, -2.3)  # truncated toward zero
+    assert not checks.quarterly_rate_matches(7.66, 7.5)

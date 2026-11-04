@@ -206,62 +206,7 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 ## ✅ Quarters add up to the year; quarterly growth follows from levels
 170 checks, 0 failures.
 
-- 55 quarterly growth rates are within 1.5 points of the levels but not exact: MoSPI's API keeps only the latest quarterly levels, while each growth rate was announced against the year-earlier quarter as estimated at the time. Listed for review:
-- 2011-12 series, 2012-13 Q1: published real growth 4.8%, levels give 4.87%
-- 2011-12 series, 2012-13 Q1: published nominal growth 13.1%, levels give 13.20%
-- 2011-12 series, 2012-13 Q2: published real growth 7.4%, levels give 7.49%
-- 2011-12 series, 2012-13 Q3: published real growth 5.3%, levels give 5.38%
-- 2011-12 series, 2012-13 Q4: published real growth 4.2%, levels give 4.30%
-- 2011-12 series, 2012-13 Q4: published nominal growth 12.6%, levels give 12.69%
-- 2011-12 series, 2013-14 Q2: published nominal growth 13.9%, levels give 13.97%
-- 2011-12 series, 2014-15 Q2: published nominal growth 13.6%, levels give 13.69%
-- 2011-12 series, 2014-15 Q4: published nominal growth 8.2%, levels give 8.29%
-- 2011-12 series, 2015-16 Q1: published real growth 7.5%, levels give 7.59%
-- 2011-12 series, 2015-16 Q1: published nominal growth 11.2%, levels give 11.29%
-- 2011-12 series, 2015-16 Q2: published nominal growth 9.8%, levels give 9.89%
-- 2011-12 series, 2015-16 Q3: published real growth 7.1%, levels give 7.20%
-- 2011-12 series, 2015-16 Q3: published nominal growth 9.1%, levels give 9.16%
-- 2011-12 series, 2015-16 Q4: published real growth 9.0%, levels give 9.09%
-- 2011-12 series, 2015-16 Q4: published nominal growth 11.4%, levels give 11.50%
-- 2011-12 series, 2016-17 Q1: published real growth 8.6%, levels give 8.68%
-- 2011-12 series, 2016-17 Q2: published real growth 9.6%, levels give 9.67%
-- 2011-12 series, 2016-17 Q2: published nominal growth 11.8%, levels give 11.87%
-- 2011-12 series, 2016-17 Q3: published real growth 8.5%, levels give 8.58%
-- 2011-12 series, 2016-17 Q3: published nominal growth 11.4%, levels give 11.46%
-- 2011-12 series, 2016-17 Q4: published real growth 6.2%, levels give 6.29%
-- 2011-12 series, 2016-17 Q4: published nominal growth 11.5%, levels give 11.55%
-- 2011-12 series, 2017-18 Q3: published real growth 6.6%, levels give 6.67%
-- 2011-12 series, 2017-18 Q3: published nominal growth 11.9%, levels give 11.98%
-- 2011-12 series, 2018-19 Q1: published real growth 7.4%, levels give 7.50%
-- 2011-12 series, 2018-19 Q1: published nominal growth 13.9%, levels give 13.98%
-- 2011-12 series, 2018-19 Q2: published real growth 6.4%, levels give 6.46%
-- 2011-12 series, 2018-19 Q2: published nominal growth 11.9%, levels give 12.00%
-- 2011-12 series, 2019-20 Q1: published real growth 5.0%, levels give 5.10%
-- 2011-12 series, 2019-20 Q1: published nominal growth 8.3%, levels give 8.36%
-- 2011-12 series, 2019-20 Q2: published real growth 4.2%, levels give 4.30%
-- 2011-12 series, 2019-20 Q2: published nominal growth 4.5%, levels give 4.56%
-- 2011-12 series, 2019-20 Q3: published real growth 3.2%, levels give 3.26%
-- 2011-12 series, 2019-20 Q3: published nominal growth 5.3%, levels give 5.38%
-- 2011-12 series, 2020-21 Q1: published nominal growth -21.3%, levels give -21.36%
-- 2011-12 series, 2020-21 Q2: published nominal growth -2.8%, levels give -2.87%
-- 2011-12 series, 2020-21 Q3: published real growth 1.7%, levels give 1.78%
-- 2011-12 series, 2020-21 Q3: published nominal growth 6.5%, levels give 6.60%
-- 2011-12 series, 2020-21 Q4: published real growth 3.2%, levels give 3.29%
-- 2011-12 series, 2021-22 Q1: published nominal growth 32.9%, levels give 32.98%
-- 2011-12 series, 2021-22 Q2: published real growth 9.8%, levels give 9.87%
-- 2011-12 series, 2021-22 Q4: published real growth 4.4%, levels give 4.45%
-- 2011-12 series, 2022-23 Q1: published real growth 13.4%, levels give 13.49%
-- 2011-12 series, 2022-23 Q2: published real growth 5.9%, levels give 5.96%
-- 2011-12 series, 2022-23 Q2: published nominal growth 14.7%, levels give 14.76%
-- 2011-12 series, 2022-23 Q4: published real growth 6.8%, levels give 6.90%
-- 2011-12 series, 2023-24 Q1: published real growth 9.6%, levels give 9.66%
-- 2011-12 series, 2023-24 Q4: published real growth 8.3%, levels give 8.35%
-- 2011-12 series, 2024-25 Q1: published nominal growth 9.6%, levels give 9.65%
-- 2011-12 series, 2024-25 Q2: published nominal growth 8.2%, levels give 8.28%
-- 2011-12 series, 2024-25 Q3: published real growth 6.3%, levels give 6.37%
-- 2011-12 series, 2024-25 Q3: published nominal growth 10.2%, levels give 10.28%
-- 2011-12 series, 2024-25 Q4: published real growth 7.3%, levels give 7.38%
-- 2011-12 series, 2024-25 Q4: published nominal growth 10.7%, levels give 10.76%
+- Quarterly growth must match the levels exactly: MoSPI's API rewrites quarterly rates with the quarterly levels, and in the 2011-12 series it truncates them to one decimal instead of rounding, so either is accepted.
 
 ## ✅ Back series joins the current series
 3 checks, 0 failures.

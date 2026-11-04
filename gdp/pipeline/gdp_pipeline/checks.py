@@ -11,8 +11,8 @@ figure on the site can be traced to an official source.
    - investment and saving by institutional sector add up to the total
 3. Growth rates: every published GDP growth rate is reproduced from the
    published GDP levels (against the previous year's estimate available then).
-4. Quarters add up to the year; published quarterly growth matches the levels (to within rounding in the 2022-23
-   series; within 1.5 points in the 2011-12 series, whose earlier quarterly estimates the API no longer keeps).
+4. Quarters add up to the year; published quarterly growth matches the levels exactly (rounded, or truncated
+   to one decimal as MoSPI's API does in the 2011-12 series).
 5. The back series (1950-51 to 2011-12) joins the current series in 2011-12.
 6. Spending side: the gap between GDP and its spending components
    ("discrepancies") is listed for review.
@@ -29,6 +29,7 @@ Writes gdp/data/validation_report.md and validation_summary.json; exits non-zero
 """
 
 import json
+import math
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -51,7 +52,7 @@ GROSS_GROWTH_GAP = 1.5
 # GDP and industries) must match the levels to within rounding.
 EXACT_GROWTH_SERIES = {"2022-23"}
 
-# The sub-industries MoSPI publishes for each industry (ids from build.slug), as one or more complete sets. An
+# The sub-industries MoSPI publishes for each industry (ids from ids.slug), as one or more complete sets. An
 # estimate that has sub-industries for an industry must have exactly one of its sets, and they must add up to it.
 SUBINDUSTRIES = {
     "agriculture": [["crops", "livestock", "forestry_and_logging", "fishing_and_aquaculture"]],
@@ -104,7 +105,9 @@ EARLY_INDUSTRY_GROWTH = (
 KNOWN_RULES = [
     ("industry_growth", lambda m: m.startswith(("2011-12 series, 2014-15 AE1,", "2011-12 series, 2014-15 PE,")),
      EARLY_INDUSTRY_GROWTH),
-    ("identity", lambda m: m.startswith("2011-12-back series, ") and int(m[21:25]) < 2004, BACK_ADDITIVITY),
+    # Only sums that are off (" — printed … parts give …"); a missing or unknown sub-industry always fails.
+    ("identity", lambda m: m.startswith("2011-12-back series, ") and int(m[21:25]) < 2004 and " — printed " in m,
+     BACK_ADDITIVITY),
     ("identity", lambda m: any(m.startswith(f"2011-12 series, {y}, {s},") for y in ("2014-15", "2015-16") for s in ("AE1", "PE"))
      and "GDP = GVA + net taxes" in m, EARLY_NET_TAXES),
 ]
@@ -332,7 +335,7 @@ def check_industry_growth(ds: dict, report: Report) -> None:
 
 
 def check_quarters(ds: dict, report: Report) -> None:
-    failures, notes, unreproduced = [], [], []
+    failures, notes = [], []
     checked = 0
     for series, freqs in ds["data"].items():
         q = freqs.get("quarterly", {})
@@ -367,19 +370,22 @@ def check_quarters(ds: dict, report: Report) -> None:
                     if key in g and price in n.get("gdp", {}) and price in p.get("gdp", {}):
                         checked += 1
                         calc = (n["gdp"][price] / p["gdp"][price] - 1) * 100
-                        if abs(calc - g[key]) > GROWTH_TOL:
+                        if not quarterly_rate_matches(calc, g[key]):
                             msg = f"{series} series, {y} Q{i}: published {key} growth {g[key]}%, levels give {calc:.2f}%"
-                            if abs(calc - g[key]) > GROSS_GROWTH_GAP or series in EXACT_GROWTH_SERIES:
-                                reason = allowed("quarters", msg)
-                                (notes.append(f"Allowed: {msg}. Reason: {reason}") if reason else failures.append(msg))
+                            reason = allowed("quarters", msg)
+                            if reason:
+                                notes.append(f"Allowed: {msg}. Reason: {reason}")
                             else:
-                                unreproduced.append(msg)
-    if unreproduced:
-        notes.append(f"{len(unreproduced)} quarterly growth rates are within {GROSS_GROWTH_GAP} points of the levels "
-                     "but not exact: MoSPI's API keeps only the latest quarterly levels, while each growth rate was "
-                     "announced against the year-earlier quarter as estimated at the time. Listed for review:")
-        notes += unreproduced
+                                failures.append(msg)
+    notes.append("Quarterly growth must match the levels exactly: MoSPI's API rewrites quarterly rates with the "
+                 "quarterly levels, and in the 2011-12 series it truncates them to one decimal instead of rounding, "
+                 "so either is accepted.")
     report.add("Quarters add up to the year; quarterly growth follows from levels", checked, failures, notes)
+
+
+def quarterly_rate_matches(calc: float, published: float) -> bool:
+    """A published quarterly rate (one decimal) matches the levels' growth rounded, or truncated toward zero."""
+    return abs(calc - published) <= GROWTH_TOL or abs(math.trunc(calc * 10) / 10 - published) < 1e-9
 
 
 def check_join(ds: dict, report: Report) -> None:

@@ -84,6 +84,9 @@ frontmatter.
 
 Hosted on Vercel (project Root Directory: `site`). The build reads each area's `data/` folder, so
 Vercel's "Include files outside the root directory" setting must stay on (the default).
-Every push to `main` deploys; other branches get preview URLs (behind Vercel's login). Vercel runs no
+Every push to `main` deploys; other branches get preview URLs (behind Vercel's login). Two exceptions, to keep
+deployment storage down (each deployment is a ~100 MB copy): Dependabot branches never deploy (`git.deploymentEnabled`
+in `vercel.json`), and `scripts/vercel-ignore-build.sh` skips a commit that changed nothing in `site/` or any area's
+`data/` since the branch's last deployment (a new area's `data/` must be added to its list). Vercel runs no
 pipeline: it builds from the `data/` folders committed to the repository, so data updates are run locally and
 committed (see the root README).

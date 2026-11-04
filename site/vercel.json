@@ -4,6 +4,12 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
+  "ignoreCommand": "bash scripts/vercel-ignore-build.sh",
+  "git": {
+    "deploymentEnabled": {
+      "dependabot/**": false
+    }
+  },
   "trailingSlash": true,
   "headers": [
     {

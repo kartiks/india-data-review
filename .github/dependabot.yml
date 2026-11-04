@@ -1,4 +1,4 @@
-# The workflows pin each action to a full commit SHA (with its version in a comment); Dependabot opens a pull request
+# The weekly refresh workflow pins each action to a full commit SHA (with its version in a comment); Dependabot opens a pull request
 # when a new version comes out, updating both.
 version: 2
 updates:

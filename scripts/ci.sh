@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 # Local CI: checks one commit (default HEAD) in a clean temporary copy, so your working folder is never touched.
-# GitHub Actions runs it on every pull request and push to main (.github/workflows/ci.yml); run it yourself on a
-# branch before pushing:
+# There is no CI on GitHub: run it on a branch before merging it into main:
 #
 #   scripts/ci.sh              # the current commit
 #   scripts/ci.sh my-branch    # a branch, tag or commit (e.g. origin/main)

@@ -1,8 +1,10 @@
 """Known problems in the official source files, each reviewed by hand.
 
 Nothing here changes a number. Entries either (a) let a check pass because
-the mismatch is explained, or (b) attach a note to a published figure so the
-website can show it. Every entry says what was found and how it was checked.
+the mismatch is explained (checks.EXCEPTIONS: the report lists each such case
+under its reason and counts it as allowed), or (b) attach a note to a
+published figure so the website can show it. Every entry says what was found
+and how it was checked.
 """
 
 SIX_POINT_ONE = (
@@ -24,19 +26,25 @@ CAPITAL_RECEIPTS_2015_16 = (
     "Shown as printed in the PDF, with this note."
 )
 
-# (source budget, fiscal year, kind, rule name or "field:<name>") -> reason
-KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
-    ("2000-01", "2000-01", "BE", "capital receipts = loan recoveries + other receipts + borrowings"): SIX_POINT_ONE,
-    ("2000-01", "2000-01", "BE", "fiscal deficit = borrowings"): SIX_POINT_ONE,
-    ("2001-02", "2000-01", "BE", "capital receipts = loan recoveries + other receipts + borrowings"): SIX_POINT_ONE,
-    ("2001-02", "2000-01", "BE", "fiscal deficit = borrowings"): SIX_POINT_ONE,
-    ("2016-17", "2015-16", "BE", "effective revenue deficit = revenue deficit - capital grants"): BE_2015_16_RESTATED,
-    ("2016-17", "2015-16", "BE", "pct:effective_revenue_deficit"): BE_2015_16_RESTATED,
-    ("cross", "2015-16", "BE", "field:grants_capital_assets"): BE_2015_16_RESTATED,
-    ("cross", "2015-16", "BE", "field:effective_revenue_deficit"): BE_2015_16_RESTATED,
-    ("2017-18", "2015-16", "Actual", "capital receipts = loan recoveries + other receipts + borrowings"):
+# (check, start of the check's message) -> reason. Checks (checks.py): "identity" (accounting rules), "pct"
+# (% of GDP) and "cross" (the same figure in two budgets). Where several entries match, the longest wins.
+KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
+    ("identity", "Budget 2000-01, BE 2000-01: capital receipts = loan recoveries + other receipts + borrowings —"):
+        SIX_POINT_ONE,
+    ("identity", "Budget 2000-01, BE 2000-01: fiscal deficit = borrowings —"): SIX_POINT_ONE,
+    ("identity", "Budget 2001-02, BE 2000-01: capital receipts = loan recoveries + other receipts + borrowings —"):
+        SIX_POINT_ONE,
+    ("identity", "Budget 2001-02, BE 2000-01: fiscal deficit = borrowings —"): SIX_POINT_ONE,
+    ("identity", "Budget 2016-17, BE 2015-16: effective revenue deficit = revenue deficit - capital grants —"):
+        BE_2015_16_RESTATED,
+    ("pct", "Budget 2016-17, BE 2015-16: effective_revenue_deficit printed"): BE_2015_16_RESTATED,
+    ("cross", "BE 2015-16 grants_capital_assets:"): BE_2015_16_RESTATED,
+    ("cross", "BE 2015-16 effective_revenue_deficit:"): BE_2015_16_RESTATED,
+    ("identity",
+     "Budget 2017-18, Actual 2015-16: capital receipts = loan recoveries + other receipts + borrowings —"):
         CAPITAL_RECEIPTS_2015_16,
-    ("2017-18", "2015-16", "Actual", "total receipts = revenue receipts + capital receipts"): CAPITAL_RECEIPTS_2015_16,
+    ("identity", "Budget 2017-18, Actual 2015-16: total receipts = revenue receipts + capital receipts —"):
+        CAPITAL_RECEIPTS_2015_16,
 }
 
 # Notes attached to published figures: (source budget, fiscal year, kind, field) -> note

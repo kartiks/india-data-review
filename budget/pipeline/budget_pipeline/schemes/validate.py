@@ -2,6 +2,9 @@
 
 from collections import defaultdict
 
+from pipeline_common.numbers import blank_or_number
+from pipeline_common.report import Allowed, Exceptions
+
 from .common import PARTS, TOLERANCE
 
 RAILWAYS_2017 = (
@@ -59,26 +62,27 @@ CENTRAL_SECTOR_2017 = (
     "the rows printed in both agree."
 )
 
-# (budget, scheme_type, check, key) -> reason. Keys: rct "<level> <number>|<kind> <year>",
-# group "<level> <number>|<kind> <year>" or "<level> <number>|*", grand "<kind> <year>|<part>".
-# A figure that differs between the two budgets printing it: ("cross", scheme_type, item_id, "<kind> <year>").
-# Each entry was verified by hand (page images, other columns, other budgets).
-KNOWN_EXCEPTIONS: dict[tuple[str, str, str, str], str] = {
-    ("2017-18", "central_sector", "group", "demand_subtotal 80|*"): RAILWAYS_2017,
-    ("2017-18", "central_sector", "group", "demand_subtotal 31|*"): GROSS_2017,
-    ("2017-18", "central_sector", "group", "demand_subtotal 48|*"): GROSS_2017,
-    ("2017-18", "central_sector", "group", "demand_subtotal 67|Actual 2015-16"): GROSS_2017,
-    ("2017-18", "central_sector", "group", "demand_subtotal 81|Actual 2015-16"): GROSS_2017,
-    ("2017-18", "central_sector", "group", "demand_subtotal 81|BE 2016-17"): GROSS_2017,
-    ("2018-19", "central_sector", "group", "demand_subtotal 56|Actual 2016-17"): MOHUA_2018,
-    ("2024-25", "central_sector", "group", "demand_subtotal 71|BE 2024-25"): FUNDS_2024,
-    ("2024-25", "central_sector", "group", "demand_subtotal 86|BE 2024-25"): FUNDS_2024,
-    ("2025-26", "css", "rct", "grand_total|BE 2025-26"): GT_2025_CSS,
-    ("2025-26", "css", "grand", "BE 2025-26|revenue"): GT_2025_CSS,
-    ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2023-24"): PMKSY_2023,
-    ("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna", "BE 2024-25"): PMKSY_2024,
-    ("cross", "css", "css:others_including_amount_met_from_transfer_to_various_funds", "BE 2024-25"): PMKSY_2024,
-    ("cross", "central_sector", "central_sector:grand_total", "BE 2017-18"): CENTRAL_SECTOR_2017,
+# ((budget, scheme_type, check), key) -> reason, where key is the start of the key the check looks up: rct
+# "<level> <number>|<kind> <year>", group "<level> <number>|<kind> <year>" (or "<level> <number>|" for every
+# period), grand "<kind> <year>|<part>", component "scheme <number>|<kind> <year>". A figure that differs between
+# the two budgets printing it: (("cross", scheme_type, item_id), "<kind> <year>"). The report lists each case by
+# its readable message. Each entry was verified by hand (page images, other columns, other budgets).
+KNOWN_EXCEPTIONS: dict[tuple[tuple[str, str, str], str], str] = {
+    (("2017-18", "central_sector", "group"), "demand_subtotal 80|"): RAILWAYS_2017,
+    (("2017-18", "central_sector", "group"), "demand_subtotal 31|"): GROSS_2017,
+    (("2017-18", "central_sector", "group"), "demand_subtotal 48|"): GROSS_2017,
+    (("2017-18", "central_sector", "group"), "demand_subtotal 67|Actual 2015-16"): GROSS_2017,
+    (("2017-18", "central_sector", "group"), "demand_subtotal 81|Actual 2015-16"): GROSS_2017,
+    (("2017-18", "central_sector", "group"), "demand_subtotal 81|BE 2016-17"): GROSS_2017,
+    (("2018-19", "central_sector", "group"), "demand_subtotal 56|Actual 2016-17"): MOHUA_2018,
+    (("2024-25", "central_sector", "group"), "demand_subtotal 71|BE 2024-25"): FUNDS_2024,
+    (("2024-25", "central_sector", "group"), "demand_subtotal 86|BE 2024-25"): FUNDS_2024,
+    (("2025-26", "css", "rct"), "grand_total|BE 2025-26"): GT_2025_CSS,
+    (("2025-26", "css", "grand"), "BE 2025-26|revenue"): GT_2025_CSS,
+    (("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna"), "BE 2023-24"): PMKSY_2023,
+    (("cross", "css", "css:pradhan_mantri_krishi_sinchai_yojna"), "BE 2024-25"): PMKSY_2024,
+    (("cross", "css", "css:others_including_amount_met_from_transfer_to_various_funds"), "BE 2024-25"): PMKSY_2024,
+    (("cross", "central_sector", "central_sector:grand_total"), "BE 2017-18"): CENTRAL_SECTOR_2017,
 }
 
 # (budget, scheme_type, ext) -> why a secondary copy differs from the PDF (the PDF is used).
@@ -112,20 +116,25 @@ def _per(pk: tuple) -> str:
     return f"{pk[1]} {pk[0]}"
 
 
-def _exc(year: str, t: str, check: str, key: str) -> str | None:
-    if (year, t, check, key) in KNOWN_EXCEPTIONS:
-        return KNOWN_EXCEPTIONS[(year, t, check, key)]
-    wild = key.split("|")[0] + "|*"
-    return KNOWN_EXCEPTIONS.get((year, t, check, wild))
+# Every known exception, with the other copies' differences as check "format".
+EXCEPTIONS = Exceptions({
+    **KNOWN_EXCEPTIONS,
+    **{("format", f"Budget {budget} {t}: {ext.upper()} differs"): reason
+       for (budget, t, ext), reason in KNOWN_FORMAT_ISSUES.items()},
+})
+
+
+def _allowed() -> Allowed:
+    return Allowed(EXCEPTIONS, more_hint="")
 
 
 def _v(x: float | None) -> float:
     return x or 0.0
 
 
-def _revenue_plus_capital(budgets: dict) -> tuple[str, int, list[str], list[str]]:
+def _revenue_plus_capital(budgets: dict) -> tuple:
     """(a) Revenue + Capital = Total, every row and period."""
-    checked, fails, notes = 0, [], []
+    checked, fails, notes, ok = 0, [], [], _allowed()
     for year, by_type in budgets.items():
         for t, e in by_type.items():
             if not e["parsed"]:
@@ -136,16 +145,16 @@ def _revenue_plus_capital(budgets: dict) -> tuple[str, int, list[str], list[str]
                     checked += 1
                     diff = _v(v["revenue"]) + _v(v["capital"]) - _v(v["total"])
                     if abs(diff) > TOLERANCE:
-                        reason = _exc(year, t, "rct", f"{_lab(i)}|{_per(pk)}")
                         msg = (f"Budget {year} {t}: {i['label_as_printed'][:60]!r} {pk[1]} {pk[0]}: "
                                f"{_v(v['revenue']):.2f} + {_v(v['capital']):.2f} != {_v(v['total']):.2f}")
-                        (notes if reason else fails).append(msg + (f". Explained: {reason}" if reason else ""))
-    return ("Schemes: revenue + capital = total in every row", checked, fails, notes)
+                        if not ok.file((year, t, "rct"), f"{_lab(i)}|{_per(pk)}", case=msg):
+                            fails.append(msg)
+    return ("Schemes: revenue + capital = total in every row", checked, fails, notes, ok)
 
 
-def _sums(budgets: dict) -> tuple[str, int, list[str], list[str]]:
+def _sums(budgets: dict) -> tuple:
     """(b) Schemes add up to their group subtotal; groups add up to the grand total."""
-    checked, fails, notes = 0, [], []
+    checked, fails, notes, ok = 0, [], [], _allowed()
     for year, by_type in budgets.items():
         for t, e in by_type.items():
             if not e["parsed"]:
@@ -175,9 +184,9 @@ def _sums(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                         notes.append(f"Budget {year} {t} {pk[1]} {pk[0]} {part}: Grand Total equals the sum of all "
                                      f"scheme rows ({all_rows:,.2f}) but not of the group subtotals ({s:,.2f}).")
                     elif abs(s - gt) > 0.5:
-                        reason = _exc(year, t, "grand", f"{_per(pk)}|{part}")
                         msg = f"Budget {year} {t} {pk[1]} {pk[0]} {part}: groups sum to {s:,.2f}, Grand Total {gt:,.2f}"
-                        (notes if reason else fails).append(msg + (f". Explained: {reason}" if reason else ""))
+                        if not ok.file((year, t, "grand"), f"{_per(pk)}|{part}", case=msg):
+                            fails.append(msg)
                     # schemes -> each group
                     for g in groups:
                         members = [s_ for s_ in schemes if (s_["demand_no"] == g["demand_no"] if g["level"] == "demand_subtotal"
@@ -186,10 +195,10 @@ def _sums(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                         s = sum(_v(m["values"][pk][part]) for m in members)
                         gv = _v(g["values"][pk][part])
                         if abs(s - gv) > 0.5:
-                            reason = _exc(year, t, "group", f"{_lab(g)}|{_per(pk)}")
                             msg = (f"Budget {year} {t} {g['level']} {g['number']} ({(g['department'] or g['label_as_printed'])[:40]}) "
                                    f"{pk[1]} {pk[0]} {part}: schemes sum to {s:,.2f}, subtotal {gv:,.2f}")
-                            (notes if reason else fails).append(msg + (f". Explained: {reason}" if reason else ""))
+                            if not ok.file((year, t, "group"), f"{_lab(g)}|{_per(pk)}", case=msg):
+                                fails.append(msg)
                     # components -> parent scheme (only where a scheme lists components)
                     for parent in {c["parent"] for c in comps}:
                         p_item = next((s_ for s_ in schemes if s_["number"] == parent), None)
@@ -200,16 +209,16 @@ def _sums(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                         s = sum(_v(m["values"][pk][part]) for m in members)
                         pv = _v(p_item["values"][pk][part])
                         if abs(s - pv) > 0.5:
-                            reason = _exc(year, t, "component", f"scheme {parent}|{_per(pk)}")
                             msg = (f"Budget {year} {t} scheme {parent} {p_item['label_as_printed'][:40]!r} {pk[1]} {pk[0]} "
                                    f"{part}: components sum to {s:,.2f}, scheme {pv:,.2f}")
-                            (notes if reason else fails).append(msg + (f". Explained: {reason}" if reason else ""))
-    return ("Schemes add up to their subtotals and the Grand Total", checked, fails, notes)
+                            if not ok.file((year, t, "component"), f"scheme {parent}|{_per(pk)}", case=msg):
+                                fails.append(msg)
+    return ("Schemes add up to their subtotals and the Grand Total", checked, fails, notes, ok)
 
 
-def _across_budgets(budgets: dict) -> tuple[str, int, list[str], list[str]]:
+def _across_budgets(budgets: dict) -> tuple:
     """(c) Same item, same period, printed in two budgets."""
-    checked, fails, notes = 0, [], []
+    checked, fails, notes, ok = 0, [], [], _allowed()
     seen: dict[tuple, list[tuple[str, float, str]]] = defaultdict(list)
     ambiguous = 0
     for year, by_type in budgets.items():
@@ -234,10 +243,9 @@ def _across_budgets(budgets: dict) -> tuple[str, int, list[str], list[str]]:
             rel = abs(a - b) / max(abs(a), abs(b), 1)
             msg = (f"{t} {lab[:50]!r} {pk[1]} {pk[0]}: {a:,.2f} in budget {a_year} vs {b:,.2f} in budget {b_year} "
                    f"({b - a:+,.2f}, {rel:.1%})")
-            reason = _exc("cross", t, iid, _per(pk))
-            if reason:
-                notes.append(msg + f". Explained: {reason}")
-            elif level == "grand_total" and abs(a - b) <= TOLERANCE:
+            if ok.file(("cross", t, iid), _per(pk), case=msg):
+                continue
+            if level == "grand_total" and abs(a - b) <= TOLERANCE:
                 notes.append("Rounding: " + msg)
             elif pk[1] == "BE" and level != "grand_total" and (rel <= RESTATED_REL or abs(a - b) <= RESTATED_CRORE):
                 # The next budget may restate a BE (reclassification); a small change is only noted.
@@ -246,12 +254,12 @@ def _across_budgets(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                 fails.append(msg)
     notes.insert(0, f"{ambiguous} scheme rows not compared: the same name appears twice under one department "
                     "in that budget, so they cannot be matched across budgets by name.")
-    return ("Same scheme figure agrees across the two budgets that print it", checked, fails, notes)
+    return ("Same scheme figure agrees across the two budgets that print it", checked, fails, notes, ok)
 
 
-def _other_copies(budgets: dict) -> tuple[str, int, list[str], list[str]]:
+def _other_copies(budgets: dict) -> tuple:
     """(d) Other copies agree with the PDF."""
-    checked, fails, notes = 0, [], []
+    checked, fails, notes, ok = 0, [], [], _allowed()
     for year, by_type in budgets.items():
         for t, e in by_type.items():
             for ext, err in e["errors"].items():
@@ -260,21 +268,23 @@ def _other_copies(budgets: dict) -> tuple[str, int, list[str], list[str]]:
                 checked += 1
                 if not diffs:
                     notes.append(f"Budget {year} {t}: {ext.upper()} agrees with the PDF.")
-                elif (year, t, ext) in KNOWN_FORMAT_ISSUES:
-                    notes.append(f"Budget {year} {t}: {ext.upper()} differs in {len(diffs)} values (known): "
-                                 f"{KNOWN_FORMAT_ISSUES[(year, t, ext)]}")
-                else:
+                    continue
+                msg = f"Budget {year} {t}: {ext.upper()} differs from PDF in {len(diffs)} values"
+                if not ok.file("format", msg):
                     sample = "; ".join(f"{d.get('label', '')[:30]!r} {d.get('period', '')} {d.get('part', d.get('issue'))}: "
                                        f"{d.get('primary', '')} vs {d.get('other', '')}" for d in diffs[:3])
-                    fails.append(f"Budget {year} {t}: {ext.upper()} differs from PDF in {len(diffs)} values ({sample})")
-    return ("Scheme tables: other copies agree with the PDF", checked, fails, notes)
+                    fails.append(f"{msg} ({sample})")
+    return ("Scheme tables: other copies agree with the PDF", checked, fails, notes, ok)
 
 
-def _share_of_spending(budgets: dict, summary_observations: list[dict]) -> tuple[str, int, list[str], list[str]]:
+def _share_of_spending(budgets: dict, summary_observations: list[dict]) -> tuple:
     """(e) Share of total expenditure (context, not an identity)."""
     notes = []
-    total_exp = {(r["source_budget"], r["fiscal_year"], r["kind"]): float(r["value_crore"])
-                 for r in summary_observations if r["field"] == "total_expenditure" and r["value_crore"]}
+    total_exp = {}
+    for r in summary_observations:
+        v = blank_or_number(r["value_crore"])
+        if r["field"] == "total_expenditure" and v is not None:
+            total_exp[(r["source_budget"], r["fiscal_year"], r["kind"])] = v
     for year, by_type in budgets.items():
         parts = []
         for t, e in by_type.items():
@@ -289,11 +299,12 @@ def _share_of_spending(budgets: dict, summary_observations: list[dict]) -> tuple
                 parts.append(f"{t} {v['total'] / te:.1%}")
         if parts:
             notes.append(f"Budget {year}, BE {year}: share of total expenditure: " + ", ".join(parts))
-    return ("Scheme spending as a share of total expenditure (context only)", 0, [], notes)
+    return ("Scheme spending as a share of total expenditure (context only)", 0, [], notes, None)
 
 
-def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple[str, int, list[str], list[str]]]:
-    """Every scheme check, one group each: [(title, checked, failures, notes)]."""
+def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple]:
+    """Every scheme check, one group each: [(title, checked, failures, notes, allowed exceptions or None)]."""
+    EXCEPTIONS.reset()
     budgets = all_parsed["budgets"]
     return [
         _revenue_plus_capital(budgets),

@@ -2,35 +2,79 @@
  "result": "PASSED",
  "checks": 117426,
  "failures": 0,
- "allowed": 0,
+ "allowed": 97,
  "sections": [
   {
    "title": "Accounting rules hold in every source column",
    "checks": 1066,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 7,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2000-01 deducts Rs 1,000 crore of disinvestment proceeds earmarked for redeeming public debt (item 6.1). The document's own formulas are 'Capital Receipts (5+6-6.1+7)' and 'Fiscal Deficit = (7-6.1)', so the figures are consistent once this item is included.",
+     "cases": 4
+    },
+    {
+     "reason": "Budget 2016-17 restated the 2015-16 Budget Estimate for grants for capital assets from 1,10,551 to 1,32,472 crore (its footnote: 'Deviation in BE 2015-16 is due to better capture of information'), but printed the effective revenue deficit as 2,68,000 crore, which matches neither figure (3,94,472 - 1,32,472 = 2,62,000). PDF and Excel copies agree, so this is in the source. The Budget Estimate shown on the site comes from Budget 2015-16, which is internally consistent.",
+     "cases": 1
+    },
+    {
+     "reason": "Budget 2017-18 prints 2015-16 actual capital receipts as 5,95,748 crore, but its parts (20,835 + 42,132 + 5,32,791) and its printed total receipts (17,90,783 = 11,95,025 + 5,95,758) both imply 5,95,758 crore, and the Excel copy of the same table prints 5,95,758. Shown as printed in the PDF, with this note.",
+     "cases": 2
+    }
+   ]
   },
   {
    "title": "Same figure agrees across documents (BE restated in the next budget)",
    "checks": 423,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2016-17 restated the 2015-16 Budget Estimate for grants for capital assets from 1,10,551 to 1,32,472 crore (its footnote: 'Deviation in BE 2015-16 is due to better capture of information'), but printed the effective revenue deficit as 2,68,000 crore, which matches neither figure (3,94,472 - 1,32,472 = 2,62,000). PDF and Excel copies agree, so this is in the source. The Budget Estimate shown on the site comes from Budget 2015-16, which is internally consistent.",
+     "cases": 2
+    }
+   ]
   },
   {
    "title": "% of GDP figures agree with the amounts",
    "checks": 376,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 1,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2016-17 restated the 2015-16 Budget Estimate for grants for capital assets from 1,10,551 to 1,32,472 crore (its footnote: 'Deviation in BE 2015-16 is due to better capture of information'), but printed the effective revenue deficit as 2,68,000 crore, which matches neither figure (3,94,472 - 1,32,472 = 2,62,000). PDF and Excel copies agree, so this is in the source. The Budget Estimate shown on the site comes from Budget 2015-16, which is internally consistent.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Other copies of the same table (Excel/HTML) agree with the primary file",
    "checks": 16,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 5,
+   "allowed_reasons": [
+    {
+     "reason": "The HTML page differs from the PDF in 21 of 60 values. The PDF's 2004-05 Budget Estimates match those reprinted in Budget 2005-06, so the HTML page is not used.",
+     "cases": 1
+    },
+    {
+     "reason": "The HTML page has 2005-06 column headings but the numbers of Budget 2003-04 (its page title also says 2002-2003). Not used.",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel copy has 2015-16 actual capital receipts as 5,95,758 (the PDF's 5,95,748 is the typo, see the note on that figure) and prints the 2016-17 RE fiscal deficit as 3.2% of GDP, where the PDF and Budget 2018-19 show 3.5%.",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel file has typos absent from the PDF (e.g. 2021-22 non-tax revenue 36,51,132 instead of 3,65,113) and several 2023-24 estimates off by 3,800 crore; the PDF matches the figures reprinted in Budget 2024-25. Not used.",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel file differs from the PDF for 2025-26 BE grants for capital assets (4,25,231.56 vs 4,27,192) and two figures derived from it; the PDF matches the figures reprinted in Budget 2026-27.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Every year has the figures it should",
@@ -43,8 +87,17 @@
    "title": "Matches the RBI Handbook of Statistics (independent series)",
    "checks": 270,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 7,
+   "allowed_reasons": [
+    {
+     "reason": "For 2002-03 to 2004-05 the Budget at a Glance counts repayments to the National Small Savings Fund and State Debt Swap Scheme transactions inside capital expenditure. These are debt transactions, not investment, and the RBI Handbook series (Table 89, note 2) treats them differently: for 2002-03 the difference is exactly the Rs 13,766 crore NSSF repayment; for 2003-04 and 2004-05 it is close to the amounts in RBI's note. Comparing capital spending across years? Treat these three years with care.",
+     "cases": 6
+    },
+    {
+     "reason": "RBI's 2004-05 fiscal deficit is Rs 592 crore higher (1,25,794 vs 1,25,202 in Budget 2006-07); the primary deficit differs by the same amount. Consistent with final audited accounts vs provisional actuals.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Large year-on-year changes (for review, not failures)",
@@ -71,15 +124,41 @@
    "title": "Taxes: same figure agrees across budgets",
    "checks": 480,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 1,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2011-12 restated the 2010-11 Budget Estimate: Budget 2010-11 printed income tax 1,20,566 and 'Other taxes and duties' 8,103; Budget 2011-12 has no 'Other taxes' row and prints income tax 1,28,066 (+7,500) and wealth tax 603 (= 8,103 - 7,500). Gross tax is 7,46,651 in both, so this is a reclassification, not a change in the estimate.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Taxes: other copies (Excel/HTML) agree with the primary file",
    "checks": 15,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 5,
+   "allowed_reasons": [
+    {
+     "reason": "The HTML page's 2004-05 Budget Estimates differ from the PDF in 13 values (e.g. corporation tax 79,546 vs 88,436). The PDF's figures are the ones Budget 2005-06 reprints as BE 2004-05, so the HTML page is not used (same problem as its headline-table page).",
+     "cases": 1
+    },
+    {
+     "reason": "The HTML page carries the numbers of Budget 2003-04 under 2005-06 headings (e.g. 2005-06 BE corporation tax 51,499, which is BE 2003-04). Not used (same problem as its headline-table page).",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel copy shows wealth tax as 0 where the PDF prints '...' (nil; wealth tax was abolished from 2015-16) for BE/RE 2016-17 and BE 2017-18. All other values agree. Its header also mislabels the Actuals column '2016-2016' (fixed via HEADER_FIXES).",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel copy prints RE 2022-23 states' share as 9,48,406, which already includes the prior-year adjustment of 32,607 that it also lists separately, so its own net tax does not add up (30,43,067 - 8,000 - 9,48,406 - 32,607 = 20,54,054, printed 20,86,662). The PDF prints 9,15,798 + 32,607 = 9,48,405, which reconciles to the same net tax and to the headline table. PDF used.",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel copy is an earlier classification: no 'Other Taxes' row (its 5,000 crore is inside union excise: 3,24,000 vs 3,19,000 for BE 2024-25, which Budget 2024-25 prints as 3,19,000), wealth tax without commodity transaction tax (7.43 vs 422), RE 2024-25 states' share with the 12,764 prior-year adjustment folded in, and a 2023-24 actual gross tax that is 415 crore more than its parts. The PDF adds up exactly and is used.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Taxes (Receipt Budget actuals 2000-01..2007-08): totals equal their printed parts",
@@ -120,15 +199,29 @@
    "title": "Ministries: revenue + capital = total on every line",
    "checks": 14689,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2023-24's grand-total block prints Central Sector Schemes revenue for 2021-22 as 74188.47; the demands add to 741,888.47 and its own total minus capital (12,09,949.59 - 4,68,061.12) is 741,888.47 (confirmed on the page image). A dropped digit in the source.",
+     "cases": 1
+    },
+    {
+     "reason": "Budget 2023-24's grand-total block prints Other Transfers revenue for RE 2022-23 as 192262.62; the demands add to 1,92,226.62 and total minus capital (2,79,138.04 - 86,911.42) is 1,92,226.62. Two digits transposed in the source.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Ministries: Revenue line + Capital line = department line",
    "checks": 18039,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 12,
+   "allowed_reasons": [
+    {
+     "reason": "The Union Territories subtotal's Capital line prints a wrong Non-Plan figure in the Revised Estimates column (e.g. Budget 2012-13: 3,679.04 where the subtotal and its Revenue line imply -55.46; confirmed on the page image). The same cell is wrong in every statement from 2011-12 to 2016-17. Only that subtotal's revenue/capital split is affected; each UT's own lines add up.",
+     "cases": 12
+    }
+   ]
   },
   {
    "title": "Ministries: sub-lines add up to the demand",
@@ -148,22 +241,41 @@
    "title": "Ministries: departments add up to the grand total",
    "checks": 291,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2000-01's 1998-99 Actuals: the departments' Plan figures add to 53.45 crore more than the printed Central Ministries total (37,107.43, confirmed on the page image), while the printed totals agree with each other and with the Budget at a Glance. Revenue/capital split of the grand total also differs from the Budget at a Glance by 932.79 crore (totals agree). 1998-99 is before the published range (2000-01 onwards).",
+     "cases": 2
+    }
+   ]
   },
   {
    "title": "Ministries: each spending category adds up across demands",
    "checks": 648,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2023-24's grand-total block prints Central Sector Schemes revenue for 2021-22 as 74188.47; the demands add to 741,888.47 and its own total minus capital (12,09,949.59 - 4,68,061.12) is 741,888.47 (confirmed on the page image). A dropped digit in the source.",
+     "cases": 1
+    },
+    {
+     "reason": "Budget 2023-24's grand-total block prints Other Transfers revenue for RE 2022-23 as 192262.62; the demands add to 1,92,226.62 and total minus capital (2,79,138.04 - 86,911.42) is 1,92,226.62. Two digits transposed in the source.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Ministries: grand total = Budget at a Glance",
    "checks": 291,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2000-01's 1998-99 Actuals: the departments' Plan figures add to 53.45 crore more than the printed Central Ministries total (37,107.43, confirmed on the page image), while the printed totals agree with each other and with the Budget at a Glance. Revenue/capital split of the grand total also differs from the Budget at a Glance by 932.79 crore (totals agree). 1998-99 is before the published range (2000-01 onwards).",
+     "cases": 2
+    }
+   ]
   },
   {
    "title": "Ministries: same line agrees in both budgets that print it",
@@ -176,36 +288,101 @@
    "title": "Ministries: Excel copies agree with the PDF",
    "checks": 12,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "The Excel copy mislabels the six category lines under Grand Total (all read \"Centre's expenditure\" / \"Transfers to ...\"), so they cannot be matched; the PDF labels them correctly.",
+     "cases": 1
+    },
+    {
+     "reason": "The PDF has no category lines under Grand Total; the Excel copy adds them.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Schemes: revenue + capital = total in every row",
    "checks": 32912,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 1,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2025-26 Statement 4A Grand Total, BE 2025-26: printed revenue 5,36,826.78 (read from the page image; the row is missing from the text layer) but printed total 5,41,850.21 = 5,41,826.78 + 23.43, and the Demand subtotals add to 5,41,826.78 revenue. The printed revenue figure is 5,000 crore short; shown as printed.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Schemes add up to their subtotals and the Grand Total",
    "checks": 9468,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 38,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2017-18 Statement 4B: for this Demand the scheme rows add to more than the printed Demand subtotal in some columns (the old Actual 2015-16 / BE 2016-17 columns were recast from the Plan/Non-plan budget, and some rows appear at gross outlay, e.g. amounts met from dedicated funds). The statement does not itemise the difference. Subtotals were checked on the page image (Demand 67: 74.86); rows shown as printed.",
+     "cases": 23
+    },
+    {
+     "reason": "Budget 2017-18 (the first budget with this statement, and the first with Railways merged into the Union Budget) lists Railways' scheme rows at their full outlay, including spending financed from the Railways' internal and extra-budgetary resources, while the Demand subtotal is the budgetary support only (BE 2017-18: 55,000 crore). Checked on the page image: the subtotal is printed as parsed. Rows shown as printed.",
+     "cases": 8
+    },
+    {
+     "reason": "Budget 2018-19 Statement 4B, Ministry of Housing and Urban Affairs, Actual 2016-17: the schemes' total matches the Demand subtotal, but 314.00 crore is classed as capital in the subtotal and as revenue in the scheme rows. Shown as printed.",
+     "cases": 2
+    },
+    {
+     "reason": "Budget 2024-25 Statement 4B: MNRE and Road Transport scheme rows include transfers to funds (2,000 and 6,000 crore) that the Demand subtotals leave out; the statement's last row 'Others (including amount met from & transfer to various funds)' carries the offsetting -8,000 crore. The scheme rows add up exactly to the Grand Total. Budget 2025-26, which reprints these BE 2024-25 figures, keeps the Demands gross.",
+     "cases": 4
+    },
+    {
+     "reason": "Budget 2025-26 Statement 4A Grand Total, BE 2025-26: printed revenue 5,36,826.78 (read from the page image; the row is missing from the text layer) but printed total 5,41,850.21 = 5,41,826.78 + 23.43, and the Demand subtotals add to 5,41,826.78 revenue. The printed revenue figure is 5,000 crore short; shown as printed.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Same scheme figure agrees across the two budgets that print it",
    "checks": 5915,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 4,
+   "allowed_reasons": [
+    {
+     "reason": "Budget 2018-19 prints the central sector schemes' Grand Total for BE 2017-18 as 6,63,663.02, against 6,66,644.02 in Budget 2017-18 itself (-2,981.00, 0.4%). The statement was reorganised between the two budgets (36 rows printed only in Budget 2017-18, 60 only in Budget 2018-19), so the restatement cannot be traced to single rows; the rows printed in both agree.",
+     "cases": 1
+    },
+    {
+     "reason": "Budget 2025-26 Statement 4A restates BE 2024-25 with PMKSY split up: Flood Management and Border Areas Programme (449.57) and Irrigation Census (40.00) become rows of their own, and 600.00 moves to 'Others (including amount met from & transfer to various funds)', -8,634.42 becoming -8,034.42. 9,339.37 - 449.57 - 40.00 - 600.00 = 8,249.80; no other row changes and the Grand Total for BE 2024-25 is the same in both budgets (5,05,978.07).",
+     "cases": 2
+    },
+    {
+     "reason": "Budget 2024-25 Statement 4A prints the Watershed Development Component of PMKSY (Department of Land Resources, BE 2023-24 2,200.00) as a row of its own; Budget 2023-24 counted it in PMKSY. 10,787.23 - 2,200.00 = 8,587.23, and the Grand Total for BE 2023-24 is the same in both budgets (4,76,104.59).",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Scheme tables: other copies agree with the PDF",
    "checks": 12,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 4,
+   "allowed_reasons": [
+    {
+     "reason": "An earlier version: about 25,786 crore of BE 2021-22 sits in item 36 'Others' (26,446.35) instead of the named Core schemes (e.g. Saksham Anganwadi and Poshan 2.0, 20,105), so the Core and Others subtotals differ. The PDF's rows add up to its subtotals and Grand Total.",
+     "cases": 1
+    },
+    {
+     "reason": "The Excel copy leaves BE 2023-24 blank for 'Assistance to States Agencies for Intra-State Movement of Foodgrains...' (the PDF and its page image show 7,424.60) and numbers two rows '58', so 'Others (Recoveries)' cannot be matched.",
+     "cases": 1
+    },
+    {
+     "reason": "A BE-2024-25-only copy that leaves out 8 Demands (5, 9, 43, 44, 45, 78, 92, 95) and their 79 schemes; every row it does have matches the PDF.",
+     "cases": 1
+    },
+    {
+     "reason": "Has no Grand Total row, like the PDF's text layer (apparently converted from the PDF); every other row matches.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Scheme spending as a share of total expenditure (context only)",

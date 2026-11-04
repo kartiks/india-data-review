@@ -25,7 +25,7 @@ page image), items (lines -> items), ids (stable ids), load (every budget and co
 Public functions: parse_schemes(), parse_file(), load_all(), checks().
 """
 
-from .validate import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks
+from .validate import EXCEPTIONS, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, checks
 from .common import MANIFEST, NAME_MAP, PARTS, ROOT, SCHEME_TYPES, TOLERANCE, Line
 from .ids import build_name_map, item_id, load_name_map, normalise_name, slug
 from .items import lines_to_items, parse_schemes, parse_value
@@ -34,7 +34,8 @@ from .read import read_pdf_lines, read_sheet_lines
 from .text_layer import GARBLED_LABELS, IMAGE_READINGS, MISSING_LABELS, apply_text_layer_fixes
 
 __all__ = [
-    "GARBLED_LABELS", "IMAGE_READINGS", "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "MANIFEST", "MISSING_LABELS",
+    "EXCEPTIONS", "GARBLED_LABELS", "IMAGE_READINGS", "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "MANIFEST",
+    "MISSING_LABELS",
     "NAME_MAP", "PARTS", "ROOT", "SCHEME_TYPES", "TOLERANCE", "Line", "apply_text_layer_fixes", "build_name_map",
     "checks", "compare", "item_id", "lines_to_items", "load_all", "load_name_map", "normalise_name", "parse_file",
     "parse_schemes", "parse_value", "read_pdf_lines", "read_sheet_lines", "slug",

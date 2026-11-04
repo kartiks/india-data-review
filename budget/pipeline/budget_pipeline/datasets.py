@@ -20,6 +20,10 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pipeline_common.numbers import strict_number
+from pipeline_common.report import Allowed, Exceptions
+from pipeline_common.text import fy_start, next_fy
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 
@@ -27,11 +31,6 @@ DATA = ROOT / "data"
 FIRST_YEAR = "2000-01"
 
 SOURCE_FIELDS = ("source_budget", "document", "label_as_printed", "source_url")
-
-
-def _next(fiscal_year: str, n: int) -> str:
-    start = int(fiscal_year[:4]) + n
-    return f"{start}-{str(start + 1)[-2:]}"
 
 
 def consolidate(rows: list[dict], id_fields: tuple[str, ...], value_fields: tuple[str, ...]) -> dict:
@@ -56,9 +55,9 @@ def consolidate(rows: list[dict], id_fields: tuple[str, ...], value_fields: tupl
     for year, key in sorted(keys):
         item: dict = {}
         be = index.get((year, key, "BE", year))
-        restated = index.get((year, key, "BE", _next(year, 1)))
-        re_ = index.get((year, key, "RE", _next(year, 1)))
-        actual = index.get((year, key, "Actual", _next(year, 2)))
+        restated = index.get((year, key, "BE", next_fy(year)))
+        re_ = index.get((year, key, "RE", next_fy(year)))
+        actual = index.get((year, key, "Actual", next_fy(year, 2)))
         for name, r in (("be", be), ("re", re_), ("actual", actual)):
             if r is not None and any(r.get(f) is not None for f in value_fields):
                 item[name] = pick(r)
@@ -202,29 +201,32 @@ def scheme_observations(all_parsed: dict) -> list[dict]:
     return rows
 
 
+# Statement 4 grand totals that may differ from the scheme lines of Statement 3: ("4 vs 3", start of the message)
+# -> reason. None today: Budget 2017-18's Demands at gross outlay and Budget 2024-25's transfers to funds (listed
+# here before) make the 4B rows differ from their Demand subtotals (schemes.KNOWN_EXCEPTIONS), not the Grand Total
+# from Statement 3, which agrees to the crore in every column.
+CROSSCHECK_EXCEPTIONS = Exceptions({})
+
+
 def scheme_ministry_crosscheck(scheme_rows: list[dict], ministry_rows: list[dict]) -> tuple:
     """Grand totals of Statements 4A/4B vs the scheme sub-lines of Statement 3, same budget and column.
 
     Two different statements of the same budget, so this independently checks the
     scheme totals (including the 2025-26 4A Grand Total that had to be read from
-    the page image). Known gross-vs-net presentation gaps are listed as notes.
+    the page image). Known gross-vs-net presentation gaps are allowed (CROSSCHECK_EXCEPTIONS).
     """
     field = {"css": "centrally_sponsored_schemes_crore", "central_sector": "central_sector_schemes_crore"}
     sums: dict[tuple, float] = defaultdict(float)
     present: set[tuple] = set()
     for r in ministry_rows:
-        if r["level"] not in ("department", "union_territory") or int(r["source_budget"][:4]) < 2017:
+        if r["level"] not in ("department", "union_territory") or fy_start(r["source_budget"]) < 2017:
             continue
         for t, f in field.items():
             if r.get(f) is not None:
                 sums[(t, r["source_budget"], r["fiscal_year"], r["kind"])] += r[f]
                 present.add((t, r["source_budget"]))
-    failures, notes, checked = [], [], 0
-    known = {
-        ("central_sector", "2017-18"): "Budget 2017-18 4B lists some Demands (Railways etc.) at gross outlay "
-                                       "while Statement 3 shows budgetary support.",
-        ("central_sector", "2024-25"): "Budget 2024-25 4B nets transfers to funds in a final -8,000 row.",
-    }
+    CROSSCHECK_EXCEPTIONS.reset()
+    failures, checked, ok = [], 0, Allowed(CROSSCHECK_EXCEPTIONS, more_hint="")
     for r in scheme_rows:
         if r["level"] != "grand_total" or (r["scheme_type"], r["source_budget"]) not in present:
             continue
@@ -235,9 +237,9 @@ def scheme_ministry_crosscheck(scheme_rows: list[dict], ministry_rows: list[dict
             continue
         msg = (f"Budget {r['source_budget']} {r['scheme_type']} {r['kind']} {r['fiscal_year']}: Statement 4 grand "
                f"total {r['total_crore']:,.2f} vs sum of Statement 3 sub-lines {sums[key]:,.2f} ({diff:+,.2f})")
-        reason = known.get((r["scheme_type"], r["source_budget"]))
-        (notes if reason else failures).append(msg + (f". {reason}" if reason else ""))
-    return ("Schemes: grand totals match the scheme lines of the ministries statement", checked, failures, notes)
+        if not ok.file("4 vs 3", msg):
+            failures.append(msg)
+    return ("Schemes: grand totals match the scheme lines of the ministries statement", checked, failures, [], ok)
 
 
 def build_schemes(ministry_rows: list[dict]) -> tuple[dict, list[tuple]]:
@@ -314,13 +316,13 @@ def check_prs() -> tuple:
     with PRS_FILE.open() as f:
         for row in csv.DictReader(f):
             checked += 1
-            want, got = float(row["value_crore"]), ours(row)
+            want, got = strict_number(row["value_crore"]), ours(row)
             if got is None or abs(got - want) > 1:  # PRS rounds to whole crore
                 failures.append(f"{row['dataset']} {row['item']} {row['kind'].upper()} {row['fiscal_year']}: "
                                 f"ours {got}, PRS {want:,.0f}")
     return ("Matches PRS Legislative Research, Union Budget 2026-27 Analysis (independent)", checked, failures,
             [f"{checked - len(failures)} of {checked} published figures match to the crore: headline totals, "
-             "taxes by type, five ministries and Defence, four schemes."])
+             "taxes by type, five ministries and Defence, four schemes."], None)
 
 
 def check_published() -> list[tuple]:
@@ -347,7 +349,7 @@ def check_published() -> list[tuple]:
                 failures.append(f"{kind.upper()} {year}: lines add to {sum(parts):,.2f}, grand total "
                                 f"{gt['total_crore']:,.2f}")
     sections.append(("Published ministries.json: lines add up to the grand total for every year and estimate",
-                     checked, failures, []))
+                     checked, failures, [], None))
     taxes = json.loads((DATA / "taxes.json").read_text())
     failures, checked = [], 0
     for year, entry in taxes["years"].items():
@@ -363,5 +365,5 @@ def check_published() -> list[tuple]:
                 failures.append(f"{kind.upper()} {year}: gross {g['value']:,.0f} - deductions {ded:,.0f} != net "
                                 f"{n['value']:,.0f}")
     sections.append(("Published taxes.json: net tax = gross tax - states' share - other deductions",
-                     checked, failures, []))
+                     checked, failures, [], None))
     return sections

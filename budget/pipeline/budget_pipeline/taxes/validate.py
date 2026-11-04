@@ -2,21 +2,23 @@
 
 from collections import defaultdict
 
-from ..parse import fy
+from pipeline_common.numbers import blank_or_number
+from pipeline_common.report import Allowed
+from pipeline_common.text import fy
+
 from .common import NON_TAX_PARTS, TOLERANCE_CRORE
-from .exceptions import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES
+from .exceptions import EXCEPTIONS
 from .load import observations
 
-
-def _allowed(key, msg, failures, notes):
-    if key in KNOWN_EXCEPTIONS:
-        notes.append(f"Allowed: {msg}. Reason: {KNOWN_EXCEPTIONS[key]}")
-    else:
-        failures.append(msg)
+Result = tuple[int, list[str], list[str], Allowed]  # checked, failures, notes, allowed exceptions
 
 
-def _identity_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
-    failures, notes, checked = [], [], 0
+def _allowed() -> Allowed:
+    return Allowed(EXCEPTIONS, more_hint="")
+
+
+def _identity_checks(all_parsed: dict) -> Result:
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for budget, b in sorted(all_parsed["budgets"].items()):
         p = b["parsed"]
         for c, col in enumerate(p["columns"]):
@@ -32,7 +34,8 @@ def _identity_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
                 if abs(printed - calc) > TOLERANCE_CRORE:
                     msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
-                    _allowed((budget, col.fiscal_year, col.kind, name), msg, failures, notes)
+                    if not ok.file("identity", msg):
+                        failures.append(msg)
 
             check("gross tax = sum of printed taxes", vals.get("gross_tax_revenue"),
                   [v for k, v in vals.items() if sections[k] == "gross"])
@@ -48,15 +51,14 @@ def _identity_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
             detail = [v for k, v in vals.items() if sections[k] == "deduction_detail"]
             if detail:
                 check("states' share = its printed split", vals.get("states_share"), detail)
-    return checked, failures, notes
+    return checked, failures, notes, ok
 
 
 def _summary_index(summary_observations: list[dict]) -> dict[tuple[str, str, str, str], float | None]:
     """(source budget, fiscal year, kind, field) -> value of the headline table (observations.csv)."""
     summ = {}
     for r in summary_observations:
-        v = r["value_crore"]
-        summ[(r["source_budget"], r["fiscal_year"], r["kind"], r["field"])] = float(v) if v not in ("", None) else None
+        summ[(r["source_budget"], r["fiscal_year"], r["kind"], r["field"])] = blank_or_number(r["value_crore"])
     return summ
 
 
@@ -67,9 +69,9 @@ SUMMARY_LINKS = {
 }
 
 
-def _summary_checks(all_parsed: dict, summary_observations: list[dict]) -> tuple[int, list[str], list[str]]:
+def _summary_checks(all_parsed: dict, summary_observations: list[dict]) -> Result:
     summ = _summary_index(summary_observations)
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for budget, b in sorted(all_parsed["budgets"].items()):
         p = b["parsed"]
         for it in p["items"]:
@@ -84,16 +86,17 @@ def _summary_checks(all_parsed: dict, summary_observations: list[dict]) -> tuple
                 if abs(s - v) > TOLERANCE_CRORE:
                     msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {it['item_id']} {v:,.0f} in Receipts "
                            f"vs {field} {s:,.0f} in the headline table")
-                    _allowed((budget, col.fiscal_year, col.kind, f"summary:{it['item_id']}"), msg, failures, notes)
-    return checked, failures, notes
+                    if not ok.file("summary", msg):
+                        failures.append(msg)
+    return checked, failures, notes, ok
 
 
-def _cross_document_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
+def _cross_document_checks(all_parsed: dict) -> Result:
     seen = defaultdict(dict)
     for r in observations(all_parsed):
         if r["value_crore"] is not None:
             seen[(r["fiscal_year"], r["kind"], r["item_id"])][r["source_budget"]] = r["value_crore"]
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for (year, kind, item), by_doc in sorted(seen.items()):
         if len(by_doc) < 2:
             continue
@@ -103,18 +106,17 @@ def _cross_document_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]
             continue
         rel = abs(v2 - v1) / max(abs(v1), 1)
         msg = f"{kind} {year} {item}: {v1:,.0f} in budget {d1} vs {v2:,.0f} in budget {d2} ({v2 - v1:+,.0f}, {rel:.1%})"
-        key = ("cross", year, kind, item)
-        if key in KNOWN_EXCEPTIONS:
-            notes.append(f"{msg}. Explained: {KNOWN_EXCEPTIONS[key]}")
-        elif rel > 0.02 and abs(v2 - v1) > 500:
+        if ok.file("cross", msg):
+            continue
+        if rel > 0.02 and abs(v2 - v1) > 500:
             failures.append(msg)
         else:
             notes.append(f"Restated: {msg}")
-    return checked, failures, notes
+    return checked, failures, notes, ok
 
 
-def _format_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
-    failures, notes, checked = [], [], 0
+def _format_checks(all_parsed: dict) -> Result:
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for c in all_parsed["comparisons"]:
         budget, primary = c["budget"], c["primary"]
         if primary is None:
@@ -125,15 +127,14 @@ def _format_checks(all_parsed: dict) -> tuple[int, list[str], list[str]]:
             n = len(o["differences"])
             if n == 0:
                 notes.append(f"Budget {budget}: {primary.upper()} and {ext.upper()} agree on all {o['compared']} values.")
-            elif (budget, ext) in KNOWN_FORMAT_ISSUES:
-                notes.append(f"Budget {budget}: {ext.upper()} differs in {n} values (known): "
-                             f"{KNOWN_FORMAT_ISSUES[(budget, ext)]}")
-            else:
+                continue
+            msg = f"Budget {budget}: {ext.upper()} differs from {primary.upper()} in {n} values"
+            if not ok.file("format", msg):
                 sample = "; ".join(f"{d['item']}: {d[primary]} vs {d[ext]}" for d in o["differences"][:3])
-                failures.append(f"Budget {budget}: {ext.upper()} differs from {primary.upper()} in {n} values ({sample})")
+                failures.append(f"{msg} ({sample})")
         for ext, err in c["unparseable"].items():
             notes.append(f"Budget {budget}: {ext.upper()} copy could not be read ({err}).")
-    return checked, failures, notes
+    return checked, failures, notes, ok
 
 
 # ----- checks on the Receipt Budget actuals ----------------------------------
@@ -156,9 +157,9 @@ def _annex7_columns(rbs: dict):
                    {it["item_id"]: it["section"] for it in p["items"]})
 
 
-def _rb_identities(rbs: dict) -> tuple[int, list[str], list[str]]:
+def _rb_identities(rbs: dict) -> Result:
     """(a) Annex 7's totals equal their printed parts."""
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for budget, b in sorted(rbs.items()):
         if "parsed" not in b:
             failures.append(f"Receipt Budget {budget}: Annex 7 could not be read ({b['error']})")
@@ -177,7 +178,8 @@ def _rb_identities(rbs: dict) -> tuple[int, list[str], list[str]]:
                 if abs(printed - calc) > TOLERANCE_CRORE:
                     msg = (f"Receipt Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
-                    _allowed(("rb:" + budget, col.fiscal_year, col.kind, name), msg, failures, notes)
+                    if not ok.file("rb identity", msg):
+                        failures.append(msg)
 
             check("gross tax = sum of printed taxes", vals.get("gross_tax_revenue"),
                   [v for k, v in vals.items() if sec[k] == "gross"])
@@ -188,12 +190,12 @@ def _rb_identities(rbs: dict) -> tuple[int, list[str], list[str]]:
             detail = [v for k, v in vals.items() if sec[k] == "deduction_detail"]
             if any(d is not None for d in detail):
                 check("states' share = its printed split", vals.get("states_share"), detail)
-    return checked, failures, notes
+    return checked, failures, notes, ok
 
 
-def _rb_actuals_vs_headline(rbs: dict, summ: dict) -> tuple[int, list[str], list[str]]:
+def _rb_actuals_vs_headline(rbs: dict, summ: dict) -> Result:
     """(b) The Actuals column against the headline table of the same budget."""
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for budget, col, vals, _ in _annex7_columns(rbs):
         if col.kind != "Actual":
             continue
@@ -207,11 +209,12 @@ def _rb_actuals_vs_headline(rbs: dict, summ: dict) -> tuple[int, list[str], list
             if abs(v - sv) > TOLERANCE_CRORE:
                 msg = (f"Receipt Budget {budget}, Actual {col.fiscal_year}: {item} {v:,.0f} vs headline "
                        f"{field} {sv:,.0f} (Budget at a Glance {budget})")
-                _allowed(("rb:" + budget, col.fiscal_year, "Actual", f"summary:{item}"), msg, failures, notes)
-    return checked, failures, notes
+                if not ok.file("rb headline", msg):
+                    failures.append(msg)
+    return checked, failures, notes, ok
 
 
-def _rb_vs_receipts_table(all_parsed: dict, rbs: dict) -> tuple[int, list[str], list[str]]:
+def _rb_vs_receipts_table(all_parsed: dict, rbs: dict) -> Result:
     """(c) The RE and BE columns against the Budget at a Glance Receipts table of the same budget."""
     bag = {}
     for budget, b in all_parsed["budgets"].items():
@@ -219,7 +222,7 @@ def _rb_vs_receipts_table(all_parsed: dict, rbs: dict) -> tuple[int, list[str], 
         for it in p["items"]:
             for col, v in zip(p["columns"], it["values"]):
                 bag[(budget, col.fiscal_year, col.kind, it["item_id"])] = v
-    failures, notes, checked = [], [], 0
+    failures, notes, checked, ok = [], [], 0, _allowed()
     for budget, col, vals, _ in _annex7_columns(rbs):
         if col.kind == "Actual":
             continue
@@ -235,11 +238,12 @@ def _rb_vs_receipts_table(all_parsed: dict, rbs: dict) -> tuple[int, list[str], 
             if (v is None) != (bv is None) or abs(v - bv) > TOLERANCE_CRORE:
                 msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {item} {v} in Receipt Budget Annex 7 "
                        f"vs {bv} in Budget at a Glance Receipts")
-                _allowed(("rb:" + budget, col.fiscal_year, col.kind, f"bag:{item}"), msg, failures, notes)
-    return checked, failures, notes
+                if not ok.file("rb receipts", msg):
+                    failures.append(msg)
+    return checked, failures, notes, ok
 
 
-def _rb_completeness(rbs: dict) -> tuple[int, list[str], list[str]]:
+def _rb_completeness(rbs: dict) -> Result:
     """(d) Actuals for every year the Budget at a Glance Receipts table lacks."""
     failures, checked = [], 0
     have = {(it_year, item) for budget, b in rbs.items() if "parsed" in b
@@ -251,7 +255,7 @@ def _rb_completeness(rbs: dict) -> tuple[int, list[str], list[str]]:
             checked += 1
             if (fy(start), item) not in have:
                 failures.append(f"Actual {fy(start)} {item} missing")
-    return checked, failures, []
+    return checked, failures, [], None
 
 
 def _receipt_budget_checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple]:
@@ -266,7 +270,9 @@ def _receipt_budget_checks(all_parsed: dict, summary_observations: list[dict]) -
     ]
 
 
-def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple[str, int, list[str], list[str]]]:
+def checks(all_parsed: dict, summary_observations: list[dict]) -> list[tuple]:
+    """Every tax check, one group each: [(title, checked, failures, notes, allowed exceptions or None)]."""
+    EXCEPTIONS.reset()
     out = []
     out.append(("Taxes: totals equal their printed parts", *_identity_checks(all_parsed)))
     out.append(("Taxes: net tax, non-tax and revenue receipts match the headline table",

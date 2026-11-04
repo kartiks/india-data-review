@@ -4,6 +4,8 @@ import csv
 import re
 from collections import defaultdict
 
+from pipeline_common import text
+
 from .common import NAME_MAP, SCHEME_TYPES
 
 
@@ -14,7 +16,8 @@ def normalise_name(name: str) -> str:
 
 
 def slug(name: str) -> str:
-    return normalise_name(name).replace(" ", "_")[:80]
+    """A scheme's id from its name: ASCII letters and digits, at most 80 characters."""
+    return text.slug(name, ascii_only=True, max_len=80)
 
 
 def load_name_map() -> dict[tuple[str, str], list[dict]]:

@@ -20,6 +20,8 @@ import re
 from dataclasses import dataclass
 
 from pipeline_common.budget_glance import parse_sentence
+from pipeline_common.numbers import strict_number
+from pipeline_common.text import fy
 
 # Canonical line items, matched against the English label after removing the
 # item number (e.g. "17. ").
@@ -79,10 +81,6 @@ class Observation:
     label_as_printed: str
 
 
-def fy(start: int) -> str:
-    return f"{start}-{str(start + 1)[-2:]}"
-
-
 def ascii_text(text: str) -> str:
     text = "".join(ch if ord(ch) < 128 else " " for ch in text)
     return re.sub(r"\s+", " ", text).strip()
@@ -133,11 +131,11 @@ def parse_cell(cell: str) -> tuple[bool, float | None, float | None]:
             continue
         m = PCT_RE.match(tok)
         if m:
-            pct = float(m.group(1))
+            pct = strict_number(m.group(1))
             if tok.startswith("-"):
                 pct = -abs(pct)
         elif NUM_RE.match(tok):
-            amount = float(tok.replace(",", ""))
+            amount = strict_number(tok)
         elif tok in NA_TOKENS or re.fullmatch(r"\.{2,}", tok):
             pass
         else:

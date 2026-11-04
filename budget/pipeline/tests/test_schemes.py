@@ -5,6 +5,7 @@ import csv
 from pathlib import Path
 
 import pytest
+from pipeline_common.text import fy_start
 
 from budget_pipeline.parse import ParseError
 from budget_pipeline.schemes import (
@@ -15,7 +16,7 @@ RAW = Path(__file__).resolve().parents[2] / "sources" / "raw"
 
 
 def parsed(budget: str, scheme_type: str, ext: str = "pdf") -> dict:
-    return parse_file(RAW / budget / f"{scheme_type}.{ext}", int(budget[:4]), scheme_type)
+    return parse_file(RAW / budget / f"{scheme_type}.{ext}", fy_start(budget), scheme_type)
 
 
 def find(result: dict, label_start: str, level: str = "scheme") -> dict:
@@ -106,7 +107,7 @@ def test_all_scheme_checks_pass():
     data = load_all()
     with (ROOT / "data" / "observations.csv").open() as f:
         summary = list(csv.DictReader(f))
-    failures = [x for _, _, fails, _ in checks(data, summary) for x in fails]
+    failures = [x for _, _, fails, _, _ in checks(data, summary) for x in fails]
     assert failures == []
     # Every statement was read from its PDF.
     assert all(e["primary"] == "pdf" for by_type in data["budgets"].values() for e in by_type.values())

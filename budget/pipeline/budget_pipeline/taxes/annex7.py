@@ -4,7 +4,9 @@ import json
 import re
 from pathlib import Path
 
-from ..parse import NA_TOKENS, YEAR_RE, Column, ParseError, ascii_text, fy, parse_cell
+from pipeline_common.text import fy, fy_start
+
+from ..parse import NA_TOKENS, YEAR_RE, Column, ParseError, ascii_text, parse_cell
 from ..readers import read_any
 from .common import MANIFEST, ROOT, english, slug
 
@@ -191,7 +193,7 @@ def load_receipt_budgets() -> dict:
             continue
         path = ROOT / f["file"]
         try:
-            parsed = parse_annex7(read_any(path), int(budget[:4]), annex7_header_text(path))
+            parsed = parse_annex7(read_any(path), fy_start(budget), annex7_header_text(path))
             out[budget] = {"url": f["url"], "sha256": f["sha256"], "parsed": parsed}
         except ParseError as exc:
             out[budget] = {"url": f["url"], "error": str(exc)}

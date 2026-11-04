@@ -22,9 +22,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline_common import budget_glance
+from pipeline_common.text import fy, fy_start
 
 from .annotations import HEADER_FIXES, SOURCE_NOTES
-from .parse import FIELD_PATTERNS, ParseError, fy, parse_document, stated_gdp
+from .parse import FIELD_PATTERNS, ParseError, parse_document, stated_gdp
 from .readers import read_any
 from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
 
@@ -62,7 +63,7 @@ def parse_all() -> tuple[list[dict], dict, list[dict]]:
     gdp: dict[str, dict] = {}
     comparisons: list[dict] = []
     for doc_year, entry in manifest.items():
-        start = int(doc_year[:4])
+        start = fy_start(doc_year)
         parsed_by_format: dict[str, dict] = {}
         errors: dict[str, str] = {}
         for ext in FORMAT_PRIORITY:

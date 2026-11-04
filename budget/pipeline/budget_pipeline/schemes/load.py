@@ -3,7 +3,9 @@
 import json
 from pathlib import Path
 
-from ..parse import ParseError, fy
+from pipeline_common.text import fy
+
+from ..parse import ParseError
 from ..sources import FIRST_SCHEME_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
 from .common import MANIFEST, PARTS, ROOT, SCHEME_TYPES, TOLERANCE
 from .items import parse_schemes

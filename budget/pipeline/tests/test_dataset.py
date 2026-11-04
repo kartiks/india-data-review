@@ -1,27 +1,33 @@
-"""End-to-end: build the dataset from the saved source files and run every check."""
+"""End-to-end: build the dataset from the saved source files and run every check.
+
+The build writes to a temporary folder (the data_dir fixture), not to budget/data/."""
 
 import json
 
 import pytest
 
 from budget_pipeline import build, checks
-from budget_pipeline.build import DATA
 
 
 @pytest.fixture(scope="module")
-def checks_result():
+def checks_result(data_dir):
     """Build everything once (headline + taxes, ministries, schemes) and run every check."""
     build.main()
     return checks.main()
 
 
 @pytest.fixture(scope="module")
-def dataset(checks_result):
-    return json.loads((DATA / "fiscal.json").read_text())
+def dataset(checks_result, data_dir):
+    return json.loads((data_dir / "fiscal.json").read_text())
 
 
-def test_all_checks_pass(checks_result):
-    assert checks_result == 0, "see budget/data/validation_report.md"
+@pytest.fixture(scope="module")
+def detailed(checks_result, data_dir):
+    return lambda name: json.loads((data_dir / f"{name}.json").read_text())
+
+
+def test_all_checks_pass(checks_result, data_dir):
+    assert checks_result == 0, f"see {data_dir / 'validation_report.md'}"
 
 
 @pytest.mark.parametrize(
@@ -56,11 +62,7 @@ def test_every_figure_has_a_source(dataset):
                     assert item[kind]["source_budget"] in dataset["sources"]
 
 
-def detailed(name: str) -> dict:
-    return json.loads((DATA / f"{name}.json").read_text())
-
-
-def test_detailed_tables_built(dataset):
+def test_detailed_tables_built(detailed):
     for name in ("taxes", "ministries", "schemes"):
         assert detailed(name)["years"], name
 
@@ -76,11 +78,11 @@ def test_detailed_tables_built(dataset):
         ("schemes", "2026-27", "css/css:samagra_shiksha", "be", "total_crore", 42100.02),
     ],
 )
-def test_detailed_known_figures(dataset, name, year, item, kind, field, value):
+def test_detailed_known_figures(detailed, name, year, item, kind, field, value):
     assert detailed(name)["years"][year][item][kind][field] == pytest.approx(value, abs=0.01)
 
 
-def test_image_read_figures_carry_a_note(dataset):
+def test_image_read_figures_carry_a_note(detailed):
     # 2025-26 Statement 4A's Grand Total is missing from the PDF text layer and was read from the page image.
     item = detailed("schemes")["years"]["2025-26"]
     gt = next(v for k, v in item.items() if k.startswith("css/") and "grand_total" in k)

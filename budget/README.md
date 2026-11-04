@@ -25,7 +25,8 @@ cd pipeline
 uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
 uv run python -m budget_pipeline --fetch    # also download anything missing
 uv run python -m budget_pipeline --refresh  # re-download every budget document (overwrites sources/raw/)
-uv run pytest                               # parser tests + end-to-end checks (~6 min)
+uv run pytest                               # parser tests + end-to-end checks (~6 min; builds in a temporary
+                                            # folder and fails if anything in data/ changes)
 ```
 
 The command exits with an error if any check fails, so it can gate a website build.
@@ -45,9 +46,9 @@ interim one, which the pipeline skips):
 3. Fix what the checks report. Usual causes, and where each fix goes (always with a written reason):
    - a renamed ministry or scheme: `pipeline/budget_pipeline/data_maps/ministry_names.csv` or `scheme_names.csv`;
    - a typo or a copy (Excel/HTML) that differs from the PDF: `annotations.py` for the headline table,
-     `KNOWN_EXCEPTIONS` in `taxes.py`, `ministries.py` or `schemes.py` for the others;
+     `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py` or `schemes/checks.py` for the others;
    - figures missing from a PDF's text layer: read them from the page rendered as an image and add them to
-     `IMAGE_READINGS` in `schemes.py`, with the reason and the broken fragment the text layer shows; a reading is
+     `IMAGE_READINGS` in `schemes/text_layer.py`, with the reason and the broken fragment the text layer shows; a reading is
      applied only where that exact fragment appears, so a corrected file is never overridden.
 4. Independent references:
    - **PRS Legislative Research.** Type PRS's tables for the new budget into a new CSV in
@@ -119,7 +120,7 @@ Research's *Union Budget 2026-27 Analysis*.
 5. **Independent publishers.**
    - RBI: 235 of 270 headline figures match exactly; the rest are explained.
    - PRS: all 117 figures match to the crore, covering headline totals, taxes by type, six ministries and four schemes.
-6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes.py`, `ministries.py`, `schemes.py`). Nothing changes a number; notes are attached to affected figures instead.
+6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
 
 ### Problems found in the official files (examples)
 
@@ -150,11 +151,14 @@ Research's *Union Budget 2026-27 Analysis*.
 pipeline/budget_pipeline/
   sources.py      where each table lives, per year and document type
   fetch.py        downloads every format, records checksums, checks the title
-  readers.py      HTML / XLS / XLSX / PDF -> rows of cells
+  readers.py      HTML / XLS / XLSX / PDF -> rows of cells; steps all PDF line readers share
   parse.py        headline table
-  taxes.py        Receipts table + Receipt Budget Annex 7
-  ministries.py   Statement 2 / 3A (own position-based PDF reader)
-  schemes.py      Statements 4A / 4B (own position-based PDF reader)
+  taxes/          Receipts table + Receipt Budget Annex 7: common (label meanings), exceptions, receipts,
+                  annex7, load, checks
+  ministries/     Statement 2 / 3A: common, read (own position-based PDF reader), table (parser), ids, load,
+                  checks
+  schemes/        Statements 4A / 4B: common, read (own position-based PDF reader), text_layer (cells read from
+                  the page image), items (parser), ids, load, checks
   build.py        headline dataset
   datasets.py     detailed datasets, scheme↔ministry and PRS cross-checks
   checks.py       all checks -> data/validation_report.md, validation_summary.json

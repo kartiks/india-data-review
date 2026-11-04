@@ -58,32 +58,40 @@ class Exceptions:
     """The known exceptions to an area's checks, each with its written reason.
 
     - known: {(check, message prefix): reason}. One known case, or every case whose message starts with the prefix
-      (an empty prefix matches every message of that check).
-    - rules: [(check, test, reason)]. A family of cases recognised by test(message), tried after `known`.
+      (an empty prefix matches every message of that check). Where several prefixes match, the longest wins.
+    - contains: {(check, fragment): reason}. Every case whose message contains the fragment anywhere; tried after
+      `known`, the longest matching fragment winning.
+    - rules: [(check, test, reason)]. A family of cases recognised by test(message), tried last, in order.
 
     `check` names a check ('growth') or is any other hashable key, such as a (budget, table) tuple. reason() also
-    remembers which `known` entries matched, so an area can list those no longer needed (unused()).
+    remembers which `known` and `contains` entries matched, so an area can list those no longer needed (unused()).
     """
 
-    def __init__(self, known: Mapping[tuple[Hashable, str], str] | None = None, rules: Iterable[Rule] = ()) -> None:
+    def __init__(self, known: Mapping[tuple[Hashable, str], str] | None = None, rules: Iterable[Rule] = (),
+                 contains: Mapping[tuple[Hashable, str], str] | None = None) -> None:
         self.known = dict(known or {})
+        self.contains = dict(contains or {})
         self.rules = list(rules)
-        self.used: set[tuple[Hashable, str]] = set()
+        self.used: set[tuple[str, Hashable, str]] = set()
 
     def reason(self, check: Hashable, message: str) -> str | None:
         """The reason this message of this check is allowed, or None if it is a failure."""
-        for (c, prefix), reason in self.known.items():
-            if c == check and message.startswith(prefix):
-                self.used.add((c, prefix))
-                return reason
+        for mode, entries, matches in (("known", self.known, str.startswith),
+                                       ("contains", self.contains, str.__contains__)):
+            hits = [text for (c, text) in entries if c == check and matches(message, text)]
+            if hits:
+                best = max(hits, key=len)
+                self.used.add((mode, check, best))
+                return entries[(check, best)]
         for c, test, reason in self.rules:
             if c == check and test(message):
                 return reason
         return None
 
     def unused(self) -> list[tuple[Hashable, str]]:
-        """The known entries no message has matched since the last reset()."""
-        return [k for k in self.known if k not in self.used]
+        """The known and contains entries no message has matched since the last reset()."""
+        return ([k for k in self.known if ("known", *k) not in self.used]
+                + [k for k in self.contains if ("contains", *k) not in self.used])
 
     def reset(self) -> None:
         self.used.clear()
@@ -92,9 +100,9 @@ class Exceptions:
 class Allowed:
     """Allowed exceptions grouped under their reason, so each reason is printed once with its cases.
 
-    Add a case under a reason the check worked out itself with add(), or let sort_out() look the reason up in the
-    area's Exceptions. Pass it to Report.add, which lists the cases and counts them in the summary.
-    `more_hint` follows "and N more" when a reason has more cases than the report shows."""
+    Add a case under a reason the check worked out itself with add(), or let file() and sort_out() look the reason
+    up in the area's Exceptions. Pass it to Report.add, which lists the cases (one bullet each) and counts them in
+    the summary. `more_hint` follows "and N more" when a reason has more cases than the report shows."""
 
     def __init__(self, exceptions: Exceptions | None = None, *, more_hint: str = " (see the CSV)") -> None:
         self.exceptions = exceptions
@@ -104,22 +112,31 @@ class Allowed:
     def add(self, reason: str, case: str) -> None:
         self.cases[reason].append(case)
 
-    def sort_out(self, check: Hashable, messages: Iterable[str]) -> list[str]:
-        """File each message the exceptions know under its reason; return the others, which are failures."""
-        failures = []
-        for m in messages:
-            reason = self.exceptions.reason(check, m) if self.exceptions else None
-            if reason:
-                self.add(reason, m)
-            else:
-                failures.append(m)
-        return failures
+    def file(self, check: Hashable, message: str, case: str | None = None) -> bool:
+        """If the exceptions know this message, record it under its reason and return True. `case` is what to
+        record and print, when the message matched is a key rather than readable text (default: the message)."""
+        reason = self.exceptions.reason(check, message) if self.exceptions else None
+        if reason:
+            self.add(reason, message if case is None else case)
+        return bool(reason)
+
+    def sort_out(self, check: Hashable, messages: Iterable[str], cases: Iterable[str] | None = None) -> list[str]:
+        """File each message the exceptions know under its reason; return the others, which are failures. With
+        `cases` (one per message), the messages are keys to match and the cases are what is recorded or returned."""
+        messages = list(messages)
+        cases = messages if cases is None else list(cases)
+        if len(cases) != len(messages):
+            raise ValueError("sort_out: one case per message")
+        return [c for m, c in zip(messages, cases) if not self.file(check, m, c)]
 
     def notes(self, limit: int = 60) -> list[str]:
+        """One note per reason: the reason, then up to `limit` of its cases as nested bullets."""
         out = []
         for reason, cases in self.cases.items():
-            more = f"; and {len(cases) - limit} more{self.more_hint}" if len(cases) > limit else ""
-            out.append(f"Allowed ({len(cases)}): {reason} Cases: {'; '.join(cases[:limit])}{more}")
+            lines = [f"Allowed ({len(cases)}): {reason} Cases:", *(f"  - {c}" for c in cases[:limit])]
+            if len(cases) > limit:
+                lines.append(f"  - and {len(cases) - limit} more{self.more_hint}")
+            out.append("\n".join(lines))
         return out
 
     def counts(self) -> list[dict]:

@@ -456,10 +456,19 @@ def check_revisions(ds: dict, report: Report) -> None:
     report.add("Large revisions to growth (for review, not failures)", 0, [], notes)
 
 
+def check_unused_exceptions(report: Report) -> None:
+    """KNOWN_EXCEPTIONS entries no message matched in this run (MoSPI fixed the figure, or the message changed), for
+    review, as for the state accounts. Run after every check that uses EXCEPTIONS."""
+    unused = [f"{c}: {k}" for c, k in EXCEPTIONS.unused()]
+    if unused:
+        report.add("Known exceptions no longer needed (for review: remove them)", 0, [], unused)
+
+
 def main(ds: dict | None = None, out: Path | None = None) -> int:
     """Run every check on ds (default: the saved gdp.json) and write the report to out (default: gdp/data/)."""
     ds = ds or json.loads((DATA / "gdp.json").read_text())
     report = Report(INTRO)
+    EXCEPTIONS.reset()
     check_source(ds, report)
     check_identities(ds, report)
     check_growth(ds, report)
@@ -470,6 +479,7 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
     check_forecasts(ds, report)
     check_expenditure(ds, report)
     check_revisions(ds, report)
+    check_unused_exceptions(report)
     population_checks.check(ds, report)
     states_checks.check(ds, report)
     return report.write(out or DATA)

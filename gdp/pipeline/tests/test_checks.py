@@ -226,7 +226,7 @@ def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monke
     checked, failures, notes = run(checks.check_source, {"source_problems": [known, unknown], "duplicate_rows": []})
     assert checked == 1 and failures == [unknown]
     assert notes[0].startswith("Allowed (1): MoSPI's API returns one Gross National Disposable Income")
-    assert notes[0].endswith(f" Cases: {known}")
+    assert notes[0].endswith(f" Cases:\n  - {known}")
 
 
 # ---- forecasts --------------------------------------------------------------------------------------------------
@@ -276,3 +276,18 @@ def test_quarterly_rate_matches_rounded_or_truncated():
     assert checks.quarterly_rate_matches(7.66, 7.6)   # truncated, as in the 2011-12 series
     assert checks.quarterly_rate_matches(-2.36, -2.3)  # truncated toward zero
     assert not checks.quarterly_rate_matches(7.66, 7.5)
+
+
+def test_known_exceptions_no_longer_needed_are_listed():
+    def sections():
+        report = checks.Report(checks.INTRO)
+        checks.check_unused_exceptions(report)
+        return report.sections
+
+    checks.EXCEPTIONS.reset()
+    (s,) = sections()
+    assert "no longer needed" in s.title and s.failures == [] and len(s.notes) == len(checks.KNOWN_EXCEPTIONS)
+    for check, prefix in checks.KNOWN_EXCEPTIONS:
+        assert checks.EXCEPTIONS.reason(check, prefix + " (as printed)")
+    assert sections() == []
+    checks.EXCEPTIONS.reset()

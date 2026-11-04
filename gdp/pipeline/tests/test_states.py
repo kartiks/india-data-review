@@ -244,7 +244,7 @@ def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monke
     sc.check_rows(st, report)
     (_, _, failures, notes), = report.sections
     reason = sc.KNOWN_EXCEPTIONS[("source", "Karnataka: NSDP per person (second table, ind32)")]
-    assert failures == [unknown] and notes[0] == f"Allowed (1): {reason} Cases: {known}"
+    assert failures == [unknown] and notes[0] == f"Allowed (1): {reason} Cases:\n  - {known}"
 
 
 def test_known_exceptions_no_longer_needed_are_listed(tmp_path, monkeypatch):
@@ -261,10 +261,14 @@ def test_rows_in_an_unexpected_unit_industry_or_year_are_problems(tmp_path, monk
         raw("Goa", "2020-21", "100"), raw("Kerala", "2020-21", "100"),
         raw("Goa", "2021-22", "100", unit="₹ Lakh"),
         raw("Kerala", "2021", "100"),
+        raw("Kerala", "2022-24", "100"),  # a typo: not a fiscal year, so no year before it can be found
+        raw("Kerala", "1999-2000", "100"),  # MoSPI's state tables write the short form
     ])
     assert [(r["state"], r["year"]) for r in rows] == [("Goa", "2020-21"), ("Kerala", "2020-21")]
     assert problems == ["nas/2011-12/Current/Annually/ind23: unit '₹ Lakh', expected '₹ Crore' (Goa, 2021-22)",
-                        "nas/2011-12/Current/Annually/ind23: row with year '2021', state 'Kerala' not understood"]
+                        "nas/2011-12/Current/Annually/ind23: row with year '2021', state 'Kerala' not understood",
+                        "nas/2011-12/Current/Annually/ind23: row with year '2022-24', state 'Kerala' not understood",
+                        "nas/2011-12/Current/Annually/ind23: row with year '1999-2000', state 'Kerala' not understood"]
     monkeypatch.setattr(states, "STATE_INDICATORS", [29])
     (tmp_path / "ind29.json").write_text(json.dumps({"rows": [
         {**raw("Goa", "2020-21", "1", unit="₹ Lakh"), "industry": "Space Mining"}]}))

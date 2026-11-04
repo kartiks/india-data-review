@@ -41,6 +41,17 @@ def fy_start(label: str) -> int:
     return start
 
 
+def is_fy(label, *, short: bool = False) -> bool:
+    """Whether label is a fiscal year fy_start reads ('2011-12', '1999-2000'); with short=True, only the short form.
+
+    Readers use it to report a malformed year as a source problem instead of failing later in fy_start."""
+    try:
+        start = fy_start(label)
+    except (TypeError, ValueError):
+        return False
+    return not short or label == fy(start)
+
+
 def next_fy(label: str, years: int = 1) -> str:
     """The fiscal year `years` after this one: '1999-00' -> '2000-01' (always the short form)."""
     return fy(fy_start(label) + years)

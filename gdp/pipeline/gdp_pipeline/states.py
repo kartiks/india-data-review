@@ -20,13 +20,12 @@ The checks are in states_checks.py.
 
 import csv
 import json
-import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline_common.numbers import number
-from pipeline_common.text import prev_fy, slug
+from pipeline_common.text import is_fy, prev_fy, slug
 
 from .ids import INDUSTRY_LABELS
 from .sources import STATE_INDICATORS, STATE_SERIES
@@ -114,7 +113,8 @@ def load(manifest: dict) -> tuple[list[dict], list[str]]:
                 continue
             ind, unit, _ = INDICATORS[code]
             for r in json.loads((ROOT / entry["file"]).read_text())["rows"]:
-                if not re.fullmatch(r"\d{4}-\d{2}", str(r.get("year"))) or not r.get("state"):
+                # a fiscal year like '2023-24' ('2023-25' would break the year-before lookups later)
+                if not is_fy(str(r.get("year")), short=True) or not r.get("state"):
                     problems.append(f"{key}: row with year {r.get('year')!r}, state {r.get('state')!r} not understood")
                     continue
                 if r.get("unit") != unit:

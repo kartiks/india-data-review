@@ -5,7 +5,7 @@ import math
 import pytest
 
 from pipeline_common.numbers import blank_or_number, number, strict_number
-from pipeline_common.text import fy, fy_start, next_fy, prev_fy, slug
+from pipeline_common.text import fy, fy_start, is_fy, next_fy, prev_fy, slug
 
 
 # ---- slug ----------------------------------------------------------------------------------------
@@ -58,6 +58,13 @@ def test_fy_start_refuses_anything_else(label):
         fy_start(label)
 
 
+def test_is_fy():
+    assert is_fy("2011-12") and is_fy("1999-00") and is_fy("1999-2000")
+    assert not is_fy("1999-2000", short=True) and is_fy("1999-00", short=True)
+    for bad in ("2023-25", "2023", "2023-24 Q1", "", None, 2023):
+        assert not is_fy(bad)
+
+
 def test_prev_and_next_fy():
     # what gdp's and jobs-prices' inline arithmetic gave: f"{int(y[:4]) - 1}-{y[2:4]}"
     for y in ("2000-01", "2011-12", "2023-24", "1951-52"):
@@ -78,6 +85,7 @@ def test_prev_and_next_fy():
     (5, 5.0), (2.5, 2.5),
     # gdp and jobs-prices (MoSPI's API): None, blanks, NaN and transcription errors are not numbers
     (None, None), ("", None), ("   ", None), ("NaN", None), ("nan", None), (float("nan"), None),
+    ("inf", None), ("-Infinity", None), (float("inf"), None),
     ("l0.8", None), ("IN.4", None), ("20J", None),
     # markers of a missing figure
     ("-", None), ("–", None), ("NA", None), ("*", None),
@@ -109,8 +117,9 @@ def test_blank_or_number():
     assert blank_or_number("NA", missing={"-", "NA"}) is None
     with pytest.raises(ValueError):
         blank_or_number("-")  # a marker only when listed
-    with pytest.raises(ValueError):
-        blank_or_number("l0.8")
+    for bad in ("l0.8", "nan", "inf", "-inf"):
+        with pytest.raises(ValueError):
+            blank_or_number(bad)
 
 
 def test_strict_number():
@@ -119,6 +128,6 @@ def test_strict_number():
     assert strict_number("2,15,935") == 215935.0
     assert strict_number("1383") == 1383.0
     assert math.isclose(strict_number("10.5"), 10.5)
-    for bad in ("", "-", "12.5*", "l0.8"):
+    for bad in ("", "-", "12.5*", "l0.8", "nan", "NaN", "inf", "Infinity", "-inf"):
         with pytest.raises(ValueError):
             strict_number(bad)

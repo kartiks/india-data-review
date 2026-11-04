@@ -125,7 +125,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
       />
     </section>
     <section class="card">
-      <h3>Workers by industry, {Y}</h3>
+      <h2>Workers by industry, {Y}</h2>
       <p class="muted small">All India, share of all workers.</p>
       <BarList rows={sections.slice(0, 12)} tone={1} label="Share of workers by industry" />
       <p class="source">{SRC} The smallest {sections.length - 12} industries are in the table download.</p>
@@ -134,7 +134,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
 
   <div class="grid-2">
     <section class="card">
-      <h3>Regular salaried jobs by state, {Y}</h3>
+      <h2>Regular salaried jobs by state, {Y}</h2>
       <p class="muted small">
         Share of workers with a regular wage or salary. The rest are self-employed (including unpaid help in a family
         business) or casual labourers. MoSPI's All-India figures for this breakdown do not add up, so they are not shown.
@@ -143,7 +143,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
       <p class="source">{SRC}</p>
     </section>
     <section class="card">
-      <h3>Who employs workers, {Y}</h3>
+      <h2>Who employs workers, {Y}</h2>
       <p class="muted small">All India, share of workers outside farming by type of enterprise.</p>
       <BarList rows={employers} tone={3} label="Workers by type of enterprise" />
       <p class="source">{SRC}</p>
@@ -174,6 +174,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
       <section class="card">
         <DotRows
           title={`${k.title}, ${Y}`}
+          headingLevel={3}
           subtitle={`${k.note} ₹ ${k.unit}.`}
           series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]}
           rows={SECTORS.map(([s, label]) => ({ label, strong: s === "rural + urban", values: [earn(k.kind, Y, "female", s), earn(k.kind, Y, "male", s)] }))}
@@ -187,6 +188,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
   <section class="card">
     <DotRows
       title={`Rural daily wages of men by state, ${YW}`}
+      headingLevel={3}
       subtitle="Average daily wage in villages for three kinds of work. Sorted by the farm-labour wage. The survey covers the 20 larger states."
       series={WAGE_KINDS.map(({ name, slot }) => ({ name, slot }))}
       rows={wageRows}

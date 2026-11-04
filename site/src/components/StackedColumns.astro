@@ -1,7 +1,9 @@
 ---
 // Stacked columns over fiscal years (part-to-whole over time). Segments are separated by a 2px surface gap;
 // only the top segment gets the rounded data-end. Hover/tap/focus a column for its breakdown.
-import { SIZES, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
+import { SIZES, estimate, estimateLayout, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 interface Props {
   title: string;
@@ -15,8 +17,10 @@ interface Props {
   tableFormat?: (v: number) => string;
   source?: string;
   max?: number; // fixed top of the scale, e.g. 100 for shares
+  headingLevel?: 2 | 3; // 2 (default) for a chart card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max } = Astro.props;
+const { title, subtitle, years, categories, values, kinds = [], format, tipFormat = format, tableFormat = tipFormat, source, max, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 const totals = values.map((row) => row.reduce<number>((s, v) => s + (v ?? 0), 0));
 const ticks = niceTicks(0, max ?? Math.max(...totals), 4);
 const id = "c" + Math.random().toString(36).slice(2, 9);
@@ -42,13 +46,18 @@ const charts = SIZES.map((sz) => {
     });
     return { i, segs, x: x(i), band };
   });
-  const xTicks = xTickIndices(years.length, sz.name).map((i) => ({ yr: years[i], i }));
+  const xTicks = xTickIndices(years, sz, band, true).map((i) => ({ yr: years[i], i }));
   return { sz, cols, y, xTicks, right, band, x, w };
 });
 
-const tipData = JSON.stringify({
+// Estimate labels in short form; left out when every year has the same one (said once, under the chart).
+const est = years.map((_, i) => estimate(kinds[i]));
+const layout = estimateLayout(est.map((e) => [e.short]));
+const allEst = layout.all ? est[0] : undefined;
+
+const tipData = safeJson({
   columns: years.map((yr, i) => ({
-    title: `${yr}${kinds[i] && kinds[i] !== "Actual" ? ` (${kinds[i]})` : ""} · total ${tipFormat(totals[i])}`,
+    title: `${yr}${layout.mode !== "none" && est[i].short ? ` (${est[i].short})` : ""} · total ${tipFormat(totals[i])}`,
     rows: categories
       .map((c, j) => ({ slot: c.slot, value: values[i][j] == null ? "–" : tipFormat(values[i][j]!), name: c.label }))
       .reverse(),
@@ -57,7 +66,7 @@ const tipData = JSON.stringify({
 ---
 <figure class="chart stacked" id={id}>
   <figcaption>
-    <h3>{title}</h3>
+    <Heading class="chart-title">{title}</Heading>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
   <ul class="legend small" aria-label="Legend">
@@ -86,15 +95,17 @@ const tipData = JSON.stringify({
     </svg>
   ))}
   <script type="application/json" class="chart-data" set:html={tipData} />
+  {allEst && <p class="muted small est-note">All figures: {allEst.full}.</p>}
   <details class="table-view">
     <summary>Show as table</summary>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Year</th>{categories.map((c) => <th>{c.label}</th>)}<th>Total</th></tr></thead>
+        <thead><tr><th>Year</th>{layout.mode === "column" && <th class="est-col">Estimate</th>}{categories.map((c) => <th>{c.label}</th>)}<th>Total</th></tr></thead>
         <tbody>
           {years.map((yr, i) => (
             <tr>
-              <td>{yr}{kinds[i] && kinds[i] !== "Actual" ? ` (${kinds[i]})` : ""}</td>
+              <td>{yr}</td>
+              {layout.mode === "column" && <td class="est-col">{est[i].short && <span class="est" title={est[i].full}>{est[i].short}</span>}</td>}
               {categories.map((_, j) => <td>{values[i][j] == null ? "–" : tableFormat(values[i][j]!)}</td>)}
               <td>{tableFormat(totals[i])}</td>
             </tr>
@@ -110,12 +121,13 @@ const tipData = JSON.stringify({
   .chart { margin: 0; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
-  .plot { width: 100%; height: auto; display: block; touch-action: pan-y; }
-  .plot-lg { display: none; }
-  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot { width: 100%; height: auto; touch-action: pan-y; }
   .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
   .plot :global(.tick) { fill: var(--muted); }
+  .est { color: var(--ink-2); font-size: 0.85em; }
+  .est-col { text-align: left; }
+  .est-note { margin: 4px 0 0; }
   .col { cursor: pointer; outline: none; }
   .col:global(.active) path, .col:focus path { opacity: 0.8; }
   .col:focus rect { stroke: var(--accent); stroke-width: 1; }

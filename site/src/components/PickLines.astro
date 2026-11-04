@@ -5,6 +5,9 @@
 // address (#show=key,key) so a comparison can be shared. Values are formatted at build time; axis ticks use the
 // named `axis` format, the same at build time and in the browser.
 import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
+import { estimate } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export interface PickOption {
   key: string;
@@ -25,14 +28,17 @@ interface Props {
   axis: AxisFormat;
   tipFormat: (v: number) => string;
   source?: string;
+  headingLevel?: 2 | 3; // 2 (default) for a chart card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, tipFormat, source } = Astro.props;
+const { title, subtitle, years, options, reference, initial, max = 8, noun = "state", axis, tipFormat, source, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 
 const pack = (o: PickOption) => ({
   key: o.key, name: o.name, note: o.note ?? "",
   v: o.values,
   t: o.values.map((v) => (v == null ? null : tipFormat(v))),
-  k: o.kinds ?? o.values.map(() => ""),
+  k: o.values.map((_, i) => estimate(o.kinds?.[i]).short), // short estimate labels ("1st advance"), "" for none
+  kt: o.values.map((_, i) => estimate(o.kinds?.[i]).full), // their full names, for a tooltip
 });
 const opts = options.map(pack);
 const ref = reference ? pack(reference) : null;
@@ -46,13 +52,12 @@ const label = `${title}. Values are listed in the table below.`;
 const plots = linePlots(shown, start.map(({ o, slot }) => ({
   name: o.name, color: slotColor(slot), dashed: slot === 0, values: o.v.slice(0, shown.length),
 })), AXIS_FORMATS[axis], label);
-// "<" escaped so the JSON cannot close its script element.
-const payload = JSON.stringify({ years, options: opts, reference: ref, initial, max, axis, label }).replace(/</g, "\\u003c");
+const payload = safeJson({ years, options: opts, reference: ref, initial, max, axis, label });
 const inStart = new Set(start.map((c) => c.key));
 ---
 <figure class="chart pick-lines">
   <figcaption>
-    <h3>{title}</h3>
+    <Heading class="chart-title">{title}</Heading>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
   <ul class="chips small" aria-label={`${noun[0].toUpperCase()}${noun.slice(1)}s shown`}>
@@ -88,7 +93,7 @@ const inStart = new Set(start.map((c) => c.key));
         <thead><tr><th>Year</th>{start.map(({ o }) => <th>{o.name}</th>)}</tr></thead>
         <tbody>
           {shown.map((yr, i) => (
-            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] ?? "–"}{o.t[i] && o.k[i] ? ` (${o.k[i]})` : ""}</td>)}</tr>
+            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est" title={o.kt[i]}>{o.k[i]}</span>}{o.t[i] ?? "–"}</td>)}</tr>
           ))}
         </tbody>
       </table>
@@ -102,7 +107,7 @@ const inStart = new Set(start.map((c) => c.key));
   import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type AxisFormat } from "../lib/line-plot";
   import { setupLine } from "../scripts/charts";
 
-  interface Opt { key: string; name: string; note: string; v: (number | null)[]; t: (string | null)[]; k: string[] }
+  interface Opt { key: string; name: string; note: string; v: (number | null)[]; t: (string | null)[]; k: string[]; kt: string[] }
   interface Data { years: string[]; options: Opt[]; reference: Opt | null; initial: string[]; max: number; axis: AxisFormat; label: string }
 
   function setup(fig: HTMLElement) {
@@ -124,6 +129,13 @@ const inStart = new Set(start.map((c) => c.key));
       const e = document.createElement(tag);
       if (text != null) e.textContent = text;
       return e;
+    };
+    // A table cell: the value, after its estimate label (muted) so the numbers stay right-aligned.
+    const cell = (t: string | null, k: string, title: string) => {
+      const td = el("td");
+      if (t != null && k) td.append(Object.assign(el("span", k), { className: "est", title }));
+      td.append(t ?? "–");
+      return td;
     };
 
     /** Redraw everything from `chosen`. `focusKey`: after a chip is removed, the chip to move focus to ("" = none
@@ -183,7 +195,7 @@ const inStart = new Set(start.map((c) => c.key));
       head.append(el("th", "Year"), ...sel.map(({ o }) => el("th", o.name)));
       const body = years.map((yr, i) => {
         const tr = el("tr");
-        tr.append(el("td", yr), ...sel.map(({ o }) => el("td", o.t[i] == null ? "–" : `${o.t[i]}${o.k[i] ? ` (${o.k[i]})` : ""}`)));
+        tr.append(el("td", yr), ...sel.map(({ o }) => cell(o.t[i], o.k[i], o.kt[i])));
         return tr;
       });
       table.tHead!.replaceChildren(head);
@@ -230,7 +242,6 @@ const inStart = new Set(start.map((c) => c.key));
 
 <style>
   .chart { margin: 0; }
-  .chart figcaption h3 { margin-bottom: 2px; }
   .chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 8px 0; }
   /* Chips are rebuilt by the script, so their styles are global within the list. */
   .chips :global(.chip) { font: inherit; display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px 4px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink); cursor: pointer; }
@@ -251,9 +262,8 @@ const inStart = new Set(start.map((c) => c.key));
   .empty { margin: 4px 0 0; }
   .pick-notes { padding-left: 18px; margin: 8px 0 0; }
   .pick-notes:empty { display: none; }
-  .plots :global(.plot) { width: 100%; height: auto; display: block; overflow: visible; touch-action: pan-y; }
-  .plots :global(.plot-lg) { display: none; }
-  @media (min-width: 640px) { .plots :global(.plot-sm) { display: none; } .plots :global(.plot-lg) { display: block; } }
+  .table-view :global(.est) { color: var(--ink-2); font-size: 0.85em; margin-right: 6px; }
+  .plots :global(.plot) { width: 100%; height: auto; overflow: visible; touch-action: pan-y; }
   .plots :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plots :global(.baseline) { stroke: var(--axis); stroke-width: 1; }
   .plots :global(.tick) { fill: var(--muted); }

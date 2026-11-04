@@ -148,6 +148,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Inflation since January 2026, rural and urban"
+      headingLevel={3}
       subtitle={`All India, base 2024, on the same month a year earlier. ${monthLabel(CPI24_LATEST)} is provisional; earlier months are final.`}
       years={m24.map(monthLabel)}
       series={SECT24.map(([i, name, slot]) => ({ name, slot, points: m24.map((m) => {
@@ -171,6 +172,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <DotRows
         title={`Inflation by state, ${monthLabel(CPI24_LATEST)}`}
+        headingLevel={3}
         subtitle={`Base 2024, on the same month a year earlier${now24.provisional ? ", provisional" : ""}. Sorted by the combined figure. Chandigarh has no rural market.`}
         series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
         rows={state24}
@@ -207,6 +209,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Average inflation by fiscal year"
+      headingLevel={3}
       subtitle={`Average index for April to March, on the year before. Highest: ${highFy} (${gpct(averageInflation(general, highFy)!)}); lowest: ${lowFy} (${gpct(averageInflation(general, lowFy)!)}).`}
       years={fys}
       series={fyPoints}
@@ -236,6 +239,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <DotRows
       title={`Inflation by state, ${lastYear}`}
+      headingLevel={3}
       subtitle={`Average index for ${lastYear} on ${Number(lastYear) - 1}. Sorted by the combined figure. MoSPI publishes Dadra & Nagar Haveli and Daman & Diu separately in this series, and no separate index for Ladakh.`}
       series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
       rows={stateRows}
@@ -249,6 +253,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <LineChart
         title="Prices for farm and rural labourers"
+        headingLevel={3}
         subtitle={`Labour Bureau's Consumer Price Index for Agricultural Labourers and for Rural Labourers, all India, inflation on a year earlier. Base 1986-87${lastOldBase ? ` to ${monthLabel(lastOldBase)}` : ""}${newBaseFrom ? `; base 2019 from ${monthLabel(newBaseFrom)}` : ""}.`}
         years={alrlLabels}
         series={[

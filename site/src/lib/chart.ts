@@ -1,19 +1,29 @@
 // Geometry helpers for the build-time SVG charts.
 
 export interface Size {
-  name: "sm" | "lg";
-  width: number;
+  name: "sm" | "md" | "lg" | "xl";
+  width: number; // viewBox width
   height: number;
-  font: number;
+  font: number; // in viewBox units
   left: number;
-  right: number;
+  right: number; // a line chart with one series: room for its end label (shown when this is over 40)
+  rightMulti: number; // a line chart with two or more series (legend and hover instead of end labels)
   top: number;
   bottom: number;
+  xLabels: number; // most labels on the x axis
+  from: number; // shown when the chart is at least this many CSS px wide (styles/charts.css)
+  max: number; // drawn at most this many CSS px wide (styles/charts.css)
 }
-// Two renderings of every chart: one sized for phones, one for wider screens.
+// Four renderings of every chart; styles/charts.css shows the one that fits the chart's own width (a container
+// query, so a chart in a half-width column gets a narrower one than a full-width chart on the same screen). Each
+// is shown from `from` px wide and drawn at most `max` px wide, which keeps tick labels at about 11-14px:
+// sm 320: 10.6px on a 375px phone, 14px at 410; md 480: 11px at 440, 14px at 560; lg 660: 11px at 600, 14px at
+// 770; xl 880: 11px at 800, 13px on the widest card (958).
 export const SIZES: Size[] = [
-  { name: "sm", width: 360, height: 220, font: 11, left: 44, right: 12, top: 14, bottom: 26 },
-  { name: "lg", width: 720, height: 300, font: 12, left: 56, right: 96, top: 16, bottom: 28 },
+  { name: "sm", width: 320, height: 220, font: 11, left: 44, right: 12, rightMulti: 12, top: 14, bottom: 26, xLabels: 4, from: 0, max: 410 },
+  { name: "md", width: 480, height: 250, font: 12, left: 52, right: 24, rightMulti: 24, top: 16, bottom: 28, xLabels: 6, from: 440, max: 560 },
+  { name: "lg", width: 660, height: 280, font: 12, left: 56, right: 96, rightMulti: 36, top: 16, bottom: 28, xLabels: 8, from: 600, max: 770 },
+  { name: "xl", width: 880, height: 320, font: 12, left: 56, right: 96, rightMulti: 36, top: 16, bottom: 28, xLabels: 10, from: 800, max: 1027 },
 ];
 
 /** Round tick steps (1, 2, 2.5, 5 × 10^n) covering [min, max]. */
@@ -57,11 +67,44 @@ export function barPath(x0: number, y: number, x1: number, h: number, r = 4): st
 
 export const shortYear = (y: string) => y; // "2005-06"
 
-/** Indices to label on the x axis: the latest year, then evenly back, as many as fit at this size. */
-export function xTickIndices(n: number, size: "sm" | "lg"): number[] {
-  const maxLabels = size === "sm" ? 4 : 9;
-  const step = Math.max(1, Math.ceil(n / maxLabels));
+export interface Estimate { short: string; full: string }
+/** How final a figure is, as pages pass it ("Actual", "RE", "Third Revised Estimate", "Provisional", "1st advance
+ *  estimate"), turned into one short lower-case form for tables and readouts ("RE", "3rd revised", "provisional",
+ *  "1st advance") and a full name for a tooltip. Actuals get "", since they need no label. Presentation only. */
+export function estimate(kind: string | undefined): Estimate {
+  const k = (kind ?? "").trim();
+  if (!k || /^actuals?$/i.test(k)) return { short: "", full: "" };
+  if (k === "RE") return { short: "RE", full: "Revised Estimate" };
+  if (k === "BE") return { short: "BE", full: "Budget Estimate" };
+  const short = k.toLowerCase().replace(/\s+estimates?$/, "").replace(/^first\b/, "1st").replace(/^second\b/, "2nd").replace(/^third\b/, "3rd");
+  return { short, full: k[0].toUpperCase() + k.slice(1) };
+}
+
+/** Where a table shows estimate labels, given each cell's short label (null = no value):
+ *  "none" when every value has the same one (`all`, "" for actuals: say it once under the table);
+ *  "column" when each row's values share one (a column after the year); "inline" otherwise (before each value). */
+export function estimateLayout(cells: (string | null)[][]): { mode: "none" | "column" | "inline"; all: string } {
+  const present = cells.flat().filter((k): k is string => k != null);
+  if (new Set(present).size <= 1) return { mode: "none", all: present[0] ?? "" };
+  const rowShares = cells.every((row) => new Set(row.filter((k) => k != null)).size <= 1);
+  return { mode: rowShares ? "column" : "inline", all: "" };
+}
+
+/** Rough width of a text label in viewBox units at a size (0.6 em a character, generous for digits). */
+export const labelWidth = (s: string, sz: Size) => s.length * sz.font * 0.6;
+
+/** Indices to label on the x axis: the latest, then evenly back, at most the size's xLabels and no closer than the
+ *  widest label allows. `spacing`: viewBox units between neighbouring positions. `endAnchored`: the latest label
+ *  ends at its position (text-anchor end), so it reaches further left; the label before it is dropped when the
+ *  two would touch. */
+export function xTickIndices(labels: string[], sz: Size, spacing: number, endAnchored: boolean): number[] {
+  const n = labels.length;
+  if (n <= 1) return n ? [0] : [];
+  const w = Math.max(...labels.map((l) => labelWidth(l, sz)));
+  const gap = sz.font * 0.5;
+  const step = Math.max(1, Math.ceil(n / sz.xLabels), Math.ceil((w + gap) / Math.max(spacing, 1e-6)));
   const out: number[] = [];
   for (let i = n - 1; i >= 0; i -= step) out.push(i);
+  if (endAnchored && out.length > 1 && step * spacing < 1.5 * w + gap) out.splice(1, 1);
   return out.reverse();
 }

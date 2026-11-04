@@ -7,6 +7,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { stateKey } from "../lib/jobs-prices/data";
+import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export interface MapMetric {
   id: string;
@@ -20,8 +22,10 @@ interface Props {
   metrics: MapMetric[];
   names: Record<string, string>; // stateKey -> display name
   source?: string;
+  headingLevel?: 2 | 3; // 2 (default) for a map card directly under the page's h1; 3 inside a section with an h2
 }
-const { metrics, source } = Astro.props;
+const { metrics, source, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 
 const geo = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), "src", "data", "india-states.json"), "utf8")) as {
   source: string; states: { name: string; rings: [number, number][][] }[];
@@ -58,7 +62,7 @@ const prepared = metrics.map((m) => {
 });
 const first = prepared[0];
 const SMALL = ["chandigarh", "delhi", "dadraandnagarhavelianddamananddiu", "goa", "lakshadweep", "puducherry"];
-const payload = JSON.stringify({ metrics: prepared, names });
+const payload = safeJson({ metrics: prepared, names });
 const id = "m" + Math.random().toString(36).slice(2, 9);
 ---
 <figure class="state-map" id={id}>
@@ -68,7 +72,7 @@ const id = "m" + Math.random().toString(36).slice(2, 9);
     ))}
   </div>
   <figcaption>
-    <h3 class="map-title">{first.title}</h3>
+    <Heading class="map-title">{first.title}</Heading>
     <p class="muted small map-note">{first.note}</p>
   </figcaption>
   <div class="map-wrap">
@@ -157,7 +161,6 @@ const id = "m" + Math.random().toString(36).slice(2, 9);
   .controls { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
   .metric { font: inherit; font-size: 0.85rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); cursor: pointer; }
   .metric[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-  .map-title { margin-bottom: 2px; }
   .map-wrap { display: grid; gap: 16px; align-items: start; }
   @media (min-width: 760px) { .map-wrap { grid-template-columns: minmax(0, 3fr) minmax(200px, 2fr); } }
   svg { width: 100%; height: auto; display: block; max-height: 640px; }

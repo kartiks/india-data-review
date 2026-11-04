@@ -3,6 +3,8 @@
 // Used for "how the estimate moved" (revisions) and "forecast vs outcome". Hover/tap/focus a row for its values;
 // every value is also in the table view.
 import { SIZES, niceTicks, scale } from "../lib/chart";
+import { safeJson } from "../lib/safe-json";
+import "../styles/charts.css";
 
 export type Shape = "range" | "dot" | "ring" | "small" | "diamond";
 export interface RowSeries { name: string; slot: number; shape: Shape; join?: boolean }
@@ -17,8 +19,10 @@ interface Props {
   source?: string;
   zero?: boolean;
   tableNotes?: boolean;
+  headingLevel?: 2 | 3; // 2 (default) for a chart card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, series, rows, format, source, zero = true, tableNotes = false } = Astro.props;
+const { title, subtitle, series, rows, format, source, zero = true, tableNotes = false, headingLevel = 2 } = Astro.props;
+const Heading = `h${headingLevel}` as "h2" | "h3";
 
 const values = rows.flatMap((r) => r.marks.flatMap((m) => [m.v, m.lo, m.hi])).filter((v): v is number => v != null);
 let lo = Math.min(...values), hi = Math.max(...values);
@@ -37,7 +41,7 @@ const charts = SIZES.map((sz) => {
   return { sz, rowH, labelW, top, bottom, right, height, x, yMid };
 });
 
-const tipData = JSON.stringify({
+const tipData = safeJson({
   columns: rows.map((r) => ({
     title: r.label,
     rows: r.marks.map((m) => ({ slot: series[m.s].slot, value: markText(m), name: series[m.s].name })),
@@ -47,7 +51,7 @@ const diamond = (cx: number, cy: number, s = 5.5) => `M${cx},${cy - s}L${cx + s}
 ---
 <figure class="chart range-rows" id={id}>
   <figcaption>
-    <h3>{title}</h3>
+    <Heading class="chart-title">{title}</Heading>
     {subtitle && <p class="muted small">{subtitle}</p>}
   </figcaption>
   <ul class="legend small" aria-label="Legend">
@@ -125,9 +129,7 @@ const diamond = (cx: number, cy: number, s = 5.5) => `M${cx},${cy - s}L${cx + s}
   .chart { margin: 0; }
   .legend { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 14px; padding: 0; margin: 6px 0 4px; color: var(--ink-2); }
   .legend li { display: flex; align-items: center; gap: 6px; }
-  .plot { width: 100%; height: auto; display: block; touch-action: pan-y; }
-  .plot-lg { display: none; }
-  @media (min-width: 640px) { .plot-sm { display: none; } .plot-lg { display: block; } }
+  .plot { width: 100%; height: auto; touch-action: pan-y; }
   .plot :global(.gridline) { stroke: var(--grid); stroke-width: 1; }
   .plot :global(.baseline) { stroke: var(--axis); stroke-width: 1.5; }
   .plot :global(.tick) { fill: var(--muted); }

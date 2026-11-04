@@ -49,11 +49,6 @@ TITLE_MUST_CONTAIN = {
 }
 
 
-def fy(start: int) -> str:
-    """2000 -> '2000-01'."""
-    return f"{start}-{str(start + 1)[-2:]}"
-
-
 def candidate_urls(start: int, doc: str) -> list[str]:
     """Every URL where this table might be, in any format."""
     site = budget_glance.site(start, LATEST_BUDGET)

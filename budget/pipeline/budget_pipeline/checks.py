@@ -23,11 +23,12 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Report
+from pipeline_common.text import fy
 
 from .annotations import FINAL_ACCOUNTS, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES, KNOWN_REFERENCE_DIFFS
 from .reference import load_rbi
-from .parse import fy
 from .sources import FIRST_BUDGET, LATEST_BUDGET
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -65,8 +66,8 @@ def load_observations() -> list[dict]:
     with (DATA / "observations.csv").open() as f:
         rows = list(csv.DictReader(f))
     for r in rows:
-        r["value_crore"] = float(r["value_crore"]) if r["value_crore"] else None
-        r["pct_gdp"] = float(r["pct_gdp"]) if r["pct_gdp"] else None
+        r["value_crore"] = blank_or_number(r["value_crore"])
+        r["pct_gdp"] = blank_or_number(r["pct_gdp"])
     return rows
 
 

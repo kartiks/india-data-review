@@ -15,6 +15,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline_common.download import get
+from pipeline_common.numbers import number
+from pipeline_common.text import is_fy
 
 from .readers import read_xlsx
 
@@ -85,13 +87,11 @@ def load_rbi() -> dict[tuple[str, str, str], dict]:
         pos = {int(c): i for i, c in enumerate(number_row) if c.isdigit()}
         for r in rows:
             year = r[1]
-            if not (len(year) == 7 and year[4] == "-" and year[:4].isdigit()):
+            if not is_fy(year, short=True):
                 continue
             for field, col in spec["columns"].items():
-                cell = r[pos[col]] if pos[col] < len(r) else ""
-                try:
-                    value = float(cell.replace(",", ""))
-                except ValueError:
+                value = number(r[pos[col]]) if pos[col] < len(r) else None
+                if value is None:
                     continue
                 out[(year, field, kinds.get(year, "actual"))] = {"value": value, "table": spec["title"]}
     return out

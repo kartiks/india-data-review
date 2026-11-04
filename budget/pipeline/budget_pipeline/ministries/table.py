@@ -5,7 +5,10 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 
-from ..parse import Column, ParseError, fy
+from pipeline_common.numbers import blank_or_number
+from pipeline_common.text import fy
+
+from ..parse import Column, ParseError
 from .common import CATEGORIES, FURNITURE, NA, YEAR_RE, Line
 from .read import _cell_lines
 
@@ -67,7 +70,7 @@ def _place(line: Line, anchors: list[float], ncols: int, where: str) -> list[flo
         if col in taken:
             raise ParseError(f"{where}: two values under column {col + 1} in line {line.label!r}")
         taken.add(col)
-        out[col] = None if tok in NA or tok == "" else float(tok.replace(",", ""))
+        out[col] = blank_or_number(tok, missing=NA)
     return out
 
 
@@ -109,7 +112,7 @@ def parse_ministries(rows, start: int, cell_based: bool, *, lines: list[Line] | 
         if cell_based:
             if len(line.values) != ncols:
                 raise ParseError(f"{where}: line {line.label!r} has {len(line.values)} values, expected {ncols}")
-            return [None if t in NA or t == "" else float(t) for t, _ in line.values]
+            return [blank_or_number(t, missing=NA) for t, _ in line.values]
         return _place(line, anchors[line.page], ncols, where)
 
     def split(vals: list[float | None]) -> list[dict]:

@@ -2,7 +2,9 @@
 
 from collections import defaultdict
 
-from ..parse import fy
+from pipeline_common.numbers import blank_or_number
+from pipeline_common.text import fy
+
 from .common import NON_TAX_PARTS, TOLERANCE_CRORE
 from .exceptions import KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES
 from .load import observations
@@ -55,8 +57,7 @@ def _summary_index(summary_observations: list[dict]) -> dict[tuple[str, str, str
     """(source budget, fiscal year, kind, field) -> value of the headline table (observations.csv)."""
     summ = {}
     for r in summary_observations:
-        v = r["value_crore"]
-        summ[(r["source_budget"], r["fiscal_year"], r["kind"], r["field"])] = float(v) if v not in ("", None) else None
+        summ[(r["source_budget"], r["fiscal_year"], r["kind"], r["field"])] = blank_or_number(r["value_crore"])
     return summ
 
 

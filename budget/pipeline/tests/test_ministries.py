@@ -4,6 +4,7 @@ import csv
 from pathlib import Path
 
 import pytest
+from pipeline_common.text import fy_start
 
 from budget_pipeline import ministries as M
 
@@ -12,7 +13,7 @@ DATA = Path(__file__).resolve().parents[2] / "data"
 
 
 def parse(budget: str, ext: str = "pdf") -> dict:
-    p = M.parse_file(RAW / budget / f"ministries.{ext}", int(budget[:4]), ext)
+    p = M.parse_file(RAW / budget / f"ministries.{ext}", fy_start(budget), ext)
     M.assign_ids(budget, p, M.load_name_map())
     return p
 

@@ -7,11 +7,11 @@ import json
 
 import pytest
 from pipeline_common.report import Report
+from pipeline_common.text import fy
 
 from budget_pipeline import checks as C
 from budget_pipeline import schemes
 from budget_pipeline.build import FIELD_LABELS
-from budget_pipeline.parse import fy
 from budget_pipeline.sources import FIRST_BUDGET, LATEST_BUDGET
 
 

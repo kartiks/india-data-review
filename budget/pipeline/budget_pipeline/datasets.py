@@ -20,6 +20,9 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from pipeline_common.numbers import strict_number
+from pipeline_common.text import fy_start, next_fy
+
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 
@@ -27,11 +30,6 @@ DATA = ROOT / "data"
 FIRST_YEAR = "2000-01"
 
 SOURCE_FIELDS = ("source_budget", "document", "label_as_printed", "source_url")
-
-
-def _next(fiscal_year: str, n: int) -> str:
-    start = int(fiscal_year[:4]) + n
-    return f"{start}-{str(start + 1)[-2:]}"
 
 
 def consolidate(rows: list[dict], id_fields: tuple[str, ...], value_fields: tuple[str, ...]) -> dict:
@@ -56,9 +54,9 @@ def consolidate(rows: list[dict], id_fields: tuple[str, ...], value_fields: tupl
     for year, key in sorted(keys):
         item: dict = {}
         be = index.get((year, key, "BE", year))
-        restated = index.get((year, key, "BE", _next(year, 1)))
-        re_ = index.get((year, key, "RE", _next(year, 1)))
-        actual = index.get((year, key, "Actual", _next(year, 2)))
+        restated = index.get((year, key, "BE", next_fy(year)))
+        re_ = index.get((year, key, "RE", next_fy(year)))
+        actual = index.get((year, key, "Actual", next_fy(year, 2)))
         for name, r in (("be", be), ("re", re_), ("actual", actual)):
             if r is not None and any(r.get(f) is not None for f in value_fields):
                 item[name] = pick(r)
@@ -213,7 +211,7 @@ def scheme_ministry_crosscheck(scheme_rows: list[dict], ministry_rows: list[dict
     sums: dict[tuple, float] = defaultdict(float)
     present: set[tuple] = set()
     for r in ministry_rows:
-        if r["level"] not in ("department", "union_territory") or int(r["source_budget"][:4]) < 2017:
+        if r["level"] not in ("department", "union_territory") or fy_start(r["source_budget"]) < 2017:
             continue
         for t, f in field.items():
             if r.get(f) is not None:
@@ -314,7 +312,7 @@ def check_prs() -> tuple:
     with PRS_FILE.open() as f:
         for row in csv.DictReader(f):
             checked += 1
-            want, got = float(row["value_crore"]), ours(row)
+            want, got = strict_number(row["value_crore"]), ours(row)
             if got is None or abs(got - want) > 1:  # PRS rounds to whole crore
                 failures.append(f"{row['dataset']} {row['item']} {row['kind'].upper()} {row['fiscal_year']}: "
                                 f"ours {got}, PRS {want:,.0f}")

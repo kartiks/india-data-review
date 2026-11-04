@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+from pipeline_common.text import fy_start
 
 from budget_pipeline.parse import ParseError, expected_columns, match_field, parse_cell, parse_document
 from budget_pipeline.readers import read_any
@@ -56,7 +57,7 @@ def test_five_columns_when_provisional_actuals_present():
 
 
 def values(doc_year: str, ext: str) -> dict:
-    parsed = parse_document(read_any(RAW / doc_year / f"summary.{ext}"), int(doc_year[:4]), ext != "pdf")
+    parsed = parse_document(read_any(RAW / doc_year / f"summary.{ext}"), fy_start(doc_year), ext != "pdf")
     return {(o.field, o.fiscal_year, o.kind): o for o in parsed["observations"]}
 
 

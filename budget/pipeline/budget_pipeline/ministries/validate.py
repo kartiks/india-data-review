@@ -5,6 +5,8 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Callable
 
+from pipeline_common.numbers import blank_or_number
+
 TOL = 0.05  # values are printed to 2 decimals; allow rounding on sums of a few cells
 
 
@@ -214,9 +216,9 @@ def _against_summary(all_parsed: dict, summary_observations: list[dict], section
     """(d) Grand total vs the Budget at a Glance summary table, same budget and column."""
     summ: dict[tuple, dict] = defaultdict(dict)
     for r in summary_observations:
-        v = r.get("value_crore")
-        if v not in (None, ""):
-            summ[(r["source_budget"], r["fiscal_year"], r["kind"])][r["field"]] = float(v)
+        v = blank_or_number(r.get("value_crore"))
+        if v is not None:
+            summ[(r["source_budget"], r["fiscal_year"], r["kind"])][r["field"]] = v
     title = "grand total = Budget at a Glance"
     for budget, b in all_parsed.items():
         p = b["parsed"][b["primary"]]

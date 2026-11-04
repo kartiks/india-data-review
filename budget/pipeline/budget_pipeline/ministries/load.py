@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from pipeline_common.text import fy_start
+
 from ..parse import ParseError
 from ..readers import read_any
 from ..sources import FORMAT_PRIORITY
@@ -32,7 +34,7 @@ def load_all() -> dict:
     out = {}
     for budget, entry in manifest.items():
         files = entry.get("ministries", {}).get("files", {})
-        start = int(budget[:4])
+        start = fy_start(budget)
         parsed, errors = {}, {}
         for ext in FORMAT_PRIORITY:
             if ext not in files:

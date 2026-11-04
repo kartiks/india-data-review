@@ -2,7 +2,9 @@
 
 import re
 
-from ..parse import NA_TOKENS, YEAR_RE, Column, ParseError, ascii_text, fy, parse_cell, read_row_cells, value_positions
+from pipeline_common.text import fy
+
+from ..parse import NA_TOKENS, YEAR_RE, Column, ParseError, ascii_text, parse_cell, read_row_cells, value_positions
 from .common import DEDUCTIONS, END_FIELD, GST_PARTS, NON_TAX_PARTS, match_item, printed_label, slug
 
 

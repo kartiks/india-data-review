@@ -19,9 +19,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline_common.download import MAGIC, get, is_type
+from pipeline_common.text import fy
 
 from .readers import read_any
-from .sources import BUDGETS, DOC_TYPES, TITLE_MUST_CONTAIN, candidate_urls, fy
+from .sources import BUDGETS, DOC_TYPES, TITLE_MUST_CONTAIN, candidate_urls
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"

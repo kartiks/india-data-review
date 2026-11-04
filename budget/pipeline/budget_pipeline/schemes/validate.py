@@ -2,6 +2,8 @@
 
 from collections import defaultdict
 
+from pipeline_common.numbers import blank_or_number
+
 from .common import PARTS, TOLERANCE
 
 RAILWAYS_2017 = (
@@ -273,8 +275,11 @@ def _other_copies(budgets: dict) -> tuple[str, int, list[str], list[str]]:
 def _share_of_spending(budgets: dict, summary_observations: list[dict]) -> tuple[str, int, list[str], list[str]]:
     """(e) Share of total expenditure (context, not an identity)."""
     notes = []
-    total_exp = {(r["source_budget"], r["fiscal_year"], r["kind"]): float(r["value_crore"])
-                 for r in summary_observations if r["field"] == "total_expenditure" and r["value_crore"]}
+    total_exp = {}
+    for r in summary_observations:
+        v = blank_or_number(r["value_crore"])
+        if r["field"] == "total_expenditure" and v is not None:
+            total_exp[(r["source_budget"], r["fiscal_year"], r["kind"])] = v
     for year, by_type in budgets.items():
         parts = []
         for t, e in by_type.items():

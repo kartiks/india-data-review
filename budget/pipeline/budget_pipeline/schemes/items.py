@@ -5,7 +5,9 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..parse import Column, ParseError, expected_columns, fy
+from pipeline_common.text import fy
+
+from ..parse import Column, ParseError, expected_columns
 from .common import NA_TEXT, Line, _is_header
 from .ids import item_id, load_name_map, normalise_name, slug
 from .read import read_pdf_lines, read_sheet_lines

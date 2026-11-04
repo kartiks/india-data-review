@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pytest
+from pipeline_common.text import fy
 
 from budget_pipeline.parse import ParseError
 from budget_pipeline.readers import read_any
@@ -170,5 +171,5 @@ def test_annex7_actuals(taxes, budget, item, expected):
 
 def test_actuals_cover_2000_to_2008(taxes):
     rows = [r for r in observations(taxes) if r["document"] == "receipt_budget" and r["item_id"] == "net_tax_revenue"]
-    assert sorted(r["fiscal_year"] for r in rows) == [f"{y}-{str(y + 1)[-2:]}" for y in range(2000, 2008)]
+    assert sorted(r["fiscal_year"] for r in rows) == [fy(y) for y in range(2000, 2008)]
     assert all("/rec/annex7.pdf" in r["source_url"] for r in rows)

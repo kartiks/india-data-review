@@ -3,6 +3,8 @@
 import re
 from pathlib import Path
 
+from pipeline_common import text
+
 from ..parse import ascii_text
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -96,4 +98,5 @@ def printed_label(label: str, item: str | None) -> str:
 
 
 def slug(label: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "_", english(label)).strip("_")[:50] or "unlabelled"
+    """An id for an unrecognised line, from its English label: at most 50 characters."""
+    return text.slug(english(label), ascii_only=True, max_len=50) or "unlabelled"

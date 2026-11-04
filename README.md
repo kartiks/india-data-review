@@ -198,7 +198,8 @@ which takes about an hour on GitHub) and 240 minutes in all.
    `gdp/pipeline/pyproject.toml`), and write the checks with its `Report`, which writes `data/validation_report.md`
    and the `data/validation_summary.json` the site reads. Code that more than one area needs goes in
    `shared/pipeline/pipeline_common/`, with tests in `shared/pipeline/tests/`; area-specific code stays in the area.
-2. In the site: add the area to `AREAS` in `site/scripts/copy-data.mjs`; a data module in `site/src/lib/<area>/`;
+2. In the site: add the area to `AREAS` in `site/scripts/copy-data.mjs` and its `data/` folder to `PATHS` in
+   `site/scripts/vercel-ignore-build.sh`; a data module in `site/src/lib/<area>/`;
    pages in `site/src/pages/<area>/`, including a sources page listing its downloads and check results (copy
    `site/src/pages/gdp/sources/index.astro`). In `site/src/layouts/Base.astro`, add it to the `AREAS` list that
    works out the area from the URL, to `tabs` and `subnav`, to `AREA_LABEL`, and give it a footer paragraph like
@@ -217,3 +218,8 @@ which takes about an hour on GitHub) and 240 minutes in all.
 
 Vercel, project Root Directory `site` (it reads each area's `data/` folder, so "Include files
 outside the root directory" must stay on).
+
+Each deployment stores a full copy of the built site (about 100 MB, mostly the download files in `data/`), so
+`site/vercel.json` skips the ones that would change nothing: Dependabot branches never deploy, and
+`site/scripts/vercel-ignore-build.sh` skips a commit when nothing in `site/` or any area's `data/` folder changed
+since the branch's last deployment. A new area's `data/` folder must be added to that script's list.

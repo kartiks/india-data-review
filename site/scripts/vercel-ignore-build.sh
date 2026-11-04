@@ -13,6 +13,12 @@ if [ -z "$PREV" ]; then
   echo "Build: first deployment on this branch."
   exit 1
 fi
+if [ "$(git rev-parse HEAD)" = "$(git rev-parse --verify --quiet "$PREV^{commit}")" ]; then
+  # Git pushes never deploy an already-deployed commit again, so this is a Redeploy someone asked for
+  # (e.g. after changing an environment variable).
+  echo "Build: redeploy of the last deployed commit."
+  exit 1
+fi
 if ! git cat-file -e "$PREV^{commit}" 2>/dev/null; then
   echo "Build: the last deployed commit ($PREV) is not in Vercel's clone, so the change can't be checked."
   exit 1

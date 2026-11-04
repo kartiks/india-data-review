@@ -12,6 +12,7 @@ and a derived GSDP implies a population that moves smoothly with MoSPI's GSDP pe
 
 import json
 
+from pipeline_common.report import Allowed, Exceptions
 from pipeline_common.text import prev_fy
 
 from .ids import STAGE_ORDER
@@ -44,25 +45,13 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
         "columns, in the years listed. It is left out; Karnataka's NSDP per person comes from the first table (ind25).",
 }
 
-
-USED: set[tuple[str, str]] = set()
-
-
-def allowed(check: str, msg: str) -> str | None:
-    for (c, key), reason in KNOWN_EXCEPTIONS.items():
-        if c == check and msg.startswith(key):
-            USED.add((c, key))
-            return reason
-    return None
+# check() lists the entries no message matched, so one MoSPI has fixed is noticed and removed.
+EXCEPTIONS = Exceptions(KNOWN_EXCEPTIONS)
 
 
-def sort_out(check: str, messages: list[str]) -> tuple[list[str], list[str]]:
-    """(failures, notes): a message with a known reason becomes a note."""
-    failures, notes = [], []
-    for m in messages:
-        reason = allowed(check, m)
-        (notes.append(f"Allowed: {m}. Reason: {reason}") if reason else failures.append(m))
-    return failures, notes
+def allowed() -> Allowed:
+    """A section's allowed exceptions, looked up in EXCEPTIONS (no CSV lists the cases a section leaves out)."""
+    return Allowed(EXCEPTIONS, more_hint="")
 
 
 def nodes(st: dict):
@@ -73,7 +62,9 @@ def nodes(st: dict):
 
 
 def check_rows(st: dict, report) -> None:
-    failures, notes = sort_out("source", st["source_problems"] + st["left_out"])
+    known = allowed()
+    failures = known.sort_out("source", st["source_problems"] + st["left_out"])
+    notes = []
     with open(DATA / "state_accounts.csv", encoding="utf-8") as f:
         n = sum(1 for _ in f) - 1
     for base in (b for b in st["bases"] if b != SITE_BASE):
@@ -82,7 +73,7 @@ def check_rows(st: dict, report) -> None:
                      + (f" (not yet for {', '.join(missing)})" if missing else " for every state")
                      + f". The site still shows the {SITE_BASE} base: switch it over (site/src/lib/gdp/states.ts) "
                      "once the new base covers the states.")
-    report.add("State accounts: every published row is understood", n, failures, notes)
+    report.add("State accounts: every published row is understood", n, failures, notes, known)
 
 
 def check_identities(st: dict, report) -> None:
@@ -159,8 +150,9 @@ def check_growth(st: dict, report) -> None:
                     if abs(calc - g[kind]) > GROWTH_TOL + slack + 1e-9:
                         messages.append(f"{state}, {year}, {level}_growth {kind}: published {g[kind]}%, "
                                         f"levels give {calc:.2f}%")
-    failures, notes = sort_out("growth", messages)
-    report.add("State accounts: every published growth rate is reproduced from the levels", n, failures, notes)
+    known = allowed()
+    failures = known.sort_out("growth", messages)
+    report.add("State accounts: every published growth rate is reproduced from the levels", n, failures, [], known)
 
 
 def check_per_person(st: dict, report) -> None:
@@ -226,7 +218,7 @@ def check_sum(st: dict, ds: dict, report) -> None:
 
 
 def check(ds: dict, report, st: dict | None = None) -> None:
-    USED.clear()
+    EXCEPTIONS.reset()
     st = st or json.loads((DATA / "states.json").read_text())
     check_rows(st, report)
     check_identities(st, report)
@@ -234,6 +226,6 @@ def check(ds: dict, report, st: dict | None = None) -> None:
     check_growth(st, report)
     check_per_person(st, report)
     check_sum(st, ds, report)
-    unused = [f"{c}: {k}" for c, k in KNOWN_EXCEPTIONS if (c, k) not in USED]
+    unused = [f"{c}: {k}" for c, k in EXCEPTIONS.unused()]
     if unused:
         report.add("State accounts: known exceptions no longer needed (for review: remove them)", 0, [], unused)

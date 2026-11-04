@@ -58,7 +58,7 @@ def test_net_figure_equal_to_gross_is_left_out():
     assert "pc_nsdp_alt" not in node and "nsva" not in node and "nsva_sub" not in node
     assert node["pc_nsdp"] == {"cur": 311_709, "con": 181_487}
     assert len(notes) == 2 and all(n.startswith("Karnataka: ") for n in notes)
-    assert all(sc.allowed("source", n) for n in notes)  # both are known, explained source errors
+    assert all(sc.EXCEPTIONS.reason("source", n) for n in notes)  # both are known, explained source errors
     assert [r["indicator_code"] for r in rows if r["left_out"]] == [32, 30, 30]
 
 
@@ -103,11 +103,13 @@ def test_coverage_counts_last_years_weight_of_the_states_reporting():
 
 
 class Report:
+    """Sections as (title, checks, failures, notes), allowed exceptions first among the notes as in the real report."""
+
     def __init__(self):
         self.sections = []
 
-    def add(self, title, checked, failures, notes):
-        self.sections.append((title, checked, failures, notes))
+    def add(self, title, checked, failures, notes=(), allowed=None):
+        self.sections.append((title, checked, failures, [*(allowed.notes() if allowed else []), *notes]))
 
 
 def st_of(data, base="2011-12"):
@@ -241,7 +243,8 @@ def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monke
     report = Report()
     sc.check_rows(st, report)
     (_, _, failures, notes), = report.sections
-    assert failures == [unknown] and notes[0].startswith(f"Allowed: {known}. Reason: ")
+    reason = sc.KNOWN_EXCEPTIONS[("source", "Karnataka: NSDP per person (second table, ind32)")]
+    assert failures == [unknown] and notes[0] == f"Allowed (1): {reason} Cases: {known}"
 
 
 def test_known_exceptions_no_longer_needed_are_listed(tmp_path, monkeypatch):

@@ -1,7 +1,7 @@
 import hashlib
 import json
 
-from pipeline_common.report import FAILURE_MARK, Allowed, Report, data_hash, data_hashes
+from pipeline_common.report import FAILURE_MARK, Allowed, Exceptions, Report, data_hash, data_hashes
 
 
 def sample(fail: bool) -> Report:
@@ -95,3 +95,64 @@ def test_write_records_the_hashes_of_the_data_it_checked(tmp_path, capsys):
     sample(fail=False).write(tmp_path)
     summary = json.loads((tmp_path / "validation_summary.json").read_text())
     assert summary["files"] == {"data.csv": hashlib.sha256(b"year,value\n2020,1\n").hexdigest()}
+
+
+# ---- known exceptions ----------------------------------------------------------------------------
+
+def exceptions() -> Exceptions:
+    return Exceptions(
+        {("source", "row 7: year '1999'"): "A known slip.", ("growth", "2019-20 AE2"): "Mistyped."},
+        [("identity", lambda m: m.startswith("back series") and " — printed " in m, "Back series."),
+         ("identity", lambda m: "net taxes" in m, "Early net taxes.")])
+
+
+def test_exceptions_known_by_check_and_message_prefix():
+    ex = exceptions()
+    assert ex.reason("source", "row 7: year '1999' left out") == "A known slip."
+    assert ex.reason("growth", "row 7: year '1999' left out") is None  # another check
+    assert ex.reason("source", "row 8: year '1999'") is None
+    assert ex.reason("source", "left out: row 7: year '1999'") is None  # a prefix, not anywhere in the message
+
+
+def test_exceptions_rules_and_which_known_ones_are_unused():
+    ex = exceptions()
+    assert ex.reason("identity", "back series 1990-91 — printed 100, parts give 95") == "Back series."
+    assert ex.reason("identity", "back series 1990-91: missing storage") is None
+    assert ex.reason("identity", "2014-15 AE1: GDP = GVA + net taxes") == "Early net taxes."
+    assert ex.unused() == [("source", "row 7: year '1999'"), ("growth", "2019-20 AE2")]
+    ex.reason("growth", "2019-20 AE2: published 3.3%")
+    assert ex.unused() == [("source", "row 7: year '1999'")]
+    ex.reset()
+    assert len(ex.unused()) == 2
+
+
+def test_exceptions_with_keys_other_than_check_names():
+    # A check can be any key, such as a (budget, table) tuple. An empty prefix allows every message of that key;
+    # a rule can look for a fragment anywhere in the message.
+    ex = Exceptions({(("cross", "2010-11", "BE", "income_tax"), ""): "Restated."},
+                    [(("2017-18", "Ministries"), lambda m: "Railways" in m, "Merged.")])
+    assert ex.reason(("cross", "2010-11", "BE", "income_tax"), "anything") == "Restated."
+    assert ex.reason(("cross", "2011-12", "BE", "income_tax"), "anything") is None
+    assert ex.reason(("2017-18", "Ministries"), "Demand 80 Railways: off by 5") == "Merged."
+
+
+def test_allowed_sort_out_files_known_messages_and_returns_failures():
+    allowed = Allowed(exceptions())
+    msgs = ["row 7: year '1999' left out", "row 9: unknown stage"]
+    assert allowed.sort_out("source", msgs) == ["row 9: unknown stage"]
+    assert allowed.sort_out("growth", ["2019-20 AE2: 3.3%", "2020-21 PE: 9%"]) == ["2020-21 PE: 9%"]
+    allowed.add("Worked out by the check.", "case")
+    assert allowed.counts() == [{"reason": "A known slip.", "cases": 1}, {"reason": "Mistyped.", "cases": 1},
+                                {"reason": "Worked out by the check.", "cases": 1}]
+    assert Allowed().sort_out("source", msgs) == msgs  # without exceptions every message is a failure
+
+
+def test_allowed_more_hint():
+    allowed = Allowed(more_hint="")
+    for i in range(3):
+        allowed.add("Reason.", f"c{i}")
+    assert allowed.notes(limit=1) == ["Allowed (3): Reason. Cases: c0; and 2 more"]
+    report = Report("x")
+    report.add("Group", 3, [], ["a note"], allowed, limit=1)
+    assert report.sections[0].notes == ["Allowed (3): Reason. Cases: c0; and 2 more", "a note"]
+    assert report.summary()["sections"][0]["allowed_reasons"] == [{"reason": "Reason.", "cases": 3}]

@@ -2,21 +2,35 @@
  "result": "PASSED",
  "checks": 57473,
  "failures": 0,
- "allowed": 0,
+ "allowed": 543,
  "sections": [
   {
    "title": "Every published row is understood",
    "checks": 10272,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 1,
+   "allowed_reasons": [
+    {
+     "reason": "MoSPI's API returns one Gross National Disposable Income row (First Advance Estimate, ₹3,62,04,793 crore) labelled with the year '1999'. No fiscal year is given, so the row is left out. The value matches no other GNDI figure in the series and does not affect GDP or growth.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Accounting identities hold in every estimate",
    "checks": 2355,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 515,
+   "allowed_reasons": [
+    {
+     "reason": "In MoSPI's API, net taxes on products for the First Advance and Provisional Estimates of 2014-15 and 2015-16 do not equal GDP minus GVA from the same release. GDP and GVA are the published headline figures (the February 2015 release put 2014-15 real GVA at ₹98.58 lakh crore, as here), so they are shown; net taxes for these four releases are not used.",
+     "cases": 8
+    },
+    {
+     "reason": "MoSPI's back series links each industry's older figures to the 2011-12 base separately, so before 2004-05 the industries do not add up exactly to total GVA (about 5% apart in 1950-51, 0.3% in 2000-01), nor the sub-industries to their industry (up to about 19% for transport's parts in the 1950s); both are exact from 2004-05, where the back series was recompiled in full. Industry shares on the site for these years are shares of the sum of industries.",
+     "cases": 507
+    }
+   ]
   },
   {
    "title": "Published GDP growth rates follow from published GDP levels",
@@ -29,8 +43,17 @@
    "title": "Published industry growth rates follow from industry GVA levels",
    "checks": 2222,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 25,
+   "allowed_reasons": [
+    {
+     "reason": "The First Advance and Provisional Estimates of 2014-15 were the first releases on the 2011-12 base. Their industry growth rates were measured against 2013-14 as estimated at the time; MoSPI's API keeps 2013-14 only as later revised (RE2, RE3 and the additional revision of 2011-12 to 2013-14), which moved some industries' levels by several percent. The site shows the latest estimate of 2014-15.",
+     "cases": 24
+    },
+    {
+     "reason": "MoSPI's API gives 3.3% for nominal GVA growth in the Second Advance Estimates of 2019-20, but the same release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is 7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Quarters add up to the year; quarterly growth follows from levels",
@@ -85,8 +108,17 @@
    "title": "State accounts: every published row is understood",
    "checks": 28422,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 2,
+   "allowed_reasons": [
+    {
+     "reason": "MoSPI's second table of NSDP per person repeats Karnataka's GSDP per person at current prices, in both columns, in the years listed. It is left out; Karnataka's NSDP per person comes from the first table (ind25).",
+     "cases": 1
+    },
+    {
+     "reason": "MoSPI's net state value added table repeats Karnataka's gross value added at current prices, in both the current- and constant-price columns, in the years listed. Net value added cannot equal gross value added (depreciation is positive), so Karnataka's net value added is left out for those years. Its NSDP and NSDP per person come from the NSDP tables (ind24, ind25), which agree with its GSDP and the RBI's handbook.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "State accounts: GSDP = GSVA + taxes - subsidies, NSDP = NSVA + taxes - subsidies",

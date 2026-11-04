@@ -33,15 +33,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240 # backstop; each area has its own limit below
     steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # Keep the write token out of .git/config, where the package installs and builds below could read it.
           # Only the push step gets it.
           persist-credentials: false
 
-      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
 
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: npm
@@ -161,7 +161,7 @@ jobs:
             gdp/data/validation_summary.json jobs-prices/data/validation_summary.json
           find refresh-artifact -type f | sed -n 1,60p
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
         if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
           steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'

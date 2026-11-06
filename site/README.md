@@ -45,7 +45,10 @@ national accounts in `gdp.json`, `src/lib/gdp/states.ts` the state accounts in `
 the same base); `src/lib/format.ts`, `chart.ts`, `line-plot.ts` and `url.ts` are shared helpers (`link()` adds the
 site's base path to internal links); `src/components/` holds the shared
 charts (`components/budget/` the budget-only ones; `DotRows.astro` compares two or three values per row, such as
-rural vs urban by state); `src/layouts/Base.astro` has the tabs and sub-navigation, and works out the area from
+rural vs urban by state; `OrDash.astro` shows "–", read as "no data", for an empty cell); `src/lib/slots.ts` fixes
+the colour slot of the old and new GDP and CPI series, so each keeps one colour on every page; `src/lib/states.ts`
+turns state names into keys the same way as the jobs-prices pipeline (both are tested against
+`shared/fixtures/state-names.json`); `src/layouts/Base.astro` has the tabs and sub-navigation, and works out the area from
 the URL. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
 (CC BY 4.0, following the Survey of India's map) simplified by `scripts/make-india-map.py`, whose header says how to
 redo it; the page must credit DataMeet.
@@ -91,4 +94,5 @@ deployment storage down (each deployment is a ~100 MB copy): Dependabot branches
 in `vercel.json`), and `scripts/vercel-ignore-build.sh` skips a commit that changed nothing in `site/` or any area's
 `data/` since the branch's last deployment (a new area's `data/` must be added to its list). Vercel runs no
 pipeline: it builds from the `data/` folders committed to the repository, so data updates are run locally and
-committed (see the root README).
+committed (see the root README). `vercel.json` also sets security headers on every page (no framing, no MIME
+sniffing, a strict referrer policy, and browser features such as the camera turned off).

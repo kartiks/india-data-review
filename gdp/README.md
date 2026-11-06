@@ -21,7 +21,8 @@ and the downloaded source files (`sources/`). The website is in `../site/` (page
   GDP › Per person.
 - **Union Budget GDP assumption**, Budgets 2011-12 to 2026-27 (Budget at a Glance).
 - **Forecasts**: the Economic Survey's projection for each year 2011-12 to 2026-27, and every RBI monetary
-  policy projection for the same years (93 statements), each with the sentence it was quoted from.
+  policy projection for the same years, each with the sentence it was quoted from (counts in
+  [`data/validation_report.md`](data/validation_report.md)).
 
 ## Run it
 
@@ -81,14 +82,13 @@ one mistyped GVA growth rate (2019-20, Second Advance Estimates).
 up from value added, taxes and subsidies on products; industries add up to total value added and sub-industries to
 their industry; every published growth rate follows from the levels (allowing for the levels' rounding, which
 matters for small states); the two tables of income per person agree, and GSDP and NSDP per person imply the same
-population; every state is one of the 34 in `KNOWN_STATES` and each appears on the 2011-12 base (a newer base may
-fill up state by state: the report lists who is not on it yet); no row is published twice with
-different values; and a state with value added always gets a GSDP. These checks fail the run.
+population; every state is in `KNOWN_STATES` and each appears on the 2011-12 base (a newer base may fill up state by
+state: the report lists who is not on it yet); no row is published twice with different values; and a state with value added always gets a GSDP. These checks fail the run.
 
 For review only (listed in the report, never a failure): the states' GSDP against India's GDP on the same base, in
 each year whose national figure is at least provisional and whose reporting states made up 97% of the states'
-economy the year before (98-103% so far). It is not a hard check because the national 2011-12 series stopped in
-February 2026 while the states keep revising theirs, so the two will drift apart. The report also lists any
+economy the year before (the report lists each year's share). It is not a hard check because the national 2011-12
+series stopped in February 2026 while the states keep revising theirs, so the two will drift apart. The report also lists any
 known exception that is no longer needed.
 
 What MoSPI publishes, and what is done with it:
@@ -142,10 +142,9 @@ population when it revised the totals in August. Where they agree, the printed f
 NAS 2026 prints no totals in its per-capita statement; its unrounded per-person figure times its population gives
 the total back (to within ₹1 crore of the API's), which is how its figures are matched to the API's estimate.
 
-**What is checked.** The per-person figures reproduce MoSPI's for the 2011-12 series from 2020-21 and for the
-2022-23 series for 2022-23 to 2024-25 (`population.checked` in `gdp.json`). The new series' latest year (2025-26
-today) is not checked: MoSPI has revised its total since the June press note, and none of the per-person figures
-quoted here is for that total, so the figure divides the revised total by the population in the June note. The site's Per person
+**What is checked.** The per-person figures reproduce MoSPI's in every year where a figure quoted here is for the
+API's latest total (`population.checked` in `gdp.json`; the report lists the years). A year whose total MoSPI has
+revised since is not checked: its figure divides the revised total by the quoted population. The site's Per person
 page says so while it is the case.
 
 Checks ("Population and figures per person" in the report):

@@ -172,7 +172,7 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   combinations that break the identities above (April–June 2019 urban unemployment shows 21.6%; the bulletin says 8.9%).
   The build leaves such combinations out whole (`plfs.flag_rates`).
 - All-India shares of workers by type of work do not add up to 100%; states' do.
-- About 6,000 "distribution of workers" rows with no breakdown named.
+- Thousands of "distribution of workers" rows with no breakdown named.
 - 2025 current-weekly-status self-employment shares whose parts do not add up.
 - HCES 2022-23 rural spending by item category for six states (Goa, Gujarat, Haryana, Himachal Pradesh,
   Jharkhand, Karnataka) that adds up to other states' averages.

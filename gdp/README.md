@@ -64,7 +64,7 @@ refreshed totals every week.
 | `validation_report.md` | Every check, and the reason for every allowed exception |
 | `validation_summary.json` | The same results for programs (the site reads it): PASSED or FAILED, and checks, failures and allowed exceptions per group of checks |
 
-Values are ₹ crore; growth rates are %. `cur` = current prices (nominal), `con` = constant prices (real).
+Levels are ₹ crore, per-person figures ₹ and growth rates %. `cur` = current prices (nominal), `con` = constant prices (real).
 
 ## Checks
 
@@ -127,7 +127,7 @@ between the two series, so it is kept per series and year:
 |---|---|---|
 | 2011-12 series, 2011-12 to 2021-22 | The official projection for 1 October. MoSPI's figures equal it in 2020-21 and 2021-22, the years the RBI's reprint covers; earlier years are assumed to be the projection too | *Population Projections for India and States 2011-2036*, Report of the Technical Group on Population Projections (National Commission on Population, November 2019), Table 14, PDF page 125 |
 | 2022-23 series, 2022-23 to 2024-25 | MoSPI's own, printed to the thousand | MoSPI, *National Accounts Statistics 2026* (31 August 2026), Statement 1.2: Per capita income, product and final consumption. Downloaded by hand (`sources/raw/population/nas-2026-statement-1.2.xlsx`) |
-| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `population_sources/mospi_press_notes.json` |
+| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json` |
 | 2011-12 series, 2022-23 | The same, where no press note here covers the year | RBI, *Handbook of Statistics on the Indian Economy* 2025-26, Tables 1 and 2 (reprinting MoSPI's) |
 
 From 2022-23 MoSPI's population is about 0.1–0.2% above the 2019 projections, so population grows 1.05% in
@@ -175,8 +175,9 @@ per-person figures, and the report lists it. To add it:
 
 1. In the new press note's statement at **constant prices**, copy five rows exactly as printed, without the growth
    rates at the end: population, GDP, net national income (NNI), per capita GDP and per capita NNI.
-2. Add a record to `population_sources/mospi_press_notes.json` like the ones there: `document`, `date`, `base`,
-   `url`, `years` (the statement's columns), and a `tables` entry with `statement`, `pdf_page` and the rows.
+2. Add a record to `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json` like the ones there:
+   `document`, `date`, `base`, `url`, `years` (the statement's columns), and a `tables` entry with `statement`,
+   `pdf_page`, `prices` (`con`) and the rows.
    Check that the page's text extracts in reading order (some MoSPI statements do not; quote another one then).
 3. Run `uv run python -m gdp_pipeline --fetch`. It downloads the note, checks every row and the implied population,
    and uses the newest document for each year.
@@ -186,8 +187,8 @@ new series), add its per-capita statement, which makes the check cover the revis
 
 1. On MoSPI's page for the publication (mospi.gov.in › Publications & Reports; it needs a browser), download the
    statement *Per Capita Income, Product and Final Consumption* (Statement 1.2 in 2026) as xlsx.
-2. Add an entry to `NAS_STATEMENTS` in `population_read.py` (key, the publication page's address, title, date, base), as
-   the last entry.
+2. Add an entry to `NAS_STATEMENTS` in `pipeline/gdp_pipeline/population_read.py` (`key`, `url` of the publication
+   page, `document`, `date`, `base`), as the last entry.
 3. Run `uv run python -m gdp_pipeline.population --add ~/Downloads/<file>.xlsx`. It copies the file into
    `sources/raw/population/` and records it in the manifest (with its SHA-256 and that it was downloaded by hand).
 4. Run `uv run python -m gdp_pipeline`. The newest document gives each year's population; the report shows the
@@ -214,8 +215,8 @@ need to be downloaded by hand into `sources/`.
 
 ### Adding a forecast
 
-**After each RBI monetary policy statement** (about every two months), add a record to `rbi.json` for every year
-it projects:
+**After each RBI monetary policy statement** (about every two months), add a record to
+`pipeline/gdp_pipeline/forecast_sources/rbi.json` for every year it projects:
 
 ```json
 {
@@ -241,10 +242,18 @@ it projects:
 - `is_last` marks the final projection before the year's outcome. While a year is still running, its latest
   record has `is_last: false` and `is_latest_available: true`; move that flag when a newer statement comes.
 
-**After each Economic Survey** (late January), add a record to `economic_survey.json` with `fiscal_year`, `survey`,
-`published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a point), `quote`, `url`,
-`pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`) and `notes`. A projection
-stated in two places can add `quote_2`, with `quote_2_url` and `quote_2_pdf_page` if it is in another document.
+**After each Economic Survey** (late January), add a record to `pipeline/gdp_pipeline/forecast_sources/economic_survey.json`
+with `fiscal_year`, `survey`, `published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a
+point), `quote`, `url`, `pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`)
+and `notes`. Optional fields:
+
+- `band_low` and `band_high`: the band around a point forecast, such as "9 per cent (+/- 0.25)"; the forecasts page
+  shows it.
+- `quote_text_layer`: the quote as the PDF's text layer reads it, where that differs from the printed page (a ¾ read
+  as `3/4`); the check accepts either.
+- `quote_2`, for a projection stated in two places, with `quote_2_url` and `quote_2_pdf_page` if it is in another
+  document.
+
 The survey's chapters move from `indiabudget.gov.in/economicsurvey/` to `indiabudget.gov.in/budget<year>/economicsurvey/`
 when the next survey comes out; the downloaded copy is kept, so the record's `url` only needs updating if the file
 is downloaded again.

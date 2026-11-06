@@ -166,7 +166,7 @@ def snapshot_name(fetched_at: str) -> str:
     share a folder. Folders made before were named by the date only ('2026-01-05') and keep their names; sorted as
     text, both kinds are in time order. The build reads versions in the order of the manifest entry's history, not
     by folder name."""
-    return datetime.fromisoformat(fetched_at).astimezone(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+    return datetime.fromisoformat(fetched_at).astimezone(UTC).strftime("%Y-%m-%dT%H%M%SZ")
 
 
 def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None, *,

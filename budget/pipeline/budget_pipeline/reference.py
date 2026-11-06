@@ -11,7 +11,7 @@ Run: uv run python -m budget_pipeline.reference   (downloads the tables)
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common.download import file_kind, get
@@ -61,7 +61,7 @@ def fetch() -> None:
             "url": spec["url"],
             "file": str(dest.relative_to(ROOT)),
             "sha256": hashlib.sha256(content).hexdigest(),
-            "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
         }
         print(f"saved {dest.name}")
     REF_MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n")

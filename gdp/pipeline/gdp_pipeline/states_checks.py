@@ -80,7 +80,7 @@ def check_rows(st: dict, report) -> None:
 def check_identities(st: dict, report) -> None:
     failures, notes, n = [], [], 0
     no_subsidies = set()
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         for level, va in (("gsdp", "gsva"), ("nsdp", "nsva")):
             lv, total, taxes = node.get(level), node.get(va, {}).get("total"), node.get("taxes")
             if not lv or lv.get("derived") or not total or not taxes:
@@ -99,7 +99,7 @@ def check_identities(st: dict, report) -> None:
               for s in sorted(no_subsidies)]
     # A state with value added but no GSDP: MoSPI's GSDP table leaves it out and its taxes or subsidies are missing,
     # so it would silently drop off the site.
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         if node.get("gsva", {}).get("total") and "gsdp" not in node:
             failures.append(f"{state}, {year}: value added is published but GSDP is not, and it cannot be worked out "
                             "(taxes or subsidies on products missing)")
@@ -111,7 +111,7 @@ def check_identities(st: dict, report) -> None:
 
 def check_industries(st: dict, report) -> None:
     failures, n = [], 0
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         for va in ("gsva", "nsva"):
             parts = node.get(va, {})
             total = parts.get("total")

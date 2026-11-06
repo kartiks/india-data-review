@@ -21,7 +21,7 @@ The checks are in states_checks.py.
 import csv
 import json
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common.numbers import number
@@ -237,7 +237,7 @@ def derive_gsdp(tree: dict) -> None:
     """GSDP where MoSPI's GSDP table leaves the state out: GSVA + taxes - subsidies, and growth from those levels."""
     for states in tree.values():
         for state, years in states.items():
-            for year, node in years.items():
+            for node in years.values():
                 total, taxes = node.get("gsva", {}).get("total"), node.get("taxes")
                 subs = node.get("subsidies") or ({"cur": 0, "con": 0} if state in NO_SUBSIDIES else None)
                 if "gsdp" in node or not (total and taxes and subs):
@@ -269,7 +269,7 @@ def build(manifest: dict) -> dict:
                  "figures; % for growth. 'cur' = current prices, 'con' = constant 2011-12 prices. 'derived': worked "
                  "out as GSVA + taxes - subsidies (MoSPI publishes no GSDP for the state); growth with "
                  "'published': false is worked out from the levels.",
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "bases": sorted(tree),
         "indicators": LABELS,
         "industries": {k: INDUSTRY_LABELS[k] for k in dict.fromkeys(INDUSTRIES.values())},

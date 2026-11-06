@@ -17,7 +17,7 @@ For each table we write <name>.csv (every observation, with its source) and
 import csv
 import json
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common.numbers import strict_number
@@ -86,7 +86,7 @@ def write_table(name: str, rows: list[dict], id_fields: tuple[str, ...], value_f
     dataset = {
         **meta,
         "units": "Rs crore",
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "rules": "BE from that year's budget; RE from the next; Actual from the one after. "
                  "be_restated = the BE as reprinted a year later, when different.",
         # The site covers 2000-01 onwards; earlier years appear only as old columns of early budgets.

@@ -39,7 +39,7 @@ def read(manifest: dict, problems: list[str]) -> dict:
     other: dict[str, list[dict]] = defaultdict(list)  # "distribution" | "conditions" | "earnings"
     unlabelled: list[str] = []
     labels: dict[int, str] = {}
-    for key, entry, body in load(manifest, "plfs/"):
+    for key, _entry, body in load(manifest, "plfs/"):
         freq = key.split("/")[1]
         code = body["query"]["indicator_code"]
         for r in body["rows"]:
@@ -95,9 +95,9 @@ MISSING = ("NaN", "nan", "-", "**", None, "")
 
 def identity_gap(r: dict) -> tuple[float, float]:
     """(gap, rounding tolerance) between the published worker ratio and participation × (1 − unemployment)."""
-    l, w, u = r["lfpr"], r["wpr"], r["ur"]
-    expected = l * (1 - u / 100)
-    return abs(expected - w), 0.05 + 0.05 * (1 - u / 100) + l * 0.0005 + 1e-9  # each figure is rounded to 0.1
+    lf, w, u = r["lfpr"], r["wpr"], r["ur"]
+    expected = lf * (1 - u / 100)
+    return abs(expected - w), 0.05 + 0.05 * (1 - u / 100) + lf * 0.0005 + 1e-9  # each figure is rounded to 0.1
 
 
 def flag_rates(rows: list[dict]) -> None:

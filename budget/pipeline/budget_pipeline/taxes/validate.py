@@ -25,6 +25,7 @@ def _identity_checks(all_parsed: dict) -> Result:
             vals = {it["item_id"]: it["values"][c] for it in p["items"]}
             sections = {it["item_id"]: it["section"] for it in p["items"]}
 
+            # Called only within this iteration, so budget and col are this column's (hence noqa: B023).
             def check(name: str, printed: float | None, parts: list[float | None]) -> None:
                 nonlocal checked
                 if printed is None or all(x is None for x in parts):
@@ -32,7 +33,7 @@ def _identity_checks(all_parsed: dict) -> Result:
                 calc = sum(x or 0 for x in parts)
                 checked += 1
                 if abs(printed - calc) > LEVEL_TOL:
-                    msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
+                    msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "  # noqa: B023
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
                     if not ok.file("identity", msg):
                         failures.append(msg)
@@ -169,6 +170,7 @@ def _rb_identities(rbs: dict) -> Result:
             vals = {it["item_id"]: it["values"][c] for it in p["items"]}
             sec = {it["item_id"]: it["section"] for it in p["items"]}
 
+            # Called only within this iteration, so budget and col are this column's (hence noqa: B023).
             def check(name, printed, parts):
                 nonlocal checked
                 if printed is None or all(x is None for x in parts):
@@ -176,7 +178,7 @@ def _rb_identities(rbs: dict) -> Result:
                 calc = sum(x or 0 for x in parts)
                 checked += 1
                 if abs(printed - calc) > LEVEL_TOL:
-                    msg = (f"Receipt Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
+                    msg = (f"Receipt Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "  # noqa: B023
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
                     if not ok.file("rb identity", msg):
                         failures.append(msg)

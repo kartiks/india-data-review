@@ -18,7 +18,7 @@ def ym(r: dict) -> str:
 
 def cpi(manifest: dict, problems: list[str]) -> list[dict]:
     out, seen = [], {}
-    for key, entry, body in load(manifest, "cpi/"):
+    for key, _entry, body in load(manifest, "cpi/"):
         file = "all_india" if key.startswith("cpi/all_india/") else "states"
         for r in body["rows"]:
             if file == "states" and r.get("subgroup") != "General-Overall":
@@ -42,7 +42,7 @@ def cpi(manifest: dict, problems: list[str]) -> list[dict]:
 
 def cpialrl(manifest: dict, problems: list[str]) -> list[dict]:
     out = []
-    for key, entry, body in load(manifest, "cpialrl/"):
+    for key, _entry, body in load(manifest, "cpialrl/"):
         for r in body["rows"]:
             rec = {"month": ym(r), **{k: v for k, v in r.items() if k not in ("year", "month")}, "source": key}
             for k in ("index_al", "index_rl", "inflation_al", "inflation_rl"):

@@ -15,7 +15,7 @@ import sys
 import tempfile
 import time
 import urllib.error
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common.download import POLITE_PAUSE_S, file_kind, get
@@ -87,7 +87,7 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                     "file": str(dest.relative_to(ROOT)),
                     "sha256": hashlib.sha256(content).hexdigest(),
                     "bytes": len(content),
-                    "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 }
                 print(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
             if files:

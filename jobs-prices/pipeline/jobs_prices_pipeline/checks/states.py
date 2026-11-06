@@ -9,6 +9,10 @@ from pipeline_common.text import fy_start, prev_fy
 
 from ..rbi import RBI_STATE_TABLES
 
+# points: RBI's state inflation (printed to one decimal) against the rate worked out from MoSPI's monthly indices,
+# which are printed to one decimal too and averaged over the year
+RBI_INFLATION_TOL = 0.15
+
 
 def state_key(s: str) -> str:
     """One key for a state however a source spells it ('Andaman & Nicobar Islands', 'NCT of Delhi' ...)."""
@@ -68,7 +72,7 @@ def check_rbi_inflation(ds: dict, report: Report) -> None:
             continue
         checked += 1
         calc = (a / b - 1) * 100
-        if abs(calc - r["value"]) > 0.15:
+        if abs(calc - r["value"]) > RBI_INFLATION_TOL:
             failures.append(f"{r['state']} {fy}: RBI {r['value']}%, MoSPI's indices give {calc:.2f}%")
     if skipped:
         notes.append("Not compared (a year without all 12 monthly indices in MoSPI's data, such as the April-May 2020 "

@@ -6,8 +6,10 @@ dependencies = [
     "openpyxl>=3.1.5",
     "pdfplumber>=0.11.10",
     "pipeline-common",
-    "pytest>=9.2.0",
 ]
+
+[dependency-groups]
+dev = ["pytest>=9.2.0"]  # the tests only: `uv run` installs it, `uv run --no-dev` leaves it out
 
 [tool.uv.sources]
 # Code shared by the three areas' pipelines: shared/pipeline/pipeline_common.

@@ -21,7 +21,8 @@ and the downloaded source files (`sources/`). The website is in `../site/` (page
   GDP › Per person.
 - **Union Budget GDP assumption**, Budgets 2011-12 to 2026-27 (Budget at a Glance).
 - **Forecasts**: the Economic Survey's projection for each year 2011-12 to 2026-27, and every RBI monetary
-  policy projection for the same years (93 statements), each with the sentence it was quoted from.
+  policy projection for the same years, each with the sentence it was quoted from (counts in
+  [`data/validation_report.md`](data/validation_report.md)).
 
 ## Run it
 
@@ -41,7 +42,7 @@ The command exits with an error if any check fails, and the website (`../site/`)
 changed and pushes it to `main` once every check and the local CI pass (see
 [Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
 estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<date>/`, so the revision history of the new series builds up over time: the build reads an
+`sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; older folders are named by date only), so the revision history of the new series builds up over time: the build reads an
 estimate stage (say a year's Provisional Estimate) from the newest saved file that has it once the current file no
 longer does, and lists those estimates in `gdp.json` (`earlier_releases`) and the validation report. Quarters have no
 stage of their own, so only their latest figures are used.
@@ -63,7 +64,7 @@ refreshed totals every week.
 | `validation_report.md` | Every check, and the reason for every allowed exception |
 | `validation_summary.json` | The same results for programs (the site reads it): PASSED or FAILED, and checks, failures and allowed exceptions per group of checks |
 
-Values are ₹ crore; growth rates are %. `cur` = current prices (nominal), `con` = constant prices (real).
+Levels are ₹ crore, per-person figures ₹ and growth rates %. `cur` = current prices (nominal), `con` = constant prices (real).
 
 ## Checks
 
@@ -73,7 +74,9 @@ series), quarters against years, the back series against the current series, the
 forecast quote found in its downloaded document. Problems found in the official data are documented in the report
 and on the site's Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labelled "1999", duplicate
 "Additional Revision" rows, inconsistent early net-tax figures, the back series' non-additivity before 2004-05, and
-one mistyped GVA growth rate (2019-20, Second Advance Estimates).
+one mistyped GVA growth rate (2019-20, Second Advance Estimates). Every row must be in the unit its indicator is
+published in (`UNITS` in `build.py`); a row in any other unit is left out and fails the checks. The back series
+writes one year "1999-2000"; it is stored as "1999-00", like every other year.
 
 ### State accounts
 
@@ -81,14 +84,13 @@ one mistyped GVA growth rate (2019-20, Second Advance Estimates).
 up from value added, taxes and subsidies on products; industries add up to total value added and sub-industries to
 their industry; every published growth rate follows from the levels (allowing for the levels' rounding, which
 matters for small states); the two tables of income per person agree, and GSDP and NSDP per person imply the same
-population; every state is one of the 34 in `KNOWN_STATES` and each appears on the 2011-12 base (a newer base may
-fill up state by state: the report lists who is not on it yet); no row is published twice with
-different values; and a state with value added always gets a GSDP. These checks fail the run.
+population; every state is in `KNOWN_STATES` and each appears on the 2011-12 base (a newer base may fill up state by
+state: the report lists who is not on it yet); no row is published twice with different values; and a state with value added always gets a GSDP. These checks fail the run.
 
 For review only (listed in the report, never a failure): the states' GSDP against India's GDP on the same base, in
 each year whose national figure is at least provisional and whose reporting states made up 97% of the states'
-economy the year before (98-103% so far). It is not a hard check because the national 2011-12 series stopped in
-February 2026 while the states keep revising theirs, so the two will drift apart. The report also lists any
+economy the year before (the report lists each year's share). It is not a hard check because the national 2011-12
+series stopped in February 2026 while the states keep revising theirs, so the two will drift apart. The report also lists any
 known exception that is no longer needed.
 
 What MoSPI publishes, and what is done with it:
@@ -96,7 +98,7 @@ What MoSPI publishes, and what is done with it:
 - Value added, taxes and subsidies are labelled ₹ lakh (correctly, unlike the national table) and divided by 100.
 - There is no All-India row; the site compares the states with the national accounts on the same base.
 - MoSPI's GSDP table leaves out Assam, Haryana, Ladakh and Nagaland, which its value-added table covers. Their
-  GSDP is worked out as GSVA + taxes - subsidies (MoSPI's definition; for every other state the two agree) and
+  GSDP is worked out as GSVA (gross state value added) + taxes - subsidies (MoSPI's definition; for every other state the two agree) and
   marked `derived`; their growth is worked out from those levels and marked `published: false`. These derived
   figures match the RBI's Handbook of Statistics on Indian States, which compiles the same state accounts. As there
   is no published total to check them against, the population they imply with MoSPI's GSDP per person must move by
@@ -127,7 +129,7 @@ between the two series, so it is kept per series and year:
 |---|---|---|
 | 2011-12 series, 2011-12 to 2021-22 | The official projection for 1 October. MoSPI's figures equal it in 2020-21 and 2021-22, the years the RBI's reprint covers; earlier years are assumed to be the projection too | *Population Projections for India and States 2011-2036*, Report of the Technical Group on Population Projections (National Commission on Population, November 2019), Table 14, PDF page 125 |
 | 2022-23 series, 2022-23 to 2024-25 | MoSPI's own, printed to the thousand | MoSPI, *National Accounts Statistics 2026* (31 August 2026), Statement 1.2: Per capita income, product and final consumption. Downloaded by hand (`sources/raw/population/nas-2026-statement-1.2.xlsx`) |
-| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `population_sources/mospi_press_notes.json` |
+| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json` |
 | 2011-12 series, 2022-23 | The same, where no press note here covers the year | RBI, *Handbook of Statistics on the Indian Economy* 2025-26, Tables 1 and 2 (reprinting MoSPI's) |
 
 From 2022-23 MoSPI's population is about 0.1–0.2% above the 2019 projections, so population grows 1.05% in
@@ -142,10 +144,9 @@ population when it revised the totals in August. Where they agree, the printed f
 NAS 2026 prints no totals in its per-capita statement; its unrounded per-person figure times its population gives
 the total back (to within ₹1 crore of the API's), which is how its figures are matched to the API's estimate.
 
-**What is checked.** The per-person figures reproduce MoSPI's for the 2011-12 series from 2020-21 and for the
-2022-23 series for 2022-23 to 2024-25 (`population.checked` in `gdp.json`). The new series' latest year (2025-26
-today) is not checked: MoSPI has revised its total since the June press note, and none of the per-person figures
-quoted here is for that total, so the figure divides the revised total by the population in the June note. The site's Per person
+**What is checked.** The per-person figures reproduce MoSPI's in every year where a figure quoted here is for the
+API's latest total (`population.checked` in `gdp.json`; the report lists the years). A year whose total MoSPI has
+revised since is not checked: its figure divides the revised total by the quoted population. The site's Per person
 page says so while it is the case.
 
 Checks ("Population and figures per person" in the report):
@@ -176,8 +177,9 @@ per-person figures, and the report lists it. To add it:
 
 1. In the new press note's statement at **constant prices**, copy five rows exactly as printed, without the growth
    rates at the end: population, GDP, net national income (NNI), per capita GDP and per capita NNI.
-2. Add a record to `population_sources/mospi_press_notes.json` like the ones there: `document`, `date`, `base`,
-   `url`, `years` (the statement's columns), and a `tables` entry with `statement`, `pdf_page` and the rows.
+2. Add a record to `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json` like the ones there:
+   `document`, `date`, `base`, `url`, `years` (the statement's columns), and a `tables` entry with `statement`,
+   `pdf_page`, `prices` (`con`) and the rows.
    Check that the page's text extracts in reading order (some MoSPI statements do not; quote another one then).
 3. Run `uv run python -m gdp_pipeline --fetch`. It downloads the note, checks every row and the implied population,
    and uses the newest document for each year.
@@ -187,8 +189,8 @@ new series), add its per-capita statement, which makes the check cover the revis
 
 1. On MoSPI's page for the publication (mospi.gov.in › Publications & Reports; it needs a browser), download the
    statement *Per Capita Income, Product and Final Consumption* (Statement 1.2 in 2026) as xlsx.
-2. Add an entry to `NAS_STATEMENTS` in `population_read.py` (key, the publication page's address, title, date, base), as
-   the last entry.
+2. Add an entry to `NAS_STATEMENTS` in `pipeline/gdp_pipeline/population_read.py` (`key`, `url` of the publication
+   page, `document`, `date`, `base`), as the last entry.
 3. Run `uv run python -m gdp_pipeline.population --add ~/Downloads/<file>.xlsx`. It copies the file into
    `sources/raw/population/` and records it in the manifest (with its SHA-256 and that it was downloaded by hand).
 4. Run `uv run python -m gdp_pipeline`. The newest document gives each year's population; the report shows the
@@ -215,8 +217,8 @@ need to be downloaded by hand into `sources/`.
 
 ### Adding a forecast
 
-**After each RBI monetary policy statement** (about every two months), add a record to `rbi.json` for every year
-it projects:
+**After each RBI monetary policy statement** (about every two months), add a record to
+`pipeline/gdp_pipeline/forecast_sources/rbi.json` for every year it projects:
 
 ```json
 {
@@ -233,7 +235,10 @@ it projects:
 }
 ```
 
-- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record.
+- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record, and
+  it must name the record's `fiscal_year` (as "2026-27" or "FY27"; the year before may be named too). Years are
+  not read as numbers. If the sentence does not name the year, the check fails until the year is confirmed from
+  the text around it and added, with that reason, to `KNOWN_EXCEPTIONS` in `checks.py`.
 - `measure` is `GDP` or `GVA`, as the statement says.
 - `value` is a single projection; use `low` and `high` for a range, and `value_text` with `value: null` for words
   such as "a little below 5 per cent".
@@ -241,11 +246,21 @@ it projects:
   site uses as the year's starting forecast.
 - `is_last` marks the final projection before the year's outcome. While a year is still running, its latest
   record has `is_last: false` and `is_latest_available: true`; move that flag when a newer statement comes.
+- The checks work the flags out again from the dates (counting only records with a `value`, `low` or `high`; the
+  April policy is the first one dated April or May of the year) and fail if any is on the wrong record.
 
-**After each Economic Survey** (late January), add a record to `economic_survey.json` with `fiscal_year`, `survey`,
-`published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a point), `quote`, `url`,
-`pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`) and `notes`. A projection
-stated in two places can add `quote_2`, with `quote_2_url` and `quote_2_pdf_page` if it is in another document.
+**After each Economic Survey** (late January), add a record to `pipeline/gdp_pipeline/forecast_sources/economic_survey.json`
+with `fiscal_year`, `survey`, `published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a
+point), `quote`, `url`, `pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`)
+and `notes`. Both nominal figures must be in `nominal_quote`. Optional fields:
+
+- `band_low` and `band_high`: the band around a point forecast, such as "9 per cent (+/- 0.25)"; the forecasts page
+  shows it. Both must be in `quote` or `quote_2`, or be the projection plus and minus the "(+/- x)" in `quote`.
+- `quote_text_layer`: the quote as the PDF's text layer reads it, where that differs from the printed page (a ¾ read
+  as `3/4`); the check accepts either.
+- `quote_2`, for a projection stated in two places, with `quote_2_url` and `quote_2_pdf_page` if it is in another
+  document.
+
 The survey's chapters move from `indiabudget.gov.in/economicsurvey/` to `indiabudget.gov.in/budget<year>/economicsurvey/`
 when the next survey comes out; the downloaded copy is kept, so the record's `url` only needs updating if the file
 is downloaded again.

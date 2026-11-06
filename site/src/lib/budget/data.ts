@@ -12,7 +12,6 @@ export const KIND_LABEL: Record<Kind, string> = {
   re: "Revised Estimate",
   actual: "Actual",
 };
-export const KIND_SHORT: Record<Kind, string> = { be: "BE", re: "RE", actual: "Actual" };
 
 export interface Source {
   budget: string; // budget the number was printed in, e.g. "2026-27"
@@ -78,8 +77,6 @@ function fiscalSourceUrl(budget: string): string | undefined {
 }
 
 // ---------- headline figures ----------
-export const FIELD_LABELS = fiscal.fields;
-
 export function headline(year: string, field: string, kind: Kind): Value | undefined {
   const it = fiscal.years[year]?.[field]?.[kind];
   if (!it) return undefined;
@@ -101,7 +98,6 @@ export function headline(year: string, field: string, kind: Kind): Value | undef
 export function best<T extends Value>(get: (k: Kind) => T | undefined): T | undefined {
   return get("actual") ?? get("re") ?? get("be");
 }
-export const headlineBest = (year: string, field: string) => best((k) => headline(year, field, k));
 
 /** The estimate type available for every dataset in a year: the one a year page shows. */
 export function yearKind(year: string): Kind {
@@ -218,7 +214,6 @@ export function ministryTotal(year: string, m: Ministry, kind: Kind): Value | un
     source: { ...vals[0].source, label: undefined, note: undefined },
   };
 }
-export const ministryBest = (year: string, m: Ministry) => best((k) => ministryTotal(year, m, k));
 
 // ---------- schemes ----------
 export interface Scheme {
@@ -282,9 +277,6 @@ export const SCHEMES: Scheme[] = Object.entries(schemes.items)
 }
 export const schemeValue = (year: string, key: string, kind: Kind) => detail(schemes, year, key, kind, "total_crore");
 export const SCHEME_YEARS = YEARS.filter((y) => Object.keys(schemes.years[y] ?? {}).length > 0);
-
-// ---------- helpers ----------
-export const yearIndex = (y: string) => YEARS.indexOf(y);
 
 // ---------- series over years ----------
 export interface SeriesPoint { value: number | null; kind?: string; estimate?: boolean }

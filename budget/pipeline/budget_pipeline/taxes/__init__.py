@@ -29,14 +29,14 @@ Public functions:
 
 from .annex7 import annex7_columns, annex7_header_text, load_receipt_budgets, parse_annex7
 from .validate import checks
-from .common import DATA, MANIFEST, ROOT, TOLERANCE_CRORE, english, match_item, printed_label, slug
+from .common import DATA, LEVEL_TOL, MANIFEST, ROOT, english, match_item, printed_label, slug
 from .exceptions import EXCEPTIONS, HEADER_FIXES, KNOWN_EXCEPTIONS, KNOWN_FORMAT_ISSUES
 from .load import load_all, load_summary_observations, observations
 from .receipts import parse_receipts, read_pdf_line, receipts_columns
 
 __all__ = [
-    "DATA", "EXCEPTIONS", "HEADER_FIXES", "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "MANIFEST", "ROOT",
-    "TOLERANCE_CRORE",
+    "DATA", "EXCEPTIONS", "HEADER_FIXES", "KNOWN_EXCEPTIONS", "KNOWN_FORMAT_ISSUES", "LEVEL_TOL", "MANIFEST",
+    "ROOT",
     "annex7_columns", "annex7_header_text", "checks", "english", "load_all", "load_receipt_budgets",
     "load_summary_observations", "match_item", "observations", "parse_annex7", "parse_receipts", "printed_label",
     "read_pdf_line", "receipts_columns", "slug",

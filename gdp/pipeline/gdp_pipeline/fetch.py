@@ -7,7 +7,8 @@ unchanged dataset gives an identical file (and SHA-256).
 
 MoSPI's API keeps only the latest estimate for the new 2022-23 series and for
 quarters. So when a re-download differs from the saved file, the old file is
-kept under sources/snapshots/<date it was fetched>/ before being replaced: run
+kept under sources/snapshots/<time it was fetched>/ (UTC, e.g. 2026-11-06T093000Z;
+see pipeline_common.download.snapshot_name) before being replaced: run
 after every release and the revision history builds up.
 
 Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]
@@ -22,7 +23,7 @@ import urllib.parse
 from pathlib import Path
 
 from pipeline_common import download
-from pipeline_common.download import fetch_pages, get, is_type, now
+from pipeline_common.download import PAGE_PAUSE_S, POLITE_PAUSE_S, fetch_pages, file_kind, get, now
 from pipeline_common.text import fy
 
 from . import forecasts, population_read
@@ -109,7 +110,7 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
         content = (json.dumps(result, ensure_ascii=False, indent=1) + "\n").encode()
         changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
         print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
-        time.sleep(0.3)
+        time.sleep(PAGE_PAUSE_S)
     if vanished:
         raise RuntimeError(f"MoSPI returned no rows, or far fewer than before, for indicators that had data: {', '.join(vanished)}")
 
@@ -125,7 +126,7 @@ def fetch_budgets(manifest: dict, force: bool) -> None:
             except urllib.error.HTTPError as exc:
                 print(f"{key}: {url} -> {exc.code}")
                 continue
-            if not is_type(content, "pdf"):
+            if file_kind(content) != "pdf":  # a web page or an error under the address: try the next one
                 print(f"{key}: {url} is not a PDF")
                 continue
             save(manifest, key, RAW / f"{key}.pdf", content, url)
@@ -133,7 +134,7 @@ def fetch_budgets(manifest: dict, force: bool) -> None:
             break
         else:
             print(f"{key}: NO SOURCE FOUND")
-        time.sleep(0.5)
+        time.sleep(POLITE_PAUSE_S)
 
 
 def fetch_forecasts(manifest: dict, force: bool) -> None:
@@ -149,10 +150,10 @@ def fetch_forecasts(manifest: dict, force: bool) -> None:
                 except Exception as exc:  # noqa: BLE001 - report and carry on; the check will fail
                     print(f"{key}: {url} -> {exc}")
                     continue
-                ext = "pdf" if is_type(content, "pdf") else "html"
+                ext = "pdf" if file_kind(content) == "pdf" else "html"  # forecasts are quoted from PDFs or web pages
                 save(manifest, key, RAW / f"{key}.{ext}", content, url, {"document": f"{name} {r['fiscal_year']}"})
                 print(f"{key}: saved {url} ({len(content):,} bytes)")
-                time.sleep(0.5)
+                time.sleep(POLITE_PAUSE_S)
 
 
 def fetch_population(manifest: dict, force: bool) -> None:
@@ -170,7 +171,7 @@ def fetch_population(manifest: dict, force: bool) -> None:
         except Exception as exc:  # noqa: BLE001 - report and carry on; the checks will fail
             print(f"{key}: {url} -> {exc}")
             continue
-        if not is_type(content, ext):
+        if file_kind(content) != ext:  # skipped, not saved: the checks report it missing
             print(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
             continue
         save(manifest, key, RAW / f"{key}.{ext}", content, url)
@@ -184,7 +185,7 @@ def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
     if not source.is_file():
         raise SystemExit(f"{source}: no such file")
     content = source.read_bytes()
-    if not is_type(content, "xlsx"):
+    if file_kind(content) != "xlsx":
         raise SystemExit(f"{source} is not an xlsx file")
     manifest = load_manifest()
     old = manifest.get(key)

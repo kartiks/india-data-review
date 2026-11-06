@@ -45,8 +45,6 @@ export function goesTo(year: string, kind: Kind, top = 9): Part[] | undefined {
   return [...named, { id: "rest", label: `All other ministries (${mins.length - top})`, value: rest, href: "/budget/ministries/" }];
 }
 
-export interface Tile { label: string; value: Value | undefined; extra?: string }
-
 /** The previous year's figure to compare against: same type if available, else the best available. */
 export function previous(year: string, get: (y: string, k: Kind) => Value | undefined, kind: Kind) {
   const i = YEARS.indexOf(year);

@@ -8,7 +8,7 @@ for b, info in sorted(data["budgets"].items()):
     print(b, info["primary"], " ".join(f"{c.kind}:{c.fiscal_year}" for c in p["columns"]), len(p["items"]), "items")
     for u in p["unknown_rows"]:
         print("   ", u)
-for title, checked, failures, notes in checks(data, load_summary_observations()):
+for title, checked, failures, _notes in checks(data, load_summary_observations()):
     print(f"{'FAIL' if failures else 'ok  '} {title}: {checked} checks, {len(failures)} failures")
     for f in failures:
         print("   -", f)

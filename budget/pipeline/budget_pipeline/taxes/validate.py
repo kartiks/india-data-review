@@ -6,7 +6,7 @@ from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Allowed
 from pipeline_common.text import fy
 
-from .common import NON_TAX_PARTS, TOLERANCE_CRORE
+from .common import LEVEL_TOL, NON_TAX_PARTS
 from .exceptions import EXCEPTIONS
 from .load import observations
 
@@ -25,14 +25,15 @@ def _identity_checks(all_parsed: dict) -> Result:
             vals = {it["item_id"]: it["values"][c] for it in p["items"]}
             sections = {it["item_id"]: it["section"] for it in p["items"]}
 
+            # Called only within this iteration, so budget and col are this column's (hence noqa: B023).
             def check(name: str, printed: float | None, parts: list[float | None]) -> None:
                 nonlocal checked
                 if printed is None or all(x is None for x in parts):
                     return
                 calc = sum(x or 0 for x in parts)
                 checked += 1
-                if abs(printed - calc) > TOLERANCE_CRORE:
-                    msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
+                if abs(printed - calc) > LEVEL_TOL:
+                    msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "  # noqa: B023
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
                     if not ok.file("identity", msg):
                         failures.append(msg)
@@ -83,7 +84,7 @@ def _summary_checks(all_parsed: dict, summary_observations: list[dict]) -> Resul
                 if s is None or v is None:
                     continue
                 checked += 1
-                if abs(s - v) > TOLERANCE_CRORE:
+                if abs(s - v) > LEVEL_TOL:
                     msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {it['item_id']} {v:,.0f} in Receipts "
                            f"vs {field} {s:,.0f} in the headline table")
                     if not ok.file("summary", msg):
@@ -102,7 +103,7 @@ def _cross_document_checks(all_parsed: dict) -> Result:
             continue
         checked += 1
         (d1, v1), (d2, v2) = sorted(by_doc.items())[:2]
-        if abs(v1 - v2) <= TOLERANCE_CRORE:
+        if abs(v1 - v2) <= LEVEL_TOL:
             continue
         rel = abs(v2 - v1) / max(abs(v1), 1)
         msg = f"{kind} {year} {item}: {v1:,.0f} in budget {d1} vs {v2:,.0f} in budget {d2} ({v2 - v1:+,.0f}, {rel:.1%})"
@@ -169,14 +170,15 @@ def _rb_identities(rbs: dict) -> Result:
             vals = {it["item_id"]: it["values"][c] for it in p["items"]}
             sec = {it["item_id"]: it["section"] for it in p["items"]}
 
+            # Called only within this iteration, so budget and col are this column's (hence noqa: B023).
             def check(name, printed, parts):
                 nonlocal checked
                 if printed is None or all(x is None for x in parts):
                     return
                 calc = sum(x or 0 for x in parts)
                 checked += 1
-                if abs(printed - calc) > TOLERANCE_CRORE:
-                    msg = (f"Receipt Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "
+                if abs(printed - calc) > LEVEL_TOL:
+                    msg = (f"Receipt Budget {budget}, {col.kind} {col.fiscal_year}: {name} - printed {printed:,.0f}, "  # noqa: B023
                            f"parts give {calc:,.0f} (off by {printed - calc:,.0f})")
                     if not ok.file("rb identity", msg):
                         failures.append(msg)
@@ -206,7 +208,7 @@ def _rb_actuals_vs_headline(rbs: dict, summ: dict) -> Result:
                     failures.append(f"Receipt Budget {budget}: no headline {field} Actual {col.fiscal_year} to compare")
                 continue
             checked += 1
-            if abs(v - sv) > TOLERANCE_CRORE:
+            if abs(v - sv) > LEVEL_TOL:
                 msg = (f"Receipt Budget {budget}, Actual {col.fiscal_year}: {item} {v:,.0f} vs headline "
                        f"{field} {sv:,.0f} (Budget at a Glance {budget})")
                 if not ok.file("rb headline", msg):
@@ -235,7 +237,7 @@ def _rb_vs_receipts_table(all_parsed: dict, rbs: dict) -> Result:
             if v is None and bv is None:
                 continue
             checked += 1
-            if (v is None) != (bv is None) or abs(v - bv) > TOLERANCE_CRORE:
+            if (v is None) != (bv is None) or abs(v - bv) > LEVEL_TOL:
                 msg = (f"Budget {budget}, {col.kind} {col.fiscal_year}: {item} {v} in Receipt Budget Annex 7 "
                        f"vs {bv} in Budget at a Glance Receipts")
                 if not ok.file("rb receipts", msg):

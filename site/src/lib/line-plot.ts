@@ -17,6 +17,7 @@ export interface PlotLine {
 export interface PlotOptions {
   zero?: boolean; // include zero in the y range (default true)
   endLabel?: boolean; // a chart with one line labels its last value in the right margin, where a size leaves room
+  valueFormat?: (v: number) => string; // the end label's format, as in the chart's table and hover (default: the axis's)
   annotations?: { year: string; label: string }[]; // a dashed rule at a year, with a label
 }
 
@@ -102,7 +103,7 @@ export function linePlotSvg(sz: Size, years: string[], lines: PlotLine[], format
   const endAt = right > 40 && lines.length === 1 ? lastOf(lines[0]) : undefined;
   if (endAt != null) {
     const v = lines[0].values[endAt]!;
-    out.push(`<text x="${n1(xs[endAt] + 9)}" y="${n1(y(v))}" dy="0.32em" class="end-label">${esc(format(v))}</text>`);
+    out.push(`<text x="${n1(xs[endAt] + 9)}" y="${n1(y(v))}" dy="0.32em" class="end-label">${esc((opts.valueFormat ?? format)(v))}</text>`);
   }
   out.push(`<line class="crosshair" x1="0" x2="0" y1="${sz.top}" y2="${bottom}" visibility="hidden"/>`);
   out.push(`<rect class="hit" x="${sz.left - 6}" y="0" width="${sz.width - right - sz.left + 12}" height="${sz.height}" fill="transparent"/>`);

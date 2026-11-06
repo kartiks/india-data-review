@@ -8,10 +8,10 @@ This folder holds the data pipeline (`pipeline/`), the verified datasets
 
 ## Data pipeline
 
-Verified data on the Union Budget of India, **2000-01 to 2026-27**, taken
+Verified data on the Union Budget of India, **2000-01 to the latest budget**, taken
 straight from official budget documents and checked automatically:
 
-- **Headline figures:** receipts, spending, deficits (all 27 budgets).
+- **Headline figures:** receipts, spending, deficits (every budget).
 - **Taxes by type:** corporation tax, income tax, GST, customs, excise, states' share, non-tax revenue (2000-01 onward).
 - **Spending by ministry/department** (2000-01 onward).
 - **Spending by scheme:** every Centrally Sponsored and Central Sector scheme (from Budget 2017-18).
@@ -29,8 +29,9 @@ uv run pytest                               # parser tests + end-to-end checks (
                                             # folder and fails if anything in data/ changes)
 ```
 
-The command exits with an error if any check fails, so it can gate a website build.
-Result when last built: **117,426 checks, 0 failures** (see `data/validation_report.md`).
+The source files are committed, so `--fetch` downloads only what is missing; `--refresh` (or `--fetch` with an empty
+`sources/raw/`) downloads about 55 MB. The command exits with an error if any check fails, so it can gate a website
+build. The results of the last build are in [`data/validation_report.md`](data/validation_report.md).
 
 ## Adding a new budget
 
@@ -61,7 +62,8 @@ interim one, which the pipeline skips):
 5. In `../gdp/`, run `uv run python -m gdp_pipeline --fetch`: it reads the new budget's GDP assumption from Budget at
    a Glance. If the sentence's numbers are missing from the PDF's text layer, add the sentence to `IMAGE_READ` in
    `../gdp/pipeline/gdp_pipeline/budget.py`, read from the page image; the checks re-compute its growth rate.
-6. Build the site and check the new year's pages, then commit `data/`, `sources/` and the code changes.
+6. Build the site and check the new year's pages, then commit `data/`, `sources/` and the code changes on a branch,
+   and open a pull request ([Local CI](../README.md#local-ci)).
 
 ## What's in `data/`
 
@@ -88,8 +90,7 @@ Each budget prints four columns: Actuals (two years back), Budget Estimate
 - **Actual** for Y comes from Budget Y+2.
 - If Budget Y+1 restates the BE, that version is kept as `be_restated`.
 
-Not published yet: RE 2026-27 (due in Budget 2027-28) and Actuals for
-2025-26 and 2026-27.
+So the latest budget year has no RE or Actual yet, and the year before it no Actual.
 
 ## Sources
 
@@ -113,13 +114,16 @@ Research's *Union Budget 2026-27 Analysis*.
 1. **Accounting rules in every column of every document.** For example: totals equal their parts; net tax = gross tax − states' share − NCCD; Revenue + Capital = Total for every ministry and scheme line.
 2. **Tables tie to each other.** For every budget and column:
    - net tax and non-tax revenue in the Receipts table equal the headline table;
-   - ministry spending adds up to total expenditure in the headline table (within ₹1 crore, all 27 budgets);
+   - ministry spending adds up to total expenditure in the headline table (within ₹1 crore, every budget);
    - scheme grand totals equal the scheme lines of the ministries statement.
 3. **Same figure, two documents.** A figure printed in two budgets must agree, or the restatement is explained.
 4. **Other copies agree.** Excel/HTML copies are compared with the PDF.
 5. **Independent publishers.**
-   - RBI: 235 of 270 headline figures match exactly; the rest are explained.
-   - PRS: all 117 figures match to the crore, covering headline totals, taxes by type, six ministries and four schemes.
+   - RBI: headline figures are compared with the RBI's series; most match exactly and every difference is explained.
+   - PRS: every figure typed from PRS's analysis of the latest budget (headline totals, taxes by type, some ministries
+     and schemes) must match to the crore.
+
+   The counts are in [`data/validation_report.md`](data/validation_report.md).
 6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
 
 ### Problems found in the official files (examples)

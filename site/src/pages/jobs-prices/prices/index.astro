@@ -10,6 +10,7 @@ import {
 } from "../../../lib/jobs-prices/data";
 import { axisPct, gpct } from "../../../lib/format";
 import { completeFys } from "../../../lib/fy";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
 
 const SRC = "MoSPI, Consumer Price Index (base 2012 = 100), via MoSPI's data service.";
 const SRC24 = "MoSPI, Consumer Price Index (base 2024 = 100), monthly press releases on PIB.";
@@ -18,7 +19,6 @@ const general = cpiAllIndia(GENERAL);
 const food = cpiAllIndia(FOOD);
 const at = (pts: CpiPoint[], m: string) => pts.find((p) => p.month === m);
 const latest = at(general, CPI_LAST)!;
-const latestFood = at(food, CPI_LAST);
 const avg = averageInflation(general, lastYear)!;
 const since2012 = latest.index! - 100;
 
@@ -116,8 +116,8 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
       subtitle={`All India, change on the same month a year earlier, ${labels[0]} to ${labels[labels.length - 1]}. Hollow marker: provisional.`}
       years={labels}
       series={[
-        { name: "Old series (base 2012)", slot: 7, points: line(general) },
-        { name: "New series (base 2024)", slot: 1, points: new24(2) },
+        { name: "Old series (base 2012)", slot: OLD_SERIES, points: line(general) },
+        { name: "New series (base 2024)", slot: NEW_SERIES, points: new24(2) },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v, 2)}
@@ -129,13 +129,13 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <LineChart
       title="Food and all items"
-      subtitle="Inflation in the Consumer Food Price Index and in the general index, all India, on both series."
+      subtitle="Inflation in the Consumer Food Price Index (dashed) and in the general index, all India, on both series."
       years={labels}
       series={[
-        { name: "All items, base 2012", slot: 7, points: line(general) },
-        { name: "Food, base 2012", slot: 2, points: line(food) },
-        { name: "All items, base 2024", slot: 1, points: new24(2) },
-        { name: "Food, base 2024", slot: 8, points: food24 },
+        { name: "All items, base 2012", slot: OLD_SERIES, points: line(general) },
+        { name: "Food, base 2012", slot: OLD_SERIES, dashed: true, points: line(food) },
+        { name: "All items, base 2024", slot: NEW_SERIES, points: new24(2) },
+        { name: "Food, base 2024", slot: NEW_SERIES, dashed: true, points: food24 },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v, 2)}
@@ -166,12 +166,13 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <h3>Inflation by division, {monthLabel(CPI24_LATEST)}</h3>
       <p class="muted small">All India, rural and urban combined, base 2024{now24.provisional ? ", provisional" : ""}. The new series groups spending into 12 divisions (an international classification, COICOP 2018).</p>
-      <BarList rows={divRows} tone={1} label={`Inflation by division, ${monthLabel(CPI24_LATEST)}`} />
+      <BarList rows={divRows} tone={NEW_SERIES} label={`Inflation by division, ${monthLabel(CPI24_LATEST)}`} />
       <p class="source">{SRC24} Annexure I.</p>
     </section>
     <section class="card">
       <DotRows
         title={`Inflation by state, ${monthLabel(CPI24_LATEST)}`}
+        rowHeader="State"
         headingLevel={3}
         subtitle={`Base 2024, on the same month a year earlier${now24.provisional ? ", provisional" : ""}. Sorted by the combined figure. Chandigarh has no rural market.`}
         series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
@@ -223,15 +224,15 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
     <section class="card">
       <h3>Inflation by group, {lastYear}</h3>
       <p class="muted small">Average index for {lastYear} on {Number(lastYear) - 1}, all India, rural and urban combined.</p>
-      <BarList rows={avgRows(GROUPS)} tone={7} label={`Average inflation by group, ${lastYear}`} />
+      <BarList rows={avgRows(GROUPS)} tone={OLD_SERIES} label={`Average inflation by group, ${lastYear}`} />
       <h3 class="sub-h">Food items</h3>
-      <BarList rows={avgRows(SUBS)} tone={2} label={`Average inflation by food item, ${lastYear}`} />
+      <BarList rows={avgRows(SUBS)} tone={OLD_SERIES} label={`Average inflation by food item, ${lastYear}`} />
       <p class="source">{SRC}</p>
     </section>
     <section class="card">
       <h3>How much prices have risen since 2012</h3>
       <p class="muted small">Index in {monthLabel(CPI_LAST)} (2012 = 100), all India, rural and urban combined.</p>
-      <BarList rows={levelRows} tone={4} label="Rise in prices since 2012 by group and item" />
+      <BarList rows={levelRows} tone={OLD_SERIES} label="Rise in prices since 2012 by group and item" />
       <p class="source">{SRC}</p>
     </section>
   </div>
@@ -239,6 +240,7 @@ const lastOldBase = [...alrl].reverse().find((r) => r.base_year === "1986-1987")
   <section class="card">
     <DotRows
       title={`Inflation by state, ${lastYear}`}
+      rowHeader="State"
       headingLevel={3}
       subtitle={`Average index for ${lastYear} on ${Number(lastYear) - 1}. Sorted by the combined figure. MoSPI publishes Dadra & Nagar Haveli and Daman & Diu separately in this series, and no separate index for Ladakh.`}
       series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}

@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[3]
 MANIFEST = ROOT / "sources" / "manifest.json"
 DATA = ROOT / "data"  # observations.csv, the headline figures written by build.py
 
-TOLERANCE_CRORE = 5
+LEVEL_TOL = 5  # ₹ crore: amounts are printed to the crore, so totals of rounded items can be a few crore off
 
 # ----- what each printed label means ---------------------------------------
 # Matched anywhere in the English label (older PDFs prefix it with leftovers of

@@ -11,10 +11,10 @@ Run: uv run python -m budget_pipeline.reference   (downloads the tables)
 
 import hashlib
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
-from pipeline_common.download import get
+from pipeline_common.download import file_kind, get
 from pipeline_common.numbers import number
 from pipeline_common.text import is_fy
 
@@ -50,6 +50,8 @@ def fetch() -> None:
     manifest = {}
     for name, spec in RBI_TABLES.items():
         content = get(spec["url"])
+        if file_kind(content) != "xlsx":  # stop: an error page saved here would break every later build
+            raise RuntimeError(f"{name}: {spec['url']} is not an Excel file")
         dest = REF_DIR / f"{name}.xlsx"
         dest.write_bytes(content)
         manifest[name] = {
@@ -59,7 +61,7 @@ def fetch() -> None:
             "url": spec["url"],
             "file": str(dest.relative_to(ROOT)),
             "sha256": hashlib.sha256(content).hexdigest(),
-            "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+            "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
         }
         print(f"saved {dest.name}")
     REF_MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n")

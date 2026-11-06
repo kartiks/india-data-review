@@ -2,7 +2,7 @@
  "result": "PASSED",
  "checks": 57473,
  "failures": 0,
- "allowed": 543,
+ "allowed": 548,
  "sections": [
   {
    "title": "Every published row is understood",
@@ -80,8 +80,29 @@
    "title": "Every forecast is quoted from its official document",
    "checks": 224,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 5,
+   "allowed_reasons": [
+    {
+     "reason": "Neither sentence names the year: 'the 7 to 7¾ per cent range' and '7.0 to 7.75 per cent in the coming year'. The paragraphs they conclude (Volume I, 1.45-1.49) weigh oil prices 'next fiscal year compared with ... 2015-16', so the year is 2016-17.",
+     "cases": 1
+    },
+    {
+     "reason": "The sentence does not name the year; it closes the Survey's Outlook section, which opens (paragraph 1.52, the page before) with 'the prospects for FY25', i.e. 2024-25.",
+     "cases": 1
+    },
+    {
+     "reason": "The sentence retains the projection 'as set out in the May 3 Policy Statement'; paragraph 36, just before it, says that statement 'projected baseline real GDP growth for 2011-12 at around 8.0 per cent'.",
+     "cases": 1
+    },
+    {
+     "reason": "The sentence gives 5.0 per cent 'for the year as a whole'; the same sentence begins with growth 'in the second half of 2013-14 relative to the first half', so the year is 2013-14.",
+     "cases": 1
+    },
+    {
+     "reason": "This record holds no projection: the sentence says why the MPC gave none. It follows 'as regards the outlook for 2020-21' in the same statement, so the record is for 2020-21.",
+     "cases": 1
+    }
+   ]
   },
   {
    "title": "Spending side: size of the statistical discrepancy (for review, not failures)",
@@ -157,8 +178,8 @@
   }
  ],
  "files": {
-  "gdp.json": "d309fed07675a3c1af812d6fc2d18906c2c85a4df58147c24ea874ae9105f2f6",
-  "national_accounts.csv": "928a0794e254de6bbac70b9fc39fadeae541f333a9957e18a00ba941a571b88b",
+  "gdp.json": "f841830a83e6f86e4e79a886db887b10272451a64d4ba5b0e55eafade324cdc4",
+  "national_accounts.csv": "0aa65733a365b6393dc8d97815958b00262a7a5e2699f3b353c4559f787884c7",
   "per_person.csv": "b9be391fb51e043b516a5981810bbf652c60d8b724f5906a89fa3717d5a3f783",
   "state_accounts.csv": "573e0eaa1f244fa1787d2da4f0f5e56a7faa77f96593d5339cae050aee311396",
   "states.json": "756c8cbb58e1151b780222f7aa49753c0c7c7c87d8580a05175d9835cd5f3559"

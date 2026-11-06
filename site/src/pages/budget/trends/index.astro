@@ -80,7 +80,7 @@ const pctFmt = (v: number) => pct(v, v >= 10 || Number.isInteger(v) ? 0 : 1);
       series={[{ name: "Capital / total spending", slot: 1, points: bestSeries(YEARS, ratio("capital_expenditure", "total_expenditure")) }]}
       format={(v) => pct(v, 0)}
       tableFormat={(v) => pct(v)}
-      annotations={[{ year: "2003-04", label: "Debt repayments counted (2002–05)" }]}
+      annotations={[{ year: "2003-04", label: "Debt repayments counted" }]}
       source="Budget at a Glance. 2002-03 to 2004-05 capital spending includes repayments to the National Small Savings Fund, so those years read high."
     />
   </section>

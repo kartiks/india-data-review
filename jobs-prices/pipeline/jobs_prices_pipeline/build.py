@@ -22,7 +22,7 @@ Run: uv run python -m jobs_prices_pipeline.build
 import csv
 import json
 from collections import defaultdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from pipeline_common.numbers import number
 
@@ -139,7 +139,7 @@ def assemble() -> dict:
         "description": ("Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data API; "
                         "the base-2024 CPI from MoSPI's press releases; state comparisons from the RBI's Handbook of "
                         "Statistics on Indian States."),
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "sources": {k: {"url": v["url"], "sha256": v["sha256"], "fetched_at": v["fetched_at"], "records": v.get("records")}
                     for k, v in sorted(manifest.items()) if not v.get("empty")},
     }

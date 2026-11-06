@@ -7,6 +7,8 @@ import {
 } from "../../../lib/gdp/data";
 import { fyRange, fyStart } from "../../../lib/fy";
 import { axisPct, gpct, money } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 const lastYear = SURVEY[SURVEY.length - 1].fiscal_year;
 const years = fyRange("2011-12", lastYear);
@@ -30,7 +32,7 @@ const rows = [...years].reverse().map((y) => {
   const notes = [];
   if (fyStart(y) <= 2014) notes.push("Forecasts made on the old 2004-05 base (GDP at factor cost); outcome on the 2011-12 base.");
   if (r1 && r1.measure !== "GDP") notes.push(`RBI projected ${r1.measure}, not GDP.`);
-  if (sv?.band_low != null) notes.push(`Survey point forecast with a band of ${sv.band_low}–${sv.band_high}%.`);
+  if (sv?.band_low != null) notes.push(`Survey point forecast with a band of ${sv.band_low}% to ${sv.band_high}%.`);
   return { label: y, marks, note: notes.join(" ") };
 });
 
@@ -105,11 +107,11 @@ const pending = BUDGET.filter((b) => !latestStage(OLD, b.budget, (n) => n.gdp?.c
       title="Real GDP growth: forecast and outcome"
       subtitle="Forecasts made before or at the start of each year, against MoSPI's first estimate and its latest."
       series={[
-        { name: "Economic Survey", slot: 2, shape: "range" },
+        { name: "Economic Survey", slot: 5, shape: "range" },
         { name: "RBI, start of year", slot: 3, shape: "diamond" },
-        { name: "MoSPI first estimate", slot: 1, shape: "ring" },
-        { name: "Latest, 2011-12 base", slot: 1, shape: "dot" },
-        { name: "Latest, 2022-23 base", slot: 7, shape: "dot" },
+        { name: "MoSPI first estimate", slot: OLD_SERIES, shape: "ring" },
+        { name: "Latest, 2011-12 base", slot: OLD_SERIES, shape: "dot" },
+        { name: "Latest, 2022-23 base", slot: NEW_SERIES, shape: "dot" },
       ]}
       rows={rows}
       format={axisPct}
@@ -130,7 +132,7 @@ const pending = BUDGET.filter((b) => !latestStage(OLD, b.budget, (n) => n.gdp?.c
         { name: "First projection", slot: 3, shape: "ring", join: true },
         { name: "Later projections", slot: 3, shape: "small", join: true },
         { name: "Last projection", slot: 3, shape: "dot", join: true },
-        { name: "MoSPI first estimate", slot: 1, shape: "diamond" },
+        { name: "MoSPI first estimate", slot: OLD_SERIES, shape: "diamond" },
       ]}
       rows={rbiRows}
       format={axisPct}
@@ -160,7 +162,7 @@ const pending = BUDGET.filter((b) => !latestStage(OLD, b.budget, (n) => n.gdp?.c
               <tr>
                 <td><a href={b.url} rel="external noopener">{b.budget}</a></td>
                 <td>{money(b.gdp_crore)}</td>
-                <td>{b.growth_pct != null ? `${b.growth_pct}%` : "–"}</td>
+                <td><OrDash v={b.growth_pct} fmt={(g) => `${g}%`} /></td>
                 <td class="wrap-text left">{b.text}{b.note ? ` (${b.note})` : ""}</td>
               </tr>
             ))}

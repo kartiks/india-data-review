@@ -3,15 +3,15 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Callable
+from collections.abc import Callable
 
 from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Allowed, Exceptions
 
-TOL = 0.05  # values are printed to 2 decimals; allow rounding on sums of a few cells
+LEVEL_TOL = 0.05  # ₹ crore: values are printed to two decimals; allowed per cell in a sum of many cells
 
 
-def _close(a: float | None, b: float | None, tol: float = TOL) -> bool:
+def _close(a: float | None, b: float | None, tol: float = LEVEL_TOL) -> bool:
     return abs((a or 0.0) - (b or 0.0)) <= tol
 
 
@@ -50,7 +50,7 @@ def _line_identities(it: dict, parsed: dict, check: Check) -> None:
         for c, col in enumerate(cols):
             for sub in ("revenue", "capital", "total"):
                 got = _sum(per[c][sub] for per in it["subs"].values())
-                check("sub-lines add up to the demand", _close(got, it["periods"][c][sub], 0.05 * len(it["subs"])),
+                check("sub-lines add up to the demand", _close(got, it["periods"][c][sub], LEVEL_TOL * len(it["subs"])),
                       f"{col.kind} {col.fiscal_year} {it['name']!r} {sub}: sub-lines {got:.2f}, "
                       f"printed {it['periods'][c][sub]}")
     if "printed_total" in it:
@@ -73,14 +73,14 @@ def _grand_total_sums(parsed: dict, check: Check) -> None:
         for c, col in enumerate(cols):
             for sub in parsed["subcolumns"]:
                 got = _sum(it["periods"][c][sub] for it in leaves)
-                check("departments add up to the grand total", _close(got, g["periods"][c][sub], 0.05 * len(leaves)),
+                check("departments add up to the grand total", _close(got, g["periods"][c][sub], LEVEL_TOL * len(leaves)),
                       f"{col.kind} {col.fiscal_year} {sub}: lines add to {got:.2f}, grand total {g['periods'][c][sub]}")
         if g.get("subs"):
             for cat, per in g["subs"].items():
                 for c, col in enumerate(cols):
                     for sub in ("revenue", "capital", "total"):
                         got = _sum(it["subs"].get(cat, [{}] * len(cols))[c].get(sub) for it in leaves if it.get("subs"))
-                        check("each spending category adds up across demands", _close(got, per[c][sub], 0.05 * len(leaves)),
+                        check("each spending category adds up across demands", _close(got, per[c][sub], LEVEL_TOL * len(leaves)),
                               f"{col.kind} {col.fiscal_year} {cat} {sub}: demands add to {got:.2f}, "
                               f"grand total line {per[c][sub]}")
 

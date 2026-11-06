@@ -6,6 +6,8 @@ from collections import defaultdict
 from pipeline_common.report import Allowed, Report
 
 
+MPCE_TOL = 0.51  # ₹: Table A2 and the data service both print whole rupees; allow half a rupee of rounding
+
 HCES_MISMATCH = (
     "In MoSPI's data service, the spending by item category filed under these states (rural, 2022-23, without "
     "imputation) does not add up to the state's own average spending; it appears to be other states' figures "
@@ -128,7 +130,7 @@ def check_hces_overall(ds: dict, report: Report) -> None:
         api = mpce.get((p["year"], p["state"], p["sector"]))
         if api is None:
             failures.append(f"Table A2 {p['year']} {p['state']} {p['sector']}: no matching average in MoSPI's data service")
-        elif abs(p["mpce_a2"] - api) > 0.51:
+        elif abs(p["mpce_a2"] - api) > MPCE_TOL:
             failures.append(f"Table A2 {p['year']} {p['state']} {p['sector']}: average ₹{p['mpce_a2']} vs data service ₹{api}")
     for year in sorted({p["year"] for p in pop}):
         for sector in ("Rural", "Urban"):

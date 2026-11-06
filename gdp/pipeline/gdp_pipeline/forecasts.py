@@ -2,8 +2,11 @@
 
 The figures are listed by hand in forecast_sources/*.json, each with the exact
 sentence it was read from and the document's URL. fetch.py downloads every
-document; the checks (verify_quotes) find the sentence in it and check that the
-numbers in the sentence are the numbers recorded.
+document; the checks (verify_quotes) find the sentence in it and check the
+record against its sentences (record_problems): every number recorded (the
+projection, its band and the nominal projection) is in them, and so is the
+fiscal year. For the RBI, the is_first / is_last / is_first_april_policy flags
+are checked against the dates of each year's records (flag_problems).
 
 - economic_survey.json : the Economic Survey's projection for the coming year
                          (Ministry of Finance, indiabudget.gov.in)
@@ -13,8 +16,11 @@ numbers in the sentence are the numbers recorded.
 
 import hashlib
 import json
+import math
 import re
 from pathlib import Path
+
+from pipeline_common.text import fy, fy_start, is_fy, prev_fy
 
 ROOT = Path(__file__).resolve().parents[2]
 CURATED = Path(__file__).resolve().parent / "forecast_sources"
@@ -71,18 +77,121 @@ def norm(s: str) -> str:
     return s.strip().lower()
 
 
-def numbers_in(text: str) -> set[float]:
-    text = text.replace("¾", ".75").replace("½", ".5").replace("¼", ".25")
+# Years and period labels, which are not projections: fiscal years ('2016-17', 'H1:2019-20', '1999-2000'),
+# 'FY24-25' / 'FY 2025-26' (named by both years), 'FY24' / 'FY2018' (named by the year it ends in), calendar years
+# ('April 2017') and quarters or halves ('Q3', 'H1').
+FY_PAIR_IN_TEXT = re.compile(r"\bFY\s?(\d{4}|\d{2})\s*[-–]\s*(\d{4}|\d{2})(?!\.?\d)", re.IGNORECASE)
+FY_IN_TEXT = re.compile(r"(?<!\d)(?<!\d\.)(\d{4})\s*[-–]\s*(\d{4}|\d{2})(?!\.?\d)")
+FY_SHORT_IN_TEXT = re.compile(r"\bFY\s?(\d{4}|\d{2})\b(?!\s*[-–]\s*\d)", re.IGNORECASE)
+NOT_A_FIGURE = [FY_PAIR_IN_TEXT, FY_IN_TEXT, FY_SHORT_IN_TEXT, re.compile(r"(?<!\d)(?<!\d\.)(?:19|20)\d{2}(?!\.?\d)"),
+                re.compile(r"\b[QH][1-4]\b")]
+
+
+def years_in(text: str) -> set[str]:
+    """The fiscal years a sentence names, in the short form: '2016-17' and '1999-2000' as written, 'FY24-25' and
+    'FY 2025-26' as 2024-25 and 2025-26, 'FY24' as 2023-24 and 'FY2018' as 2017-18 (a fiscal year named by one
+    year is named by the year it ends in)."""
     out = set()
-    for sign, x in re.findall(r"(\(-\)\s*|−\s*|-\s*|minus\s+)?(\d+(?:\.\d+)?)", text):
+    for a, b in FY_PAIR_IN_TEXT.findall(text):
+        start = 2000 + int(a) if len(a) == 2 else int(a)
+        if is_fy(f"{start}-{b}"):
+            out.add(fy(start))
+    text = FY_PAIR_IN_TEXT.sub(" ", text)
+    out |= {fy(fy_start(f"{a}-{b}")) for a, b in FY_IN_TEXT.findall(text) if is_fy(f"{a}-{b}")}
+    for end in FY_SHORT_IN_TEXT.findall(text):
+        out.add(fy((2000 + int(end) if len(end) == 2 else int(end)) - 1))
+    return out
+
+
+def numbers_in(text: str) -> set[float]:
+    """The figures in a sentence (with a negative sign where one is written), leaving out years and period labels,
+    so that '2016-17' gives neither 2016 nor 17."""
+    text = text.replace("¾", ".75").replace("½", ".5").replace("¼", ".25")
+    for pattern in NOT_A_FIGURE:
+        text = pattern.sub(" ", text)
+    out = set()
+    # a hyphen after a number is a range ('6.8-7.1'), not a minus sign
+    for sign, x in re.findall(r"(\(-\)\s*|−\s*|(?<![\d.])(?<![\d.]\s)-\s*|minus\s+)?(\d+(?:\.\d+)?)", text):
         out.add(float(x))
-        if sign.strip() in ("(-)", "−", "minus") or (sign.strip() == "-" and not re.search(r"\d$", sign)):
+        if sign:
             out.add(-float(x))
     return out
 
 
 def _fmt_ok(value: float | None, quote: str) -> bool:
     return value is None or value in numbers_in(quote)
+
+
+def record_problems(r: dict) -> list[str]:
+    """What in a record its own sentences do not bear out (messages start with the record's label):
+
+    - the projection (value, low, high) must be in `quote`;
+    - the band (band_low, band_high) must be in `quote` or `quote_2`, or be the projection plus or minus the
+      '(+/- x)' the quote gives;
+    - the nominal projection (nominal_low, nominal_high) must be in `nominal_quote`;
+    - the quotes must name the record's fiscal year, and no other year than that one and the year before (which
+      a sentence names as the year growth is measured from)."""
+    out = []
+    label = r.get("_label", r.get("fiscal_year"))
+    quote = r.get("quote") or ""
+    values = [r.get("low"), r.get("high"), r.get("value")]
+    if not all(_fmt_ok(v, quote) for v in values):
+        out.append(f"{label}: recorded {[v for v in values if v is not None]} not all in the quote “{quote}”")
+    band = [r.get("band_low"), r.get("band_high")]
+    if any(v is not None for v in band):
+        both = quote + " " + (r.get("quote_2") or "")
+        pm = re.search(r"\+\s*/\s*-\s*(\d+(?:\.\d+)?)", quote)  # '9 per cent (+/- 0.25)'
+        around = (pm is not None and None not in (r.get("low"), r.get("high"), *band)
+                  and math.isclose(band[0], r["low"] - float(pm[1])) and math.isclose(band[1], r["high"] + float(pm[1])))
+        if None in band or not (all(_fmt_ok(v, both) for v in band) or around):
+            out.append(f"{label}: band {band} not in the quotes, nor the projection ± the quote's (+/- x): “{both.strip()}”")
+    nominal = [r.get("nominal_low"), r.get("nominal_high")]
+    if any(v is not None for v in nominal) and not all(_fmt_ok(v, r.get("nominal_quote") or "") for v in nominal):
+        out.append(f"{label}: nominal {[v for v in nominal if v is not None]} not all in “{r.get('nominal_quote')}”")
+    named = set().union(*(years_in(r.get(f) or "") for f in QUOTE_FIELDS))
+    year = r.get("fiscal_year")
+    if not named:
+        out.append(f"{label}: the quotes name no fiscal year")
+    elif year not in named or named - {year, prev_fy(year)}:
+        out.append(f"{label}: the quotes name {sorted(named)}, not {year}")
+    return out
+
+
+def has_figure(r: dict) -> bool:
+    """Whether a record gives a full-year projection as a number (not 'negative', not quarters only)."""
+    return any(r.get(k) is not None for k in ("value", "low", "high"))
+
+
+def flag_problems(records: list[dict], label=lambda r: r["fiscal_year"]) -> list[str]:
+    """The RBI's flags, checked against the dates of each fiscal year's records (as gdp/README.md defines them):
+
+    - is_first: the year's first record with a figure, and no other;
+    - is_first_april_policy: the first record with a figure from the April-May policy at the start of the year
+      (the first of the fiscal year), if there is one, and no other;
+    - is_latest_available: at most one per year, on its latest record, while the year is still being projected;
+    - is_last: otherwise, the year's last record with a figure, and no other."""
+    out = []
+    by_year: dict[str, list[dict]] = {}
+    for r in records:
+        by_year.setdefault(r["fiscal_year"], []).append(r)
+    for year, rs in by_year.items():
+        rs = sorted(rs, key=lambda r: r["date"])
+        figures = [r for r in rs if has_figure(r)]
+        start = fy_start(year)
+        april = [r for r in figures if f"{start}-04-01" <= r["date"] <= f"{start}-05-31"]
+        running = [r for r in rs if r.get("is_latest_available")]
+        want = {
+            "is_first": figures[:1],
+            "is_first_april_policy": april[:1],
+            "is_latest_available": rs[-1:] if running else [],
+            "is_last": [] if running else figures[-1:],
+        }
+        for flag, expected in want.items():
+            have = [r for r in rs if r.get(flag)]
+            if [id(r) for r in have] != [id(r) for r in expected]:
+                out.append(f"{year}: {flag} is set on {[label(r) for r in have] or 'no record'}, "
+                           f"expected {[label(r) for r in expected] or 'no record'}")
+    return out
 
 
 def words(s: str) -> list[str]:
@@ -150,17 +259,14 @@ def verify_quotes(ds: dict) -> tuple[int, list[str], list[str]]:
                                  "between its words")
                 else:
                     failures.append(f"{label}: {field} not found on {'page ' + str(page) if page else 'the page'} of {url}: “{q}”")
-            # the recorded numbers must be in the sentence
+            # the recorded numbers and year must be in the sentences
             checked += 1
-            quote = r.get("quote", "")
-            values = [r.get("low"), r.get("high"), r.get("value")]
-            if not all(_fmt_ok(v, quote) for v in values):
-                failures.append(f"{label}: recorded {[v for v in values if v is not None]} not all in the quote “{quote}”")
-            if r.get("nominal_low") is not None:
-                checked += 1
-                if not _fmt_ok(r["nominal_low"], r.get("nominal_quote") or ""):
-                    failures.append(f"{label}: nominal {r['nominal_low']} not in “{r.get('nominal_quote')}”")
-    notes.append(f"{found} quoted sentences found in their official documents; recorded numbers checked against each sentence.")
+            failures += record_problems({**r, "_label": label})
+        if name == "rbi":
+            checked += 1
+            failures += flag_problems(load(name), lambda r: f"{r['statement']} ({r['date']})")
+    notes.append(f"{found} quoted sentences found in their official documents; recorded numbers, bands and years "
+                 "checked against each record's sentences; the RBI's first and last flags checked against the dates.")
     return checked, failures, notes
 
 

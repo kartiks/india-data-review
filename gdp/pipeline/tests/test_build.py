@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from pipeline_common.text import prev_fy
 
 from gdp_pipeline import build
 
@@ -96,3 +97,63 @@ def test_problems_in_a_snapshot_are_reported_once(sources):
     manifest = sources([bad("First Revised Estimates")], [bad("Provisional Estimates")])
     rows, problems, _ = build.load_rows(manifest)
     assert len(rows) == 2 and problems == [f"{KEY}: unknown industry 'Space Mining'"]
+
+
+def test_a_year_written_in_full_is_read_in_the_short_form(sources):
+    # MoSPI's back series writes 1999-2000; the year before 2000-01 must be found under prev_fy's '1999-00'.
+    pe, ae2 = "Provisional Estimates", "Second Advance Estimates"
+    manifest = sources([gdp_row("1999-2000", pe, 205), gdp_row("2000-01", pe, 210)],
+                       [gdp_row("1999-00", pe, 200), gdp_row("1999-00", ae2, 190)])
+    rows, problems, _ = build.load_rows(manifest)
+    assert problems == []
+    # the newest version wins for 1999-00 PE, whichever way each version writes the year
+    assert gdp_by_stage(rows) == {("1999-00", "PE"): (205.0, "sha0"), ("2000-01", "PE"): (210.0, "sha0"),
+                                  ("1999-00", "AE2"): (190.0, "sha1")}
+    annual = build.arrange(rows)["2022-23"]["annual"]
+    assert set(annual) == {"1999-00", "2000-01"} and annual[prev_fy("2000-01")]["PE"]["gdp"]["cur"] == 205.0
+
+
+def read(code, unit, value="100"):
+    r = {"year": "2023-24", "revision": "Final Estimates", "indicator": "x", "current_price": value,
+         "constant_price": value, "unit": unit}
+    return build.read_row(r, f"nas/2022-23/Current/Annually/ind{code:02d}", "2022-23", "Current", "Annually", code,
+                          "https://api.example/nas", "sha")
+
+
+@pytest.mark.parametrize("code, unit", [(5, "₹ Crore"), (22, "%"), (3, "₹ Lakh"), (4, "₹ Lakh")])
+def test_each_indicator_s_own_unit_is_read_as_published(code, unit):
+    row, problems = read(code, unit, "2079741")
+    # taxes and subsidies on products are labelled ₹ lakh but are in ₹ crore: never divided
+    assert problems == [] and build.pair(row) == {"cur": 2079741.0, "con": 2079741.0}
+
+
+@pytest.mark.parametrize("code, unit", [(5, "₹ Lakh"), (5, "₹ Billion"), (5, None), (22, "₹ Crore"),
+                                        (3, "₹ Crore"), (1, "%")])
+def test_a_row_in_another_unit_is_left_out_and_reported(code, unit):
+    row, problems = read(code, unit)
+    expected = build.UNITS[build.INDICATORS[code][0]]
+    assert row is None and problems == [f"nas/2022-23/Current/Annually/ind{code:02d}: unit {unit!r}, expected "
+                                        f"{expected!r}; row left out (2023-24 Final Estimates)"]
+
+
+def test_snapshots_named_by_date_or_by_time_are_read_newest_first(tmp_path, monkeypatch):
+    # Snapshot folders were named by date ('2026-08-01'), now by time ('2026-08-01T120000Z'); old ones keep their
+    # names. Versions are read in the order of the manifest's history, whatever the folders are called.
+    monkeypatch.setattr(build, "ROOT", tmp_path)
+    monkeypatch.setattr(build, "NAS_SERIES", [("2022-23", "Current", "Annually")])
+    monkeypatch.setattr(build, "NAS_INDICATORS", [5])
+    pe = "Provisional Estimates"
+    versions = [("sources/raw", "2026-09-01T00:00:00+00:00", 230),
+                ("sources/snapshots/2026-08-01T120000Z", "2026-08-01T12:00:00+00:00", 220),
+                ("sources/snapshots/2026-08-01", "2026-08-01T06:00:00+00:00", 210),
+                ("sources/snapshots/2026-07-01", "2026-07-01T00:00:00+00:00", 200)]
+    files = []
+    for i, (folder, at, value) in enumerate(versions):
+        rows = [gdp_row("2025-26", "Second Advance Estimates", value)] + ([gdp_row("2025-26", pe, value)] if i else [])
+        (tmp_path / folder / f"{KEY}.json").parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / folder / f"{KEY}.json").write_text(json.dumps({"rows": rows}))
+        files.append({"file": f"{folder}/{KEY}.json", "sha256": f"sha{i}", "fetched_at": at})
+    entry = {"url": "https://api.example/nas", **files[0], "history": files[:0:-1]}  # history: oldest first
+    rows, _, earlier = build.load_rows({KEY: entry})
+    assert gdp_by_stage(rows) == {("2025-26", "AE2"): (230.0, "sha0"), ("2025-26", "PE"): (220.0, "sha1")}
+    assert [e["fetched_on"] for e in earlier] == ["2026-08-01"]

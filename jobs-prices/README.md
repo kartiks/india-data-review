@@ -52,7 +52,7 @@ source (`plfs.py`, `prices.py`, `hces.py`, `cpi2024.py`, `rbi.py`, sharing `comm
 `data/`; and `checks/`, one module per topic, which writes the validation report.
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
-re-download differs, the old file is kept in `sources/snapshots/<date>/`.
+re-download differs, the old file is kept in `sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`).
 
 ## Keeping it up to date
 
@@ -91,7 +91,7 @@ index, so:
 3. Run `uv run python -m jobs_prices_pipeline --fetch`. It downloads only the new release (page content and PDF),
    reads it, and checks it against its PDF and the earlier releases. The previous month's figures move from
    provisional to final.
-4. Commit `sources/` and `data/`, run the local CI (`scripts/ci.sh`) and push.
+4. Commit `sources/` and `data/` on a branch, and open a pull request ([Local CI](../README.md#local-ci)).
 
 Jobs (PLFS monthly bulletin mid-month, quarterly bulletin each quarter) and farm and rural labourers' prices (end of
 the month) need nothing: the weekly refresh brings them in.
@@ -172,7 +172,7 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   combinations that break the identities above (April–June 2019 urban unemployment shows 21.6%; the bulletin says 8.9%).
   The build leaves such combinations out whole (`plfs.flag_rates`).
 - All-India shares of workers by type of work do not add up to 100%; states' do.
-- About 6,000 "distribution of workers" rows with no breakdown named.
+- Thousands of "distribution of workers" rows with no breakdown named.
 - 2025 current-weekly-status self-employment shares whose parts do not add up.
 - HCES 2022-23 rural spending by item category for six states (Goa, Gujarat, Haryana, Himachal Pradesh,
   Jharkhand, Karnataka) that adds up to other states' averages.

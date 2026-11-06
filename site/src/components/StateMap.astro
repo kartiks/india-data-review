@@ -6,7 +6,7 @@
 // steps that each hold about the same number of states (quantiles); a state with no figure is grey.
 import fs from "node:fs";
 import path from "node:path";
-import { stateKey } from "../lib/jobs-prices/data";
+import { stateKey } from "../lib/states";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
 
@@ -15,7 +15,7 @@ export interface MapMetric {
   label: string; // button text
   title: string; // shown above the map when selected
   note?: string;
-  values: Record<string, number | null>; // keyed by stateKey() from lib/jobs-prices/data
+  values: Record<string, number | null>; // keyed by stateKey() from lib/states
   format: (v: number) => string;
 }
 interface Props {
@@ -54,7 +54,7 @@ const prepared = metrics.map((m) => {
   const cls = (v: number) => cuts.filter((c) => v >= c).length;
   const legend = Array.from({ length: STEPS }, (_, i) => {
     const inClass = vals.filter((v) => cls(v) === i);
-    return inClass.length ? `${m.format(inClass[0])} – ${m.format(inClass[inClass.length - 1])}` : "";
+    return inClass.length ? `${m.format(inClass[0])} to ${m.format(inClass[inClass.length - 1])}` : "";
   });
   const states: Record<string, { c: number; t: string }> = {};
   for (const [k, v] of Object.entries(m.values)) states[k] = v == null ? { c: -1, t: "no figure" } : { c: cls(v), t: m.format(v) };
@@ -75,13 +75,14 @@ const id = "m" + Math.random().toString(36).slice(2, 9);
     <Heading class="map-title">{first.title}</Heading>
     <p class="muted small map-note">{first.note}</p>
   </figcaption>
+  <a class="skip" href={`#${id}-after`}>Skip the map (every value is in the table below)</a>
   <div class="map-wrap">
     <svg viewBox={`0 0 ${W.toFixed(0)} ${H.toFixed(0)}`} role="img" aria-label={`Map of India's states and union territories, coloured by the chosen measure. Every value is in the table below.`}>
       {shapes.map((s) => (
         <path d={s.d} data-key={s.key} data-cls={String(first.states[s.key]?.c ?? -1)} tabindex="0" aria-label={`${names[s.key] ?? s.key}: ${first.states[s.key]?.t ?? "no figure"}`} />
       ))}
     </svg>
-    <div class="side">
+    <div class="side" id={`${id}-after`} tabindex="-1">
       <p class="legend-head muted small">Stronger colour = higher value</p>
       <ol class="legend small" aria-label="Legend">
         {first.legend.map((l, i) => (
@@ -173,6 +174,10 @@ const id = "m" + Math.random().toString(36).slice(2, 9);
   [data-cls="3"] { fill: color-mix(in oklab, var(--s1) 82%, var(--surface)); background: color-mix(in oklab, var(--s1) 82%, var(--surface)); }
   [data-cls="4"] { fill: var(--s1); background: var(--s1); }
   [data-cls="-1"] { fill: var(--grid); background: var(--grid); }
+  /* Skip link past the map's tab stops (one per state), shown only when it has keyboard focus. */
+  .skip:not(:focus) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .skip:focus { display: inline-block; margin: 0 0 8px; outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  .side:focus { outline: none; }
   .legend-head { margin: 0 0 6px; }
   .legend { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 4px; color: var(--ink-2); }
   .legend li, .small-uts li { display: flex; align-items: center; gap: 8px; }

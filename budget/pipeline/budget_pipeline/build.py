@@ -18,7 +18,7 @@ Run: uv run python -m budget_pipeline.build
 
 import csv
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common import budget_glance
@@ -185,7 +185,7 @@ def main() -> None:
     dataset = {
         "description": "Union Government of India: headline budget figures (Budget at a Glance), in Rs crore.",
         "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
-        "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "fields": FIELD_LABELS,
         "sources": {k: v["summary"]["files"] for k, v in manifest.items()},
         "reference_sources": json.loads((ROOT / "sources" / "reference" / "manifest.json").read_text()),

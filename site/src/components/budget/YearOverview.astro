@@ -58,7 +58,7 @@ const schemes = topSchemes(year, kind, 8);
   <p class="muted"><span class="chip">{KIND_LABEL[kind]}</span> {status[kind]}</p>
   <nav class="prevnext small" aria-label="Other years">
     {prevYear && <a href={link(`/budget/years/${prevYear}/`)}>← {prevYear}</a>}
-    {nextY && <a href={link(nextY === LATEST_YEAR ? "/budget/" : `/budget/years/${nextY}/`)}>{nextY} →</a>}
+    {nextY && <a class="next" href={link(nextY === LATEST_YEAR ? "/budget/" : `/budget/years/${nextY}/`)}>{nextY} →</a>}
   </nav>
 </section>
 
@@ -68,7 +68,7 @@ const schemes = topSchemes(year, kind, 8);
   <div class="tile">
     <div class="label">Total spending</div>
     <div class="value"><Money value={total.value} /></div>
-    {prevTotal && <div class="sub">{signedPct(((total.value - prevTotal.v.value) / prevTotal.v.value) * 100)} on {prevTotal.year} ({prevTotal.v.kind === "actual" ? "actual" : prevTotal.v.kind.toUpperCase()})</div>}
+    {prevTotal && <div class="sub">{signedPct(((total.value - prevTotal.v.value) / prevTotal.v.value) * 100)} on {prevTotal.year} ({KIND_LABEL[prevTotal.v.kind].toLowerCase()})</div>}
   </div>
   {raised != null && (
     <div class="tile">
@@ -160,4 +160,5 @@ const schemes = topSchemes(year, kind, 8);
   .head { margin-bottom: 12px; }
   .head p { margin: 8px 0 4px; }
   .prevnext { display: flex; justify-content: space-between; }
+  .prevnext .next { margin-left: auto; } /* on the right even when there is no earlier year */
 </style>

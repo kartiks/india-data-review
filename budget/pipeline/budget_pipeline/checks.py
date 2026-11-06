@@ -39,17 +39,29 @@ DATA = ROOT / "data"
 INTRO = "Headline figures, taxes, ministries and schemes. Every allowed exception lists its reason."
 
 # Rounding: documents say items "may not sum up to the totals due to rounding off".
-TOLERANCE_CRORE = 5
+LEVEL_TOL = 5  # ₹ crore: amounts are printed to the crore, so sums of rounded items can be a few crore off
+PCT_ROUNDING = 0.05  # points: % of GDP is printed to one decimal, so each figure is off by up to this
+PCT_TOL = 0.051  # points: PCT_ROUNDING, plus a little for the rounding of the amounts themselves
+# A BE restated in the next budget by more than both of these is a failure for a person to look at; smaller
+# restatements (reclassifications) are listed.
+RESTATED_SHARE = 0.02
+RESTATED_CRORE = 500
+# Our figures against the RBI Handbook series: a difference up to the smaller of these is a provisional figure
+# against an audited one (FINAL_ACCOUNTS); anything larger fails unless KNOWN_REFERENCE_DIFFS gives its reason.
+# Those seen so far are at most Rs 143 crore and 0.1% (2001-02 actuals).
+RBI_SHARE_TOL = 0.001  # 0.1%
+RBI_CRORE_TOL = 500  # ₹ crore, so the share does not allow thousands of crore on today's totals
+JUMP_SHARE = 0.35  # a year-on-year change in actuals larger than this is listed for review
 
 # Every known exception to the headline checks, as (check, start of its message) -> reason. Besides
 # KNOWN_EXCEPTIONS: "format" (another copy of the table differs from the PDF) and "rbi" (a difference from the RBI
-# Handbook series larger than 1%).
+# Handbook series larger than RBI_SHARE_TOL or RBI_CRORE_TOL).
 EXCEPTIONS = Exceptions({
     **KNOWN_EXCEPTIONS,
     **{("format", f"Budget {budget}: {ext.upper()} differs"): reason
        for (budget, ext), reason in KNOWN_FORMAT_ISSUES.items()},
-    **{("rbi", f"{'Actual' if kind == 'actual' else kind.upper()} {year} {field}:"): reason
-       for (year, field, kind), reason in KNOWN_REFERENCE_DIFFS.items()},
+    **{("rbi", f"{'Actual' if kind == 'actual' else kind.upper()} {year} {field}: ours {ours:,.0f} vs RBI {rbi:,.0f} ("):
+       reason for (year, field, kind, ours, rbi), reason in KNOWN_REFERENCE_DIFFS.items()},
 })
 
 
@@ -108,7 +120,7 @@ def check_identities(rows: list[dict], report: Report) -> None:
             expected = sum(vals[f] for f in plus) - sum(vals[f] for f in minus)
             diff = vals[lhs] - expected
             checked += 1
-            if abs(diff) > TOLERANCE_CRORE:
+            if abs(diff) > LEVEL_TOL:
                 msg = (f"Budget {doc}, {kind} {year}: {name} — printed {vals[lhs]:,.0f}, "
                        f"components give {expected:,.0f} (off by {diff:,.0f})")
                 if not ok.file("identity", msg):
@@ -136,7 +148,7 @@ def check_cross_document(rows: list[dict], report: Report) -> None:
             # Restatements happen (reclassification); only large ones need a person to look.
             if ok.file("cross", msg):
                 continue
-            if rel > 0.02 and abs(diff) > 500:
+            if rel > RESTATED_SHARE and abs(diff) > RESTATED_CRORE:
                 failures.append(msg)
             else:
                 notes.append(msg)
@@ -154,11 +166,17 @@ def check_pct_gdp(rows: list[dict], gdp: dict, report: Report) -> None:
         stated = gdp.get(doc)
         if kind == "BE" and year == doc and stated:
             base, base_name = stated["value"], f"stated GDP {stated['value']:,.0f}"
-            tol = 0.051
+            tol = PCT_TOL
         elif fd and fd_pct:
             base, base_name = fd * 100 / fd_pct, "GDP implied by fiscal deficit %"
-            tol = 0.051 + 0.05 * 100 / fd_pct * 0.05  # rounding of the fiscal deficit % itself
+            tol = PCT_TOL + PCT_ROUNDING * 100 / fd_pct * PCT_ROUNDING  # rounding of the fiscal deficit % itself
         else:
+            # No GDP to check against (no stated GDP, no fiscal deficit %). Fine if the column prints no % of GDP.
+            printed = [f for f in DEFICITS if v.get(f, (None, None))[1] is not None]
+            if printed:
+                checked += 1
+                failures.append(f"Budget {doc}, {kind} {year}: {', '.join(printed)} printed as % of GDP, but there is "
+                                "no GDP to check them against (no stated GDP or fiscal deficit %)")
             continue
         for field in DEFICITS:
             amount, pct = v.get(field, (None, None))
@@ -229,18 +247,18 @@ def check_reference(dataset: dict, report: Report) -> None:
             failures.append(f"{label}: missing from our data (RBI: {ref['value']:,.0f})")
             continue
         diff = ours["value"] - ref["value"]
-        if abs(diff) <= TOLERANCE_CRORE:
+        if abs(diff) <= LEVEL_TOL:
             exact += 1
             continue
         rel = abs(diff) / max(abs(ref["value"]), 1)
         msg = f"{label}: ours {ours['value']:,.0f} vs RBI {ref['value']:,.0f} ({diff:+,.0f}, {rel:.2%})"
         if ok.file("rbi", msg):
             continue
-        if rel <= 0.01:
-            notes.append(f"{msg}. Small difference: {FINAL_ACCOUNTS}")
+        if rel <= RBI_SHARE_TOL and abs(diff) <= RBI_CRORE_TOL:
+            ok.add(FINAL_ACCOUNTS, msg)
         else:
             failures.append(msg)
-    notes.insert(0, f"{exact} of {checked} figures match the RBI series exactly (within Rs {TOLERANCE_CRORE} crore).")
+    notes.insert(0, f"{exact} of {checked} figures match the RBI series exactly (within Rs {LEVEL_TOL} crore).")
     report.add("Matches the RBI Handbook of Statistics (independent series)", checked, failures, notes, ok)
 
 
@@ -253,7 +271,7 @@ def check_jumps(dataset: dict, report: Report) -> None:
         for y in years:
             item = dataset["years"][y].get(field, {})
             val = (item.get("actual") or item.get("re") or item.get("be") or {}).get("value")
-            if prev and val and abs(val / prev[1] - 1) > 0.35:
+            if prev and val and abs(val / prev[1] - 1) > JUMP_SHARE:
                 notes.append(f"{field}: {prev[0]} → {y} changed {val / prev[1] - 1:+.0%} ({prev[1]:,.0f} → {val:,.0f})")
             prev = (y, val) if val else prev
     report.add("Large year-on-year changes (for review, not failures)", 0, [], notes)

@@ -1,11 +1,12 @@
 """Downloading sources: HTTP with retries, saving with snapshots, the manifest, and MoSPI's paged API.
 
 Every area keeps its downloads under <area>/sources/: raw/ (the files), manifest.json (one entry per file: URL,
-SHA-256, size, time) and snapshots/<date fetched>/ (earlier versions of files that are revised in place). The
-areas pass their own paths, so these functions hold no state.
+SHA-256, size, time) and snapshots/<time fetched>/ (earlier versions of files that are revised in place; see
+snapshot_name). The areas pass their own paths, so these functions hold no state.
 """
 
 import hashlib
+import http.client
 import json
 import shutil
 import ssl
@@ -14,13 +15,22 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 USER_AGENT = "india-data-review-data-pipeline/0.1 (python-urllib)"
+
+# Network timing, in one place for every area.
 TRIES = 5
-BACKOFF_S = 5  # waits 5, 10, 15, 20 s between the tries
-TIMEOUT_S = 120
+BACKOFF_S = 5  # waits 5, 10, 15, 20 s between the tries: long enough for a briefly overloaded server to recover
+TIMEOUT_S = 120  # seconds without an answer before a try fails: the largest files (tens of MB) come from slow servers
+PAGE_PAUSE_S = 0.3  # between pages or queries of MoSPI's API: hundreds of requests in a row, so go gently
+POLITE_PAUSE_S = 0.5  # between documents from one government or RBI web server, to be polite
+RELEASE_PAUSE_S = 1.0  # between PIB press-release pages (each also fetches its PDF)
+
+# The largest file any area keeps is about 30 MB (a MoSPI API answer); anything far larger is not a source we want
+# (a wrong address, or a server streaming without end), so get() stops reading and raises.
+MAX_BYTES = 200 * 1024 * 1024
 
 # api.mospi.gov.in needs TLS legacy renegotiation, which Python turns off by default, so it is turned on for that
 # host only. Certificates are still verified everywhere.
@@ -29,17 +39,36 @@ LEGACY_TLS_HOSTS = {"api.mospi.gov.in"}
 LEGACY_TLS = ssl.create_default_context()
 LEGACY_TLS.options |= getattr(ssl, "OP_LEGACY_SERVER_CONNECT", 0x4)
 
-# The first bytes of each kind of file, to tell a document from an error page saved under its address.
-MAGIC = {"pdf": b"%PDF", "xlsx": b"PK", "xls": b"\xd0\xcf\x11\xe0"}  # xlsx: a zip; xls: an OLE2 container
+
+class TooLarge(RuntimeError):
+    """A download larger than MAX_BYTES."""
+
+
+class DowngradeRefused(urllib.error.HTTPError):
+    """An https address redirected to a plain http one. Not tried again."""
 
 
 def now() -> str:
-    return datetime.now(timezone.utc).isoformat(timespec="seconds")
+    return datetime.now(UTC).isoformat(timespec="seconds")
 
 
-def is_type(content: bytes, ext: str) -> bool:
-    """Whether the content starts like a file of this kind (pdf, xlsx or xls)."""
-    return content.startswith(MAGIC[ext])
+def file_kind(content: bytes) -> str | None:
+    """What a file is, from its first bytes: "pdf", "xlsx" (a zip, as .xlsx files are), "xls" (an OLE2 container,
+    as .xls files are), "html", "json", or None if none of these. Every area tells a document from a web page or an
+    error page saved under its address with this one test; what a mismatch means (skip the file, or stop) is up to
+    each caller."""
+    if content.startswith(b"%PDF"):
+        return "pdf"
+    if content.startswith(b"PK"):
+        return "xlsx"
+    if content.startswith(b"\xd0\xcf\x11\xe0"):
+        return "xls"
+    head = content[:3000].lower()
+    if b"<html" in head or head.lstrip().startswith(b"<!doctype html"):
+        return "html"
+    if content.lstrip()[:1] in (b"{", b"["):
+        return "json"
+    return None
 
 
 def _retryable(exc: Exception) -> bool:
@@ -47,24 +76,49 @@ def _retryable(exc: Exception) -> bool:
     errors (404 …) are an answer."""
     if isinstance(exc, urllib.error.HTTPError):
         return exc.code >= 500 or exc.code in (408, 429)
-    return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError))
+    return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead))
 
 
 def tls_for(url: str) -> ssl.SSLContext:
     return LEGACY_TLS if urllib.parse.urlsplit(url).hostname in LEGACY_TLS_HOSTS else TLS
 
 
+class _NoDowngrade(urllib.request.HTTPRedirectHandler):
+    """Follows redirects, except from https to anything else."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if urllib.parse.urlsplit(req.full_url).scheme == "https" and urllib.parse.urlsplit(newurl).scheme != "https":
+            raise DowngradeRefused(req.full_url, code, f"refused a redirect from https to {newurl}", headers, fp)
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 def _open(req: urllib.request.Request, timeout: float):
-    return urllib.request.urlopen(req, timeout=timeout, context=tls_for(req.full_url))
+    handlers = (urllib.request.HTTPSHandler(context=tls_for(req.full_url)), _NoDowngrade())
+    return urllib.request.build_opener(*handlers).open(req, timeout=timeout)
+
+
+def _check_complete(resp, body: bytes) -> None:
+    """Raise IncompleteRead if the body is shorter than the Content-Length header says. read(n) returns a short body
+    without an error when the connection drops (read() with no size would raise), and a cut-off PDF or Excel file
+    still starts with the right bytes, so it would otherwise be saved over the good copy."""
+    headers = getattr(resp, "headers", None)
+    expected = headers.get("Content-Length") if headers is not None else None
+    if expected and expected.strip().isdigit() and len(body) < int(expected):
+        raise http.client.IncompleteRead(body, int(expected) - len(body))
 
 
 def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
-    """The body at url. Raises urllib.error.HTTPError for a 4xx answer, and the last error after `tries` tries."""
+    """The body at url. Raises urllib.error.HTTPError for a 4xx answer, DowngradeRefused for a redirect from https to
+    http, TooLarge past MAX_BYTES, and the last error (a cut-off download is tried again) after `tries` tries."""
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
             with opener(req, timeout=TIMEOUT_S) as resp:
-                return resp.read()
+                body = resp.read(MAX_BYTES + 1)
+            if len(body) > MAX_BYTES:
+                raise TooLarge(f"{url}: more than {MAX_BYTES:,} bytes (download.MAX_BYTES); not a source we expect")
+            _check_complete(resp, body)
+            return body
         except Exception as exc:
             if not _retryable(exc) or attempt == tries - 1:
                 raise
@@ -91,7 +145,7 @@ def fetch_pages(page_url: Callable[[int], str], what: str) -> list[dict]:
         if page % 20 == 0:
             print(f"  {what}: page {page} of {meta.get('totalPages')}", flush=True)
         page += 1
-        time.sleep(0.3)
+        time.sleep(PAGE_PAUSE_S)
     if len(rows) != total:
         raise RuntimeError(f"{what}: got {len(rows)} rows, API says {total}")
     rows.sort(key=lambda r: json.dumps(r, sort_keys=True, ensure_ascii=False))
@@ -118,11 +172,20 @@ def check_records(manifest: dict, key: str, records: int, max_drop: float = MAX_
             "entry in sources/manifest.json and download again.")
 
 
+def snapshot_name(fetched_at: str) -> str:
+    """The folder under snapshots/ for a version fetched at `fetched_at` (ISO 8601): its UTC time to the second,
+    '2026-01-05T093000Z' (no colons, which some file systems refuse), so two versions fetched on the same day never
+    share a folder. Folders made before were named by the date only ('2026-01-05') and keep their names; sorted as
+    text, both kinds are in time order. The build reads versions in the order of the manifest entry's history, not
+    by folder name."""
+    return datetime.fromisoformat(fetched_at).astimezone(UTC).strftime("%Y-%m-%dT%H%M%SZ")
+
+
 def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None, *,
          root: Path, raw: Path, snapshots: Path) -> bool:
     """Write the file (dest, under raw) and its manifest entry; paths in the manifest are relative to root. If the
-    file changed, the previous version is kept under snapshots/<date it was fetched>/ and listed in the entry's
-    history. Returns True if the file is new or changed."""
+    file changed, the previous version is kept under snapshots/<time it was fetched>/ (snapshot_name) and listed at
+    the end of the entry's history (oldest first). Returns True if the file is new or changed."""
     sha = hashlib.sha256(content).hexdigest()
     old = manifest.get(key)
     if old and old.get("sha256") == sha and dest.exists():
@@ -130,7 +193,7 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
         return False
     history = old.get("history", []) if old else []
     if old and old.get("sha256") and dest.exists():
-        snap = snapshots / old["fetched_at"][:10] / dest.relative_to(raw)
+        snap = snapshots / snapshot_name(old["fetched_at"]) / dest.relative_to(raw)
         snap.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest, snap)
         history.append({"sha256": old["sha256"], "fetched_at": old["fetched_at"], "file": str(snap.relative_to(root))})

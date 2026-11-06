@@ -14,7 +14,7 @@ HCES_CATEGORIES = ("Monthly Per Capita Consumption Expenditure (MPCE) over Broad
 
 def read(manifest: dict, problems: list[str]) -> list[dict]:
     out = []
-    for key, entry, body in load(manifest, "hces/"):
+    for key, _entry, body in load(manifest, "hces/"):
         for r in body["rows"]:
             cat = next((r[k] for k in ("mpce_fractile_classes", "item_category", "employment_of_households", "social_group", "cereal")
                         if r.get(k) not in (None, "")), "")
@@ -23,7 +23,9 @@ def read(manifest: dict, problems: list[str]) -> list[dict]:
     # Spending by item category must add up to the average spending of the same state, year, area and method.
     # Where it does not, the category rows appear to be another state's, so both the rupee values and the
     # shares for that cell are left out.
-    base = lambda r: (r.get("year"), r.get("state"), r.get("sector"), r.get("imputation_type"))
+    def base(r: dict) -> tuple:
+        return r.get("year"), r.get("state"), r.get("sector"), r.get("imputation_type")
+
     mpce = {base(r): r["value"] for r in out if r["indicator"] == HCES_MPCE}
     totals: dict[tuple, float] = defaultdict(float)
     for r in out:

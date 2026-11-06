@@ -19,15 +19,16 @@ URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for p
 `data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED and
 records the SHA-256 of every data file as it is now (so data changed after its checks ran cannot deploy). Code
 the pipelines share (the validation report, downloading, reading Budget at a Glance, fiscal-year labels, ids and
-number parsing) is in `shared/pipeline/` (package `pipeline_common`).
+number parsing) is in `shared/pipeline/` (package `pipeline_common`). Abbreviations (NAS, GVA, BE/RE, PLFS …) are
+explained under [Terms](#terms).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/) for the pipelines. Each pipeline needs Python 3.14 or later; uv installs it and the
-  packages on first run.
+- [uv](https://docs.astral.sh/uv/) for the pipelines: install it first ([installation](https://docs.astral.sh/uv/getting-started/installation/)).
+  Each pipeline needs Python 3.14 or later; uv installs it and the packages on first run.
 - Node.js 22.23.4 or later and npm for the site.
 
 ## Run it
@@ -37,7 +38,11 @@ number parsing) is in `shared/pipeline/` (package `pipeline_common`).
 (cd gdp/pipeline && uv run python -m gdp_pipeline)         # refreshed weekly; see below
 (cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # refreshed weekly; see below
 (cd site && npm ci && npm run build)                       # or: npm run dev
+(cd site && npm run preview)                               # serve the built site from dist/
 ```
+
+The source files are committed, so a fresh clone needs no download. `uv run --locked` (what `scripts/ci.sh` and the
+weekly refresh use) stops with an error if `uv.lock` is out of date instead of updating it.
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
 `--fetch` downloads anything missing first, and `--refresh` re-downloads everything (GDP and jobs and prices keep
@@ -69,8 +74,8 @@ same decision: see [Adding data](#adding-data).
 | GDP per person (GDP › Per person): GDP, national income and household spending per person | MoSPI national accounts API, divided by population: the official 2019 projections, then MoSPI's own figures from its press notes (cross-checked with the RBI's Handbook of Statistics on the Indian Economy) | **Weekly refresh** of the totals. The population is **by hand**: add each new year from MoSPI's press note, and each year's *National Accounts Statistics* per-capita statement, downloaded from MoSPI's site in a browser ([GDP README](gdp/README.md#adding-a-years-population)); until then the report lists the year, it has no per-person figures, and the Per person page stays on the year before | Population for a new year: early January (First Advance Estimates); National Accounts Statistics: August or September |
 | Union Budget: headline figures, taxes, ministries, schemes | Budget documents on indiabudget.gov.in | **By hand**: move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)) | 1 February, or the full budget after an election |
 | The Budget's GDP assumption (GDP pages) | Budget at a Glance | **By hand**, with the new budget (step 5 of the Budget README) | 1 February |
-| Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Late January |
-| RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Every two months |
+| Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Late January |
+| RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Every two months |
 | Overall (rural + urban) household spending 2023-24 | MoSPI's HCES 2023-24 report, Table A2 | Fixed: a published report | Never |
 | Budget cross-checks (used by the checks, described in the Budget pages' notes) | RBI Handbook of Statistics on Indian Economy; PRS budget analysis | **By hand** (step 4 of the Budget README) | RBI: yearly, second half of the year; PRS: after each budget |
 | India map | DataMeet state boundaries | Fixed | Never |
@@ -91,7 +96,8 @@ changed. It:
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
    listed in the code but missing is downloaded.
 2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
-   pipeline keeps the old file under `<area>/sources/snapshots/<date it was fetched>/` and records it in the
+   pipeline keeps the old file under `<area>/sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; folders from before
+   are named by date only) and records it in the
    manifest's `history`. This is how the revision history of each release builds up.
 3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
    no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
@@ -118,7 +124,7 @@ protection or a ruleset that requires a pull request; if it does, every refresh 
 3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
    with its reason (each area's README says where). A message saying a query returned no rows although it had data
    before usually means the source is having trouble; the saved file is kept, so wait and run again.
-4. Commit the area's `sources/` and `data/` with the fix, run `scripts/ci.sh`, and push (or open a pull request).
+4. Commit the area's `sources/` and `data/` with the fix on a branch, and open a pull request ([Local CI](#local-ci)).
 
 Nothing is lost while a failure waits, unless a source publishes twice before it is fixed: the previous version is
 still on `main`, and the next successful download keeps it as a snapshot. The artifact holds anything in between.
@@ -137,13 +143,14 @@ For everything marked "by hand" above, or to refresh a source outside the schedu
    must end with every check passing; if a check fails, look at the failure in `data/validation_report.md` before
    allowing anything (each area's README says where exceptions are written down, always with a reason).
 3. Build the site (`npm run build` in `site/`) and look at the pages that changed.
-4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes.
-   Open a pull request and run the local CI on it before merging. A branch gets a Vercel preview; `main` deploys the
+4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes
+   on a branch, and open a pull request ([Local CI](#local-ci)). A branch gets a Vercel preview; `main` deploys the
    live site.
 
 ## Local CI
 
-There is no CI on GitHub: run `scripts/ci.sh` on a branch yourself before merging it into `main`:
+There is no CI on GitHub. Every change goes through a branch and a pull request, and you run `scripts/ci.sh` on the
+branch before merging it into `main`:
 
 ```bash
 scripts/ci.sh <branch>
@@ -154,6 +161,7 @@ It checks out that commit in a temporary folder (your working folder is not touc
 - every area's pipeline rebuilds `data/` from the committed sources with every check passing;
 - the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
 - the build changes no committed file in `sources/` and writes no new files;
+- the Python code passes `ruff check` (`ruff.toml`; to run it yourself: `uvx ruff@0.17.4 check .`);
 - every area's tests pass, and the shared pipeline code's;
 - the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds. The build's own
   gate (`site/scripts/copy-data.mjs`) also checks every area's `validation_summary.json`: it must say PASSED, and
@@ -163,7 +171,7 @@ Running a pipeline's tests rewrites its `data/` files with only a new `generated
 than committing them (the hashes leave `generated_at` out, so they never trip the gate).
 
 It downloads no data (npm and uv may download packages) and takes about 10 to 15 minutes, most of it the budget
-tests. The weekly refresh runs the same script on its own commit before pushing.
+tests. Only the weekly refresh pushes to `main` directly, and it runs the same script on its commit first.
 
 ## Adding data
 
@@ -223,3 +231,18 @@ Each deployment stores a full copy of the built site (about 100 MB, mostly the d
 `site/vercel.json` skips the ones that would change nothing: Dependabot branches never deploy, and
 `site/scripts/vercel-ignore-build.sh` skips a commit when nothing in `site/` or any area's `data/` folder changed
 since the branch's last deployment. A new area's `data/` folder must be added to that script's list.
+
+## Terms
+
+| Term | Meaning |
+|---|---|
+| MoSPI | Ministry of Statistics and Programme Implementation, which publishes the national accounts, PLFS, CPI and HCES |
+| NAS | National Accounts Statistics: MoSPI's GDP and related accounts (`--refresh-nas` re-downloads them), and its yearly publication of that name |
+| Base year | The year whose prices the constant-price figures use; MoSPI moves it every decade or so (2011-12, now 2022-23), and series on different bases are never mixed |
+| GVA, GSVA | Gross value added (output less inputs) for India, and for a state; GDP = GVA + taxes − subsidies on products |
+| GSDP, NSDP | Gross and net state domestic product: a state's GDP, and its GDP less depreciation |
+| BE, RE, Actuals | A budget's Budget Estimate for the coming year, the Revised Estimate a year later, and the Actuals two years later |
+| PLFS | Periodic Labour Force Survey, MoSPI's survey of jobs and unemployment |
+| Usual status, CWS | PLFS's two ways of counting work: usual status is activity over the past year (annual figures); current weekly status (CWS) is the past seven days (quarterly and monthly figures) |
+| CPI, CPI-AL/RL | Consumer Price Index; the Labour Bureau's CPI for agricultural and rural labourers |
+| HCES | Household Consumption Expenditure Survey |

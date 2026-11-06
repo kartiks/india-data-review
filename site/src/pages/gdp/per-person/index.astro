@@ -8,6 +8,8 @@ import {
 } from "../../../lib/gdp/data";
 import { fyRange, fyStart, prevFy } from "../../../lib/fy";
 import { axisPct, decimal, gpct, orDash, rupees, rupeesAxis } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 // Headline: the latest year of the new 2022-23 series that has a population. Each January MoSPI adds a year whose
 // population is added by hand later (see gdp/README.md); until then the page stays on the year before.
@@ -115,8 +117,8 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
       subtitle={`GDP per person at constant prices, on the year before. It runs below GDP growth by about the rate the population grows${popRate(OLD, gYears[0]) !== undefined && popGrowth !== undefined ? `: ${gpct(popRate(OLD, gYears[0])!)} in ${gYears[0]}, ${gpct(popGrowth)} in ${Y}` : ""}.`}
       years={gYears}
       series={[
-        { name: SERIES_LABEL[OLD], slot: 1, points: growthPoints(OLD, oldYears) },
-        { name: SERIES_LABEL[NEW], slot: 2, points: growthPoints(NEW, newYears) },
+        { name: SERIES_LABEL[OLD], slot: OLD_SERIES, points: growthPoints(OLD, oldYears) },
+        { name: SERIES_LABEL[NEW], slot: NEW_SERIES, points: growthPoints(NEW, newYears) },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}
@@ -131,8 +133,8 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
       subtitle="Net national income per person, in each year's rupees. The two series are drawn separately: the new base measures the economy differently."
       years={lYears}
       series={[
-        { name: SERIES_LABEL[OLD], slot: 1, points: levelPoints(OLD) },
-        { name: SERIES_LABEL[NEW], slot: 2, points: levelPoints(NEW) },
+        { name: SERIES_LABEL[OLD], slot: OLD_SERIES, points: levelPoints(OLD) },
+        { name: SERIES_LABEL[NEW], slot: NEW_SERIES, points: levelPoints(NEW) },
       ]}
       format={rupeesAxis}
       tableFormat={rupees}
@@ -155,7 +157,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
           {tableRows.map((r) => (
             <tr>
               <td>{r.y}</td><td>{SERIES_LABEL[r.series]}</td><td>{r.stage}</td><td>{decimal(r.pop, 1)}</td>
-              <td>{orDash(r.gdp, rupees)}</td><td>{orDash(r.nni, rupees)}</td><td>{orDash(r.pfce, rupees)}</td><td>{orDash(r.growth, gpct)}</td>
+              <td><OrDash v={r.gdp} fmt={rupees} /></td><td><OrDash v={r.nni} fmt={rupees} /></td><td><OrDash v={r.pfce} fmt={rupees} /></td><td><OrDash v={r.growth} fmt={gpct} /></td>
             </tr>
           ))}
         </tbody>

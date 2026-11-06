@@ -60,11 +60,48 @@ def test_get_retries_server_errors_but_not_404(no_waiting):
     assert len(calls) == 1
 
 
-def test_is_type():
-    assert download.is_type(b"%PDF-1.7 ...", "pdf")
-    assert download.is_type(b"PK\x03\x04", "xlsx")
-    assert download.is_type(b"\xd0\xcf\x11\xe0\xa1\xb1", "xls")
-    assert not download.is_type(b"<html>not found</html>", "pdf")
+def test_file_kind():
+    assert download.file_kind(b"%PDF-1.7 ...") == "pdf"
+    assert download.file_kind(b"PK\x03\x04") == "xlsx"
+    assert download.file_kind(b"\xd0\xcf\x11\xe0\xa1\xb1") == "xls"
+    assert download.file_kind(b"<html>not found</html>") == "html"
+    assert download.file_kind(b"\r\n<!DOCTYPE html>\n<head>") == "html"
+    assert download.file_kind(b"<?xml version='1.0'?><HTML><body>") == "html"
+    assert download.file_kind(b' {"data": []}') == "json"
+    assert download.file_kind(b"[1, 2]") == "json"
+    assert download.file_kind(b"") is None and download.file_kind(b"plain text") is None
+
+
+def test_get_refuses_a_download_past_the_size_cap(monkeypatch, no_waiting):
+    monkeypatch.setattr(download, "MAX_BYTES", 10)
+    opener, calls = opener_failing(0, AssertionError, body=b"x" * 11)
+    with pytest.raises(download.TooLarge, match="more than 10 bytes"):
+        download.get("https://example.test/x", opener=opener)
+    assert len(calls) == 1  # not tried again
+    opener, _ = opener_failing(0, AssertionError, body=b"x" * 10)
+    assert download.get("https://example.test/x", opener=opener) == b"x" * 10
+
+
+def redirect(old: str, new: str):
+    req = download.urllib.request.Request(old)
+    return download._NoDowngrade().redirect_request(req, None, 302, "Found", {}, new)
+
+
+def test_redirects_from_https_to_http_are_refused():
+    with pytest.raises(download.DowngradeRefused, match="from https to http://example.test/y"):
+        redirect("https://example.test/x", "http://example.test/y")
+    with pytest.raises(download.DowngradeRefused):
+        redirect("https://example.test/x", "ftp://example.test/y")
+    assert redirect("https://example.test/x", "https://other.test/y").full_url == "https://other.test/y"
+    assert redirect("http://example.test/x", "https://example.test/y").full_url == "https://example.test/y"
+    assert not download._retryable(download.DowngradeRefused("https://example.test/x", 302, "no", {}, None))
+
+
+def test_get_does_not_retry_a_refused_redirect(no_waiting):
+    opener, calls = opener_failing(99, download.DowngradeRefused("https://example.test/x", 301, "no", {}, None))
+    with pytest.raises(download.DowngradeRefused):
+        download.get("https://example.test/x", opener=opener)
+    assert len(calls) == 1
 
 
 def paths(tmp_path):

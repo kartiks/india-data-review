@@ -14,7 +14,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-from pipeline_common.download import get
+from pipeline_common.download import file_kind, get
 from pipeline_common.numbers import number
 from pipeline_common.text import is_fy
 
@@ -50,6 +50,8 @@ def fetch() -> None:
     manifest = {}
     for name, spec in RBI_TABLES.items():
         content = get(spec["url"])
+        if file_kind(content) != "xlsx":  # stop: an error page saved here would break every later build
+            raise RuntimeError(f"{name}: {spec['url']} is not an Excel file")
         dest = REF_DIR / f"{name}.xlsx"
         dest.write_bytes(content)
         manifest[name] = {

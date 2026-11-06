@@ -4,6 +4,7 @@ import LineChart from "../../../components/LineChart.astro";
 import BarList from "../../../components/BarList.astro";
 import { OLD, NEW, SERIES_LABEL, quarters, quarterNode } from "../../../lib/gdp/data";
 import { axisPct, gpct, money } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
 
 const real = (s: string, p: string) => quarterNode(s, p)?.growth?.gdp?.real;
 const withGrowth = (s: string) => quarters(s).filter((p) => real(s, p) !== undefined);
@@ -50,8 +51,8 @@ const prev = newQ[newQ.length - 2];
       subtitle="On the same quarter a year earlier, latest estimate. The two series overlap from 2023-24."
       years={periods}
       series={[
-        { name: SERIES_LABEL[OLD], slot: 1, points: pts(OLD) },
-        { name: SERIES_LABEL[NEW], slot: 2, points: pts(NEW) },
+        { name: SERIES_LABEL[OLD], slot: OLD_SERIES, points: pts(OLD) },
+        { name: SERIES_LABEL[NEW], slot: NEW_SERIES, points: pts(NEW) },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}

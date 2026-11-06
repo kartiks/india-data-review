@@ -5,6 +5,7 @@ import LineChart from "../../../components/LineChart.astro";
 import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBaseOf, bestOf } from "../../../lib/gdp/data";
 import { fyRange } from "../../../lib/fy";
 import { axisPct, gpct, money, moneyShort } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
 
 const lastYear = LONG[LONG.length - 1].year; // the 2011-12 base's last year
 const years = fyRange("2000-01", lastYear);
@@ -49,7 +50,7 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
       years={years}
       series={[
         { name: "Real", slot: 1, points: real },
-        { name: "Nominal", slot: 2, points: nominal },
+        { name: "Nominal", slot: 7, points: nominal },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}
@@ -64,8 +65,8 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
       subtitle="The two series are drawn separately: the new base measures the economy differently."
       years={years}
       series={[
-        { name: SERIES_LABEL[OLD], slot: 1, points: gdpOld.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
-        { name: SERIES_LABEL[NEW], slot: 2, points: gdpNew.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+        { name: SERIES_LABEL[OLD], slot: OLD_SERIES, points: gdpOld.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+        { name: SERIES_LABEL[NEW], slot: NEW_SERIES, points: gdpNew.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
       ]}
       format={moneyShort}
       tableFormat={money}

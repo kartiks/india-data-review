@@ -9,6 +9,7 @@ import {
 } from "../../lib/gdp/data";
 import { fyRange } from "../../lib/fy";
 import { axisPct, gpct, money, rupees } from "../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../lib/slots";
 
 const latest = node(NEW, LATEST_YEAR, LATEST_STAGE)!;
 const g = growthAt(NEW, LATEST_YEAR, LATEST_STAGE)!;
@@ -82,8 +83,8 @@ const newPoints = years.map((y) => {
       subtitle="Growth after inflation, each year on the year before. The new 2022-23 series starts in 2023-24."
       years={years}
       series={[
-        { name: "2011-12 base (incl. MoSPI back series)", slot: 1, points: oldPoints },
-        { name: "2022-23 base (new series)", slot: 2, points: newPoints },
+        { name: "2011-12 base (incl. MoSPI back series)", slot: OLD_SERIES, points: oldPoints },
+        { name: "2022-23 base (new series)", slot: NEW_SERIES, points: newPoints },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}

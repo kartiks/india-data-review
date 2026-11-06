@@ -10,6 +10,7 @@ import * as G from "../lib/gdp/data";
 import * as J from "../lib/jobs-prices/data";
 import { axisPct, gpct, pct } from "../lib/format";
 import { completeFys } from "../lib/fy";
+import { OLD_SERIES } from "../lib/slots";
 
 // ---- headline tiles --------------------------------------------------------------
 const gdpNode = G.node(G.NEW, G.LATEST_YEAR, G.LATEST_STAGE)!;
@@ -131,7 +132,7 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       years={taxYears}
       series={[
         { name: "Gross tax revenue", slot: 1, points: taxGrowth },
-        { name: "Nominal GDP", slot: 2, points: nominalGrowth },
+        { name: "Nominal GDP", slot: 7, points: nominalGrowth },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}
@@ -146,7 +147,7 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       subtitle="Consumer prices (what households pay) against the GDP deflator (prices across everything the economy produces, including exports and investment goods), fiscal years, on the year before."
       years={priceYears}
       series={[
-        { name: "Consumer prices (CPI)", slot: 7, points: cpiFy },
+        { name: "Consumer prices (CPI)", slot: OLD_SERIES, points: cpiFy },
         { name: "GDP deflator", slot: 2, points: deflator },
       ]}
       format={axisPct}

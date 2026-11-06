@@ -5,6 +5,7 @@ import {
   DS, OLD, NEW, STAGE_LABEL, STAGE_SHORT, STAGE_ORDER, stagesOf, growthAt, yearsOf, latestStage,
 } from "../../../lib/gdp/data";
 import { axisPct, gpct, pts } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
 
 const years = yearsOf(OLD).filter((y) => y >= "2014-15"); // the first year the 2011-12 series covers from its first estimate
 const real = (s: string, y: string, st: string) => growthAt(s, y, st)?.real;
@@ -65,10 +66,10 @@ const allStages = DS.stages.filter((s) => years.some((y) => real(OLD, y, s.id) !
       title="Real GDP growth: first estimate to latest"
       subtitle="Each row is one year. The line runs from the lowest to the highest estimate published for it."
       series={[
-        { name: "First estimate", slot: 1, shape: "ring", join: true },
-        { name: "Revisions in between", slot: 1, shape: "small", join: true },
-        { name: "Latest estimate (2011-12 base)", slot: 1, shape: "dot", join: true },
-        { name: "New 2022-23 series", slot: 2, shape: "diamond" },
+        { name: "First estimate", slot: OLD_SERIES, shape: "ring", join: true },
+        { name: "Revisions in between", slot: OLD_SERIES, shape: "small", join: true },
+        { name: "Latest estimate (2011-12 base)", slot: OLD_SERIES, shape: "dot", join: true },
+        { name: "New 2022-23 series", slot: NEW_SERIES, shape: "diamond" },
       ]}
       rows={rows}
       format={axisPct}

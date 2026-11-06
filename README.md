@@ -161,6 +161,7 @@ It checks out that commit in a temporary folder (your working folder is not touc
 - every area's pipeline rebuilds `data/` from the committed sources with every check passing;
 - the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
 - the build changes no committed file in `sources/` and writes no new files;
+- the Python code passes `ruff check` (`ruff.toml`; to run it yourself: `uvx ruff@0.17.4 check .`);
 - every area's tests pass, and the shared pipeline code's;
 - the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds. The build's own
   gate (`site/scripts/copy-data.mjs`) also checks every area's `validation_summary.json`: it must say PASSED, and

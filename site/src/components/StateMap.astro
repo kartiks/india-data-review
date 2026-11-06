@@ -54,7 +54,7 @@ const prepared = metrics.map((m) => {
   const cls = (v: number) => cuts.filter((c) => v >= c).length;
   const legend = Array.from({ length: STEPS }, (_, i) => {
     const inClass = vals.filter((v) => cls(v) === i);
-    return inClass.length ? `${m.format(inClass[0])} – ${m.format(inClass[inClass.length - 1])}` : "";
+    return inClass.length ? `${m.format(inClass[0])} to ${m.format(inClass[inClass.length - 1])}` : "";
   });
   const states: Record<string, { c: number; t: string }> = {};
   for (const [k, v] of Object.entries(m.values)) states[k] = v == null ? { c: -1, t: "no figure" } : { c: cls(v), t: m.format(v) };

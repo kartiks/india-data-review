@@ -88,7 +88,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
   </p>
 
   <div class="tiles">
-    <div class="tile"><div class="label">Unemployment rate, {Y}</div><div class="value">{pct(all.ur!)}</div><div class="sub">aged 15+; youth (15–29): {pct(youth.ur!)}</div></div>
+    <div class="tile"><div class="label">Unemployment rate, {Y}</div><div class="value">{pct(all.ur!)}</div><div class="sub">aged 15+; youth (15 to 29): {pct(youth.ur!)}</div></div>
     <div class="tile"><div class="label">In the labour force, {Y}</div><div class="value">{pct(all.lfpr!)}</div><div class="sub">working or seeking work, aged 15+</div></div>
     <div class="tile"><div class="label">Women in the labour force</div><div class="value">{pct(women.lfpr!)}</div><div class="sub">men: {pct(men.lfpr!)}; women in {PLFS_YEARS[0]}: {pct(first.lfpr!)}</div></div>
     <div class="tile"><div class="label">Working, {Y}</div><div class="value">{pct(all.wpr!)}</div><div class="sub">worker population ratio, aged 15+</div></div>
@@ -116,17 +116,17 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <LineChart title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart title="Labour force participation" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]} to ${Y}.`} years={PLFS_YEARS} series={trend("lfpr")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <LineChart title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]}–${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
+      <LineChart title="Unemployment rate" subtitle={`Aged 15 and over, usual status, calendar years ${PLFS_YEARS[0]} to ${Y}.`} years={PLFS_YEARS} series={trend("ur")} format={axisPct} tableFormat={(v) => pct(v)} source={SRC} />
     </section>
   </div>
 
   <section class="card">
     <LineChart
       title="Urban unemployment, quarter by quarter"
-      subtitle={`Towns and cities, aged 15 and over, current weekly status, ${qLabels[0]} to ${qLabels[qLabels.length - 1]}. ${covidUr ? `In Apr–Jun 2020, during the COVID-19 lockdown, it reached ${pct(covidUr)}.` : ""}`}
+      subtitle={`Towns and cities, aged 15 and over, current weekly status, ${qLabels[0]} to ${qLabels[qLabels.length - 1]}. ${covidUr ? `In April to June 2020, during the COVID-19 lockdown, it reached ${pct(covidUr)}.` : ""}`}
       years={qLabels}
       series={qSeries}
       format={axisPct}
@@ -154,7 +154,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
     <DotRows
       title="Unemployment since 1993-94, rural and urban"
       rowHeader="Survey year"
-      subtitle="All India, all ages, usual status. Survey years are uneven: MoSPI's employment surveys every five years or so to 2011-12, then the yearly PLFS (July–June) from 2017-18. The two surveys differ in design, so compare across the 2011-12 to 2017-18 break with care."
+      subtitle="All India, all ages, usual status. Survey years are uneven: MoSPI's employment surveys every five years or so to 2011-12, then the yearly PLFS (July to June) from 2017-18. The two surveys differ in design, so compare across the 2011-12 to 2017-18 break with care."
       series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
       rows={longRows}
       format={(v) => pct(v)}
@@ -164,7 +164,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Young people (15–29), unemployment rate, ${Y}`} rowHeader="Area" series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Young people (15 to 29), unemployment rate, ${Y}`} rowHeader="Area" series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
       <h2>Unemployment by education, {Y}</h2>

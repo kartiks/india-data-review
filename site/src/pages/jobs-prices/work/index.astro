@@ -102,7 +102,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
   <section class="card">
     <StackedColumns
       title="Where people work"
-      subtitle={`Share of workers by broad industry, all India, ${PLFS_YEARS[0]}–${Y}. Current weekly status (what people did in the past seven days), the only basis on which MoSPI publishes this breakdown.`}
+      subtitle={`Share of workers by broad industry, all India, ${PLFS_YEARS[0]} to ${Y}. Current weekly status (what people did in the past seven days), the only basis on which MoSPI publishes this breakdown.`}
       years={PLFS_YEARS}
       categories={broadCats}
       values={PLFS_YEARS.map((y) => broadOf(y))}
@@ -154,12 +154,12 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
   <section class="card">
     <LineChart
       title="Conditions of regular salaried jobs"
-      subtitle={`Share of regular employees without each benefit, all India, survey years July–June ${C_YEARS[0]} to ${lastC}. In ${lastC}, ${pct(cond(lastC, "4.")!)} had none of the three.`}
+      subtitle={`Share of regular employees without each benefit, all India, survey years (July to June) ${C_YEARS[0]} to ${lastC}. In ${lastC}, ${pct(cond(lastC, "4.")!)} had none of the three.`}
       years={C_YEARS}
       series={COND.map((c) => ({ name: c.label, slot: c.slot, points: C_YEARS.map((y) => ({ value: cond(y, c.key) })) }))}
       format={axisPct}
       tableFormat={(v) => pct(v)}
-      source="MoSPI, Periodic Labour Force Survey annual reports (July–June years), via MoSPI's data service."
+      source="MoSPI, Periodic Labour Force Survey annual reports (July to June years), via MoSPI's data service."
     />
   </section>
 

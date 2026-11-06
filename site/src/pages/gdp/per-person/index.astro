@@ -9,6 +9,7 @@ import {
 import { fyRange, fyStart, prevFy } from "../../../lib/fy";
 import { axisPct, decimal, gpct, orDash, rupees, rupeesAxis } from "../../../lib/format";
 import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 // Headline: the latest year of the new 2022-23 series that has a population. Each January MoSPI adds a year whose
 // population is added by hand later (see gdp/README.md); until then the page stays on the year before.
@@ -156,7 +157,7 @@ const SOURCE = "MoSPI national accounts (latest estimate of each year) divided b
           {tableRows.map((r) => (
             <tr>
               <td>{r.y}</td><td>{SERIES_LABEL[r.series]}</td><td>{r.stage}</td><td>{decimal(r.pop, 1)}</td>
-              <td>{orDash(r.gdp, rupees)}</td><td>{orDash(r.nni, rupees)}</td><td>{orDash(r.pfce, rupees)}</td><td>{orDash(r.growth, gpct)}</td>
+              <td><OrDash v={r.gdp} fmt={rupees} /></td><td><OrDash v={r.nni} fmt={rupees} /></td><td><OrDash v={r.pfce} fmt={rupees} /></td><td><OrDash v={r.growth} fmt={gpct} /></td>
             </tr>
           ))}
         </tbody>

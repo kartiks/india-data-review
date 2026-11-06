@@ -5,6 +5,7 @@ import { estimate, estimateLayout } from "../lib/chart";
 import { linePlots } from "../lib/line-plot";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 
 export interface Point {
   value: number | null;
@@ -92,7 +93,7 @@ const tooltipData = safeJson({
               {layout.mode === "column" && <td class="est-col">{rowEst[i] && <span class="est" title={rowEst[i].full}>{rowEst[i].short}</span>}</td>}
               {series.map((s, j) => {
                 const p = s.points[i], e = est[j][i];
-                return <td>{layout.mode === "inline" && e?.short && <span class="est" title={e.full}>{e.short}</span>}{p.value == null ? "–" : tableFormat(p.value)}</td>;
+                return <td>{layout.mode === "inline" && e?.short && <span class="est" title={e.full}>{e.short}</span>}<OrDash v={p.value} fmt={tableFormat} /></td>;
               })}
             </tr>
           ))}

@@ -99,7 +99,12 @@ const ur = J.rate({ year: J.PLFS_LATEST });
     <a class="tile tile-link" href={link("/jobs-prices/prices/")}>
       <div class="label">Consumer inflation, {J.monthLabel(J.CPI24_LATEST)}</div>
       <div class="value">{gpct(J.CPI24.find((p) => p.month === J.CPI24_LATEST)!.inflation[2]!, 2)}</div>
-      <div class="sub">on a year earlier (new series); unemployment {J.PLFS_LATEST}: {pct(ur!.ur!)}</div>
+      <div class="sub">on a year earlier (new series, base 2024)</div>
+    </a>
+    <a class="tile tile-link" href={link("/jobs-prices/jobs/")}>
+      <div class="label">Unemployment rate, {J.PLFS_LATEST}</div>
+      <div class="value">{pct(ur!.ur!)}</div>
+      <div class="sub">aged 15 and over, usual status</div>
     </a>
     <a class="tile tile-link" href="#share">
       <div class="label">Centre's spending, {lastActual}</div>
@@ -153,7 +158,7 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       format={axisPct}
       tableFormat={(v) => gpct(v)}
       annotations={[{ year: "2020-21", label: "COVID-19" }]}
-      source="CPI: MoSPI, base 2012, average of the April–March monthly indices on the year before (worked out here). GDP deflator: MoSPI's nominal and real GDP growth on the 2011-12 base, latest estimate, combined as (1 + nominal) ÷ (1 + real) − 1."
+      source="CPI: MoSPI, base 2012, average of the April to March monthly indices on the year before (worked out here). GDP deflator: MoSPI's nominal and real GDP growth on the 2011-12 base, latest estimate, combined as (1 + nominal) ÷ (1 + real) − 1."
     />
   </section>
 

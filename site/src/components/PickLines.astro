@@ -8,6 +8,7 @@ import { AXIS_FORMATS, assignSlots, linePlots, slotColor, yearsWithData, type Ax
 import { estimate } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 
 export interface PickOption {
   key: string;
@@ -93,7 +94,7 @@ const inStart = new Set(start.map((c) => c.key));
         <thead><tr><th>Year</th>{start.map(({ o }) => <th>{o.name}</th>)}</tr></thead>
         <tbody>
           {shown.map((yr, i) => (
-            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est" title={o.kt[i]}>{o.k[i]}</span>}{o.t[i] ?? "–"}</td>)}</tr>
+            <tr><td>{yr}</td>{start.map(({ o }) => <td>{o.t[i] && o.k[i] && <span class="est" title={o.kt[i]}>{o.k[i]}</span>}{o.t[i] ?? <OrDash />}</td>)}</tr>
           ))}
         </tbody>
       </table>
@@ -134,7 +135,8 @@ const inStart = new Set(start.map((c) => c.key));
     const cell = (t: string | null, k: string, title: string) => {
       const td = el("td");
       if (t != null && k) td.append(Object.assign(el("span", k), { className: "est", title }));
-      td.append(t ?? "–");
+      if (t != null) td.append(t);
+      else td.append(Object.assign(el("span"), { className: "no-data", innerHTML: '<span aria-hidden="true">–</span><span class="sr-only">no data</span>' }));
       return td;
     };
 

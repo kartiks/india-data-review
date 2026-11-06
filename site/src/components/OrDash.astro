@@ -1,0 +1,11 @@
+---
+// A figure, or the site's mark for a missing one: an en dash that screen readers read as "no data". Every table
+// cell without a figure uses it, never a blank. <OrDash /> for the mark alone, <OrDash v={x} fmt={pct} /> for a
+// figure that may be missing. In plain text (aria-labels, notes) use orDash() from lib/format.
+interface Props {
+  v?: number | null;
+  fmt?: (v: number) => string;
+}
+const { v, fmt } = Astro.props;
+---
+{v != null && fmt ? fmt(v) : <span class="no-data"><span aria-hidden="true">–</span><span class="sr-only">no data</span></span>}

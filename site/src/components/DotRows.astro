@@ -3,6 +3,7 @@
 // rural vs urban, women vs men. Plain HTML so long names wrap on phones; every value is printed,
 // so no hover is needed. A table view lists the same numbers.
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 export interface DotSeries { name: string; slot: number }
 export interface DotRow { label: string; values: (number | null)[]; note?: string; strong?: boolean }
 interface Props {
@@ -71,7 +72,7 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
         <thead><tr><th>{rowHeader}</th>{series.map((s) => <th>{s.name}</th>)}</tr></thead>
         <tbody>
           {rows.map((r) => (
-            <tr><td>{r.label}</td>{r.values.map((v) => <td>{v == null ? "–" : format(v)}</td>)}</tr>
+            <tr><td>{r.label}</td>{r.values.map((v) => <td><OrDash v={v} fmt={format} /></td>)}</tr>
           ))}
         </tbody>
       </table>

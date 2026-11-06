@@ -8,6 +8,7 @@ import {
 import { gpct, orDash, pct, rupees } from "../../../lib/format";
 import { link } from "../../../lib/url";
 import { prevFy } from "../../../lib/fy";
+import OrDash from "../../../components/OrDash.astro";
 
 const Y = PLFS_LATEST;
 const lastYear = CPI_LAST.slice(0, 4);
@@ -113,11 +114,11 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
           </thead>
           <tbody>
             <tr class="india">
-              <td>All India</td><td>{orDash(india.ur, pct)}</td><td>{orDash(india.women, pct)}</td><td>–</td><td>{orDash(india.infl24, (v) => gpct(v, 2))}</td><td>{orDash(india.infl, gpct)}</td><td>{orDash(india.overall, rupees)}</td><td>{orDash(india.rural, rupees)}</td><td>{orDash(india.urban, rupees)}</td><td>–</td><td>–</td><td>{orDash(india.wage, rupees)}</td>
+              <td>All India</td><td><OrDash v={india.ur} fmt={pct} /></td><td><OrDash v={india.women} fmt={pct} /></td><td><OrDash /></td><td><OrDash v={india.infl24} fmt={(v) => gpct(v, 2)} /></td><td><OrDash v={india.infl} fmt={gpct} /></td><td><OrDash v={india.overall} fmt={rupees} /></td><td><OrDash v={india.rural} fmt={rupees} /></td><td><OrDash v={india.urban} fmt={rupees} /></td><td><OrDash /></td><td><OrDash /></td><td><OrDash v={india.wage} fmt={rupees} /></td>
             </tr>
             {rows.map((r) => (
               <tr>
-                <td>{r.st}</td><td>{orDash(r.ur, pct)}</td><td>{orDash(r.women, pct)}</td><td>{orDash(r.regular, pct)}</td><td>{orDash(r.infl24, (v) => gpct(v, 2))}</td><td>{orDash(r.infl, gpct)}</td><td>{orDash(r.overall, rupees)}</td><td>{orDash(r.rural, rupees)}</td><td>{orDash(r.urban, rupees)}</td><td>{orDash(r.income, rupees)}</td><td>{orDash(r.growth, gpct)}</td><td>{orDash(r.wage, rupees)}</td>
+                <td>{r.st}</td><td><OrDash v={r.ur} fmt={pct} /></td><td><OrDash v={r.women} fmt={pct} /></td><td><OrDash v={r.regular} fmt={pct} /></td><td><OrDash v={r.infl24} fmt={(v) => gpct(v, 2)} /></td><td><OrDash v={r.infl} fmt={gpct} /></td><td><OrDash v={r.overall} fmt={rupees} /></td><td><OrDash v={r.rural} fmt={rupees} /></td><td><OrDash v={r.urban} fmt={rupees} /></td><td><OrDash v={r.income} fmt={rupees} /></td><td><OrDash v={r.growth} fmt={gpct} /></td><td><OrDash v={r.wage} fmt={rupees} /></td>
               </tr>
             ))}
           </tbody>

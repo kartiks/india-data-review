@@ -6,6 +6,7 @@ import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBa
 import { fyRange } from "../../../lib/fy";
 import { axisPct, gpct, money, moneyShort } from "../../../lib/format";
 import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 const lastYear = LONG[LONG.length - 1].year; // the 2011-12 base's last year
 const years = fyRange("2000-01", lastYear);
@@ -89,11 +90,11 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
             return (
               <tr>
                 <td>{y}</td>
-                <td>{r.growth?.real !== undefined ? gpct(r.growth.real) : "–"}</td>
-                <td>{r.growth?.nominal != null ? gpct(r.growth.nominal) : "–"}</td>
+                <td><OrDash v={r.growth?.real} fmt={gpct} /></td>
+                <td><OrDash v={r.growth?.nominal} fmt={gpct} /></td>
                 <td>{kind(r.stage)}{r.growth && !r.growth.published ? " (from levels)" : ""}</td>
-                <td>{n && n.series === NEW ? gpct(n.real) : "–"}</td>
-                <td>{n && n.series === NEW ? kind(n.stage) : ""}</td>
+                <td><OrDash v={n && n.series === NEW ? n.real : null} fmt={gpct} /></td>
+                <td>{n && n.series === NEW ? kind(n.stage) : <OrDash />}</td>
               </tr>
             );
           })}

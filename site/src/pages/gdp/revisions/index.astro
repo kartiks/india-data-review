@@ -6,6 +6,7 @@ import {
 } from "../../../lib/gdp/data";
 import { axisPct, gpct, pts } from "../../../lib/format";
 import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 const years = yearsOf(OLD).filter((y) => y >= "2014-15"); // the first year the 2011-12 series covers from its first estimate
 const real = (s: string, y: string, st: string) => growthAt(s, y, st)?.real;
@@ -90,8 +91,8 @@ const allStages = DS.stages.filter((s) => years.some((y) => real(OLD, y, s.id) !
             return (
               <tr>
                 <td>{y}</td>
-                {allStages.map((s) => <td>{real(OLD, y, s.id) !== undefined ? gpct(real(OLD, y, s.id)!) : ""}</td>)}
-                <td>{ns.map((st) => `${gpct(real(NEW, y, st)!)} (${STAGE_SHORT[st]})`).join(" → ")}</td>
+                {allStages.map((s) => <td><OrDash v={real(OLD, y, s.id)} fmt={gpct} /></td>)}
+                <td>{ns.length ? ns.map((st) => `${gpct(real(NEW, y, st)!)} (${STAGE_SHORT[st]})`).join(" → ") : <OrDash />}</td>
               </tr>
             );
           })}

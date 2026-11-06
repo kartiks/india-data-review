@@ -32,7 +32,7 @@ const stateRows = [{ label: "All India", strong: true, values: [rural, urban, ov
 const classNames = [...new Set(hces(q({ indicator: "classes", sector: "Rural" })).map((r) => r.category))]
   .filter((c) => c !== "All").sort((a, b) => parseFloat(a) - parseFloat(b));
 const classRows = classNames.map((c) => ({
-  label: `${c.replace("-", "–")}%`,
+  label: `${c.replace("-", "% to ")}%`,
   values: [hcesValue(q({ indicator: "classes", sector: "Rural", category: c })) ?? null, hcesValue(q({ indicator: "classes", sector: "Urban", category: c })) ?? null],
 }));
 const top = classRows[classRows.length - 1].values, bottom = classRows[0].values;

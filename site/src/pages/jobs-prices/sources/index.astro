@@ -42,7 +42,7 @@ const nFiles = Object.keys(SOURCES).length;
   <section class="card">
     <h2>What is covered</h2>
     <ul>
-      <li><strong>Jobs</strong>: Periodic Labour Force Survey (PLFS). Annual figures for calendar years {PLFS_YEARS[0]} to {PLFS_YEARS[PLFS_YEARS.length - 1]} (MoSPI's data service does not have the earlier July–June annual figures, except job conditions from 2017-18); quarterly figures for towns and cities from April–June 2018, and for villages too from 2025; monthly figures from January 2025.</li>
+      <li><strong>Jobs</strong>: Periodic Labour Force Survey (PLFS). Annual figures for calendar years {PLFS_YEARS[0]} to {PLFS_YEARS[PLFS_YEARS.length - 1]} (MoSPI's data service does not have the earlier July to June annual figures, except job conditions from 2017-18); quarterly figures for towns and cities from April to June 2018, and for villages too from 2025; monthly figures from January 2025.</li>
       <li><strong>Consumer prices, old series</strong>: Consumer Price Index, base 2012, {monthLabel(CPI_FIRST)} to {monthLabel(CPI_LAST)}, from MoSPI's data service: every group and item group for All India, the general index for every state.</li>
       <li><strong>Consumer prices, new series</strong>: Consumer Price Index, base 2024, January 2026 to {monthLabel(CPI24_LATEST)}, read from MoSPI's monthly press releases ({Object.keys(CPI24_RELEASES).length} so far): the All-India index from January 2025 and inflation from January 2026, and each month's 12 divisions, 43 groups and 36 states. MoSPI's data service lists the base-2024 series but does not yet return its figures. Each release's tables are read from its web page and checked against its PDF; the June 2026 release has no PDF. Divisions, groups and states are as first published (provisional); the All-India series is final except for the latest month.</li>
       <li><strong>Prices for farm and rural labourers</strong>: the Labour Bureau's CPI-AL and CPI-RL, base 1986-87 and, from June 2025, base 2019.</li>
@@ -74,7 +74,7 @@ const nFiles = Object.keys(SOURCES).length;
     <h2>Problems found in the official data</h2>
     <p class="small muted">MoSPI's data service appears to have been filled partly by reading printed tables, and the checks find the slips. None of these figures is shown; every one is listed in the report and kept, with its reason, in the downloads.</p>
     <ul>
-      <li><strong>Jobs figures that cannot all be right: {count("MoSPI's PLFS figures")} combinations.</strong> Letters for digits ("l0.8", "IN.4", "20J") and figures that break the rules above. Most are in the quarterly series; April–June 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin for that quarter says 8.9%. Each such combination is left out whole, since which of its numbers is wrong cannot be told.</li>
+      <li><strong>Jobs figures that cannot all be right: {count("MoSPI's PLFS figures")} combinations.</strong> Letters for digits ("l0.8", "IN.4", "20J") and figures that break the rules above. Most are in the quarterly series; April to June 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin for that quarter says 8.9%. Each such combination is left out whole, since which of its numbers is wrong cannot be told.</li>
       <li><strong>All-India shares of workers by type of work</strong> (self-employed, regular, casual) do not add up to 100% (for example 0.3%, 0.4%, 0.6% and 0.6% for women in 2022), while every state's do. The site shows this breakdown by state only.</li>
       <li><strong>{count("MoSPI's data service returns some")} rows of "distribution of workers" with no breakdown named</strong>, often with several different values for the same cell. They cannot be read.</li>
       <li>For 2025 in current weekly status, the "all self-employed" share is not the sum of its parts; the site uses usual-status figures.</li>
@@ -98,7 +98,7 @@ const nFiles = Object.keys(SOURCES).length;
     <h2>Not here yet</h2>
     <ul>
       <li>The new bases of industrial production and wholesale prices, when MoSPI's data service carries them. The new Consumer Price Index will switch to the data service once it returns figures.</li>
-      <li>Annual PLFS figures for the July–June years 2017-18 to 2023-24, from MoSPI's annual reports.</li>
+      <li>Annual PLFS figures for the July to June years 2017-18 to 2023-24, from MoSPI's annual reports.</li>
       <li>The Time Use Survey and the Multiple Indicator Survey (MoSPI's data service did not return them when tried).</li>
     </ul>
   </section>

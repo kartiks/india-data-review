@@ -4,6 +4,7 @@
 import { SIZES, estimate, estimateLayout, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 
 interface Props {
   title: string;
@@ -107,7 +108,7 @@ const tipData = safeJson({
             <tr>
               <td>{yr}</td>
               {layout.mode === "column" && <td class="est-col">{est[i].short && <span class="est" title={est[i].full}>{est[i].short}</span>}</td>}
-              {categories.map((_, j) => <td>{values[i][j] == null ? "–" : tableFormat(values[i][j]!)}</td>)}
+              {categories.map((_, j) => <td><OrDash v={values[i][j]} fmt={tableFormat} /></td>)}
               <td>{tableFormat(totals[i])}</td>
             </tr>
           ))}

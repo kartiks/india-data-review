@@ -10,7 +10,7 @@ NAME_MAP = Path(__file__).resolve().parents[1] / "data_maps" / "scheme_names.csv
 
 SCHEME_TYPES = {"css": "Centrally Sponsored Schemes", "central_sector": "Central Sector Schemes"}
 PARTS = ("revenue", "capital", "total")
-TOLERANCE = 0.051  # crore; values are printed to two decimals
+LEVEL_TOL = 0.051  # ₹ crore: values are printed to two decimals; a little over 0.05 for sums of rounded cells
 
 NA_TEXT = {"...", "..", "…", "-", "--", "–", "—"}
 HEADER_PATTERNS = [

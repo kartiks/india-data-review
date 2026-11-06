@@ -5,7 +5,7 @@ from collections import defaultdict
 from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Allowed, Exceptions
 
-from .common import PARTS, TOLERANCE
+from .common import LEVEL_TOL, PARTS
 
 RAILWAYS_2017 = (
     "Budget 2017-18 (the first budget with this statement, and the first with Railways merged into the Union "
@@ -144,7 +144,7 @@ def _revenue_plus_capital(budgets: dict) -> tuple:
                 for pk, v in i["values"].items():
                     checked += 1
                     diff = _v(v["revenue"]) + _v(v["capital"]) - _v(v["total"])
-                    if abs(diff) > TOLERANCE:
+                    if abs(diff) > LEVEL_TOL:
                         msg = (f"Budget {year} {t}: {i['label_as_printed'][:60]!r} {pk[1]} {pk[0]}: "
                                f"{_v(v['revenue']):.2f} + {_v(v['capital']):.2f} != {_v(v['total']):.2f}")
                         if not ok.file((year, t, "rct"), f"{_lab(i)}|{_per(pk)}", case=msg):
@@ -245,7 +245,7 @@ def _across_budgets(budgets: dict) -> tuple:
                    f"({b - a:+,.2f}, {rel:.1%})")
             if ok.file(("cross", t, iid), _per(pk), case=msg):
                 continue
-            if level == "grand_total" and abs(a - b) <= TOLERANCE:
+            if level == "grand_total" and abs(a - b) <= LEVEL_TOL:
                 notes.append("Rounding: " + msg)
             elif pk[1] == "BE" and level != "grand_total" and (rel <= RESTATED_REL or abs(a - b) <= RESTATED_CRORE):
                 # The next budget may restate a BE (reclassification); a small change is only noted.

@@ -73,6 +73,26 @@ Headline figures, taxes, ministries and schemes. Every allowed exception lists i
 ## ✅ Matches the RBI Handbook of Statistics (independent series)
 270 checks, 0 failures.
 
+- Allowed (5): Budget 2002-03's 2000-01 actuals have Rs 258 crore more tax revenue and Rs 239 crore less non-tax revenue than RBI's series (a different split of the same receipts, net Rs 19 crore), and Rs 19 crore more revenue receipts, revenue expenditure and total expenditure. Every deficit agrees exactly. Cases:
+  - Actual 2000-01 non_tax_revenue: ours 55,708 vs RBI 55,947 (-239, 0.43%)
+  - Actual 2000-01 revenue_expenditure: ours 277,858 vs RBI 277,839 (+19, 0.01%)
+  - Actual 2000-01 revenue_receipts: ours 192,624 vs RBI 192,605 (+19, 0.01%)
+  - Actual 2000-01 tax_revenue_net: ours 136,916 vs RBI 136,658 (+258, 0.19%)
+  - Actual 2000-01 total_expenditure: ours 325,611 vs RBI 325,592 (+19, 0.01%)
+- Allowed (13): Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Small differences (up to 0.1% and Rs 500 crore) are expected for this reason; larger ones are listed with their own reason. Cases:
+  - Actual 2001-02 non_tax_revenue: ours 67,787 vs RBI 67,774 (+13, 0.02%)
+  - Actual 2001-02 revenue_expenditure: ours 301,611 vs RBI 301,468 (+143, 0.05%)
+  - Actual 2001-02 revenue_receipts: ours 201,449 vs RBI 201,306 (+143, 0.07%)
+  - Actual 2001-02 tax_revenue_net: ours 133,662 vs RBI 133,532 (+130, 0.10%)
+  - Actual 2001-02 total_expenditure: ours 362,453 vs RBI 362,310 (+143, 0.04%)
+  - Actual 2003-04 non_tax_revenue: ours 76,896 vs RBI 76,831 (+65, 0.08%)
+  - Actual 2003-04 revenue_expenditure: ours 362,140 vs RBI 362,074 (+66, 0.02%)
+  - Actual 2003-04 revenue_receipts: ours 263,878 vs RBI 263,813 (+65, 0.02%)
+  - Actual 2004-05 non_tax_revenue: ours 81,215 vs RBI 81,193 (+22, 0.03%)
+  - Actual 2004-05 revenue_expenditure: ours 384,351 vs RBI 384,329 (+22, 0.01%)
+  - Actual 2004-05 revenue_receipts: ours 306,013 vs RBI 305,991 (+22, 0.01%)
+  - Actual 2014-15 non_tax_revenue: ours 197,857 vs RBI 197,766 (+91, 0.05%)
+  - Actual 2014-15 revenue_receipts: ours 1,101,472 vs RBI 1,101,381 (+91, 0.01%)
 - Allowed (6): For 2002-03 to 2004-05 the Budget at a Glance counts repayments to the National Small Savings Fund and State Debt Swap Scheme transactions inside capital expenditure. These are debt transactions, not investment, and the RBI Handbook series (Table 89, note 2) treats them differently: for 2002-03 the difference is exactly the Rs 13,766 crore NSSF repayment; for 2003-04 and 2004-05 it is close to the amounts in RBI's note. Comparing capital spending across years? Treat these three years with care. Cases:
   - Actual 2002-03 capital_expenditure: ours 74,535 vs RBI 60,769 (+13,766, 22.65%)
   - Actual 2002-03 total_expenditure: ours 414,162 vs RBI 399,482 (+14,680, 3.67%)
@@ -80,36 +100,20 @@ Headline figures, taxes, ministries and schemes. Every allowed exception lists i
   - Actual 2003-04 total_expenditure: ours 471,368 vs RBI 424,992 (+46,376, 10.91%)
   - Actual 2004-05 capital_expenditure: ours 113,331 vs RBI 81,248 (+32,083, 39.49%)
   - Actual 2004-05 total_expenditure: ours 497,682 vs RBI 465,577 (+32,105, 6.90%)
-- Allowed (1): RBI's 2004-05 fiscal deficit is Rs 592 crore higher (1,25,794 vs 1,25,202 in Budget 2006-07); the primary deficit differs by the same amount. Consistent with final audited accounts vs provisional actuals. Cases:
+- Allowed (4): Budget 2004-05's 2002-03 actuals have Rs 914 crore more revenue receipts (Rs 881 crore of it tax) and Rs 915 crore more revenue expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount is counted on both sides in one series and on neither in the other. Total expenditure differs by this plus the NSSF repayment (see that note). Cases:
+  - Actual 2002-03 non_tax_revenue: ours 72,323 vs RBI 72,290 (+33, 0.05%)
+  - Actual 2002-03 revenue_expenditure: ours 339,628 vs RBI 338,713 (+915, 0.27%)
+  - Actual 2002-03 revenue_receipts: ours 231,748 vs RBI 230,834 (+914, 0.40%)
+  - Actual 2002-03 tax_revenue_net: ours 159,425 vs RBI 158,544 (+881, 0.56%)
+- Allowed (2): RBI's 2004-05 fiscal deficit is Rs 592 crore higher (1,25,794 vs 1,25,202 in Budget 2006-07); the primary deficit differs by the same amount. Consistent with final audited accounts vs provisional actuals. Cases:
+  - Actual 2004-05 fiscal_deficit: ours 125,202 vs RBI 125,794 (-592, 0.47%)
   - Actual 2004-05 primary_deficit: ours -1,732 vs RBI -1,140 (-592, 51.93%)
+- Allowed (4): Budget 2007-08's 2005-06 actuals have Rs 385 crore more non-tax revenue, revenue receipts, revenue expenditure and total expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount is counted on both sides in one series and on neither in the other. Cases:
+  - Actual 2005-06 non_tax_revenue: ours 77,198 vs RBI 76,813 (+385, 0.50%)
+  - Actual 2005-06 revenue_expenditure: ours 439,761 vs RBI 439,376 (+385, 0.09%)
+  - Actual 2005-06 revenue_receipts: ours 347,462 vs RBI 347,077 (+385, 0.11%)
+  - Actual 2005-06 total_expenditure: ours 506,123 vs RBI 505,738 (+385, 0.08%)
 - 236 of 270 figures match the RBI series exactly (within Rs 5 crore).
-- Actual 2000-01 non_tax_revenue: ours 55,708 vs RBI 55,947 (-239, 0.43%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2000-01 revenue_expenditure: ours 277,858 vs RBI 277,839 (+19, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2000-01 revenue_receipts: ours 192,624 vs RBI 192,605 (+19, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2000-01 tax_revenue_net: ours 136,916 vs RBI 136,658 (+258, 0.19%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2000-01 total_expenditure: ours 325,611 vs RBI 325,592 (+19, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2001-02 non_tax_revenue: ours 67,787 vs RBI 67,774 (+13, 0.02%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2001-02 revenue_expenditure: ours 301,611 vs RBI 301,468 (+143, 0.05%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2001-02 revenue_receipts: ours 201,449 vs RBI 201,306 (+143, 0.07%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2001-02 tax_revenue_net: ours 133,662 vs RBI 133,532 (+130, 0.10%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2001-02 total_expenditure: ours 362,453 vs RBI 362,310 (+143, 0.04%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2002-03 non_tax_revenue: ours 72,323 vs RBI 72,290 (+33, 0.05%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2002-03 revenue_expenditure: ours 339,628 vs RBI 338,713 (+915, 0.27%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2002-03 revenue_receipts: ours 231,748 vs RBI 230,834 (+914, 0.40%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2002-03 tax_revenue_net: ours 159,425 vs RBI 158,544 (+881, 0.56%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2003-04 non_tax_revenue: ours 76,896 vs RBI 76,831 (+65, 0.08%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2003-04 revenue_expenditure: ours 362,140 vs RBI 362,074 (+66, 0.02%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2003-04 revenue_receipts: ours 263,878 vs RBI 263,813 (+65, 0.02%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2004-05 fiscal_deficit: ours 125,202 vs RBI 125,794 (-592, 0.47%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2004-05 non_tax_revenue: ours 81,215 vs RBI 81,193 (+22, 0.03%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2004-05 revenue_expenditure: ours 384,351 vs RBI 384,329 (+22, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2004-05 revenue_receipts: ours 306,013 vs RBI 305,991 (+22, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2005-06 non_tax_revenue: ours 77,198 vs RBI 76,813 (+385, 0.50%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2005-06 revenue_expenditure: ours 439,761 vs RBI 439,376 (+385, 0.09%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2005-06 revenue_receipts: ours 347,462 vs RBI 347,077 (+385, 0.11%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2005-06 total_expenditure: ours 506,123 vs RBI 505,738 (+385, 0.08%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2014-15 non_tax_revenue: ours 197,857 vs RBI 197,766 (+91, 0.05%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
-- Actual 2014-15 revenue_receipts: ours 1,101,472 vs RBI 1,101,381 (+91, 0.01%). Small difference: Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Differences under 1% are expected for this reason.
 
 ## ✅ Large year-on-year changes (for review, not failures)
 0 checks, 0 failures.

@@ -2,7 +2,7 @@
  "result": "PASSED",
  "checks": 117426,
  "failures": 0,
- "allowed": 97,
+ "allowed": 124,
  "sections": [
   {
    "title": "Accounting rules hold in every source column",
@@ -87,15 +87,31 @@
    "title": "Matches the RBI Handbook of Statistics (independent series)",
    "checks": 270,
    "failures": 0,
-   "allowed": 7,
+   "allowed": 34,
    "allowed_reasons": [
+    {
+     "reason": "Budget 2002-03's 2000-01 actuals have Rs 258 crore more tax revenue and Rs 239 crore less non-tax revenue than RBI's series (a different split of the same receipts, net Rs 19 crore), and Rs 19 crore more revenue receipts, revenue expenditure and total expenditure. Every deficit agrees exactly.",
+     "cases": 5
+    },
+    {
+     "reason": "Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses the audited Finance Accounts. Small differences (up to 0.1% and Rs 500 crore) are expected for this reason; larger ones are listed with their own reason.",
+     "cases": 13
+    },
     {
      "reason": "For 2002-03 to 2004-05 the Budget at a Glance counts repayments to the National Small Savings Fund and State Debt Swap Scheme transactions inside capital expenditure. These are debt transactions, not investment, and the RBI Handbook series (Table 89, note 2) treats them differently: for 2002-03 the difference is exactly the Rs 13,766 crore NSSF repayment; for 2003-04 and 2004-05 it is close to the amounts in RBI's note. Comparing capital spending across years? Treat these three years with care.",
      "cases": 6
     },
     {
+     "reason": "Budget 2004-05's 2002-03 actuals have Rs 914 crore more revenue receipts (Rs 881 crore of it tax) and Rs 915 crore more revenue expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount is counted on both sides in one series and on neither in the other. Total expenditure differs by this plus the NSSF repayment (see that note).",
+     "cases": 4
+    },
+    {
      "reason": "RBI's 2004-05 fiscal deficit is Rs 592 crore higher (1,25,794 vs 1,25,202 in Budget 2006-07); the primary deficit differs by the same amount. Consistent with final audited accounts vs provisional actuals.",
-     "cases": 1
+     "cases": 2
+    },
+    {
+     "reason": "Budget 2007-08's 2005-06 actuals have Rs 385 crore more non-tax revenue, revenue receipts, revenue expenditure and total expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount is counted on both sides in one series and on neither in the other.",
+     "cases": 4
     }
    ]
   },

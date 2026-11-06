@@ -8,6 +8,9 @@ from pipeline_common.report import Allowed, Report
 from ..common import ROOT
 from ..cpi2024 import pdf_numbers
 
+INDEX_INFLATION_TOL = 0.03  # points: indices are printed to two decimals but compiled unrounded
+LINKING_TOL = 0.00006  # the linking factor is printed to four decimals (off by up to 0.00005), plus float slack
+
 BACKTICK = (
     "MoSPI's press release page prints this figure with a stray backtick (for example '109.`39'). It is read as "
     "missing and the rest of its row is kept; the next month's release repeats it as final, and that figure is used."
@@ -76,7 +79,7 @@ def check_inflation(ds: dict, report: Report) -> None:
                     continue
                 checked += 1
                 calc = (v[i] / before[i] - 1) * 100
-                if abs(calc - v[i + 3]) > 0.03:
+                if abs(calc - v[i + 3]) > INDEX_INFLATION_TOL:
                     failures.append(f"release {m}, {month} {sec}: index {v[i]} vs {before[i]} gives {calc:.2f}%, published {v[i + 3]}%")
     report.add("Prices, new series: inflation reproduced from the index a year earlier", checked, failures,
                ["Indices are printed to two decimals but compiled unrounded, so a difference of up to 0.03 points is allowed."])
@@ -136,7 +139,7 @@ def check_linking_factor(ds: dict, report: Report) -> None:
             continue
         checked += 1
         calc = (sum(news) / 12) / (sum(olds) / 12)
-        if abs(calc - f) > 0.00006:
+        if abs(calc - f) > LINKING_TOL:
             failures.append(f"linking factor {sec}: published {f}, 2025 averages give {calc:.4f}")
     report.add("Prices, new series: linking factor = 2025 average, new base ÷ old base", checked, failures,
                [f"Published factors {c['linking']}; old-base indices from MoSPI's data service, new-base from the press releases."])

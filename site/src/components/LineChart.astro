@@ -45,7 +45,7 @@ const plots = linePlots(
   series.map((s) => ({ name: s.name, color: `var(--s${s.slot})`, dashed: s.dashed, values: s.points.map((p) => p.value), estimates: s.points.map((p) => !!p.estimate) })),
   format,
   `${title}. Values are listed in the table below.`,
-  { zero, endLabel: true, annotations },
+  { zero, endLabel: true, annotations, valueFormat: tipFormat },
 );
 
 // Estimate labels in short form; left out when every figure has the same one (said once, under the chart).

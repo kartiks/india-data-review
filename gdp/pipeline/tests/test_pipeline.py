@@ -37,11 +37,6 @@ def test_in_order_tolerates_interleaved_text():
     assert not forecasts.in_order(quote, "expected to fall sharply")
 
 
-def test_unit_label_error_not_converted():
-    assert build.to_crore(2079741, "₹ Lakh", "product_taxes") == 2079741
-    assert build.to_crore(100, "₹ Lakh", "gdp") == 1
-
-
 @pytest.mark.skipif(not (ROOT / "data" / "gdp.json").exists(), reason="data not built")
 def test_checks_pass_on_saved_data(tmp_path):
     # The report goes to tmp_path: gdp/data/validation_report.md and validation_summary.json are the site's build

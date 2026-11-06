@@ -243,7 +243,7 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 83 checks, 0 failures.
 
 - GDP is measured from production; the spending components are estimated separately, and MoSPI shows the difference as 'discrepancies'. Gaps above 3% of GDP:
-- 2011-12-back series, 1999-2000 BACK: discrepancy -5.2% of GDP (current prices)
+- 2011-12-back series, 1999-00 BACK: discrepancy -5.2% of GDP (current prices)
 - 2011-12-back series, 2001-02 BACK: discrepancy -4.9% of GDP (current prices)
 - 2011-12-back series, 2002-03 BACK: discrepancy -3.6% of GDP (current prices)
 - 2011-12-back series, 2007-08 BACK: discrepancy -3.5% of GDP (current prices)

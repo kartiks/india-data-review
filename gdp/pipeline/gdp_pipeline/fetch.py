@@ -7,7 +7,8 @@ unchanged dataset gives an identical file (and SHA-256).
 
 MoSPI's API keeps only the latest estimate for the new 2022-23 series and for
 quarters. So when a re-download differs from the saved file, the old file is
-kept under sources/snapshots/<date it was fetched>/ before being replaced: run
+kept under sources/snapshots/<time it was fetched>/ (UTC, e.g. 2026-11-06T093000Z;
+see pipeline_common.download.snapshot_name) before being replaced: run
 after every release and the revision history builds up.
 
 Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]

@@ -236,14 +236,24 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 ## ✅ Every forecast is quoted from its official document
 224 checks, 0 failures.
 
+- Allowed (1): Neither sentence names the year: 'the 7 to 7¾ per cent range' and '7.0 to 7.75 per cent in the coming year'. The paragraphs they conclude (Volume I, 1.45-1.49) weigh oil prices 'next fiscal year compared with ... 2015-16', so the year is 2016-17. Cases:
+  - Economic Survey (Ministry of Finance), Economic Survey 2015-16 → 2016-17: the quotes name no fiscal year
+- Allowed (1): The sentence does not name the year; it closes the Survey's Outlook section, which opens (paragraph 1.52, the page before) with 'the prospects for FY25', i.e. 2024-25. Cases:
+  - Economic Survey (Ministry of Finance), Economic Survey 2023-24 → 2024-25: the quotes name no fiscal year
+- Allowed (1): The sentence retains the projection 'as set out in the May 3 Policy Statement'; paragraph 36, just before it, says that statement 'projected baseline real GDP growth for 2011-12 at around 8.0 per cent'. Cases:
+  - Reserve Bank of India, monetary policy statements, First Quarter Review of Monetary Policy 2011-12 → 2011-12: the quotes name no fiscal year
+- Allowed (1): The sentence gives 5.0 per cent 'for the year as a whole'; the same sentence begins with growth 'in the second half of 2013-14 relative to the first half', so the year is 2013-14. Cases:
+  - Reserve Bank of India, monetary policy statements, Second Quarter Review of Monetary Policy 2013-14 → 2013-14: the quotes name no fiscal year
+- Allowed (1): This record holds no projection: the sentence says why the MPC gave none. It follows 'as regards the outlook for 2020-21' in the same statement, so the record is for 2020-21. Cases:
+  - Reserve Bank of India, monetary policy statements, Governor's Statement – Seventh Bi-monthly Monetary Policy Statement, 2019-20 (off-cycle, COVID) → 2020-21: the quotes name no fiscal year
 - Economic Survey (Ministry of Finance), Economic Survey 2013-14 → 2014-15: quote found with other text (a margin box or second column) printed between its words
-- 114 quoted sentences found in their official documents; recorded numbers checked against each sentence.
+- 114 quoted sentences found in their official documents; recorded numbers, bands and years checked against each record's sentences; the RBI's first and last flags checked against the dates.
 
 ## ✅ Spending side: size of the statistical discrepancy (for review, not failures)
 83 checks, 0 failures.
 
 - GDP is measured from production; the spending components are estimated separately, and MoSPI shows the difference as 'discrepancies'. Gaps above 3% of GDP:
-- 2011-12-back series, 1999-2000 BACK: discrepancy -5.2% of GDP (current prices)
+- 2011-12-back series, 1999-00 BACK: discrepancy -5.2% of GDP (current prices)
 - 2011-12-back series, 2001-02 BACK: discrepancy -4.9% of GDP (current prices)
 - 2011-12-back series, 2002-03 BACK: discrepancy -3.6% of GDP (current prices)
 - 2011-12-back series, 2007-08 BACK: discrepancy -3.5% of GDP (current prices)

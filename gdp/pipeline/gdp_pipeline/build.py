@@ -14,7 +14,8 @@ Nothing here changes a published number. The only arithmetic is:
 - growth for the back series (1950-51 to 2011-12), which MoSPI publishes as
   levels only: growth = this year / last year - 1, from constant-price GDP;
 - nothing is converted from ₹ lakh: the two indicators labelled "₹ Lakh"
-  (taxes and subsidies on products) are in fact in ₹ crore (see UNIT_LABEL_ERRORS);
+  (taxes and subsidies on products) are in fact in ₹ crore (see UNITS); a row
+  with any other unit than its indicator's is left out and fails the checks;
 - where only the finer industries are published, the three broad service
   groups are added up from their parts (checks confirm parts = groups wherever
   MoSPI publishes both).
@@ -24,17 +25,16 @@ Run: uv run python -m gdp_pipeline.build
 
 import csv
 import json
-import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 from pipeline_common.numbers import number
-from pipeline_common.text import slug
+from pipeline_common.text import fy, fy_start, is_fy, slug
 
 from . import budget, forecasts, population, states
-from .ids import (BROAD, GROUPS, INDICATORS, INDUSTRIES, INDUSTRY_LABELS, SECTOR_LABELS, SECTORS, STAGE_BY_LABEL,
-                  STAGE_ORDER, STAGES, latest_stage)
+from .ids import (BROAD, GROUPS, GROWTH_INDICATORS, INDICATORS, INDUSTRIES, INDUSTRY_LABELS, SECTOR_LABELS, SECTORS,
+                  STAGE_BY_LABEL, STAGE_ORDER, STAGES, latest_stage)
 from .sources import BUDGETS, NAS_INDICATORS, NAS_SERIES
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,12 +57,28 @@ def versions(entry: dict) -> list[dict]:
     return [current] + earlier
 
 
+# The unit MoSPI prints for each indicator. A row in any other unit is left out and reported (a check failure),
+# so a figure in another unit is never shown as ₹ crore. MoSPI labels taxes and subsidies on products "₹ Lakh", but
+# the values are ₹ crore: taxes − subsidies equals net taxes on products (published in ₹ crore) exactly (checked in
+# checks.py). So that label is expected, and not applied. If MoSPI corrects it, the rows fail here: change the
+# entry to "₹ Crore" then.
+UNITS = {name: "%" if code in GROWTH_INDICATORS else "₹ Crore" for code, (name, _) in INDICATORS.items()}
+UNITS |= {"product_taxes": "₹ Lakh", "product_subsidies": "₹ Lakh"}
+
+
 def read_row(r: dict, key: str, base: str, series: str, freq: str, code: int, url: str,
              sha: str) -> tuple[dict | None, list[str]]:
-    """One API row with our ids attached, or None if it cannot be used; and the problems found in it."""
-    if not re.fullmatch(r"\d{4}-(\d{2}|2000)", str(r.get("year"))):
+    """One API row with our ids attached, or None if it cannot be used; and the problems found in it.
+
+    The year is written in the short form ('1999-00'; MoSPI's back series writes '1999-2000'), so that the year
+    before 2000-01 is found under the label every fiscal-year helper makes."""
+    if not is_fy(str(r.get("year"))):
         return None, [f"{key}: row with year {r.get('year')!r} left out (not a fiscal year): {r.get('indicator')} "
                       f"{r.get('revision')} {r.get('current_price')}"]
+    indicator = INDICATORS[code][0]
+    if (r.get("unit") or "") != UNITS[indicator]:
+        which = " ".join(str(r[k]) for k in ("year", "quarter", "revision") if r.get(k))
+        return None, [f"{key}: unit {r.get('unit')!r}, expected {UNITS[indicator]!r}; row left out ({which})"]
     stage_label = r.get("revision")
     stage = STAGE_BY_LABEL.get(stage_label) if stage_label else ("BACK" if series == "Back" else "LATEST")
     if stage is None:
@@ -80,10 +96,10 @@ def read_row(r: dict, key: str, base: str, series: str, freq: str, code: int, ur
         "series": series_key(base, series),
         "base_year": base,
         "frequency": "annual" if freq == "Annually" else "quarterly",
-        "year": r["year"],
+        "year": fy(fy_start(r["year"])),
         "quarter": r.get("quarter") or "",
         "indicator_code": code,
-        "indicator": INDICATORS[code][0],
+        "indicator": indicator,
         "indicator_as_printed": r.get("indicator"),
         "stage": stage,
         "stage_as_printed": stage_label or "",
@@ -127,7 +143,9 @@ def load_rows(manifest: dict) -> tuple[list[dict], list[str], list[dict]]:
                     raise FileNotFoundError(f"{key}: version {version['sha256']} of {version['fetched_at']} is "
                                             f"listed in sources/manifest.json but its file {version['file']!r} is missing")
                 for r in json.loads((ROOT / version["file"]).read_text())["rows"]:
-                    estimate = (r.get("year"), r.get("quarter") or "", r.get("revision"))
+                    year = str(r.get("year"))
+                    year = fy(fy_start(year)) if is_fy(year) else year
+                    estimate = (year, r.get("quarter") or "", r.get("revision"))
                     if n and (r.get("revision") not in STAGE_BY_LABEL or estimate in have):
                         continue
                     row, why = read_row(r, key, base, series, freq, code, entry["url"], version["sha256"])
@@ -188,21 +206,10 @@ def label(k: tuple) -> str:
     return ", ".join(p for p in parts if p)
 
 
-# MoSPI labels taxes and subsidies on products "₹ Lakh", but the values are ₹ crore:
-# taxes − subsidies equals net taxes on products (published in ₹ crore) exactly
-# (checked in checks.py). So the label is not applied.
-UNIT_LABEL_ERRORS = {"product_taxes", "product_subsidies"}
-
-
-def to_crore(v: float | None, unit: str, indicator: str = "") -> float | None:
-    if v is None:
-        return None
-    return v / 100 if unit == "₹ Lakh" and indicator not in UNIT_LABEL_ERRORS else v
-
-
 def pair(r: dict) -> dict:
-    cur = to_crore(r["current_price"], r["unit"], r["indicator"])
-    con = to_crore(r["constant_price"], r["unit"], r["indicator"])
+    """A level's figures as published: every level is in ₹ crore (read_row leaves out a row in any other unit
+    than UNITS gives)."""
+    cur, con = r["current_price"], r["constant_price"]
     out = {}
     if cur is not None:
         out["cur"] = cur
@@ -306,7 +313,8 @@ def main() -> dict:
     assumptions = [a for s in BUDGETS if (a := budget.assumption(s, manifest))]
     dataset = {
         "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
-        "units": "₹ crore for levels; % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
+        "units": "₹ crore for levels; ₹ for per-person figures (per_person); % for growth rates. 'cur' = current "
+                 "prices (nominal), 'con' = constant prices of the base year (real).",
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "series": {
             "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",

@@ -52,7 +52,7 @@ source (`plfs.py`, `prices.py`, `hces.py`, `cpi2024.py`, `rbi.py`, sharing `comm
 `data/`; and `checks/`, one module per topic, which writes the validation report.
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
-re-download differs, the old file is kept in `sources/snapshots/<date>/`.
+re-download differs, the old file is kept in `sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`).
 
 ## Keeping it up to date
 

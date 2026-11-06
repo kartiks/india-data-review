@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from pipeline_common import download
 
 from gdp_pipeline import fetch
 
@@ -40,7 +41,7 @@ def test_refresh_snapshots_a_revision(sandbox, monkeypatch):
     fetch_nas, _ = stub({1: [{"v": 1}], 2: [{"v": 2}]})
     monkeypatch.setattr(fetch, "fetch_nas", fetch_nas)
     fetch.fetch_all_nas(manifest, force=False)
-    first = manifest[KEY1]["fetched_at"][:10]
+    first = download.snapshot_name(manifest[KEY1]["fetched_at"])
 
     fetch_nas, _ = stub({1: [{"v": 10}], 2: [{"v": 2}]})
     monkeypatch.setattr(fetch, "fetch_nas", fetch_nas)

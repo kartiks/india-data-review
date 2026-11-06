@@ -42,7 +42,7 @@ The command exits with an error if any check fails, and the website (`../site/`)
 changed and pushes it to `main` once every check and the local CI pass (see
 [Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
 estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<date>/`, so the revision history of the new series builds up over time: the build reads an
+`sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; older folders are named by date only), so the revision history of the new series builds up over time: the build reads an
 estimate stage (say a year's Provisional Estimate) from the newest saved file that has it once the current file no
 longer does, and lists those estimates in `gdp.json` (`earlier_releases`) and the validation report. Quarters have no
 stage of their own, so only their latest figures are used.
@@ -74,7 +74,9 @@ series), quarters against years, the back series against the current series, the
 forecast quote found in its downloaded document. Problems found in the official data are documented in the report
 and on the site's Sources page: a ₹ lakh unit label on figures that are in ₹ crore, a row labelled "1999", duplicate
 "Additional Revision" rows, inconsistent early net-tax figures, the back series' non-additivity before 2004-05, and
-one mistyped GVA growth rate (2019-20, Second Advance Estimates).
+one mistyped GVA growth rate (2019-20, Second Advance Estimates). Every row must be in the unit its indicator is
+published in (`UNITS` in `build.py`); a row in any other unit is left out and fails the checks. The back series
+writes one year "1999-2000"; it is stored as "1999-00", like every other year.
 
 ### State accounts
 
@@ -233,7 +235,10 @@ need to be downloaded by hand into `sources/`.
 }
 ```
 
-- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record.
+- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record, and
+  it must name the record's `fiscal_year` (as "2026-27" or "FY27"; the year before may be named too). Years are
+  not read as numbers. If the sentence does not name the year, the check fails until the year is confirmed from
+  the text around it and added, with that reason, to `KNOWN_EXCEPTIONS` in `checks.py`.
 - `measure` is `GDP` or `GVA`, as the statement says.
 - `value` is a single projection; use `low` and `high` for a range, and `value_text` with `value: null` for words
   such as "a little below 5 per cent".
@@ -241,14 +246,16 @@ need to be downloaded by hand into `sources/`.
   site uses as the year's starting forecast.
 - `is_last` marks the final projection before the year's outcome. While a year is still running, its latest
   record has `is_last: false` and `is_latest_available: true`; move that flag when a newer statement comes.
+- The checks work the flags out again from the dates (counting only records with a `value`, `low` or `high`; the
+  April policy is the first one dated April or May of the year) and fail if any is on the wrong record.
 
 **After each Economic Survey** (late January), add a record to `pipeline/gdp_pipeline/forecast_sources/economic_survey.json`
 with `fiscal_year`, `survey`, `published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a
 point), `quote`, `url`, `pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`)
-and `notes`. Optional fields:
+and `notes`. Both nominal figures must be in `nominal_quote`. Optional fields:
 
 - `band_low` and `band_high`: the band around a point forecast, such as "9 per cent (+/- 0.25)"; the forecasts page
-  shows it.
+  shows it. Both must be in `quote` or `quote_2`, or be the projection plus and minus the "(+/- x)" in `quote`.
 - `quote_text_layer`: the quote as the PDF's text layer reads it, where that differs from the printed page (a ¾ read
   as `3/4`); the check accepts either.
 - `quote_2`, for a projection stated in two places, with `quote_2_url` and `quote_2_pdf_page` if it is in another

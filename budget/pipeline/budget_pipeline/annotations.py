@@ -100,14 +100,33 @@ NSSF = (
 )
 FINAL_ACCOUNTS = (
     "Budget documents print actuals about two years later, sometimes still provisional; RBI's series uses "
-    "the audited Finance Accounts. Differences under 1% are expected for this reason."
+    "the audited Finance Accounts. Small differences (up to 0.1% and Rs 500 crore) are expected for this reason; "
+    "larger ones are listed with their own reason."
 )
 RBI_2004_05_FD = (
     "RBI's 2004-05 fiscal deficit is Rs 592 crore higher (1,25,794 vs 1,25,202 in Budget 2006-07); the "
     "primary deficit differs by the same amount. Consistent with final audited accounts vs provisional actuals."
 )
 
-# (fiscal year, field, kind) -> reason for a difference larger than 1% from the RBI series
+RBI_2000_01 = (
+    "Budget 2002-03's 2000-01 actuals have Rs 258 crore more tax revenue and Rs 239 crore less non-tax revenue "
+    "than RBI's series (a different split of the same receipts, net Rs 19 crore), and Rs 19 crore more revenue "
+    "receipts, revenue expenditure and total expenditure. Every deficit agrees exactly."
+)
+RBI_2002_03 = (
+    "Budget 2004-05's 2002-03 actuals have Rs 914 crore more revenue receipts (Rs 881 crore of it tax) and Rs 915 "
+    "crore more revenue expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount is "
+    "counted on both sides in one series and on neither in the other. Total expenditure differs by this plus the "
+    "NSSF repayment (see that note)."
+)
+RBI_2005_06 = (
+    "Budget 2007-08's 2005-06 actuals have Rs 385 crore more non-tax revenue, revenue receipts, revenue "
+    "expenditure and total expenditure than RBI's series, and the deficits agree (to Rs 1 crore): the same amount "
+    "is counted on both sides in one series and on neither in the other."
+)
+
+# (fiscal year, field, kind) -> reason for a difference from the RBI series larger than checks.RBI_SHARE_TOL or
+# checks.RBI_CRORE_TOL; for a year listed with its own reason, every field that differs is listed under it.
 KNOWN_REFERENCE_DIFFS: dict[tuple[str, str, str], str] = {
     ("2002-03", "capital_expenditure", "actual"): NSSF,
     ("2002-03", "total_expenditure", "actual"): NSSF,
@@ -115,7 +134,14 @@ KNOWN_REFERENCE_DIFFS: dict[tuple[str, str, str], str] = {
     ("2003-04", "total_expenditure", "actual"): NSSF,
     ("2004-05", "capital_expenditure", "actual"): NSSF,
     ("2004-05", "total_expenditure", "actual"): NSSF,
+    ("2004-05", "fiscal_deficit", "actual"): RBI_2004_05_FD,
     ("2004-05", "primary_deficit", "actual"): RBI_2004_05_FD,
+    **{("2000-01", field, "actual"): RBI_2000_01 for field in (
+        "tax_revenue_net", "non_tax_revenue", "revenue_receipts", "revenue_expenditure", "total_expenditure")},
+    **{("2002-03", field, "actual"): RBI_2002_03 for field in (
+        "tax_revenue_net", "non_tax_revenue", "revenue_receipts", "revenue_expenditure")},
+    **{("2005-06", field, "actual"): RBI_2005_06 for field in (
+        "non_tax_revenue", "revenue_receipts", "revenue_expenditure", "total_expenditure")},
 }
 
 # Actuals for year Y come from Budget Y+2.

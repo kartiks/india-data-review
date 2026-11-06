@@ -8,6 +8,11 @@ from ..plfs import MISSING, RATE_DIMS, SMALL_GAP, identity_gap
 from .values import BAD_VALUE, cell
 
 
+# Shares of workers are printed to one decimal, so each is off by up to SHARE_ROUNDING points.
+SHARE_ROUNDING = 0.05
+SUBTOTAL_TOL = 0.15  # points: 'all self-employed' against its two parts (three rounded shares)
+SHARE_SUM_TOL = 0.25  # points: a breakdown's shares against 100% (or SHARE_ROUNDING per share, if more)
+
 LEFT_OUT = (
     "MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters "
     "for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and "
@@ -128,12 +133,12 @@ def check_distribution(ds: dict, report: Report) -> None:
                 own = {c[:2]: v for c, v in cats.items()}
                 total = sum(own.get(x) or 0 for x in ("1.", "2.", "4.", "5."))
                 checked += 1
-                if abs((own.get("1.") or 0) + (own.get("2.") or 0) - (own.get("3.") or 0)) > 0.15:
+                if abs((own.get("1.") or 0) + (own.get("2.") or 0) - (own.get("3.") or 0)) > SUBTOTAL_TOL:
                     problems.append(f"{where}: all self-employed {own.get('3.')} ≠ {own.get('1.')} + {own.get('2.')}")
-                tol = 0.25
+                tol = SHARE_SUM_TOL
             else:
                 total = sum(vals)
-                tol = max(0.25, 0.05 * len(vals))
+                tol = max(SHARE_SUM_TOL, SHARE_ROUNDING * len(vals))
             if abs(total - 100) > tol:
                 problems.append(f"{where}: shares add up to {total:.1f}%")
         for msg in problems:

@@ -19,7 +19,8 @@ from .ids import STAGE_ORDER
 from .states import DATA, KNOWN_STATES, SITE_BASE
 
 LEVEL_TOL = 2  # ₹ crore: GSDP is printed to the crore and its parts to the lakh
-GROWTH_TOL = 0.05  # growth rates are printed to one decimal ...
+# Unlike checks.GROWTH_TOL, the tolerance here is built per figure: GROWTH_ROUNDING + the levels' slack + 1e-9.
+GROWTH_ROUNDING = 0.05  # points: growth rates are printed to one decimal ...
 LEVEL_ROUNDING = 0.5  # ... and worked out from levels printed to the crore (or rupee), which matters for small states
 PER_PERSON_TOL = 1  # ₹
 POPULATION_TOL = 0.0005  # per-person GSDP and NSDP are rounded to the rupee
@@ -79,7 +80,7 @@ def check_rows(st: dict, report) -> None:
 def check_identities(st: dict, report) -> None:
     failures, notes, n = [], [], 0
     no_subsidies = set()
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         for level, va in (("gsdp", "gsva"), ("nsdp", "nsva")):
             lv, total, taxes = node.get(level), node.get(va, {}).get("total"), node.get("taxes")
             if not lv or lv.get("derived") or not total or not taxes:
@@ -98,7 +99,7 @@ def check_identities(st: dict, report) -> None:
               for s in sorted(no_subsidies)]
     # A state with value added but no GSDP: MoSPI's GSDP table leaves it out and its taxes or subsidies are missing,
     # so it would silently drop off the site.
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         if node.get("gsva", {}).get("total") and "gsdp" not in node:
             failures.append(f"{state}, {year}: value added is published but GSDP is not, and it cannot be worked out "
                             "(taxes or subsidies on products missing)")
@@ -110,7 +111,7 @@ def check_identities(st: dict, report) -> None:
 
 def check_industries(st: dict, report) -> None:
     failures, n = [], 0
-    for base, state, year, node in nodes(st):
+    for _base, state, year, node in nodes(st):
         for va in ("gsva", "nsva"):
             parts = node.get(va, {})
             total = parts.get("total")
@@ -147,7 +148,7 @@ def check_growth(st: dict, report) -> None:
                     calc = (a[k] / b[k] - 1) * 100
                     # How far rounding the two levels can move the growth rate.
                     slack = 100 * LEVEL_ROUNDING / b[k] * (1 + a[k] / b[k])
-                    if abs(calc - g[kind]) > GROWTH_TOL + slack + 1e-9:
+                    if abs(calc - g[kind]) > GROWTH_ROUNDING + slack + 1e-9:
                         messages.append(f"{state}, {year}, {level}_growth {kind}: published {g[kind]}%, "
                                         f"levels give {calc:.2f}%")
     known = allowed()

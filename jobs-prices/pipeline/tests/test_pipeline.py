@@ -113,6 +113,19 @@ def test_rbi_table_links():
     assert links[21] == ("Table 21: Gross State Domestic Product (Current Prices)", "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_1112.XLSX")
 
 
+def test_rbi_table_links_only_from_rbis_document_host():
+    from jobs_prices_pipeline import rbi
+
+    def row(n: int, url: str) -> str:
+        return (f"<tr><td><a class='link2' href=PublicationsView.aspx?id={n}>Table {n}: T{n}</a></td>"
+                f"<td><a href='{url}'>x</a></td></tr>")
+
+    page = (row(19, "https://rbidocs.rbi.org.in.evil.test/rdocs/19T.XLSX") + row(20, "https://rbidocsx.test/20T.XLSX")
+            + row(21, "https://rbidocs.rbi.org.in/rdocs/21T.XLSX"))
+    _, links = rbi.table_links(page)
+    assert links == {21: ("Table 21: T21", "https://rbidocs.rbi.org.in/rdocs/21T.XLSX")}  # 19 and 20 not paired with 21's file
+
+
 def test_cfpi_final_figures_replace_provisional_ones_figure_by_figure():
     def release(month, current, previous=None):
         summary = {"current": {"cfpi_index": current}}

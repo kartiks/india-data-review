@@ -47,7 +47,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 
 LEVEL_TOL = 10  # ₹ crore: published figures are rounded to the crore, so sums can be a few crore off
-GROWTH_TOL = 0.051  # published growth rates have one decimal
+GROWTH_TOL = 0.051  # points: growth rates are printed to one decimal (off by up to 0.05), plus float slack
 # A published growth rate further than this from every reading of the levels is treated as an error.
 GROSS_GROWTH_GAP = 1.5
 # Series where MoSPI's API keeps the estimates every rate was measured against, so every rate (annual and quarterly,
@@ -449,7 +449,7 @@ def check_budget(ds: dict, report: Report) -> None:
             checked += 1
             calc = (a["gdp_crore"] / a["base_gdp_crore"] - 1) * 100
             msg = f"Budget {y}: ₹{a['gdp_crore']:,.0f} crore is {calc:.2f}% over ₹{a['base_gdp_crore']:,.0f} crore; printed {a['growth_pct']}%"
-            (notes if abs(calc - a["growth_pct"]) <= 0.051 else failures).append(msg)
+            (notes if abs(calc - a["growth_pct"]) <= GROWTH_TOL else failures).append(msg)
         if a.get("note"):
             notes.append(f"Budget {y}: {a['note']}")
     report.add("Budget GDP assumption found and consistent", checked, failures, notes)

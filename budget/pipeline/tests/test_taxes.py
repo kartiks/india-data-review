@@ -6,7 +6,6 @@ import pytest
 from pipeline_common.text import fy
 
 from budget_pipeline.parse import ParseError
-from budget_pipeline.readers import read_any
 from budget_pipeline.taxes import (
     checks,
     load_all,

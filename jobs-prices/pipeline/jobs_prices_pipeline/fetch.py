@@ -24,7 +24,7 @@ import urllib.parse
 from pathlib import Path
 
 from pipeline_common import download
-from pipeline_common.download import fetch_pages, get, is_type, now
+from pipeline_common.download import PAGE_PAUSE_S, POLITE_PAUSE_S, RELEASE_PAUSE_S, fetch_pages, file_kind, get, now
 
 from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, queries
 
@@ -101,13 +101,13 @@ def fetch_cpi2024(manifest: dict, force: bool) -> None:
             raise RuntimeError(f"{key}: more than one PDF on {page}: {links}")
         if links:
             pdf = get(links[0])
-            if not is_type(pdf, "pdf"):
+            if file_kind(pdf) != "pdf":  # stop: a release without its PDF must not be saved
                 raise RuntimeError(f"{key}: {links[0]} is not a PDF")
             save(manifest, f"{key}/pdf", RAW / f"{key}.pdf", pdf, links[0], {"release_page": page})
             print(f"{key}: PDF {len(pdf):,} bytes", flush=True)
         else:
             manifest[f"{key}/pdf"] = {"url": page, "empty": True, "note": "no PDF attached to this release", "checked_at": now()}
-        time.sleep(1)
+        time.sleep(RELEASE_PAUSE_S)
 
 
 def fetch_hces_tables(manifest: dict, force: bool) -> None:
@@ -117,7 +117,7 @@ def fetch_hces_tables(manifest: dict, force: bool) -> None:
         if key in manifest and not force:
             continue
         content = get(url)
-        if not is_type(content, "xlsx"):
+        if file_kind(content) != "xlsx":  # stop: these tables are required
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url)
         print(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
@@ -140,12 +140,12 @@ def fetch_rbi(manifest: dict, force: bool) -> None:
         if spec.words not in title.upper():
             raise RuntimeError(f"{key}: expected a title with {spec.words!r}, found {title!r}")
         content = get(url)
-        if not is_type(content, "xlsx"):
+        if file_kind(content) != "xlsx":  # stop: these tables are required
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url,
                        {"edition": edition, "title": title, "page": rbi.HANDBOOK_PAGE})
         print(f"{key}: {title} ({edition}){' (changed)' if changed else ''}", flush=True)
-        time.sleep(0.5)
+        time.sleep(POLITE_PAUSE_S)
 
 
 def main(force: bool = False, force_api: bool = False) -> None:
@@ -178,7 +178,7 @@ def main(force: bool = False, force_api: bool = False) -> None:
             changed = save(manifest, key, RAW / f"{key}.json", encode(result), result["url"],
                            {"records": result["total_records"]})
             print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}", flush=True)
-            time.sleep(0.3)
+            time.sleep(PAGE_PAUSE_S)
         fetch_cpi2024(manifest, force)
         fetch_hces_tables(manifest, force)
         fetch_rbi(manifest, force or force_api)

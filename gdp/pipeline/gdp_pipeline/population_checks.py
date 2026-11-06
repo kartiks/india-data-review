@@ -24,6 +24,7 @@ from .population import (IMPLIED_TOL, MEASURES, MISREAD_GAP, PER_PERSON_TOL, PRO
 ROOT = Path(__file__).resolve().parents[2]
 
 LAKH_TOL = 0.501  # lakh: population against the RBI's figure, printed to the nearest lakh
+MILLION_TOL = 0.5  # million: an implied population against the one printed to the nearest million
 PROJECTION_TOL = 1e-4  # MoSPI's population (as implied) against the projection, 2011-12 to 2021-22
 # MoSPI's own population from 2022-23 is 0.1-0.2% above the projection; a year's figure further away than this
 # means a quoted row is under the wrong year (a year's population growth is about 0.9%).
@@ -75,7 +76,7 @@ def check_tables(src: dict) -> Result:
                 failures.append(f"{label}: per-person figures imply different populations "
                                 f"({', '.join(f'{v:.3f}' for v in vals)} million)")
             printed = t["figures"].get("population", {}).get(y)
-            if printed is not None and abs(vals[0] - printed) > 0.5:
+            if printed is not None and abs(vals[0] - printed) > MILLION_TOL:
                 failures.append(f"{label}: implied population {vals[0]:.3f} million, printed {printed:,.0f}")
     return checked, failures, []
 

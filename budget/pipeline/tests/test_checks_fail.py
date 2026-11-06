@@ -111,6 +111,16 @@ def test_pct_gdp_against_gdp_implied_by_fiscal_deficit():
                           "GDP implied by fiscal deficit % = 3.00%"]
 
 
+def test_pct_gdp_printed_without_a_gdp_to_check_against_fails():
+    # No stated GDP for this column and no fiscal deficit %: a printed % of GDP cannot be checked.
+    rows = [obs("fiscal_deficit", 100000, budget="2011-12"), obs("revenue_deficit", 60000, pct=2.0, budget="2011-12")]
+    s = run(C.check_pct_gdp, rows, {})
+    assert s.failures == ["Budget 2011-12, BE 2010-11: revenue_deficit printed as % of GDP, but there is no GDP to "
+                          "check them against (no stated GDP or fiscal deficit %)"]
+    rows[1]["pct_gdp"] = None  # no % printed: nothing to check
+    assert run(C.check_pct_gdp, rows, {}).checks == 0
+
+
 def test_pct_gdp_within_rounding_passes():
     rows = [obs("fiscal_deficit", 100000, pct=5.0), obs("primary_deficit", 30900, pct=1.5)]
     s = run(C.check_pct_gdp, rows, {"2010-11": {"value": 2_000_000}})
@@ -145,20 +155,26 @@ def test_rbi_comparison(monkeypatch):
     rbi = {
         ("2010-11", "fiscal_deficit", "actual"): {"value": 400000},  # matches
         ("2011-12", "fiscal_deficit", "actual"): {"value": 500000},  # ours is 2% higher: fails
-        ("2012-13", "fiscal_deficit", "actual"): {"value": 490000},  # ours is 0.1% lower: a note
+        ("2012-13", "fiscal_deficit", "actual"): {"value": 490000},  # ours is 0.06% lower: allowed (final accounts)
         ("2013-14", "fiscal_deficit", "actual"): {"value": 500000},  # ours is missing: fails
+        ("2014-15", "fiscal_deficit", "actual"): {"value": 490000},  # ours is 0.12% lower: fails
+        ("2015-16", "fiscal_deficit", "actual"): {"value": 1000000},  # Rs 600 crore, though under 0.1%: fails
         ("1999-00", "fiscal_deficit", "actual"): {"value": 1},  # before the first budget: not compared
     }
     monkeypatch.setattr(C, "load_rbi", lambda: rbi)
     dataset = {"years": {y: {"fiscal_deficit": {"actual": {"value": v}}}
-                         for y, v in (("2010-11", 400003), ("2011-12", 510000), ("2012-13", 489500))}}
+                         for y, v in (("2010-11", 400003), ("2011-12", 510000), ("2012-13", 489700),
+                                      ("2014-15", 489400), ("2015-16", 999400))}}
     s = run(C.check_reference, dataset)
-    assert s.checks == 4
+    assert s.checks == 6
     assert s.failures == ["Actual 2011-12 fiscal_deficit: ours 510,000 vs RBI 500,000 (+10,000, 2.00%)",
-                          "Actual 2013-14 fiscal_deficit: missing from our data (RBI: 500,000)"]
-    assert s.notes[0] == "1 of 4 figures match the RBI series exactly (within Rs 5 crore)."
-    assert s.notes[1].startswith("Actual 2012-13 fiscal_deficit: ours 489,500 vs RBI 490,000 (-500, 0.10%). "
-                                 "Small difference:")
+                          "Actual 2013-14 fiscal_deficit: missing from our data (RBI: 500,000)",
+                          "Actual 2014-15 fiscal_deficit: ours 489,400 vs RBI 490,000 (-600, 0.12%)",
+                          "Actual 2015-16 fiscal_deficit: ours 999,400 vs RBI 1,000,000 (-600, 0.06%)"]
+    assert s.allowed == [{"reason": C.FINAL_ACCOUNTS, "cases": 1}]
+    assert s.notes[0].startswith(f"Allowed (1): {C.FINAL_ACCOUNTS} Cases:\n"
+                                 "  - Actual 2012-13 fiscal_deficit: ours 489,700 vs RBI 490,000 (-300, 0.06%)")
+    assert s.notes[1] == "1 of 6 figures match the RBI series exactly (within Rs 5 crore)."
 
 
 def test_rbi_listed_difference_is_allowed(monkeypatch):

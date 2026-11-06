@@ -5,9 +5,10 @@
 #   scripts/ci.sh              # the current commit
 #   scripts/ci.sh my-branch    # a branch, tag or commit (e.g. origin/main)
 #
-# It passes only if, for every area, the pipeline rebuilds data/ from the committed sources with every check
-# passing, the rebuilt data/ matches what is committed (apart from the build time), and the tests pass; and the
-# site type-checks, passes its tests (if it has an npm test script) and builds. It downloads no data (npm and uv may download packages).
+# It passes only if the Python code passes ruff (settings in ruff.toml); for every area, the pipeline rebuilds
+# data/ from the committed sources with every check passing, the rebuilt data/ matches what is committed (apart
+# from the build time), and the tests pass; and the site type-checks, passes its tests (if it has an npm test
+# script) and builds. It downloads no data (npm and uv may download packages).
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
@@ -15,6 +16,7 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 REF="${1:-HEAD}"
 AREAS=(budget gdp jobs-prices)
+RUFF_VERSION=0.17.4  # pinned, so a new ruff release cannot fail a commit that passed before
 
 SHA="$(git -C "$REPO" rev-parse --verify "$REF^{commit}")"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/india-data-review-ci.XXXXXX")"
@@ -28,6 +30,9 @@ step() { printf '\n== %s\n' "$*"; }
 
 echo "Local CI for $REF ($(git -C "$REPO" log -1 --format='%h %s' "$SHA"))"
 git -C "$REPO" worktree add --quiet --detach "$WORK" "$SHA"
+
+step "Python lint (ruff)"
+(cd "$WORK" && uvx "ruff@$RUFF_VERSION" check --no-cache .)
 
 step "shared pipeline code: tests"
 (cd "$WORK/shared/pipeline" && uv run --locked pytest -q)

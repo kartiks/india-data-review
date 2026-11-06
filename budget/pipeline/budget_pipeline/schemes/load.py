@@ -7,7 +7,7 @@ from pipeline_common.text import fy
 
 from ..parse import ParseError
 from ..sources import FIRST_SCHEME_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
-from .common import MANIFEST, PARTS, ROOT, SCHEME_TYPES, TOLERANCE
+from .common import LEVEL_TOL, MANIFEST, PARTS, ROOT, SCHEME_TYPES
 from .items import parse_schemes
 
 
@@ -42,7 +42,7 @@ def compare(primary: dict, other: dict) -> list[dict]:
             for part in PARTS:
                 va = ia["values"][pk][part] or 0.0
                 vb = ib["values"][pk][part] or 0.0
-                if abs(va - vb) > TOLERANCE:
+                if abs(va - vb) > LEVEL_TOL:
                     diffs.append({"item": k, "label": ia["label_as_printed"], "period": pk, "part": part,
                                   "primary": va, "other": vb})
     return diffs

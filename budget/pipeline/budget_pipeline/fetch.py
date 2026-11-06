@@ -15,10 +15,10 @@ import sys
 import tempfile
 import time
 import urllib.error
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
-from pipeline_common.download import MAGIC, get, is_type
+from pipeline_common.download import POLITE_PAUSE_S, file_kind, get
 from pipeline_common.text import fy
 
 from .readers import read_any
@@ -29,13 +29,17 @@ RAW = ROOT / "sources" / "raw"
 MANIFEST = ROOT / "sources" / "manifest.json"
 
 
+MIN_BYTES = 500  # smaller than any real table: an empty or error answer
+
+
 def looks_valid(ext: str, content: bytes) -> bool:
-    if len(content) < 500:
+    """Whether a download is the kind of file its address says (.pdf, .xlsx, .xls, else a web page) and not the
+    site's 404 page. A mismatch means the candidate address does not hold the table: it is skipped, not an error."""
+    if len(content) < MIN_BYTES:
         return False
-    if ext in MAGIC:  # pdf, xlsx, xls
-        return is_type(content, ext)
-    lowered = content[:3000].lower()
-    return b"<html" in lowered and b"404 - file or directory not found" not in lowered
+    if ext in ("pdf", "xlsx", "xls"):
+        return file_kind(content) == ext
+    return file_kind(content) == "html" and b"404 - file or directory not found" not in content[:3000].lower()
 
 
 def has_title(doc: str, ext: str, content: bytes) -> bool:
@@ -69,7 +73,7 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                         print(f"{year} {doc}: {url} -> {exc}")
                 except Exception as exc:  # noqa: BLE001 - a network error after get()'s retries: report and carry on
                     print(f"{year} {doc}: {url} -> {exc}")
-                time.sleep(0.5)  # be polite to the government server
+                time.sleep(POLITE_PAUSE_S)
                 if content is None or not looks_valid(ext, content):
                     continue
                 if not has_title(doc, ext, content):
@@ -83,7 +87,7 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                     "file": str(dest.relative_to(ROOT)),
                     "sha256": hashlib.sha256(content).hexdigest(),
                     "bytes": len(content),
-                    "fetched_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                    "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 }
                 print(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
             if files:

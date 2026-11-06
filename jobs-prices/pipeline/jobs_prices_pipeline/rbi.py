@@ -54,8 +54,12 @@ def table_links(page_html: str) -> tuple[str, dict[int, tuple[str, str]]]:
     m = re.search(r"Handbook of Statistics on Indian States,?\s*(\d{4}-\d{2})", page_html)
     edition = m.group(1) if m else ""
     out = {}
+    # A table's Excel file is the first link after its title, before the next table's title, and only on RBI's
+    # document host (rbidocs.rbi.org.in): a link elsewhere leaves the table out rather than pairing it with another.
+    title_link = r"<a class='link2' href=PublicationsView\.aspx\?id=\d+>"
     for title, url in re.findall(
-            r"<a class='link2' href=PublicationsView\.aspx\?id=\d+>(.*?)</a>.*?href='(https://rbidocs[^']+\.XLSX)'",
+            title_link + r"((?:(?!</a>).)*)</a>(?:(?!" + title_link + r").)*?"
+            r"href='(https://rbidocs\.rbi\.org\.in/[^']+\.XLSX)'",
             page_html, flags=re.S):
         title = re.sub(r"\s+", " ", h.unescape(title)).strip()
         n = re.match(r"Table ?(\d+)", title)

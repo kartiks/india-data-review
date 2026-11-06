@@ -83,6 +83,7 @@ const diamond = (cx: number, cy: number, s = 5.5) => `M${cx},${cy - s}L${cx + s}
         return (
           <g data-col={i} tabindex="0" class="row" aria-label={`${r.label}: ${r.marks.map((m) => `${series[m.s].name} ${markText(m)}`).join(", ")}`}>
             <rect x="0" y={top + i * rowH} width={sz.width} height={rowH} class="row-hit" />
+            <rect x="1" y={top + i * rowH + 1} width={sz.width - 2} height={rowH - 2} rx="4" class="focus-ring" />
             <text x={labelW} y={y} dy="0.32em" text-anchor="end" class="tick row-label">{r.label}</text>
             {pts.length > 1 && <line x1={x(Math.min(...pts))} x2={x(Math.max(...pts))} y1={y} y2={y} class="join" />}
             {r.marks.filter((m) => series[m.s].shape === "range" && m.lo != null && m.hi != null).map((m) => {
@@ -137,5 +138,8 @@ const diamond = (cx: number, cy: number, s = 5.5) => `M${cx},${cy - s}L${cx + s}
   .plot :global(.join) { stroke: var(--axis); stroke-width: 2; stroke-linecap: round; }
   .row { cursor: pointer; outline: none; }
   .row-hit { fill: transparent; }
-  .row:global(.active) .row-hit, .row:focus .row-hit { fill: var(--surface-2); }
+  .row:global(.active) .row-hit { fill: var(--surface-2); }
+  /* Keyboard focus: a 2px accent outline round the row (the hover fill alone is too faint to see). */
+  .focus-ring { fill: none; stroke: none; pointer-events: none; vector-effect: non-scaling-stroke; }
+  .row:focus-visible .focus-ring { stroke: var(--accent); stroke-width: 2; }
 </style>

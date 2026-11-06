@@ -1,0 +1,31 @@
+{
+  "about": "State and UT names as sources spell them, and the key each must normalise to. Tested against the site's stateKey (site/src/lib/states.ts, site/test/states.test.ts) and the jobs and prices checks' state_key (jobs-prices/pipeline/jobs_prices_pipeline/checks/states.py, jobs-prices/pipeline/tests/test_state_names.py), which are kept in step by hand: add a spelling here when a source brings a new one.",
+  "names": {
+    "Andaman & Nicobar Islands": "andamanandnicobar",
+    "Andaman and Nicobar Islands": "andamanandnicobar",
+    "Andaman And Nicobar Islands": "andamanandnicobar",
+    "Andaman & Nicobar": "andamanandnicobar",
+    "The Andaman and Nicobar Island": "andamanandnicobar",
+    "Dadra & Nagar Haveli & Daman & Diu": "dadraandnagarhavelianddamananddiu",
+    "Dadra & Nagar Haveli and Daman & Diu": "dadraandnagarhavelianddamananddiu",
+    "Dadra and Nagar Haveli and Daman and Diu": "dadraandnagarhavelianddamananddiu",
+    "The Dadra And Nagar Haveli And Daman And Diu": "dadraandnagarhavelianddamananddiu",
+    "Dadra & Nagar Haveli": "dadraandnagarhaveli",
+    "Daman & Diu": "damananddiu",
+    "Delhi": "delhi",
+    "NCT of Delhi": "delhi",
+    "Jammu & Kashmir": "jammuandkashmir",
+    "Jammu and Kashmir": "jammuandkashmir",
+    "Ladakh": "ladakh",
+    "Lakshadweep": "lakshadweep",
+    "Puducherry": "puducherry",
+    "Chandigarh": "chandigarh",
+    "Goa": "goa",
+    "Tamil Nadu": "tamilnadu",
+    "Telangana": "telangana",
+    "Andhra Pradesh": "andhrapradesh",
+    "Uttar Pradesh": "uttarpradesh",
+    "Odisha": "odisha",
+    "All India": "allindia"
+  }
+}

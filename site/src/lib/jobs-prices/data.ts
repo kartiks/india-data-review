@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fyMonths, isFy, prevFy } from "../fy";
+import { stateKey } from "../states";
 
 type Num = number | null;
 interface Table { fields: string[]; labels: Record<string, string[]>; rows: (number | null)[][] }
@@ -188,10 +189,6 @@ export interface Cpi24Row { code: string; name: string; index: Num[]; inflation:
 export function cpi24Rows(kind: "divisions" | "groups" | "states", month = C24.latest): Cpi24Row[] {
   return (C24[kind][month] ?? []).map(([code, name, ...v]) => ({ code, name, index: v.slice(0, 3), inflation: v.slice(3, 6) }));
 }
-/** One key for a state however a source spells it: "The Dadra And Nagar Haveli And Daman And Diu",
- * "Dadra & Nagar Haveli & Daman & Diu" and "Dadra and Nagar Haveli and Daman and Diu" all give the same key. */
-export const stateKey = (s: string) =>
-  s.toLowerCase().replace(/&/g, "and").replace(/^the |^nct of |\bislands?\b/g, "").replace(/[^a-z]/g, "");
 /** "Andaman And Nicobar Islands" -> "Andaman & Nicobar Islands"; the releases spell names differently from MoSPI's API. */
 export const tidyState = (s: string) => s.replace(/ And /g, " & ").replace(/^The /, "").replace("NCT of Delhi", "Delhi");
 

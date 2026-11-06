@@ -3,10 +3,11 @@ import Base from "../../../layouts/Base.astro";
 import StateMap, { type MapMetric } from "../../../components/StateMap.astro";
 import {
   rate, PLFS_LATEST, PLFS_STATES, WORKERS, cpiState, averageInflation, CPI_LAST, hcesValueFor, hcesOverall, HCES_LATEST, NOT_IMPUTED,
-  cpi24Rows, CPI24_LATEST, CPI24, monthLabel, stateKey, rbiValue, rbiLatestYear, RBI_EDITION,
+  cpi24Rows, CPI24_LATEST, CPI24, monthLabel, rbiValue, rbiLatestYear, RBI_EDITION,
 } from "../../../lib/jobs-prices/data";
 import { gpct, orDash, pct, rupees } from "../../../lib/format";
 import { link } from "../../../lib/url";
+import { stateKey } from "../../../lib/states";
 import { prevFy } from "../../../lib/fy";
 import OrDash from "../../../components/OrDash.astro";
 

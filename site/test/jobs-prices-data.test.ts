@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { completeFys } from "../src/lib/fy";
 import {
-  type CpiPoint, averageInflation, monthRange, rbiLatestYear, rbiValue, rbiYears, stateKey, tidyState, yearAverage, RBI,
+  type CpiPoint, averageInflation, monthRange, rbiLatestYear, rbiValue, rbiYears, tidyState, yearAverage, RBI,
   CPI_LAST, GENERAL, cpiAllIndia,
 } from "../src/lib/jobs-prices/data";
 
@@ -65,14 +65,6 @@ describe("averageInflation", () => {
 });
 
 describe("state names", () => {
-  it("stateKey matches the spellings different sources use", () => {
-    const k = stateKey("Andaman & Nicobar Islands");
-    expect(stateKey("Andaman And Nicobar Islands")).toBe(k);
-    expect(stateKey("The Andaman and Nicobar Island")).toBe(k);
-    expect(stateKey("NCT of Delhi")).toBe(stateKey("Delhi"));
-    expect(stateKey("Jammu & Kashmir")).toBe("jammuandkashmir");
-    expect(stateKey("Tamil Nadu")).not.toBe(stateKey("Telangana"));
-  });
   it("tidyState", () => {
     expect(tidyState("Andaman And Nicobar Islands")).toBe("Andaman & Nicobar Islands");
     expect(tidyState("NCT of Delhi")).toBe("Delhi");

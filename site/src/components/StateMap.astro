@@ -6,7 +6,7 @@
 // steps that each hold about the same number of states (quantiles); a state with no figure is grey.
 import fs from "node:fs";
 import path from "node:path";
-import { stateKey } from "../lib/jobs-prices/data";
+import { stateKey } from "../lib/states";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
 
@@ -15,7 +15,7 @@ export interface MapMetric {
   label: string; // button text
   title: string; // shown above the map when selected
   note?: string;
-  values: Record<string, number | null>; // keyed by stateKey() from lib/jobs-prices/data
+  values: Record<string, number | null>; // keyed by stateKey() from lib/states
   format: (v: number) => string;
 }
 interface Props {

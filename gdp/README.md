@@ -235,7 +235,10 @@ it projects:
 }
 ```
 
-- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record.
+- `quote` is copied exactly from the document at `url`; the numbers in it must be the numbers in the record, and
+  it must name the record's `fiscal_year` (as "2026-27" or "FY27"; the year before may be named too). Years are
+  not read as numbers. If the sentence does not name the year, the check fails until the year is confirmed from
+  the text around it and added, with that reason, to `KNOWN_EXCEPTIONS` in `checks.py`.
 - `measure` is `GDP` or `GVA`, as the statement says.
 - `value` is a single projection; use `low` and `high` for a range, and `value_text` with `value: null` for words
   such as "a little below 5 per cent".
@@ -243,11 +246,15 @@ it projects:
   site uses as the year's starting forecast.
 - `is_last` marks the final projection before the year's outcome. While a year is still running, its latest
   record has `is_last: false` and `is_latest_available: true`; move that flag when a newer statement comes.
+- The checks work the flags out again from the dates (counting only records with a `value`, `low` or `high`; the
+  April policy is the first one dated April or May of the year) and fail if any is on the wrong record.
 
 **After each Economic Survey** (late January), add a record to `economic_survey.json` with `fiscal_year`, `survey`,
 `published_date`, `kind` (`point` or `range`), `low` and `high` (the same number for a point), `quote`, `url`,
 `pdf_page`, the nominal fields (`nominal_low`, `nominal_high`, `nominal_quote`, or `null`) and `notes`. A projection
 stated in two places can add `quote_2`, with `quote_2_url` and `quote_2_pdf_page` if it is in another document.
+A likely range around a point projection goes in `band_low` and `band_high`; both must be in `quote` or `quote_2`,
+or be the projection plus and minus a "(+/- 0.25)" in `quote`. Both nominal figures must be in `nominal_quote`.
 The survey's chapters move from `indiabudget.gov.in/economicsurvey/` to `indiabudget.gov.in/budget<year>/economicsurvey/`
 when the next survey comes out; the downloaded copy is kept, so the record's `url` only needs updating if the file
 is downloaded again.

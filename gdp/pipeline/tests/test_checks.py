@@ -233,8 +233,9 @@ def test_unknown_source_problem_fails_and_a_known_one_is_allowed(tmp_path, monke
 
 def forecast_run(monkeypatch, texts, **record):
     from gdp_pipeline import forecasts
-    r = {"fiscal_year": "2025-26", "statement": "April 2025", "url": "https://rbi.example/p.pdf",
-         "quote": "real GDP growth for 2025-26 is projected at 6.5 per cent", "value": 6.5, **record}
+    r = {"fiscal_year": "2025-26", "statement": "April 2025", "date": "2025-04-09", "url": "https://rbi.example/p.pdf",
+         "quote": "real GDP growth for 2025-26 is projected at 6.5 per cent", "value": 6.5,
+         "is_first": True, "is_first_april_policy": True, "is_last": True, **record}
     monkeypatch.setattr(forecasts, "SOURCES", {"rbi": "RBI"})
     monkeypatch.setattr(forecasts, "load", lambda name: [r])
     monkeypatch.setattr(forecasts, "document_texts", lambda manifest, url, page: texts)
@@ -243,7 +244,7 @@ def forecast_run(monkeypatch, texts, **record):
 
 def test_forecast_quoted_from_its_document_passes(monkeypatch):
     text = ["... Taking all these factors into consideration, real GDP growth for 2025-26 is projected at 6.5 per cent ..."]
-    assert forecast_run(monkeypatch, text)[:2] == (2, [])
+    assert forecast_run(monkeypatch, text)[:2] == (3, [])  # the quote found, the record, the flags
 
 
 def test_forecast_quote_not_in_its_document_fails(monkeypatch):
@@ -256,6 +257,18 @@ def test_forecast_figure_not_in_its_quote_fails(monkeypatch):
     _, failures, _ = forecast_run(monkeypatch, text, value=6.7)
     assert failures == ["RBI, April 2025 → 2025-26: recorded [6.7] not all in the quote "
                         "“real GDP growth for 2025-26 is projected at 6.5 per cent”"]
+
+
+def test_forecast_for_a_year_its_quote_does_not_name_fails(monkeypatch):
+    text = ["real GDP growth for 2025-26 is projected at 6.5 per cent"]
+    _, failures, _ = forecast_run(monkeypatch, text, fiscal_year="2026-27", date="2026-04-08")
+    assert failures == ["RBI, April 2025 → 2026-27: the quotes name ['2025-26'], not 2026-27"]
+
+
+def test_forecast_flag_on_the_wrong_record_fails(monkeypatch):
+    text = ["real GDP growth for 2025-26 is projected at 6.5 per cent"]
+    _, failures, _ = forecast_run(monkeypatch, text, is_last=False)
+    assert failures == ["2025-26: is_last is set on no record, expected ['April 2025 (2025-04-09)']"]
 
 
 def test_forecast_document_not_downloaded_fails(monkeypatch):

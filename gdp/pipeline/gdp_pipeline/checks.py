@@ -80,6 +80,26 @@ KNOWN_EXCEPTIONS: dict[tuple[str, str], str] = {
         "MoSPI's API gives 3.3% for nominal GVA growth in the Second Advance Estimates of 2019-20, but the same "
         "release's GVA levels give 7.3% over every estimate of 2018-19, and nominal GDP growth in that release is "
         "7.4%. The rate looks mistyped in the API. The site shows the latest estimate of 2019-20 (RE3), not this one.",
+    # Forecast sentences that do not name their year; the year is read from the text around them.
+    ("forecast", "Economic Survey (Ministry of Finance), Economic Survey 2015-16 → 2016-17: the quotes name no fiscal year"):
+        "Neither sentence names the year: 'the 7 to 7¾ per cent range' and '7.0 to 7.75 per cent in the coming "
+        "year'. The paragraphs they conclude (Volume I, 1.45-1.49) weigh oil prices 'next fiscal year compared "
+        "with ... 2015-16', so the year is 2016-17.",
+    ("forecast", "Economic Survey (Ministry of Finance), Economic Survey 2023-24 → 2024-25: the quotes name no fiscal year"):
+        "The sentence does not name the year; it closes the Survey's Outlook section, which opens (paragraph 1.52, "
+        "the page before) with 'the prospects for FY25', i.e. 2024-25.",
+    ("forecast", "Reserve Bank of India, monetary policy statements, First Quarter Review of Monetary Policy 2011-12 → "
+                 "2011-12: the quotes name no fiscal year"):
+        "The sentence retains the projection 'as set out in the May 3 Policy Statement'; paragraph 36, just before "
+        "it, says that statement 'projected baseline real GDP growth for 2011-12 at around 8.0 per cent'.",
+    ("forecast", "Reserve Bank of India, monetary policy statements, Second Quarter Review of Monetary Policy 2013-14 → "
+                 "2013-14: the quotes name no fiscal year"):
+        "The sentence gives 5.0 per cent 'for the year as a whole'; the same sentence begins with growth 'in the "
+        "second half of 2013-14 relative to the first half', so the year is 2013-14.",
+    ("forecast", "Reserve Bank of India, monetary policy statements, Governor's Statement – Seventh Bi-monthly Monetary "
+                 "Policy Statement, 2019-20 (off-cycle, COVID) → 2020-21: the quotes name no fiscal year"):
+        "This record holds no projection: the sentence says why the MPC gave none. It follows 'as regards the "
+        "outlook for 2020-21' in the same statement, so the record is for 2020-21.",
 }
 INTRO = ("National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. "
          "Every allowed exception lists its reason.")
@@ -437,7 +457,9 @@ def check_budget(ds: dict, report: Report) -> None:
 
 def check_forecasts(ds: dict, report: Report) -> None:
     checked, failures, notes = verify_quotes(ds)
-    report.add("Every forecast is quoted from its official document", checked, failures, notes)
+    known = allowed()
+    failures = known.sort_out("forecast", failures)
+    report.add("Every forecast is quoted from its official document", checked, failures, notes, known)
 
 
 def check_revisions(ds: dict, report: Report) -> None:

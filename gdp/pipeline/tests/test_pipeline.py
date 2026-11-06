@@ -30,6 +30,99 @@ def test_numbers_in_quotes():
     assert forecasts.numbers_in("range of 5.4 – 5.9 per cent") >= {5.4, 5.9}
 
 
+@pytest.mark.parametrize("quote, numbers", [
+    ("GVA growth for 2016-17 is projected at 7.6 per cent", {7.6}),  # not 2016, 17 or -17
+    ("revised down to 6.7 per cent from the August 2017 projection of 7.3 per cent", {6.7, 7.3}),
+    ("7.2 per cent – in the range of 6.8-7.1 per cent in H1:2019-20 and 7.3-7.4 per cent in H2", {7.2, 6.8, 7.1, 7.3, 7.4}),
+    ("we expect real GDP growth to be in the 6¾ to 7½ percent range in FY2018.", {6.75, 7.5}),
+    ("a baseline GDP growth of 6.5 per cent in real terms in FY24.", {6.5}),
+    ("raising real GDP growth from 4.4 per cent in Q1 to 5.0 per cent", {4.4, 5.0}),
+    ("growth in 1999-2000 was 8.8 per cent", {8.8}),
+    ("growth of -0.5 per cent, or minus 1 per cent, between 6.8 - 7.1", {-0.5, 0.5, -1.0, 1.0, 6.8, 7.1}),
+])
+def test_numbers_in_leaves_out_years_and_periods(quote, numbers):
+    assert forecasts.numbers_in(quote) == numbers
+
+
+def test_years_in():
+    assert forecasts.years_in("from 6.6 per cent in 2017-18 to 7.4 per cent in 2018-19.") == {"2017-18", "2018-19"}
+    assert forecasts.years_in("in FY2018 and FY24, H1:2019-20; 1999-2000") == {"2017-18", "2023-24", "2019-20",
+                                                                               "1999-00"}
+    assert forecasts.years_in("for the year as a whole, 7.5 per cent, April 2017") == set()
+
+
+def survey(**kw):
+    return {"fiscal_year": "2023-24", "low": 6.5, "high": 6.5, "quote": "growth of 6.5 per cent in FY24.", **kw}
+
+
+def test_a_record_its_sentences_bear_out_has_no_problems():
+    assert forecasts.record_problems(survey()) == []
+    # a band from a second sentence, or the projection ± the quote's '(+/- x)'
+    assert forecasts.record_problems(survey(band_low=6.0, band_high=6.8,
+                                            quote_2="in the range of 6.0 per cent to 6.8 per cent")) == []
+    assert forecasts.record_problems({"fiscal_year": "2011-12", "low": 9.0, "high": 9.0, "band_low": 8.75,
+                                      "band_high": 9.25, "quote": "grow by 9 per cent (+/- 0.25) in 2011-12."}) == []
+    assert forecasts.record_problems(survey(nominal_low=10.5, nominal_high=11.0,
+                                            nominal_quote="nominal growth of 10.5 to 11 per cent")) == []
+    # the year growth is measured from may be named too
+    assert forecasts.record_problems({"fiscal_year": "2018-19", "value": 7.4,
+                                      "quote": "from 6.6 per cent in 2017-18 to 7.4 per cent in 2018-19"}) == []
+
+
+@pytest.mark.parametrize("record, problem", [
+    ({"fiscal_year": "2016-17", "value": 17.0, "quote": "GVA growth for 2016-17 is projected at 7.6 per cent"},
+     "recorded [17.0] not all in the quote"),
+    (survey(band_low=6.0, band_high=6.9, quote_2="in the range of 6.0 per cent to 6.8 per cent"),
+     "band [6.0, 6.9] not in the quotes"),
+    (survey(band_low=6.0), "band [6.0, None] not in the quotes"),
+    ({"fiscal_year": "2011-12", "low": 9.0, "high": 9.0, "band_low": 8.5, "band_high": 9.5,
+      "quote": "grow by 9 per cent (+/- 0.25) in 2011-12."}, "band [8.5, 9.5] not in the quotes"),
+    (survey(nominal_low=10.5, nominal_high=11.5, nominal_quote="nominal growth of 10.5 to 11 per cent"),
+     "nominal [10.5, 11.5] not all in"),
+    (survey(fiscal_year="2024-25"), "the quotes name ['2023-24'], not 2024-25"),
+    (survey(quote_2="and 7 per cent in 2025-26"), "the quotes name ['2023-24', '2025-26'], not 2023-24"),
+    (survey(quote="growth of 6.5 per cent for the year as a whole"), "the quotes name no fiscal year"),
+])
+def test_a_record_its_sentences_do_not_bear_out_is_reported(record, problem):
+    problems = forecasts.record_problems(record)
+    assert len(problems) == 1 and problems[0].startswith(f"{record['fiscal_year']}: {problem}")
+
+
+def rbi(date, value=7.0, **flags):
+    return {"fiscal_year": "2024-25", "date": date, "value": value, **flags}
+
+
+def flagged():
+    return [rbi("2024-02-08", is_first=True), rbi("2024-04-05", is_first_april_policy=True), rbi("2024-06-07"),
+            rbi("2024-12-06", is_last=True)]
+
+
+def test_flags_that_follow_the_dates_have_no_problems():
+    assert forecasts.flag_problems(flagged()) == []
+    # records are matched by date, not by their order in the file; a record without a figure is never first or last
+    assert forecasts.flag_problems([rbi("2024-01-01", value=None)] + flagged()[::-1]) == []
+    # a year still being projected: its latest record is marked as such, and none is last
+    running = flagged()[:3] + [rbi("2024-10-09", is_latest_available=True)]
+    assert forecasts.flag_problems(running) == []
+
+
+@pytest.mark.parametrize("change, problem", [
+    (lambda rs: rs[0].pop("is_first") and rs[1].update(is_first=True),
+     "2024-25: is_first is set on ['2024-04-05'], expected ['2024-02-08']"),
+    (lambda rs: rs[3].pop("is_last"), "2024-25: is_last is set on no record, expected ['2024-12-06']"),
+    (lambda rs: rs[2].update(is_last=True), "2024-25: is_last is set on ['2024-06-07', '2024-12-06'], expected"),
+    (lambda rs: rs[3].update(value=None), "2024-25: is_last is set on ['2024-12-06'], expected ['2024-06-07']"),
+    (lambda rs: rs[1].pop("is_first_april_policy"), "2024-25: is_first_april_policy is set on no record"),
+    (lambda rs: rs[2].update(is_latest_available=True), "2024-25: is_latest_available is set on ['2024-06-07'], "
+                                                         "expected ['2024-12-06']"),
+])
+def test_flags_that_do_not_follow_the_dates_are_reported(change, problem):
+    rs = flagged()
+    change(rs)
+    problems = forecasts.flag_problems(rs, lambda r: r["date"])
+    assert any(p.startswith(problem) for p in problems), problems
+
+
 def test_in_order_tolerates_interleaved_text():
     quote = "expected to grow in the range of 5.4 – 5.9 per cent"
     text = "expected to grow in the turing, improved balance of range of 5.4 – 5.9 per cent in 2014-15"

@@ -187,6 +187,15 @@ def test_rbi_listed_difference_is_allowed(monkeypatch):
     assert "  - Actual 2011-12 fiscal_deficit: ours 600,000 vs RBI 500,000 (+100,000, 20.00%)" in s.notes[0]
 
 
+def test_rbi_listed_difference_only_covers_its_own_figures(monkeypatch):
+    """A listed cell is allowed only at the figures that were reviewed; any other difference there fails."""
+    monkeypatch.setattr(C, "load_rbi", lambda: {("2002-03", "tax_revenue_net", "actual"): {"value": 158544}})
+    for ours, fails in ((159425, False), (169425, True)):
+        dataset = {"years": {"2002-03": {"tax_revenue_net": {"actual": {"value": ours}}}}}
+        s = run(C.check_reference, dataset)
+        assert bool(s.failures) is fails, (ours, s.failures)
+
+
 def test_year_on_year_jump_is_flagged_for_review():
     # Not a failure by design (a real jump happens, e.g. 2020-21), but it must be listed for a person to look at.
     values = {"2010-11": 100, "2011-12": 110, "2012-13": 200, "2013-14": 210}

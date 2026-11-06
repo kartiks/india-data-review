@@ -49,6 +49,10 @@ def test_years_in():
     assert forecasts.years_in("in FY2018 and FY24, H1:2019-20; 1999-2000") == {"2017-18", "2023-24", "2019-20",
                                                                                "1999-00"}
     assert forecasts.years_in("for the year as a whole, 7.5 per cent, April 2017") == set()
+    # a fiscal year named by both its years, with FY in front
+    assert forecasts.years_in("in FY24-25 at 6.5 per cent") == {"2024-25"}
+    assert forecasts.years_in("FY 2025-26 to FY 2026-27") == {"2025-26", "2026-27"}
+    assert forecasts.numbers_in("in FY24-25 at 6.5 per cent") == {6.5}
 
 
 def survey(**kw):

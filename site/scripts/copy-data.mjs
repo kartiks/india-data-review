@@ -4,7 +4,7 @@
 // Run as a script before every dev and build; the functions are exported for test/copy-data.test.ts.
 import fs from "node:fs";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { dataMismatches, passed, readValidation, SUMMARY_FILE } from "../src/lib/validation.ts";
 
 export const AREAS = ["budget", "gdp", "jobs-prices"];
@@ -65,7 +65,9 @@ export function copyData(root, out, areas = AREAS, log = console.log) {
   return [];
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+// Run as a script (not imported by the tests). Compare real paths, so a symlink in the path cannot skip the gate.
+const real = (p) => fs.realpathSync(p);
+if (process.argv[1] && real(path.resolve(process.argv[1])) === real(fileURLToPath(import.meta.url))) {
   const errors = copyData(path.resolve(".."), path.resolve("public", "data"));
   if (errors.length) {
     for (const e of errors) console.error(e);

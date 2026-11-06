@@ -125,23 +125,32 @@ RBI_2005_06 = (
     "is counted on both sides in one series and on neither in the other."
 )
 
-# (fiscal year, field, kind) -> reason for a difference from the RBI series larger than checks.RBI_SHARE_TOL or
-# checks.RBI_CRORE_TOL; for a year listed with its own reason, every field that differs is listed under it.
-KNOWN_REFERENCE_DIFFS: dict[tuple[str, str, str], str] = {
-    ("2002-03", "capital_expenditure", "actual"): NSSF,
-    ("2002-03", "total_expenditure", "actual"): NSSF,
-    ("2003-04", "capital_expenditure", "actual"): NSSF,
-    ("2003-04", "total_expenditure", "actual"): NSSF,
-    ("2004-05", "capital_expenditure", "actual"): NSSF,
-    ("2004-05", "total_expenditure", "actual"): NSSF,
-    ("2004-05", "fiscal_deficit", "actual"): RBI_2004_05_FD,
-    ("2004-05", "primary_deficit", "actual"): RBI_2004_05_FD,
-    **{("2000-01", field, "actual"): RBI_2000_01 for field in (
-        "tax_revenue_net", "non_tax_revenue", "revenue_receipts", "revenue_expenditure", "total_expenditure")},
-    **{("2002-03", field, "actual"): RBI_2002_03 for field in (
-        "tax_revenue_net", "non_tax_revenue", "revenue_receipts", "revenue_expenditure")},
-    **{("2005-06", field, "actual"): RBI_2005_06 for field in (
-        "non_tax_revenue", "revenue_receipts", "revenue_expenditure", "total_expenditure")},
+# (fiscal year, field, kind, our figure, RBI's figure) -> reason for a difference from the RBI series larger than
+# checks.RBI_SHARE_TOL or checks.RBI_CRORE_TOL. The figures are part of the key, so any other difference for the same
+# cell (a parser regression, a revised RBI table) fails until a person looks at it. For a year listed with its own
+# reason, every field that differs is listed under it.
+KNOWN_REFERENCE_DIFFS: dict[tuple[str, str, str, int, int], str] = {
+    ("2000-01", "non_tax_revenue", "actual", 55708, 55947): RBI_2000_01,
+    ("2000-01", "revenue_expenditure", "actual", 277858, 277839): RBI_2000_01,
+    ("2000-01", "revenue_receipts", "actual", 192624, 192605): RBI_2000_01,
+    ("2000-01", "tax_revenue_net", "actual", 136916, 136658): RBI_2000_01,
+    ("2000-01", "total_expenditure", "actual", 325611, 325592): RBI_2000_01,
+    ("2002-03", "capital_expenditure", "actual", 74535, 60769): NSSF,
+    ("2002-03", "total_expenditure", "actual", 414162, 399482): NSSF,
+    ("2002-03", "non_tax_revenue", "actual", 72323, 72290): RBI_2002_03,
+    ("2002-03", "revenue_expenditure", "actual", 339628, 338713): RBI_2002_03,
+    ("2002-03", "revenue_receipts", "actual", 231748, 230834): RBI_2002_03,
+    ("2002-03", "tax_revenue_net", "actual", 159425, 158544): RBI_2002_03,
+    ("2003-04", "capital_expenditure", "actual", 109228, 62918): NSSF,
+    ("2003-04", "total_expenditure", "actual", 471368, 424992): NSSF,
+    ("2004-05", "capital_expenditure", "actual", 113331, 81248): NSSF,
+    ("2004-05", "total_expenditure", "actual", 497682, 465577): NSSF,
+    ("2004-05", "fiscal_deficit", "actual", 125202, 125794): RBI_2004_05_FD,
+    ("2004-05", "primary_deficit", "actual", -1732, -1140): RBI_2004_05_FD,
+    ("2005-06", "non_tax_revenue", "actual", 77198, 76813): RBI_2005_06,
+    ("2005-06", "revenue_expenditure", "actual", 439761, 439376): RBI_2005_06,
+    ("2005-06", "revenue_receipts", "actual", 347462, 347077): RBI_2005_06,
+    ("2005-06", "total_expenditure", "actual", 506123, 505738): RBI_2005_06,
 }
 
 # Actuals for year Y come from Budget Y+2.

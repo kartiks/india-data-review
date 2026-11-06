@@ -60,8 +60,8 @@ EXCEPTIONS = Exceptions({
     **KNOWN_EXCEPTIONS,
     **{("format", f"Budget {budget}: {ext.upper()} differs"): reason
        for (budget, ext), reason in KNOWN_FORMAT_ISSUES.items()},
-    **{("rbi", f"{'Actual' if kind == 'actual' else kind.upper()} {year} {field}:"): reason
-       for (year, field, kind), reason in KNOWN_REFERENCE_DIFFS.items()},
+    **{("rbi", f"{'Actual' if kind == 'actual' else kind.upper()} {year} {field}: ours {ours:,.0f} vs RBI {rbi:,.0f} ("):
+       reason for (year, field, kind, ours, rbi), reason in KNOWN_REFERENCE_DIFFS.items()},
 })
 
 

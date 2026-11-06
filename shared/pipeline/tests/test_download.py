@@ -82,6 +82,31 @@ def test_get_refuses_a_download_past_the_size_cap(monkeypatch, no_waiting):
     assert download.get("https://example.test/x", opener=opener) == b"x" * 10
 
 
+class Response(io.BytesIO):
+    def __init__(self, body: bytes, length: int):
+        super().__init__(body)
+        self.headers = {"Content-Length": str(length)}
+
+
+def test_get_retries_a_download_cut_short(no_waiting):
+    """A dropped connection gives a short body with no error from read(n); Content-Length catches it."""
+    bodies = [Response(b"%PDF-1.4 short", 1000), Response(b"%PDF-1.4 whole", 14)]
+
+    @contextmanager
+    def opener(req, timeout):
+        yield bodies.pop(0)
+
+    assert download.get("https://example.test/x", opener=opener) == b"%PDF-1.4 whole"
+    assert bodies == [] and no_waiting == [5]
+
+    @contextmanager
+    def always_short(req, timeout):
+        yield Response(b"%PDF", 1000)
+
+    with pytest.raises(download.http.client.IncompleteRead):
+        download.get("https://example.test/x", opener=always_short)
+
+
 def redirect(old: str, new: str):
     req = download.urllib.request.Request(old)
     return download._NoDowngrade().redirect_request(req, None, 302, "Found", {}, new)

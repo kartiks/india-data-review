@@ -78,17 +78,26 @@ def norm(s: str) -> str:
 
 
 # Years and period labels, which are not projections: fiscal years ('2016-17', 'H1:2019-20', '1999-2000'),
-# 'FY24' / 'FY2018', calendar years ('April 2017') and quarters or halves ('Q3', 'H1').
+# 'FY24-25' / 'FY 2025-26' (named by both years), 'FY24' / 'FY2018' (named by the year it ends in), calendar years
+# ('April 2017') and quarters or halves ('Q3', 'H1').
+FY_PAIR_IN_TEXT = re.compile(r"\bFY\s?(\d{4}|\d{2})\s*[-–]\s*(\d{4}|\d{2})(?!\.?\d)", re.IGNORECASE)
 FY_IN_TEXT = re.compile(r"(?<!\d)(?<!\d\.)(\d{4})\s*[-–]\s*(\d{4}|\d{2})(?!\.?\d)")
-FY_SHORT_IN_TEXT = re.compile(r"\bFY\s?(\d{4}|\d{2})\b", re.IGNORECASE)
-NOT_A_FIGURE = [FY_IN_TEXT, FY_SHORT_IN_TEXT, re.compile(r"(?<!\d)(?<!\d\.)(?:19|20)\d{2}(?!\.?\d)"),
+FY_SHORT_IN_TEXT = re.compile(r"\bFY\s?(\d{4}|\d{2})\b(?!\s*[-–]\s*\d)", re.IGNORECASE)
+NOT_A_FIGURE = [FY_PAIR_IN_TEXT, FY_IN_TEXT, FY_SHORT_IN_TEXT, re.compile(r"(?<!\d)(?<!\d\.)(?:19|20)\d{2}(?!\.?\d)"),
                 re.compile(r"\b[QH][1-4]\b")]
 
 
 def years_in(text: str) -> set[str]:
-    """The fiscal years a sentence names, in the short form: '2016-17' and '1999-2000' as written, 'FY24' as
-    2023-24 and 'FY2018' as 2017-18 (the Indian fiscal year is named by the year it ends in)."""
-    out = {fy(fy_start(f"{a}-{b}")) for a, b in FY_IN_TEXT.findall(text) if is_fy(f"{a}-{b}")}
+    """The fiscal years a sentence names, in the short form: '2016-17' and '1999-2000' as written, 'FY24-25' and
+    'FY 2025-26' as 2024-25 and 2025-26, 'FY24' as 2023-24 and 'FY2018' as 2017-18 (a fiscal year named by one
+    year is named by the year it ends in)."""
+    out = set()
+    for a, b in FY_PAIR_IN_TEXT.findall(text):
+        start = 2000 + int(a) if len(a) == 2 else int(a)
+        if is_fy(f"{start}-{b}"):
+            out.add(fy(start))
+    text = FY_PAIR_IN_TEXT.sub(" ", text)
+    out |= {fy(fy_start(f"{a}-{b}")) for a, b in FY_IN_TEXT.findall(text) if is_fy(f"{a}-{b}")}
     for end in FY_SHORT_IN_TEXT.findall(text):
         out.add(fy((2000 + int(end) if len(end) == 2 else int(end)) - 1))
     return out

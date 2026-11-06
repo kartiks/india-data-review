@@ -6,6 +6,7 @@ snapshot_name). The areas pass their own paths, so these functions hold no state
 """
 
 import hashlib
+import http.client
 import json
 import shutil
 import ssl
@@ -75,7 +76,7 @@ def _retryable(exc: Exception) -> bool:
     errors (404 …) are an answer."""
     if isinstance(exc, urllib.error.HTTPError):
         return exc.code >= 500 or exc.code in (408, 429)
-    return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError))
+    return isinstance(exc, (urllib.error.URLError, TimeoutError, ConnectionError, http.client.IncompleteRead))
 
 
 def tls_for(url: str) -> ssl.SSLContext:
@@ -96,9 +97,19 @@ def _open(req: urllib.request.Request, timeout: float):
     return urllib.request.build_opener(*handlers).open(req, timeout=timeout)
 
 
+def _check_complete(resp, body: bytes) -> None:
+    """Raise IncompleteRead if the body is shorter than the Content-Length header says. read(n) returns a short body
+    without an error when the connection drops (read() with no size would raise), and a cut-off PDF or Excel file
+    still starts with the right bytes, so it would otherwise be saved over the good copy."""
+    headers = getattr(resp, "headers", None)
+    expected = headers.get("Content-Length") if headers is not None else None
+    if expected and expected.strip().isdigit() and len(body) < int(expected):
+        raise http.client.IncompleteRead(body, int(expected) - len(body))
+
+
 def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
     """The body at url. Raises urllib.error.HTTPError for a 4xx answer, DowngradeRefused for a redirect from https to
-    http, TooLarge past MAX_BYTES, and the last error after `tries` tries."""
+    http, TooLarge past MAX_BYTES, and the last error (a cut-off download is tried again) after `tries` tries."""
     for attempt in range(tries):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
@@ -106,6 +117,7 @@ def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
                 body = resp.read(MAX_BYTES + 1)
             if len(body) > MAX_BYTES:
                 raise TooLarge(f"{url}: more than {MAX_BYTES:,} bytes (download.MAX_BYTES); not a source we expect")
+            _check_complete(resp, body)
             return body
         except Exception as exc:
             if not _retryable(exc) or attempt == tries - 1:

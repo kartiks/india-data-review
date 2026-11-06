@@ -80,7 +80,7 @@ const ur = J.rate({ year: J.PLFS_LATEST });
     from MoSPI's surveys, read straight from government documents and data services, and checked automatically.
   </p>
 
-  <div class="tiles">
+  <div class="tiles home-tiles">
     <a class="tile tile-link" href={link("/gdp/")}>
       <div class="label">GDP growth, {G.LATEST_YEAR}</div>
       <div class="value">{gpct(gdpGrowth.real!)}</div>
@@ -137,7 +137,7 @@ const ur = J.rate({ year: J.PLFS_LATEST });
       years={taxYears}
       series={[
         { name: "Gross tax revenue", slot: 1, points: taxGrowth },
-        { name: "Nominal GDP", slot: 7, points: nominalGrowth },
+        { name: "Nominal GDP", slot: 3, points: nominalGrowth },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}
@@ -193,6 +193,9 @@ const ur = J.rate({ year: J.PLFS_LATEST });
 
 <style>
   .lede { font-size: 1.08rem; max-width: 46em; }
+  /* six tiles: two or three full rows, never a row of six too narrow for their labels */
+  .home-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 720px) { .home-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
   .tile-link { display: block; color: inherit; text-decoration: none; }
   .tile-link:hover { border-color: var(--accent); }
   .areas { margin-bottom: 16px; }

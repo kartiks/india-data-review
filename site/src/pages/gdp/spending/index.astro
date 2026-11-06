@@ -29,7 +29,7 @@ const sec = (field: "gfcf_by_sector" | "saving_by_sector", ids: string[]) =>
   });
 const WHO = [
   { name: "Households", ids: ["households"], slot: 1 },
-  { name: "Private companies", ids: ["private_nonfin", "private_fin"], slot: 7 },
+  { name: "Private companies", ids: ["private_nonfin", "private_fin"], slot: 2 },
   { name: "Public sector companies", ids: ["public_nonfin", "public_fin"], slot: 5 },
   { name: "Government", ids: ["government"], slot: 3 },
 ];
@@ -62,7 +62,7 @@ const nCons = share(nn.pfce?.cur, nn.gdp?.cur)!;
       years={years}
       series={[
         { name: "Household spending", slot: 1, points: line(pfce) },
-        { name: "Investment (fixed)", slot: 2, points: line(gfcf) },
+        { name: "Investment (fixed)", slot: 8, points: line(gfcf) },
         { name: "Government spending", slot: 3, points: line(gfce) },
         { name: "Net exports", slot: 4, points: line(netx) },
       ]}

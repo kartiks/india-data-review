@@ -107,7 +107,7 @@ const pending = BUDGET.filter((b) => !latestStage(OLD, b.budget, (n) => n.gdp?.c
       title="Real GDP growth: forecast and outcome"
       subtitle="Forecasts made before or at the start of each year, against MoSPI's first estimate and its latest."
       series={[
-        { name: "Economic Survey", slot: 6, shape: "range" },
+        { name: "Economic Survey", slot: 5, shape: "range" },
         { name: "RBI, start of year", slot: 3, shape: "diamond" },
         { name: "MoSPI first estimate", slot: OLD_SERIES, shape: "ring" },
         { name: "Latest, 2011-12 base", slot: OLD_SERIES, shape: "dot" },

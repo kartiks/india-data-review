@@ -41,7 +41,7 @@ The command exits with an error if any check fails, and the website (`../site/`)
 changed and pushes it to `main` once every check and the local CI pass (see
 [Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
 estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<date>/`, so the revision history of the new series builds up over time: the build reads an
+`sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; older folders are named by date only), so the revision history of the new series builds up over time: the build reads an
 estimate stage (say a year's Provisional Estimate) from the newest saved file that has it once the current file no
 longer does, and lists those estimates in `gdp.json` (`earlier_releases`) and the validation report. Quarters have no
 stage of their own, so only their latest figures are used.

@@ -3,6 +3,7 @@
 import json
 
 import pytest
+from pipeline_common import download
 
 from jobs_prices_pipeline import fetch
 
@@ -66,7 +67,7 @@ def test_without_flags_saved_queries_are_not_fetched(sandbox, monkeypatch):
 def test_revision_is_snapshotted(sandbox, monkeypatch):
     use_api(monkeypatch, {KEY1: [{"v": 1}], KEY2: [{"v": 2}]})
     fetch.main()
-    first = json.loads(fetch.MANIFEST.read_text())[KEY1]["fetched_at"][:10]
+    first = download.snapshot_name(json.loads(fetch.MANIFEST.read_text())[KEY1]["fetched_at"])
 
     use_api(monkeypatch, {KEY1: [{"v": 10}], KEY2: [{"v": 2}]})
     fetch.main(force_api=True)

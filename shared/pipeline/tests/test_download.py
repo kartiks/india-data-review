@@ -82,13 +82,38 @@ def test_save_keeps_the_previous_version_as_a_snapshot(tmp_path):
     assert not download.save(manifest, "nas/ind01", dest, b"v1", "https://example.test/1", **p)
     assert "checked_at" in manifest["nas/ind01"] and not p["snapshots"].exists()
 
-    # changed: the old file is kept under the date it was fetched, and listed in history
+    # changed: the old file is kept under the time it was fetched, and listed in history
     first["fetched_at"] = "2026-01-05T00:00:00+00:00"
     assert download.save(manifest, "nas/ind01", dest, b"v2", "https://example.test/1", **p)
-    snap = p["snapshots"] / "2026-01-05" / "nas" / "ind01.json"
+    snap = p["snapshots"] / "2026-01-05T000000Z" / "nas" / "ind01.json"
     assert dest.read_bytes() == b"v2" and snap.read_bytes() == b"v1"
     assert manifest["nas/ind01"]["history"] == [
-        {"sha256": first["sha256"], "fetched_at": "2026-01-05T00:00:00+00:00", "file": "sources/snapshots/2026-01-05/nas/ind01.json"}]
+        {"sha256": first["sha256"], "fetched_at": "2026-01-05T00:00:00+00:00",
+         "file": "sources/snapshots/2026-01-05T000000Z/nas/ind01.json"}]
+
+
+def test_two_versions_fetched_on_the_same_day_keep_their_own_snapshots(tmp_path):
+    p, manifest = paths(tmp_path), {}
+    dest = p["raw"] / "nas" / "ind01.json"
+    url = "https://example.test/1"
+    download.save(manifest, "nas/ind01", dest, b"v1", url, **p)
+    manifest["nas/ind01"]["fetched_at"] = "2026-01-05T09:30:00+00:00"
+    download.save(manifest, "nas/ind01", dest, b"v2", url, **p)
+    manifest["nas/ind01"]["fetched_at"] = "2026-01-05T17:45:10+05:30"  # another time zone: named in UTC
+    download.save(manifest, "nas/ind01", dest, b"v3", url, **p)
+    history = manifest["nas/ind01"]["history"]
+    assert [h["file"] for h in history] == ["sources/snapshots/2026-01-05T093000Z/nas/ind01.json",
+                                            "sources/snapshots/2026-01-05T121510Z/nas/ind01.json"]
+    assert [(tmp_path / h["file"]).read_bytes() for h in history] == [b"v1", b"v2"] and dest.read_bytes() == b"v3"
+
+
+def test_snapshot_folders_old_and_new_sort_in_time_order():
+    # folders made before snapshot_name were named by the date only; they keep those names
+    names = [download.snapshot_name("2026-01-06T00:00:01+00:00"), "2026-01-05",
+             download.snapshot_name("2026-01-05T23:59:59+00:00"), "2026-01-04",
+             download.snapshot_name("2026-01-05T08:00:00+00:00")]
+    assert sorted(names) == ["2026-01-04", "2026-01-05", "2026-01-05T080000Z", "2026-01-05T235959Z",
+                             "2026-01-06T000001Z"]
 
 
 def test_check_records_refuses_a_much_shorter_download():

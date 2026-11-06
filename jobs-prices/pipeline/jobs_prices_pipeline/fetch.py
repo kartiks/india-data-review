@@ -6,7 +6,8 @@ line, so an unchanged dataset gives an identical file (and SHA-256) and a
 changed one gives a readable diff.
 
 MoSPI's API keeps only the latest figures. When a re-download differs from the
-saved file, the old file is kept under sources/snapshots/<date it was fetched>/
+saved file, the old file is kept under sources/snapshots/<time it was fetched>/
+(UTC, e.g. 2026-11-06T093000Z)
 before being replaced, so revisions build up over time. A re-download with no
 rows, or with more than 5% fewer rows than the saved file, is more likely a
 fault than a revision: the saved file is kept, the rest is downloaded, and the

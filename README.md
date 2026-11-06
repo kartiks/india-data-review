@@ -91,7 +91,8 @@ changed. It:
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
    listed in the code but missing is downloaded.
 2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
-   pipeline keeps the old file under `<area>/sources/snapshots/<date it was fetched>/` and records it in the
+   pipeline keeps the old file under `<area>/sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; folders from before
+   are named by date only) and records it in the
    manifest's `history`. This is how the revision history of each release builds up.
 3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
    no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.

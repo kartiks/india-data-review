@@ -1,8 +1,8 @@
 """Downloading sources: HTTP with retries, saving with snapshots, the manifest, and MoSPI's paged API.
 
 Every area keeps its downloads under <area>/sources/: raw/ (the files), manifest.json (one entry per file: URL,
-SHA-256, size, time) and snapshots/<date fetched>/ (earlier versions of files that are revised in place). The
-areas pass their own paths, so these functions hold no state.
+SHA-256, size, time) and snapshots/<time fetched>/ (earlier versions of files that are revised in place; see
+snapshot_name). The areas pass their own paths, so these functions hold no state.
 """
 
 import hashlib
@@ -118,11 +118,20 @@ def check_records(manifest: dict, key: str, records: int, max_drop: float = MAX_
             "entry in sources/manifest.json and download again.")
 
 
+def snapshot_name(fetched_at: str) -> str:
+    """The folder under snapshots/ for a version fetched at `fetched_at` (ISO 8601): its UTC time to the second,
+    '2026-01-05T093000Z' (no colons, which some file systems refuse), so two versions fetched on the same day never
+    share a folder. Folders made before were named by the date only ('2026-01-05') and keep their names; sorted as
+    text, both kinds are in time order. The build reads versions in the order of the manifest entry's history, not
+    by folder name."""
+    return datetime.fromisoformat(fetched_at).astimezone(timezone.utc).strftime("%Y-%m-%dT%H%M%SZ")
+
+
 def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None, *,
          root: Path, raw: Path, snapshots: Path) -> bool:
     """Write the file (dest, under raw) and its manifest entry; paths in the manifest are relative to root. If the
-    file changed, the previous version is kept under snapshots/<date it was fetched>/ and listed in the entry's
-    history. Returns True if the file is new or changed."""
+    file changed, the previous version is kept under snapshots/<time it was fetched>/ (snapshot_name) and listed at
+    the end of the entry's history (oldest first). Returns True if the file is new or changed."""
     sha = hashlib.sha256(content).hexdigest()
     old = manifest.get(key)
     if old and old.get("sha256") == sha and dest.exists():
@@ -130,7 +139,7 @@ def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: 
         return False
     history = old.get("history", []) if old else []
     if old and old.get("sha256") and dest.exists():
-        snap = snapshots / old["fetched_at"][:10] / dest.relative_to(raw)
+        snap = snapshots / snapshot_name(old["fetched_at"]) / dest.relative_to(raw)
         snap.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(dest, snap)
         history.append({"sha256": old["sha256"], "fetched_at": old["fetched_at"], "file": str(snap.relative_to(root))})

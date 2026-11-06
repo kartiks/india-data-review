@@ -117,6 +117,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
     <section class="card">
       <DotRows
         title={`Share working in agriculture, ${Y}`}
+        rowHeader="Area"
         subtitle="Agriculture, forestry and fishing; current weekly status."
         series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]}
         rows={SECTORS.map(([s, label]) => ({ label, strong: s === "rural + urban", values: [broadOf(Y, "female", s)[0], broadOf(Y, "male", s)[0]] }))}
@@ -174,6 +175,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
       <section class="card">
         <DotRows
           title={`${k.title}, ${Y}`}
+          rowHeader="Area"
           headingLevel={3}
           subtitle={`${k.note} ₹ ${k.unit}.`}
           series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]}
@@ -188,6 +190,7 @@ const wageRows = wageStates.map((st) => ({ label: st, strong: st === "All India"
   <section class="card">
     <DotRows
       title={`Rural daily wages of men by state, ${YW}`}
+      rowHeader="State"
       headingLevel={3}
       subtitle="Average daily wage in villages for three kinds of work. Sorted by the farm-labour wage. The survey covers the 20 larger states."
       series={WAGE_KINDS.map(({ name, slot }) => ({ name, slot }))}

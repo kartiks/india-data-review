@@ -8,6 +8,8 @@ export interface DotRow { label: string; values: (number | null)[]; note?: strin
 interface Props {
   title?: string;
   subtitle?: string;
+  label?: string; // accessible name of the list, for a chart with no title of its own (a heading just above it)
+  rowHeader: string; // what the rows are, heading the table view's first column: "State", "Survey year"
   series: DotSeries[];
   rows: DotRow[];
   format: (v: number) => string;
@@ -15,7 +17,9 @@ interface Props {
   zero?: boolean; // start the scale at zero (default true)
   headingLevel?: 2 | 3; // 2 (default) for a card directly under the page's h1; 3 inside a section with an h2
 }
-const { title, subtitle, series, rows, format, source, zero = true, headingLevel = 2 } = Astro.props;
+const { title, subtitle, label, rowHeader, series, rows, format, source, zero = true, headingLevel = 2 } = Astro.props;
+const name = label || title;
+if (!name) throw new Error("DotRows needs a title or a label: screen readers announce the list by it");
 const Heading = `h${headingLevel}` as "h2" | "h3";
 const all = rows.flatMap((r) => r.values).filter((v): v is number => v != null);
 const lo = zero ? Math.min(0, ...all) : Math.min(...all);
@@ -37,7 +41,7 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
       <li><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill={`var(--s${s.slot})`} /></svg>{s.name}</li>
     ))}
   </ul>}
-  <ol class="rows" aria-label={title || subtitle || "Values"}>
+  <ol class="rows" aria-label={name}>
     {rows.map((r) => {
       const vs = r.values.map((v, i) => ({ v, i })).filter((d): d is { v: number; i: number } => d.v != null);
       const a = Math.min(...vs.map((d) => d.v)), b = Math.max(...vs.map((d) => d.v));
@@ -64,7 +68,7 @@ const pos = (v: number) => ((v - x0) / (x1 - x0)) * 100;
     <summary>Show as table</summary>
     <div class="table-scroll">
       <table>
-        <thead><tr><th></th>{series.map((s) => <th>{s.name}</th>)}</tr></thead>
+        <thead><tr><th>{rowHeader}</th>{series.map((s) => <th>{s.name}</th>)}</tr></thead>
         <tbody>
           {rows.map((r) => (
             <tr><td>{r.label}</td>{r.values.map((v) => <td>{v == null ? "–" : format(v)}</td>)}</tr>

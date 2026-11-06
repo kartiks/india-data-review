@@ -107,10 +107,10 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Labour force participation, ${Y}`} subtitle="Share of people aged 15 and over who are working or looking for work." series={dotSeries} rows={bySexArea("lfpr")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Labour force participation, ${Y}`} rowHeader="Area" subtitle="Share of people aged 15 and over who are working or looking for work." series={dotSeries} rows={bySexArea("lfpr")} format={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <DotRows title={`Unemployment rate, ${Y}`} subtitle="Share of the labour force aged 15 and over without work." series={dotSeries} rows={bySexArea("ur")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Unemployment rate, ${Y}`} rowHeader="Area" subtitle="Share of the labour force aged 15 and over without work." series={dotSeries} rows={bySexArea("ur")} format={(v) => pct(v)} source={SRC} />
     </section>
   </div>
 
@@ -153,6 +153,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
   <section class="card">
     <DotRows
       title="Unemployment since 1993-94, rural and urban"
+      rowHeader="Survey year"
       subtitle="All India, all ages, usual status. Survey years are uneven: MoSPI's employment surveys every five years or so to 2011-12, then the yearly PLFS (July–June) from 2017-18. The two surveys differ in design, so compare across the 2011-12 to 2017-18 break with care."
       series={[{ name: "Rural", slot: 3 }, { name: "Urban", slot: 4 }]}
       rows={longRows}
@@ -163,7 +164,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Young people (15–29), unemployment rate, ${Y}`} series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Young people (15–29), unemployment rate, ${Y}`} rowHeader="Area" series={dotSeries} rows={bySexArea("ur", "15-29 years")} format={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
       <h2>Unemployment by education, {Y}</h2>
@@ -190,10 +191,10 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Women and men in the labour force, by state, ${Y}`} subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("lfpr")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Women and men in the labour force, by state, ${Y}`} rowHeader="State" subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("lfpr")} format={(v) => pct(v)} source={SRC} />
     </section>
     <section class="card">
-      <DotRows title={`Unemployment by state, ${Y}`} subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("ur")} format={(v) => pct(v)} source={SRC} />
+      <DotRows title={`Unemployment by state, ${Y}`} rowHeader="State" subtitle="Aged 15 and over, usual status. Sorted by the figure for everyone." series={[{ name: "Women", slot: 2 }, { name: "Men", slot: 1 }]} rows={stateRows("ur")} format={(v) => pct(v)} source={SRC} />
     </section>
   </div>
 </Base>

@@ -10,6 +10,7 @@ small script for hover/touch/keyboard readouts and a table view under every char
 npm ci
 npm run dev      # http://localhost:4321
 npm run build    # static site in dist/ (refuses to build unless every area's checks passed on its current data)
+npm run preview  # serve dist/ locally
 npm run check    # type check
 ```
 
@@ -70,7 +71,8 @@ India's national accounts on that same base; every comparison uses one year, the
 have published made up at least 97% of the states' economy the year before; GSDP that MoSPI does not publish for a
 state is worked out as GSVA + taxes − subsidies and marked, as is growth worked out from the levels; average growth
 is from constant-price GSDP; income per person is NSDP per person at current prices. Jobs and prices: annual job
-figures use usual status for people aged 15 and over, quarterly and monthly ones current weekly status, never mixed
+figures use usual status (activity over the past year) for people aged 15 and over, quarterly and monthly ones
+current weekly status (the past seven days), never mixed
 in one chart; figures the pipeline left out (failed checks) are gaps, not zeros; the two Consumer Price Index series
 are shown side by side and never joined; yearly inflation is the change in the average of twelve monthly indices,
 and earnings "after inflation" divide by the same year's average index; household spending excludes items

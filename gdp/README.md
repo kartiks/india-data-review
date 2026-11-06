@@ -96,7 +96,7 @@ What MoSPI publishes, and what is done with it:
 - Value added, taxes and subsidies are labelled ₹ lakh (correctly, unlike the national table) and divided by 100.
 - There is no All-India row; the site compares the states with the national accounts on the same base.
 - MoSPI's GSDP table leaves out Assam, Haryana, Ladakh and Nagaland, which its value-added table covers. Their
-  GSDP is worked out as GSVA + taxes - subsidies (MoSPI's definition; for every other state the two agree) and
+  GSDP is worked out as GSVA (gross state value added) + taxes - subsidies (MoSPI's definition; for every other state the two agree) and
   marked `derived`; their growth is worked out from those levels and marked `published: false`. These derived
   figures match the RBI's Handbook of Statistics on Indian States, which compiles the same state accounts. As there
   is no published total to check them against, the population they imply with MoSPI's GSDP per person must move by

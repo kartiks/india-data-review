@@ -19,15 +19,16 @@ URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for p
 `data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED and
 records the SHA-256 of every data file as it is now (so data changed after its checks ran cannot deploy). Code
 the pipelines share (the validation report, downloading, reading Budget at a Glance, fiscal-year labels, ids and
-number parsing) is in `shared/pipeline/` (package `pipeline_common`).
+number parsing) is in `shared/pipeline/` (package `pipeline_common`). Abbreviations (NAS, GVA, BE/RE, PLFS …) are
+explained under [Terms](#terms).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.
 
 ## Prerequisites
 
-- [uv](https://docs.astral.sh/uv/) for the pipelines. Each pipeline needs Python 3.14 or later; uv installs it and the
-  packages on first run.
+- [uv](https://docs.astral.sh/uv/) for the pipelines: install it first ([installation](https://docs.astral.sh/uv/getting-started/installation/)).
+  Each pipeline needs Python 3.14 or later; uv installs it and the packages on first run.
 - Node.js 22.23.4 or later and npm for the site.
 
 ## Run it
@@ -37,7 +38,11 @@ number parsing) is in `shared/pipeline/` (package `pipeline_common`).
 (cd gdp/pipeline && uv run python -m gdp_pipeline)         # refreshed weekly; see below
 (cd jobs-prices/pipeline && uv run python -m jobs_prices_pipeline)  # refreshed weekly; see below
 (cd site && npm ci && npm run build)                       # or: npm run dev
+(cd site && npm run preview)                               # serve the built site from dist/
 ```
+
+The source files are committed, so a fresh clone needs no download. `uv run --locked` (what `scripts/ci.sh` and the
+weekly refresh use) stops with an error if `uv.lock` is out of date instead of updating it.
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
 `--fetch` downloads anything missing first, and `--refresh` re-downloads everything (GDP and jobs and prices keep
@@ -223,3 +228,18 @@ Each deployment stores a full copy of the built site (about 100 MB, mostly the d
 `site/vercel.json` skips the ones that would change nothing: Dependabot branches never deploy, and
 `site/scripts/vercel-ignore-build.sh` skips a commit when nothing in `site/` or any area's `data/` folder changed
 since the branch's last deployment. A new area's `data/` folder must be added to that script's list.
+
+## Terms
+
+| Term | Meaning |
+|---|---|
+| MoSPI | Ministry of Statistics and Programme Implementation, which publishes the national accounts, PLFS, CPI and HCES |
+| NAS | National Accounts Statistics: MoSPI's GDP and related accounts (`--refresh-nas` re-downloads them), and its yearly publication of that name |
+| Base year | The year whose prices the constant-price figures use; MoSPI moves it every decade or so (2011-12, now 2022-23), and series on different bases are never mixed |
+| GVA, GSVA | Gross value added (output less inputs) for India, and for a state; GDP = GVA + taxes − subsidies on products |
+| GSDP, NSDP | Gross and net state domestic product: a state's GDP, and its GDP less depreciation |
+| BE, RE, Actuals | A budget's Budget Estimate for the coming year, the Revised Estimate a year later, and the Actuals two years later |
+| PLFS | Periodic Labour Force Survey, MoSPI's survey of jobs and unemployment |
+| Usual status, CWS | PLFS's two ways of counting work: usual status is activity over the past year (annual figures); current weekly status (CWS) is the past seven days (quarterly and monthly figures) |
+| CPI, CPI-AL/RL | Consumer Price Index; the Labour Bureau's CPI for agricultural and rural labourers |
+| HCES | Household Consumption Expenditure Survey |

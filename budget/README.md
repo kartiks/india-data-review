@@ -29,8 +29,9 @@ uv run pytest                               # parser tests + end-to-end checks (
                                             # folder and fails if anything in data/ changes)
 ```
 
-The command exits with an error if any check fails, so it can gate a website build. The results of the last
-build are in [`data/validation_report.md`](data/validation_report.md).
+The source files are committed, so `--fetch` downloads only what is missing; `--refresh` (or `--fetch` with an empty
+`sources/raw/`) downloads about 55 MB. The command exits with an error if any check fails, so it can gate a website
+build. The results of the last build are in [`data/validation_report.md`](data/validation_report.md).
 
 ## Adding a new budget
 

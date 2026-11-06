@@ -91,7 +91,7 @@ index, so:
 3. Run `uv run python -m jobs_prices_pipeline --fetch`. It downloads only the new release (page content and PDF),
    reads it, and checks it against its PDF and the earlier releases. The previous month's figures move from
    provisional to final.
-4. Commit `sources/` and `data/`, run the local CI (`scripts/ci.sh`) and push.
+4. Commit `sources/` and `data/` on a branch, and open a pull request ([Local CI](../README.md#local-ci)).
 
 Jobs (PLFS monthly bulletin mid-month, quarterly bulletin each quarter) and farm and rural labourers' prices (end of
 the month) need nothing: the weekly refresh brings them in.

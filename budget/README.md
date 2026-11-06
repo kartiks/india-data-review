@@ -62,7 +62,8 @@ interim one, which the pipeline skips):
 5. In `../gdp/`, run `uv run python -m gdp_pipeline --fetch`: it reads the new budget's GDP assumption from Budget at
    a Glance. If the sentence's numbers are missing from the PDF's text layer, add the sentence to `IMAGE_READ` in
    `../gdp/pipeline/gdp_pipeline/budget.py`, read from the page image; the checks re-compute its growth rate.
-6. Build the site and check the new year's pages, then commit `data/`, `sources/` and the code changes.
+6. Build the site and check the new year's pages, then commit `data/`, `sources/` and the code changes on a branch,
+   and open a pull request ([Local CI](../README.md#local-ci)).
 
 ## What's in `data/`
 

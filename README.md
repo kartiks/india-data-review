@@ -123,7 +123,7 @@ protection or a ruleset that requires a pull request; if it does, every refresh 
 3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
    with its reason (each area's README says where). A message saying a query returned no rows although it had data
    before usually means the source is having trouble; the saved file is kept, so wait and run again.
-4. Commit the area's `sources/` and `data/` with the fix, run `scripts/ci.sh`, and push (or open a pull request).
+4. Commit the area's `sources/` and `data/` with the fix on a branch, and open a pull request ([Local CI](#local-ci)).
 
 Nothing is lost while a failure waits, unless a source publishes twice before it is fixed: the previous version is
 still on `main`, and the next successful download keeps it as a snapshot. The artifact holds anything in between.
@@ -142,13 +142,14 @@ For everything marked "by hand" above, or to refresh a source outside the schedu
    must end with every check passing; if a check fails, look at the failure in `data/validation_report.md` before
    allowing anything (each area's README says where exceptions are written down, always with a reason).
 3. Build the site (`npm run build` in `site/`) and look at the pages that changed.
-4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes.
-   Open a pull request and run the local CI on it before merging. A branch gets a Vercel preview; `main` deploys the
+4. Commit the area's `data/` and `sources/` (the downloaded files and `manifest.json`) together with any code changes
+   on a branch, and open a pull request ([Local CI](#local-ci)). A branch gets a Vercel preview; `main` deploys the
    live site.
 
 ## Local CI
 
-There is no CI on GitHub: run `scripts/ci.sh` on a branch yourself before merging it into `main`:
+There is no CI on GitHub. Every change goes through a branch and a pull request, and you run `scripts/ci.sh` on the
+branch before merging it into `main`:
 
 ```bash
 scripts/ci.sh <branch>
@@ -168,7 +169,7 @@ Running a pipeline's tests rewrites its `data/` files with only a new `generated
 than committing them (the hashes leave `generated_at` out, so they never trip the gate).
 
 It downloads no data (npm and uv may download packages) and takes about 10 to 15 minutes, most of it the budget
-tests. The weekly refresh runs the same script on its own commit before pushing.
+tests. Only the weekly refresh pushes to `main` directly, and it runs the same script on its commit first.
 
 ## Adding data
 

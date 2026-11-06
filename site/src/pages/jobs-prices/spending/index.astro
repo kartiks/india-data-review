@@ -32,7 +32,7 @@ const stateRows = [{ label: "All India", strong: true, values: [rural, urban, ov
 const classNames = [...new Set(hces(q({ indicator: "classes", sector: "Rural" })).map((r) => r.category))]
   .filter((c) => c !== "All").sort((a, b) => parseFloat(a) - parseFloat(b));
 const classRows = classNames.map((c) => ({
-  label: `${c.replace("-", "–")}%`,
+  label: `${c.replace("-", "% to ")}%`,
   values: [hcesValue(q({ indicator: "classes", sector: "Rural", category: c })) ?? null, hcesValue(q({ indicator: "classes", sector: "Urban", category: c })) ?? null],
 }));
 const top = classRows[classRows.length - 1].values, bottom = classRows[0].values;
@@ -102,13 +102,14 @@ const giniRows = [{ label: "All India", strong: true, values: [gini("Rural") ?? 
   </section>
 
   <section class="card">
-    <DotRows title={`Spending per person by state, ${Y}`} subtitle="Average monthly consumption per person: rural, urban and overall. Sorted by the overall figure." series={RUO} rows={stateRows} format={rupees} source={SRC_O} />
+    <DotRows title={`Spending per person by state, ${Y}`} rowHeader="State" subtitle="Average monthly consumption per person: rural, urban and overall. Sorted by the overall figure." series={RUO} rows={stateRows} format={rupees} source={SRC_O} />
   </section>
 
   <div class="grid-2">
     <section class="card">
       <DotRows
         title={`Spending by class, ${Y}`}
+        rowHeader="Class"
         subtitle={`Average spending of each slice of the population, ranked from the lowest-spending 5% to the highest. The top 5% in towns spend ${(top[1]! / bottom[1]!).toFixed(0)} times as much as the bottom 5%; in villages ${(top[0]! / bottom[0]!).toFixed(0)} times.`}
         series={RU}
         rows={classRows}
@@ -117,29 +118,29 @@ const giniRows = [{ label: "All India", strong: true, values: [gini("Rural") ?? 
       />
     </section>
     <section class="card">
-      <DotRows title={`Spending by social group, ${Y}`} subtitle="Average monthly consumption per person." series={RU} rows={groupRows} format={rupees} source={SRC} />
+      <DotRows title={`Spending by social group, ${Y}`} rowHeader="Social group" subtitle="Average monthly consumption per person." series={RU} rows={groupRows} format={rupees} source={SRC} />
       <h3 class="sub-h">By what the household mainly does, rural</h3>
-      <DotRows title="" series={[{ name: "Rural", slot: 3 }]} rows={typeRows("Rural")} format={rupees} />
+      <DotRows label={`Spending per person by what the household mainly does, rural, ${Y}`} rowHeader="Household type" series={[{ name: "Rural", slot: 3 }]} rows={typeRows("Rural")} format={rupees} />
       <h3 class="sub-h">By what the household mainly does, urban</h3>
-      <DotRows title="" series={[{ name: "Urban", slot: 4 }]} rows={typeRows("Urban")} format={rupees} source={SRC} />
+      <DotRows label={`Spending per person by what the household mainly does, urban, ${Y}`} rowHeader="Household type" series={[{ name: "Urban", slot: 4 }]} rows={typeRows("Urban")} format={rupees} source={SRC} />
     </section>
   </div>
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Food: share of spending, ${Y}`} subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(true)} format={(v) => pct(v, 2)} source={SRC} />
+      <DotRows title={`Food: share of spending, ${Y}`} rowHeader="Item" subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(true)} format={(v) => pct(v, 2)} source={SRC} />
     </section>
     <section class="card">
-      <DotRows title={`Other items: share of spending, ${Y}`} subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(false)} format={(v) => pct(v, 2)} source={SRC} />
+      <DotRows title={`Other items: share of spending, ${Y}`} rowHeader="Item" subtitle="Share of monthly consumption spending, all India." series={RU} rows={catRows(false)} format={(v) => pct(v, 2)} source={SRC} />
     </section>
   </div>
 
   <div class="grid-2">
     <section class="card">
-      <DotRows title={`Food's share of spending by state, ${Y}`} subtitle="Rural, urban and overall. Sorted by the overall share." series={RUO} rows={foodStateRows} format={(v) => pct(v)} source={SRC_O} />
+      <DotRows title={`Food's share of spending by state, ${Y}`} rowHeader="State" subtitle="Rural, urban and overall. Sorted by the overall share." series={RUO} rows={foodStateRows} format={(v) => pct(v)} source={SRC_O} />
     </section>
     <section class="card">
-      <DotRows title={`Inequality of spending by state, ${Y}`} subtitle="Gini coefficient: 0 if everyone spent the same, 1 if one person spent everything. Sorted by urban." series={RU} rows={giniRows} format={(v) => v.toFixed(3)} zero={false} source={SRC} />
+      <DotRows title={`Inequality of spending by state, ${Y}`} rowHeader="State" subtitle="Gini coefficient: 0 if everyone spent the same, 1 if one person spent everything. Sorted by urban." series={RU} rows={giniRows} format={(v) => v.toFixed(3)} zero={false} source={SRC} />
     </section>
   </div>
 </Base>

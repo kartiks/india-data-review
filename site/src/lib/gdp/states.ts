@@ -4,7 +4,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { OLD, annual, industrySum, latestStage, STAGE_LABEL } from "./data";
-import { stateKey } from "../jobs-prices/data";
+import { stateKey } from "../states";
 import { fyGap, prevFy } from "../fy";
 
 export interface SPair { cur?: number; con?: number; derived?: boolean }

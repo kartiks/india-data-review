@@ -9,6 +9,7 @@ import {
   schemeValue, best, headline, type Ministry,
 } from "../../../lib/budget/data";
 import { money, moneyShort, signedPct } from "../../../lib/format";
+import OrDash from "../../../components/OrDash.astro";
 
 export function getStaticPaths() {
   return MINISTRIES.map((m) => ({ params: { id: m.id }, props: { m } }));
@@ -87,7 +88,7 @@ const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"))
           {depts.map(({ d, years, latest }) => (
             <tr>
               <td class="wrap-text">{d.name}</td>
-              <td>{latest && years.includes(LATEST_YEAR) ? money(latest.value) : "–"}</td>
+              <td>{latest && years.includes(LATEST_YEAR) ? money(latest.value) : <OrDash />}</td>
               <td>{years[0] === years[years.length - 1] ? years[0] : `${years[0]} to ${years[years.length - 1]}`}</td>
             </tr>
           ))}

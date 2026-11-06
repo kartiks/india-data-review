@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fyMonths, isFy, prevFy } from "../fy";
+import { stateKey } from "../states";
 
 type Num = number | null;
 interface Table { fields: string[]; labels: Record<string, string[]>; rows: (number | null)[][] }
@@ -43,6 +44,11 @@ function objects<T>(t: Table): T[] {
   return t.rows.map((r) => Object.fromEntries(t.fields.map((f, i) => [f, t.labels[f] && r[i] != null ? t.labels[f][r[i] as number] : r[i]])) as T);
 }
 
+/** Whether a row has every value given in a partial filter. */
+function matches<T extends object>(row: T, q: Partial<T>): boolean {
+  return (Object.keys(q) as (keyof T)[]).every((k) => row[k] === q[k]);
+}
+
 // ---- jobs (PLFS) --------------------------------------------------------------------------------
 
 export type Sector = "rural" | "urban" | "rural + urban";
@@ -55,7 +61,6 @@ export interface Rate {
 export const RATES = objects<Rate>(DS.plfs.rates);
 export const AGE15 = "15 years and above";
 export const USUAL = "PS+SS"; // usual status: principal + subsidiary activity over the past year
-export const WEEKLY = "CWS"; // current weekly status: the past 7 days
 
 export interface RateQuery {
   frequency?: Rate["frequency"]; year?: string; period?: string; state?: string; sector?: Sector; gender?: Gender;
@@ -69,16 +74,16 @@ const RATE_DEFAULTS: Required<Omit<RateQuery, "year" | "period">> = {
 const SUB_YEAR_DEFAULTS = { status: "", religion: "", social_group: "", education: "" };
 export function rates(q: RateQuery): Rate[] {
   const base = q.frequency && q.frequency !== "annual" ? { ...RATE_DEFAULTS, ...SUB_YEAR_DEFAULTS } : RATE_DEFAULTS;
-  const want = { ...base, ...q } as Record<string, string>;
-  return RATES.filter((r) => Object.entries(want).every(([k, v]) => (r as unknown as Record<string, string>)[k] === v));
+  const want: Partial<Rate> = { ...base, ...q };
+  return RATES.filter((r) => matches(r, want));
 }
 export function rate(q: RateQuery & { year: string }): Rate | undefined {
   return rates({ period: "", ...q })[0];
 }
 
 /** Distinct values of one field among annual (or other) rate rows matching a partial filter, without defaults. */
-export function distinct(field: keyof Rate, where: Partial<Record<keyof Rate, string>>): string[] {
-  return [...new Set(RATES.filter((r) => Object.entries(where).every(([k, v]) => (r as unknown as Record<string, string>)[k] === v))
+export function distinct(field: keyof Rate, where: Partial<Rate>): string[] {
+  return [...new Set(RATES.filter((r) => matches(r, where))
     .map((r) => String(r[field])))].sort();
 }
 export const PLFS_YEARS = [...new Set(rates({}).map((r) => r.year))].sort();
@@ -188,10 +193,6 @@ export interface Cpi24Row { code: string; name: string; index: Num[]; inflation:
 export function cpi24Rows(kind: "divisions" | "groups" | "states", month = C24.latest): Cpi24Row[] {
   return (C24[kind][month] ?? []).map(([code, name, ...v]) => ({ code, name, index: v.slice(0, 3), inflation: v.slice(3, 6) }));
 }
-/** One key for a state however a source spells it: "The Dadra And Nagar Haveli And Daman And Diu",
- * "Dadra & Nagar Haveli & Daman & Diu" and "Dadra and Nagar Haveli and Daman and Diu" all give the same key. */
-export const stateKey = (s: string) =>
-  s.toLowerCase().replace(/&/g, "and").replace(/^the |^nct of |\bislands?\b/g, "").replace(/[^a-z]/g, "");
 /** "Andaman And Nicobar Islands" -> "Andaman & Nicobar Islands"; the releases spell names differently from MoSPI's API. */
 export const tidyState = (s: string) => s.replace(/ And /g, " & ").replace(/^The /, "").replace("NCT of Delhi", "Delhi");
 
@@ -211,7 +212,7 @@ export const HCES_LATEST = HCES_YEARS[HCES_YEARS.length - 1];
 export const IMPUTED = "With Imputation";
 export const NOT_IMPUTED = "Without Imputation";
 export function hces(q: Partial<HcesRow>): HcesRow[] {
-  return HCES.filter((r) => Object.entries(q).every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v));
+  return HCES.filter((r) => matches(r, q));
 }
 export const hcesValue = (q: Partial<HcesRow>) => hces(q)[0]?.value ?? undefined;
 /** Rural + urban average, weighted by the survey's estimated persons (MoSPI's report, Table A2); worked out by the pipeline. */
@@ -219,7 +220,7 @@ export const hcesOverall = (state: string, year: string, imputation = NOT_IMPUTE
   DS.hces_overall.find((r) => stateKey(r.state) === stateKey(state) && r.year === year && r.imputation_type === imputation);
 /** Like hcesValue, but matching the state however it is spelt (the surveys spell some UTs differently). */
 export const hcesValueFor = (state: string, q: Partial<HcesRow>) =>
-  HCES.find((r) => stateKey(r.state) === stateKey(state) && Object.entries(q).every(([k, v]) => (r as unknown as Record<string, unknown>)[k] === v))?.value ?? undefined;
+  HCES.find((r) => stateKey(r.state) === stateKey(state) && matches(r, q))?.value ?? undefined;
 
 // ---- states ---------------------------------------------------------------------------------------
 
@@ -229,9 +230,8 @@ export const PLFS_STATES = distinct("state", { frequency: "annual", year: PLFS_L
 // ---- RBI Handbook of Statistics on Indian States (state income, state GDP, rural wages, older unemployment) ---------
 
 export interface RbiRow { table_id: string; variant: string; state: string; year: string; value: Num }
-export const RBI = objects<RbiRow>(DS.rbi as unknown as Table);
+export const RBI = objects<RbiRow>(DS.rbi);
 export const RBI_EDITION = DS.rbi.editions.join(", ");
-export const RBI_TITLES = DS.rbi.titles;
 /** A handbook value for a state (matched however it is spelt), table and year; variant e.g. "Rural Overall". */
 export function rbiValue(tableId: string, state: string, year: string, variant = ""): number | null {
   const k = stateKey(state);

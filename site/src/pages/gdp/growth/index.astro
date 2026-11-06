@@ -5,6 +5,8 @@ import LineChart from "../../../components/LineChart.astro";
 import { LONG, NEW, OLD, STAGE_LABEL, SERIES_LABEL, yearsOf, latestGrowth, oldBaseOf, bestOf } from "../../../lib/gdp/data";
 import { fyRange } from "../../../lib/fy";
 import { axisPct, gpct, money, moneyShort } from "../../../lib/format";
+import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
+import OrDash from "../../../components/OrDash.astro";
 
 const lastYear = LONG[LONG.length - 1].year; // the 2011-12 base's last year
 const years = fyRange("2000-01", lastYear);
@@ -49,7 +51,7 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
       years={years}
       series={[
         { name: "Real", slot: 1, points: real },
-        { name: "Nominal", slot: 2, points: nominal },
+        { name: "Nominal", slot: 3, points: nominal },
       ]}
       format={axisPct}
       tableFormat={(v) => gpct(v)}
@@ -64,8 +66,8 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
       subtitle="The two series are drawn separately: the new base measures the economy differently."
       years={years}
       series={[
-        { name: SERIES_LABEL[OLD], slot: 1, points: gdpOld.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
-        { name: SERIES_LABEL[NEW], slot: 2, points: gdpNew.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+        { name: SERIES_LABEL[OLD], slot: OLD_SERIES, points: gdpOld.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
+        { name: SERIES_LABEL[NEW], slot: NEW_SERIES, points: gdpNew.map((p) => ({ value: p?.value ?? null, kind: p ? kind(p.stage) : "" })) },
       ]}
       format={moneyShort}
       tableFormat={money}
@@ -88,11 +90,11 @@ const decades = [["2001-02", "2010-11"], ["2011-12", "2020-21"], ["2021-22", las
             return (
               <tr>
                 <td>{y}</td>
-                <td>{r.growth?.real !== undefined ? gpct(r.growth.real) : "–"}</td>
-                <td>{r.growth?.nominal != null ? gpct(r.growth.nominal) : "–"}</td>
+                <td><OrDash v={r.growth?.real} fmt={gpct} /></td>
+                <td><OrDash v={r.growth?.nominal} fmt={gpct} /></td>
                 <td>{kind(r.stage)}{r.growth && !r.growth.published ? " (from levels)" : ""}</td>
-                <td>{n && n.series === NEW ? gpct(n.real) : "–"}</td>
-                <td>{n && n.series === NEW ? kind(n.stage) : ""}</td>
+                <td><OrDash v={n && n.series === NEW ? n.real : null} fmt={gpct} /></td>
+                <td>{n && n.series === NEW ? kind(n.stage) : <OrDash />}</td>
               </tr>
             );
           })}

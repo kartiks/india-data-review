@@ -5,6 +5,7 @@ import { estimate, estimateLayout } from "../lib/chart";
 import { linePlots } from "../lib/line-plot";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 
 export interface Point {
   value: number | null;
@@ -14,6 +15,7 @@ export interface Point {
 export interface Series {
   name: string;
   slot: number; // categorical slot 1..8
+  dashed?: boolean; // a dashed line: a second measure in the same colour, e.g. food prices beside all items
   points: Point[]; // aligned with `years`
 }
 interface Props {
@@ -40,10 +42,10 @@ const id = "c" + Math.random().toString(36).slice(2, 9);
 // an end label where the size leaves room (with 2+ series: legend and hover instead).
 const plots = linePlots(
   years,
-  series.map((s) => ({ name: s.name, color: `var(--s${s.slot})`, values: s.points.map((p) => p.value), estimates: s.points.map((p) => !!p.estimate) })),
+  series.map((s) => ({ name: s.name, color: `var(--s${s.slot})`, dashed: s.dashed, values: s.points.map((p) => p.value), estimates: s.points.map((p) => !!p.estimate) })),
   format,
   `${title}. Values are listed in the table below.`,
-  { zero, endLabel: true, annotations },
+  { zero, endLabel: true, annotations, valueFormat: tipFormat },
 );
 
 // Estimate labels in short form; left out when every figure has the same one (said once, under the chart).
@@ -69,7 +71,7 @@ const tooltipData = safeJson({
   {(series.length > 1 || hasEstimates) && (
     <ul class="legend small" aria-label="Legend">
       {series.length > 1 && series.map((s) => (
-        <li><svg width="16" height="10" aria-hidden="true"><line x1="1" y1="5" x2="15" y2="5" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linecap="round" /></svg>{s.name}</li>
+        <li><svg width="16" height="10" aria-hidden="true"><line x1="1" y1="5" x2="15" y2="5" stroke={`var(--s${s.slot})`} stroke-width="2" stroke-linecap="round" stroke-dasharray={s.dashed ? "5 4" : undefined} /></svg>{s.name}</li>
       ))}
       {hasEstimates && (
         <li><svg width="12" height="12" aria-hidden="true"><circle cx="6" cy="6" r="4" fill="var(--surface)" stroke="var(--ink-2)" stroke-width="2" /></svg>{estimateLabel}</li>
@@ -91,7 +93,7 @@ const tooltipData = safeJson({
               {layout.mode === "column" && <td class="est-col">{rowEst[i] && <span class="est" title={rowEst[i].full}>{rowEst[i].short}</span>}</td>}
               {series.map((s, j) => {
                 const p = s.points[i], e = est[j][i];
-                return <td>{layout.mode === "inline" && e?.short && <span class="est" title={e.full}>{e.short}</span>}{p.value == null ? "–" : tableFormat(p.value)}</td>;
+                return <td>{layout.mode === "inline" && e?.short && <span class="est" title={e.full}>{e.short}</span>}<OrDash v={p.value} fmt={tableFormat} /></td>;
               })}
             </tr>
           ))}

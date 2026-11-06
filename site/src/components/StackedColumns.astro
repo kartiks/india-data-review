@@ -4,6 +4,7 @@
 import { SIZES, estimate, estimateLayout, niceTicks, scale, columnPath, xTickIndices } from "../lib/chart";
 import { safeJson } from "../lib/safe-json";
 import "../styles/charts.css";
+import OrDash from "./OrDash.astro";
 
 interface Props {
   title: string;
@@ -90,6 +91,7 @@ const tipData = safeJson({
         <g data-col={c.i} tabindex="0" class="col" aria-label={`${years[c.i]}: total ${tipFormat(totals[c.i])}`}>
           <rect x={sz.left + c.i * band} y={sz.top} width={band} height={sz.height - sz.top - sz.bottom} fill="transparent" />
           {c.segs.map((s) => <path d={s.d} fill={`var(--s${categories[s.j].slot})`} />)}
+          <rect x={sz.left + c.i * band + 1} y={sz.top - 3} width={Math.max(2, band - 2)} height={sz.height - sz.top - sz.bottom + 4} rx="3" class="focus-ring" />
         </g>
       ))}
     </svg>
@@ -106,7 +108,7 @@ const tipData = safeJson({
             <tr>
               <td>{yr}</td>
               {layout.mode === "column" && <td class="est-col">{est[i].short && <span class="est" title={est[i].full}>{est[i].short}</span>}</td>}
-              {categories.map((_, j) => <td>{values[i][j] == null ? "–" : tableFormat(values[i][j]!)}</td>)}
+              {categories.map((_, j) => <td><OrDash v={values[i][j]} fmt={tableFormat} /></td>)}
               <td>{tableFormat(totals[i])}</td>
             </tr>
           ))}
@@ -129,6 +131,8 @@ const tipData = safeJson({
   .est-col { text-align: left; }
   .est-note { margin: 4px 0 0; }
   .col { cursor: pointer; outline: none; }
-  .col:global(.active) path, .col:focus path { opacity: 0.8; }
-  .col:focus rect { stroke: var(--accent); stroke-width: 1; }
+  .col:global(.active) path { opacity: 0.8; }
+  /* Keyboard focus: a 2px accent outline round the column. */
+  .focus-ring { fill: none; stroke: none; pointer-events: none; vector-effect: non-scaling-stroke; }
+  .col:focus-visible .focus-ring { stroke: var(--accent); stroke-width: 2; }
 </style>

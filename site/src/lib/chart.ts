@@ -56,17 +56,6 @@ export function columnPath(x: number, y0: number, w: number, y1: number, r = 4):
   return `M${x},${y0}V${top - rr}Q${x},${top} ${x + rr},${top}H${x + w - rr}Q${x + w},${top} ${x + w},${top - rr}V${y0}Z`;
 }
 
-/** Horizontal bar with a rounded end at x1 (square at x0). */
-export function barPath(x0: number, y: number, x1: number, h: number, r = 4): string {
-  const w = x1 - x0;
-  if (Math.abs(w) < 0.5) return "";
-  const rr = Math.min(r, Math.abs(w), h / 2);
-  if (w > 0) return `M${x0},${y}H${x1 - rr}Q${x1},${y} ${x1},${y + rr}V${y + h - rr}Q${x1},${y + h} ${x1 - rr},${y + h}H${x0}Z`;
-  return `M${x0},${y}H${x1 + rr}Q${x1},${y} ${x1},${y + rr}V${y + h - rr}Q${x1},${y + h} ${x1 + rr},${y + h}H${x0}Z`;
-}
-
-export const shortYear = (y: string) => y; // "2005-06"
-
 export interface Estimate { short: string; full: string }
 /** How final a figure is, as pages pass it ("Actual", "RE", "Third Revised Estimate", "Provisional", "1st advance
  *  estimate"), turned into one short lower-case form for tables and readouts ("RE", "3rd revised", "provisional",

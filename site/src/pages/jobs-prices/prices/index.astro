@@ -19,7 +19,6 @@ const general = cpiAllIndia(GENERAL);
 const food = cpiAllIndia(FOOD);
 const at = (pts: CpiPoint[], m: string) => pts.find((p) => p.month === m);
 const latest = at(general, CPI_LAST)!;
-const latestFood = at(food, CPI_LAST);
 const avg = averageInflation(general, lastYear)!;
 const since2012 = latest.index! - 100;
 

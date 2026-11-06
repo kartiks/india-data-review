@@ -71,9 +71,7 @@ export const STAGE_SHORT: Record<string, string> = {
   AE1: "1st advance", AE2: "2nd advance", PE: "Provisional", RE1: "1st revised", RE2: "2nd revised",
   RE3: "3rd revised", ADD: "Additional revision", FINAL: "Final", BACK: "Back series", LATEST: "Latest",
 };
-export const INDUSTRY = DS.industries;
 export const BROAD = DS.broad_industries;
-export const SECTOR = DS.sectors;
 
 export function annual(series: string): Record<string, Stages> {
   return DS.data[series]?.annual ?? {};
@@ -164,7 +162,6 @@ export const rbiFor = (y: string) => RBI.filter((r) => r.fiscal_year === y).sort
  *  (A February projection for the next year can be on a different base or measure, e.g. Feb 2015 on the old 2004-05 base.) */
 export const rbiFirst = (y: string) =>
   rbiFor(y).find((r) => r.is_first_april_policy && r.value !== null) ?? rbiFor(y).find((r) => r.value !== null);
-export const rbiLast = (y: string) => [...rbiFor(y)].reverse().find((r) => r.value !== null);
 
 /** MoSPI's first published growth estimate for a year in the 2011-12 series (AE1 where it exists). */
 export function firstEstimate(y: string): { real: number; stage: string; series: string } | undefined {

@@ -165,10 +165,6 @@ def test_fetch_cpi2024_refuses_a_pdf_link_that_is_not_a_pdf(sandbox, monkeypatch
     assert not (fetch.RAW / "cpi2024" / "2026-01.pdf").exists()
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "fetch_cpi2024 saves the release page (and writes the manifest) before it checks the PDF, so after a failed PDF "
-    "download the next --fetch skips the release ('key in manifest') and never fetches its PDF; the checks then "
-    "treat the release as one without a PDF"))
 def test_fetch_cpi2024_retries_a_pdf_that_failed_before(sandbox, monkeypatch):
     monkeypatch.setattr(fetch, "CPI2024_RELEASES", {"2026-01": PAGE})
     serve(monkeypatch, {PAGE: release_page(), PDF_URL: b"<html>Error 503</html>"})

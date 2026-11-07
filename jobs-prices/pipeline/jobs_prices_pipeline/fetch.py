@@ -87,15 +87,15 @@ def release_content(html: str) -> str:
 
 
 def fetch_cpi2024(manifest: dict, force: bool) -> None:
-    """Each month's CPI (base 2024) press release on PIB: the release's text and tables, and its PDF where it has one."""
+    """Each month's CPI (base 2024) press release on PIB: the release's text and tables, and its PDF where it has one.
+    The PDF is downloaded and checked before anything is saved, and the release page is recorded last, so a release
+    whose PDF failed is not in the manifest and is fetched again by the next run."""
     for month, page in CPI2024_RELEASES.items():
         key = f"cpi2024/{month}"
-        if key in manifest and not force:
+        if key in manifest and f"{key}/pdf" in manifest and not force:
             continue
         html = get(page).decode("utf-8", "ignore")
         content = release_content(html).encode()
-        changed = save(manifest, key, RAW / f"{key}.html", content, page)
-        print(f"{key}: release page, {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
         links = sorted(set(re.findall(r"https://static\.pib\.gov\.in/WriteReadData/specificdocs/documents/[^\"'&\s]+\.pdf", html)))
         if len(links) > 1:
             raise RuntimeError(f"{key}: more than one PDF on {page}: {links}")
@@ -107,6 +107,8 @@ def fetch_cpi2024(manifest: dict, force: bool) -> None:
             print(f"{key}: PDF {len(pdf):,} bytes", flush=True)
         else:
             manifest[f"{key}/pdf"] = {"url": page, "empty": True, "note": "no PDF attached to this release", "checked_at": now()}
+        changed = save(manifest, key, RAW / f"{key}.html", content, page)
+        print(f"{key}: release page, {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
         time.sleep(RELEASE_PAUSE_S)
 
 

@@ -130,7 +130,7 @@ def read_table(path, table_no: int, spec: Table) -> tuple[list[dict], list[str]]
             for j, year in cols.items():
                 v, printed, flag = cell(r[j] if j < len(r) else None)
                 if flag == "unreadable":
-                    problems.append(f"Table {table_no} {variant} {state} {year}: value {printed!r} is not a table_no")
+                    problems.append(f"Table {table_no} {variant} {state} {year}: value {printed!r} is not a number")
                 out.append({"table": table_no, "table_id": spec.id, "title": title, "variant": variant, "unit": unit,
                             "state": "All India" if state.upper() == "ALL INDIA" else state, "year": year, "value": v,
                             "value_as_printed": printed, "flag": flag, "sheet": ws.title})

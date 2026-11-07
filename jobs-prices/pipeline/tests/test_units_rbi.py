@@ -2,7 +2,6 @@
 read), and rbi.read_all."""
 
 import openpyxl
-import pytest
 
 from jobs_prices_pipeline import rbi
 
@@ -68,8 +67,6 @@ def test_an_unreadable_value_is_a_problem_and_kept_as_printed(tmp_path):
     assert len(problems) == 1 and "Bihar 2023-24" in problems[0] and "'3l.5'" in problems[0]
 
 
-@pytest.mark.xfail(strict=True, reason="rbi.read_table's problem for an unreadable value says 'is not a table_no' "
-                                       "(a slip for 'is not a number')")
 def test_an_unreadable_value_is_reported_as_not_a_number(tmp_path):
     _, problems = unreadable(tmp_path)
     assert problems[0].endswith("value '3l.5' is not a number")

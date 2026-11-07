@@ -31,8 +31,25 @@ def opener_failing(times: int, error: Exception, body: bytes = b"ok"):
     return opener, calls
 
 
+# Every HTTPError holds a file (an empty one here) that must be closed, or Python warns (ResourceWarning) when it is
+# garbage collected; the tests close the ones they make.
+ERRORS: list[urllib.error.HTTPError] = []
+
+
+@pytest.fixture(autouse=True)
+def close_errors():
+    yield
+    while ERRORS:
+        ERRORS.pop().close()
+
+
+def made(error: urllib.error.HTTPError) -> urllib.error.HTTPError:
+    ERRORS.append(error)
+    return error
+
+
 def http_error(code: int) -> urllib.error.HTTPError:
-    return urllib.error.HTTPError("https://example.test/x", code, "error", {}, None)
+    return made(urllib.error.HTTPError("https://example.test/x", code, "error", {}, None))
 
 
 def test_get_retries_network_errors_then_succeeds(no_waiting):
@@ -113,17 +130,19 @@ def redirect(old: str, new: str):
 
 
 def test_redirects_from_https_to_http_are_refused():
-    with pytest.raises(download.DowngradeRefused, match="from https to http://example.test/y"):
+    with pytest.raises(download.DowngradeRefused, match="from https to http://example.test/y") as e:
         redirect("https://example.test/x", "http://example.test/y")
-    with pytest.raises(download.DowngradeRefused):
+    made(e.value)
+    with pytest.raises(download.DowngradeRefused) as e:
         redirect("https://example.test/x", "ftp://example.test/y")
+    made(e.value)
     assert redirect("https://example.test/x", "https://other.test/y").full_url == "https://other.test/y"
     assert redirect("http://example.test/x", "https://example.test/y").full_url == "https://example.test/y"
-    assert not download._retryable(download.DowngradeRefused("https://example.test/x", 302, "no", {}, None))
+    assert not download._retryable(made(download.DowngradeRefused("https://example.test/x", 302, "no", {}, None)))
 
 
 def test_get_does_not_retry_a_refused_redirect(no_waiting):
-    opener, calls = opener_failing(99, download.DowngradeRefused("https://example.test/x", 301, "no", {}, None))
+    opener, calls = opener_failing(99, made(download.DowngradeRefused("https://example.test/x", 301, "no", {}, None)))
     with pytest.raises(download.DowngradeRefused):
         download.get("https://example.test/x", opener=opener)
     assert len(calls) == 1

@@ -92,23 +92,26 @@ def read_table(path, table_no: int, spec: Table) -> tuple[list[dict], list[str]]
     import openpyxl
 
     wb = openpyxl.load_workbook(path, data_only=True, read_only=True)
+    try:  # a read-only workbook keeps its file open until closed
+        sheets = [(ws.title, [list(r) for r in ws.iter_rows(values_only=True)]) for ws in wb.worksheets]
+    finally:
+        wb.close()
     out, problems = [], []
-    for ws in wb.worksheets:
-        rows = [list(r) for r in ws.iter_rows(values_only=True)]
+    for sheet, rows in sheets:
         b = [str(r[1]).strip() if len(r) > 1 and r[1] is not None else "" for r in rows]
         title = re.sub(r"\s*\((Contd|Concld)\.?\)\s*$", "", re.sub(r"\s+", " ", b[0]), flags=re.I) if b else ""
         head = next((i for i, x in enumerate(b) if x.startswith("State/Union Territory")), None)
         if head is None:
-            problems.append(f"Table {table_no} sheet {ws.title}: no 'State/Union Territory' header")
+            problems.append(f"Table {table_no} sheet {sheet}: no 'State/Union Territory' header")
             continue
         notes = [x.strip("()") for x in b[1:head] if x.startswith("(")]
         units = [UNIT_SPELLINGS.get(x, x) for x in notes if UNIT_SPELLINGS.get(x, x) == spec.unit]
         variant = " ".join(x for x in notes if UNIT_SPELLINGS.get(x, x) != spec.unit)
         unit = units[0] if units else ""
         if not units:
-            problems.append(f"Table {table_no} sheet {ws.title}: unit ({spec.unit}) not found; notes under the title: {notes}")
+            problems.append(f"Table {table_no} sheet {sheet}: unit ({spec.unit}) not found; notes under the title: {notes}")
         if variant not in spec.variants:
-            problems.append(f"Table {table_no} sheet {ws.title}: sub-title {variant!r} is not one of {list(spec.variants)}")
+            problems.append(f"Table {table_no} sheet {sheet}: sub-title {variant!r} is not one of {list(spec.variants)}")
         cols = {j: str(c).strip() for j, c in enumerate(rows[head]) if c is not None and YEAR.match(str(c).strip())}
         start = head + 1
         if not cols:
@@ -117,11 +120,11 @@ def read_table(path, table_no: int, spec: Table) -> tuple[list[dict], list[str]]
         # YEAR only looks like a fiscal year; a typo such as '2023-25' would break the year-before lookups later
         for j, year in list(cols.items()):
             if not is_fy(year):
-                problems.append(f"Table {table_no} sheet {ws.title}: year {year!r} in the header is not a fiscal year; "
+                problems.append(f"Table {table_no} sheet {sheet}: year {year!r} in the header is not a fiscal year; "
                                 "its column is left out")
                 del cols[j]
         if not cols:
-            problems.append(f"Table {table_no} sheet {ws.title}: no years in the header")
+            problems.append(f"Table {table_no} sheet {sheet}: no years in the header")
             continue
         for r, name in zip(rows[start:], b[start:]):
             if not name or not any(r[j] is not None for j in cols if j < len(r)):
@@ -130,10 +133,10 @@ def read_table(path, table_no: int, spec: Table) -> tuple[list[dict], list[str]]
             for j, year in cols.items():
                 v, printed, flag = cell(r[j] if j < len(r) else None)
                 if flag == "unreadable":
-                    problems.append(f"Table {table_no} {variant} {state} {year}: value {printed!r} is not a table_no")
+                    problems.append(f"Table {table_no} {variant} {state} {year}: value {printed!r} is not a number")
                 out.append({"table": table_no, "table_id": spec.id, "title": title, "variant": variant, "unit": unit,
                             "state": "All India" if state.upper() == "ALL INDIA" else state, "year": year, "value": v,
-                            "value_as_printed": printed, "flag": flag, "sheet": ws.title})
+                            "value_as_printed": printed, "flag": flag, "sheet": sheet})
     return out, problems
 
 

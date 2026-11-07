@@ -1,6 +1,10 @@
 ---
 import { link } from "../lib/url";
 import "../styles/global.css";
+import InlineScript from "../components/InlineScript.astro";
+import themeJs from "../scripts/inline/theme.js?raw";
+import navEdgesJs from "../scripts/inline/nav-edges.js?raw";
+import vercelAnalyticsJs from "../scripts/inline/vercel-analytics.js?raw";
 import { LATEST_YEAR as BUDGET_YEAR } from "../lib/budget/data";
 import { LATEST_YEAR as GDP_YEAR } from "../lib/gdp/data";
 
@@ -81,16 +85,11 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
     <meta name="twitter:card" content="summary" />
     {analytics && (
       <>
-        <script is:inline>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+        <InlineScript code={vercelAnalyticsJs} />
         <script is:inline defer src="/_vercel/insights/script.js"></script>
       </>
     )}
-    <script is:inline>
-      try {
-        const t = localStorage.getItem("theme");
-        if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
-      } catch {}
-    </script>
+    <InlineScript code={themeJs} />
   </head>
   <body>
     <header class="site-header">
@@ -114,25 +113,7 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
           </ul>
         </nav>
       )}
-      <script is:inline>
-        // Navigation rows scroll sideways on narrow screens. Fade the edge where more items are hidden,
-        // and start with the current page's item in view. Runs before first paint, so nothing jumps.
-        for (const ul of document.querySelectorAll(".site-header nav ul")) {
-          const cur = ul.querySelector("[aria-current]");
-          if (cur && ul.scrollWidth > ul.clientWidth) {
-            const a = cur.getBoundingClientRect(), u = ul.getBoundingClientRect();
-            if (a.left < u.left || a.right > u.right) ul.scrollLeft += a.left - u.left - (u.width - a.width) / 2;
-          }
-          const edges = () => {
-            const max = ul.scrollWidth - ul.clientWidth;
-            ul.toggleAttribute("data-more-left", ul.scrollLeft > 1);
-            ul.toggleAttribute("data-more-right", ul.scrollLeft < max - 1);
-          };
-          edges();
-          ul.addEventListener("scroll", edges, { passive: true });
-          addEventListener("resize", edges, { passive: true });
-        }
-      </script>
+      <InlineScript code={navEdgesJs} />
     </header>
     <main class="wrap">
       <slot />
@@ -197,7 +178,7 @@ const analytics = import.meta.env.PROD && process.env.VERCEL === "1";
   .theme { background: none; border: 1px solid var(--border); color: var(--ink-2); border-radius: 8px; width: 34px; height: 34px; font-size: 1rem; cursor: pointer; }
   nav ul { list-style: none; display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; }
   nav ul::-webkit-scrollbar { display: none; }
-  /* Fade an edge when more items are scrolled out of view that way (set by the script above). The mask
+  /* Fade an edge when more items are scrolled out of view that way (set by scripts/inline/nav-edges.js). The mask
      only uses alpha, so it works on any background in either theme. */
   nav ul {
     --fade-l: 0px; --fade-r: 0px;

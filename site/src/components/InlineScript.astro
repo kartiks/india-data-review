@@ -1,0 +1,13 @@
+---
+// A script left inline and unbundled, so that it runs where it stands (e.g. before first paint), rather than
+// deferred like the scripts Astro bundles. Astro's Content-Security-Policy (security.csp in astro.config.mjs) hashes
+// only the scripts it bundles, so this adds the hash of `code` to the page's script-src itself. Pass the code as
+// text, e.g. `import code from "../scripts/inline/theme.js?raw"`.
+import { createHash } from "node:crypto";
+
+interface Props { code: string }
+const { code } = Astro.props;
+// SHA-256, the algorithm astro.config.mjs uses. Astro.csp is undefined where CSP is off (the dev server).
+Astro.csp?.insertScriptHash(`sha256-${createHash("sha256").update(code).digest("base64")}`);
+---
+<script is:inline set:html={code} />

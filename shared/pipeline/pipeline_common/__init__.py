@@ -5,6 +5,7 @@
 - budget_glance: where Budget at a Glance is on indiabudget.gov.in, and the GDP the budget assumes
 - text: ids made from labels (slug) and fiscal-year labels (fy, fy_start, is_fy, prev_fy, next_fy)
 - numbers: reading numbers as sources print them (number, blank_or_number, strict_number)
+- labels: text that is new in a data/ folder (the weekly refresh opens a pull request for it)
 
 Area-specific code stays in the areas.
 """

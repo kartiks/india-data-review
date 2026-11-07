@@ -168,9 +168,6 @@ def test_fetch_keeps_the_first_statement_found(site, tmp_path, monkeypatch):
     assert manifest["2020-21"]["ministries"]["files"]["htm"]["url"] == f"{base}/stat3a.htm"
 
 
-@pytest.mark.xfail(strict=True, reason="fetch.main(force=True) downloads every candidate address and lets a later "
-                   "one (Statement 3) overwrite the file and manifest entry of the first (Statement 3A) for the same "
-                   "format, so --refresh can switch documents where --fetch keeps the first one found")
 def test_refresh_keeps_the_same_statement_as_fetch(site, tmp_path, monkeypatch):
     answers, _ = site
     monkeypatch.setattr(fetch, "BUDGETS", [2020])
@@ -181,6 +178,24 @@ def test_refresh_keeps_the_same_statement_as_fetch(site, tmp_path, monkeypatch):
     fetch.main(force=True, docs=["ministries"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
     assert manifest["2020-21"]["ministries"]["files"]["htm"]["url"] == f"{base}/stat3a.htm"
+    assert (tmp_path / "sources" / "raw" / "2020-21" / "ministries.htm").read_bytes() == html("Ministry-wise statement 3A")
+
+
+def test_refresh_keeps_a_mix_of_statements_by_format(site, tmp_path, monkeypatch):
+    # As in the committed manifest for 2023-24: Statement 3A only as PDF, Statement 3 only as Excel.
+    answers, _ = site
+    monkeypatch.setattr(fetch, "BUDGETS", [2023])
+    base = "https://www.indiabudget.gov.in/budget2023-24/doc/eb"
+    monkeypatch.setattr(fetch, "candidate_urls", lambda start, doc: [
+        f"{base}/stat3a.pdf", f"{base}/stat3a.htm", f"{base}/stat3.pdf", f"{base}/stat3.htm"])
+    answers[f"{base}/stat3a.pdf"] = b"statement 3A"  # stat3a.htm is not there (404)
+    answers[f"{base}/stat3.pdf"] = answers[f"{base}/stat3.htm"] = b"statement 3"
+    monkeypatch.setattr(fetch, "looks_valid", lambda ext, content: True)
+    monkeypatch.setattr(fetch, "has_title", lambda doc, ext, content: True)
+    for force in (False, True):
+        fetch.main(force=force, docs=["ministries"])
+        files = json.loads((tmp_path / "sources" / "manifest.json").read_text())["2023-24"]["ministries"]["files"]
+        assert {ext: f["url"].rsplit("/", 1)[-1] for ext, f in files.items()} == {"pdf": "stat3a.pdf", "htm": "stat3.htm"}
 
 
 # ----- reference: the RBI Handbook tables ---------------------------------------------------------------------
@@ -240,6 +255,18 @@ def test_load_rbi_finds_columns_after_a_spacer(one_table):
 def test_load_rbi_refuses_a_malformed_year(one_table):
     rbi_table(one_table, [*TABLE[:4], ["2023-25", "1", "1", "1"]])
     with pytest.raises(ValueError, match="not a fiscal year"):
+        reference.load_rbi()
+
+
+def test_load_rbi_refuses_a_table_without_column_numbers(one_table):
+    rbi_table(one_table, [row for row in TABLE if row[:1] != ["1"]])
+    with pytest.raises(ValueError, match=r"t86\.xlsx: no row of column numbers"):
+        reference.load_rbi()
+
+
+def test_load_rbi_refuses_a_table_missing_a_numbered_column(one_table):
+    rbi_table(one_table, [["1", "2", "3"] if row[:1] == ["1"] else row for row in TABLE])
+    with pytest.raises(ValueError, match=r"t86\.xlsx: column number\(s\) \[4\]"):
         reference.load_rbi()
 
 

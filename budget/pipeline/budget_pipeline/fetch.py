@@ -61,9 +61,12 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
         entry = manifest.setdefault(year, {})
         for doc in docs or DOC_TYPES:
             files = entry.get(doc, {}).get("files", {})
+            # One file per format: the first candidate address that holds the table (Statement 3A before
+            # Statement 3). --force downloads it again but never lets a later candidate replace it.
+            saved_now: set[str] = set()
             for url in candidate_urls(start, doc):
                 ext = url.rsplit(".", 1)[-1]
-                if ext in files and not force:
+                if ext in saved_now or (ext in files and not force):
                     continue
                 content = None
                 try:
@@ -89,6 +92,7 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                     "bytes": len(content),
                     "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 }
+                saved_now.add(ext)
                 print(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
             if files:
                 entry[doc] = {"files": files}

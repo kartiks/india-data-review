@@ -93,7 +93,7 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
   </section>
 
   <section class="card">
-    <details class="table-details">
+    <details class="table-view">
       <summary>Show all states as a table</summary>
       <div class="table-scroll">
         <table class="states">
@@ -139,9 +139,6 @@ const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
 </Base>
 
 <style>
-  .lede { font-size: 1.08rem; max-width: 46em; }
-  .table-details summary { cursor: pointer; font-weight: 600; }
-  .table-details .table-scroll { margin-top: 12px; }
   .states td:not(:first-child), .states th:not(:first-child) { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .states tr.india td { font-weight: 600; }
   .notes { margin-top: 12px; padding-left: 18px; }

@@ -13,7 +13,7 @@ from pipeline_common.due import DUE
 
 ROOT = Path(__file__).resolve().parents[2]
 COMMITTED = ROOT / "sources" / "raw" / "2026-27" / "summary.pdf"
-MANIFEST = {"2026-27": {"summary": {"files": {"pdf": {"sha256": due.sha256(COMMITTED.read_bytes()).hexdigest()}}}}}
+MANIFEST = {"2026-27/summary/pdf": {"sha256": due.sha256(COMMITTED.read_bytes()).hexdigest()}}
 ROOT_URL = "https://www.indiabudget.gov.in/doc/Budget_at_Glance/bag1.pdf"
 MOVED_URL = "https://www.indiabudget.gov.in/budget2026-27/doc/Budget_at_Glance/bag1.pdf"
 NOV = date(2026, 11, 8)

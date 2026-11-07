@@ -6,7 +6,7 @@ and data/validation_report.md.
     uv run python -m budget_pipeline            # use files already in sources/
     uv run python -m budget_pipeline --fetch    # also download anything missing
     uv run python -m budget_pipeline --refresh  # re-download every budget file (after a new budget or a
-                                                # corrected file); overwrites the files in sources/raw/
+                                                # corrected file); a changed file is kept in sources/snapshots/
 
 Both --fetch and --refresh also re-download the RBI reference tables (sources/reference/). The budget has no
 sources revised in place, so it has no --refresh-api (pipeline_common.cli).

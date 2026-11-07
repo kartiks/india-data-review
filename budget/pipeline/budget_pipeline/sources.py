@@ -91,14 +91,35 @@ def expected_documents(start: int) -> list[str]:
     return [doc for doc in DOC_TYPES if candidate_urls(start, doc)]
 
 
+def manifest_key(year: str, doc: str, ext: str) -> str:
+    """The key of one budget document's file in one format in sources/manifest.json (pipeline_common.download has
+    the manifest's layout): "2016-17/summary/pdf"."""
+    return f"{year}/{doc}/{ext}"
+
+
+def documents(manifest: dict) -> dict[str, dict[str, dict[str, dict]]]:
+    """The budget documents in sources/manifest.json, by budget: {budget year: {document type: {format: manifest
+    entry}}}, budgets in order, document types in DOC_TYPES' order and formats in FORMAT_PRIORITY's. The reference
+    tables (keys under "reference/") are left out."""
+    out: dict[str, dict[str, dict[str, dict]]] = {}
+    for key, entry in sorted(manifest.items()):
+        if key.startswith("reference/"):
+            continue
+        year, doc, ext = key.split("/")
+        out.setdefault(year, {}).setdefault(doc, {})[ext] = entry
+    return {year: {doc: {ext: docs[doc][ext] for ext in sorted(docs[doc], key=FORMAT_PRIORITY.index)}
+                   for doc in sorted(docs, key=DOC_TYPES.index)}
+            for year, docs in out.items()}
+
+
 def missing_documents(manifest: dict) -> dict[str, list[str]]:
     """{budget year: [document types]} for every budget up to LATEST_BUDGET whose documents are not all in the
     manifest: usually the newest budget, when LATEST_BUDGET is raised before its documents are downloaded."""
+    have = documents(manifest)
     out = {}
     for start in BUDGETS:
         year = fy(start)
-        have = manifest.get(year, {})
-        if missing := [doc for doc in expected_documents(start) if not have.get(doc, {}).get("files")]:
+        if missing := [doc for doc in expected_documents(start) if not have.get(year, {}).get(doc)]:
             out[year] = missing
     return out
 

@@ -30,7 +30,7 @@ from pipeline_common.download import file_kind, get
 from pipeline_common.due import Findings
 from pipeline_common.text import fy, fy_start, is_fy
 
-from .sources import LATEST_BUDGET
+from .sources import LATEST_BUDGET, manifest_key
 
 MANIFEST = Path(__file__).resolve().parents[2] / "sources" / "manifest.json"
 
@@ -53,7 +53,7 @@ def pdf_text(content: bytes) -> str:
 
 
 def committed_sha(manifest: dict, start: int) -> str | None:
-    return manifest.get(fy(start), {}).get("summary", {}).get("files", {}).get("pdf", {}).get("sha256")
+    return manifest.get(manifest_key(fy(start), "summary", "pdf"), {}).get("sha256")
 
 
 def fetch_pdf(url: str, fetch: Callable[[str], bytes]) -> tuple[bytes | None, str | None]:

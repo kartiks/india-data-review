@@ -24,7 +24,7 @@ The website that presents this data is in `../site/` (see `../site/README.md`); 
 cd pipeline
 uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
 uv run python -m budget_pipeline --fetch    # also download anything missing
-uv run python -m budget_pipeline --refresh  # re-download every budget document (overwrites sources/raw/)
+uv run python -m budget_pipeline --refresh  # re-download every budget document (a changed file is kept in sources/snapshots/)
 uv run python -m budget_pipeline.due        # whether the next budget is out on indiabudget.gov.in (exit 11 if so)
 uv run pytest                               # parser tests + end-to-end checks (~6 min; builds in a temporary
                                             # folder and fails if anything in data/ changes)
@@ -100,7 +100,7 @@ So the latest budget year has no RE or Actual yet, and the year before it no Act
 ## Sources
 
 All from indiabudget.gov.in, with URL and SHA-256 of every file in
-`sources/manifest.json`. The printed PDF is the primary copy; Excel/HTML
+`sources/manifest.json` (as `<budget year>/<document>/<format>`; the RBI reference tables as `reference/rbi/<table>`). The printed PDF is the primary copy; Excel/HTML
 copies are parsed too and must agree (several don't — see below).
 
 | Data | Document |

@@ -29,13 +29,15 @@ from pipeline_common.text import fy, fy_start
 from .annotations import HEADER_FIXES, SOURCE_NOTES
 from .parse import FIELD_PATTERNS, ParseError, parse_document, stated_gdp
 from .readers import read_any
-from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, missing_documents, missing_message
+from .reference import reference_sources
+from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, documents, missing_documents, missing_message
 
 log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MANIFEST = ROOT / "sources" / "manifest.json"
+SOURCE_FIELDS = ("url", "file", "sha256", "bytes", "fetched_at")  # of each Budget at a Glance file, in fiscal.json
 
 FIELD_LABELS = {
     "revenue_receipts": "Revenue receipts",
@@ -74,12 +76,12 @@ def parse_all() -> tuple[list[dict], dict, list[dict]]:
     rows: list[dict] = []
     gdp: dict[str, dict] = {}
     comparisons: list[dict] = []
-    for doc_year, entry in manifest.items():
+    for doc_year, entry in documents(manifest).items():
         start = fy_start(doc_year)
         parsed_by_format: dict[str, dict] = {}
         errors: dict[str, str] = {}
         for ext in FORMAT_PRIORITY:
-            f = entry["summary"]["files"].get(ext)
+            f = entry["summary"].get(ext)
             if not f:
                 continue
             try:
@@ -93,7 +95,7 @@ def parse_all() -> tuple[list[dict], dict, list[dict]]:
             raise ParseError(f"{doc_year}: no file could be parsed: {errors}")
         primary = next(ext for ext in FORMAT_PRIORITY if ext in parsed_by_format)
         parsed = parsed_by_format[primary]
-        src = entry["summary"]["files"][primary]
+        src = entry["summary"][primary]
         comparisons.append(compare_formats(doc_year, primary, parsed_by_format, errors))
         for o in parsed["observations"]:
             rows.append(
@@ -199,12 +201,13 @@ def main() -> None:
         "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "fields": FIELD_LABELS,
-        "sources": {k: v["summary"]["files"] for k, v in manifest.items()},
-        "reference_sources": json.loads((ROOT / "sources" / "reference" / "manifest.json").read_text()),
+        "sources": {year: {ext: {k: e[k] for k in SOURCE_FIELDS} for ext, e in docs["summary"].items()}
+                    for year, docs in documents(manifest).items()},
+        "reference_sources": reference_sources(manifest),
         "gdp_stated_in_budget": gdp,
         "years": choose(rows),
     }
-    (DATA / "format_comparison.json").write_text(json.dumps(comparisons, indent=1, default=list) + "\n")
+    (DATA / "format_comparison.json").write_text(json.dumps(comparisons, indent=1, ensure_ascii=False, default=list) + "\n")
     (DATA / "fiscal.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
     log.info(f"wrote {len(rows)} observations and {len(dataset['years'])} years")
 

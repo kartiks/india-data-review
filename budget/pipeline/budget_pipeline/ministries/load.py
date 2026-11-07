@@ -9,7 +9,7 @@ from pipeline_common.text import fy_start
 
 from ..parse import ParseError
 from ..readers import read_any
-from ..sources import FORMAT_PRIORITY
+from ..sources import FORMAT_PRIORITY, documents
 from .common import MANIFEST, ROOT
 from .ids import assign_ids, load_name_map
 from .read import read_pdf_lines
@@ -29,11 +29,11 @@ def load_all() -> dict:
     "sources": {ext: manifest entry}}}. The primary file is the first parseable one in
     sources.FORMAT_PRIORITY (the PDF, wherever it exists).
     """
-    manifest = json.loads(MANIFEST.read_text())
+    manifest = documents(json.loads(MANIFEST.read_text()))
     name_map = load_name_map()
     out = {}
     for budget, entry in manifest.items():
-        files = entry.get("ministries", {}).get("files", {})
+        files = entry.get("ministries", {})
         start = fy_start(budget)
         parsed, errors = {}, {}
         for ext in FORMAT_PRIORITY:

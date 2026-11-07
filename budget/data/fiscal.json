@@ -1,7 +1,7 @@
 {
  "description": "Union Government of India: headline budget figures (Budget at a Glance), in Rs crore.",
  "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
- "generated_at": "2026-11-03T13:05:17+00:00",
+ "generated_at": "2026-11-07T08:25:09+00:00",
  "fields": {
   "revenue_receipts": "Revenue receipts",
   "tax_revenue_net": "Tax revenue (net to Centre)",
@@ -231,19 +231,19 @@
    }
   },
   "2016-17": {
-   "xls": {
-    "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag1.xls",
-    "file": "sources/raw/2016-17/summary.xls",
-    "sha256": "1452d513b37147cf33f9c11a33cedc14b7d1f4d0e747621377dfeb05ccfc3c7b",
-    "bytes": 33792,
-    "fetched_at": "2026-10-30T04:44:01+00:00"
-   },
    "pdf": {
     "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag11.pdf",
     "file": "sources/raw/2016-17/summary.pdf",
     "sha256": "85f2e904fc2d6280cee31d457606d3bf421673600af527f8c8b62662f90041f1",
     "bytes": 245591,
     "fetched_at": "2026-10-30T04:48:08+00:00"
+   },
+   "xls": {
+    "url": "https://www.indiabudget.gov.in/budget2016-2017/ub2016-17/bag/bag1.xls",
+    "file": "sources/raw/2016-17/summary.xls",
+    "sha256": "1452d513b37147cf33f9c11a33cedc14b7d1f4d0e747621377dfeb05ccfc3c7b",
+    "bytes": 33792,
+    "fetched_at": "2026-10-30T04:44:01+00:00"
    }
   },
   "2017-18": {

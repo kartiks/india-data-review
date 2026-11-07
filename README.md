@@ -15,7 +15,8 @@ type of data, and a shared home page with charts that use more than one area.
 
 Each data area is self-contained: its own `pipeline/` (a Python package run with uv), `data/` (the verified
 datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
-URL and SHA-256). Each pipeline's checks write `data/validation_report.md` for people and
+URL and SHA-256; the manifest has the same layout in every area, described in
+[`download.py`](shared/pipeline/pipeline_common/download.py)). Each pipeline's checks write `data/validation_report.md` for people and
 `data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED and
 records the SHA-256 of every data file as it is now (so data changed after its checks ran cannot deploy). Code
 the pipelines share (the validation report, downloading, reading Budget at a Glance, fiscal-year labels, ids and
@@ -45,8 +46,8 @@ The source files are committed, so a fresh clone needs no download. `uv run --lo
 weekly refresh use) stops with an error if `uv.lock` is out of date instead of updating it.
 
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
-`--fetch` downloads anything missing first, and `--refresh` re-downloads everything (GDP and jobs and prices keep
-changed files in `sources/snapshots/`; the budget overwrites its files, so compare them with the committed copies).
+`--fetch` downloads anything missing first, and `--refresh` re-downloads everything (a changed file's previous copy is
+kept in `sources/snapshots/`).
 `--refresh-api` (GDP, and jobs and prices; the budget has no such sources) re-downloads only the sources that are
 revised in place; the weekly refresh runs it. The options are the same in every area (`pipeline_common/cli.py`):
 `--help` lists them; an option renamed since (`--refresh-nas`, `--force`…) is refused with its new name, and any

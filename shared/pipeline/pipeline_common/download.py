@@ -3,6 +3,29 @@
 Every area keeps its downloads under <area>/sources/: raw/ (the files), manifest.json (one entry per file: URL,
 SHA-256, size, time) and snapshots/<time fetched>/ (earlier versions of files that are revised in place; see
 snapshot_name). The areas pass their own paths, so these functions hold no state.
+
+The manifest, the same in every area (save() writes an entry, write_manifest() the file):
+
+    {"<key>": {entry}, ...}     one object; keys sorted; indent 1; UTF-8 as is (ensure_ascii off); a final newline
+
+<key> names one downloaded file: its path under sources/raw/ (or sources/) without the extension, e.g.
+"nas/2011-12/Back/Annually/ind01", "reference/rbi/table86_key_deficit_indicators", with the format added when one
+document is kept in several, e.g. "2016-17/summary/pdf" and "2016-17/summary/xls" (budget) or "cpi2024/2026-01/pdf".
+An entry has these fields, the first five always and in this order:
+
+    url          the address it was downloaded from
+    file         where it is saved, relative to the area's folder ("sources/raw/...")
+    sha256       of the file
+    bytes        its size
+    fetched_at   when this version was downloaded (ISO 8601, UTC, to the second)
+    ...          fields of the area's own, e.g. records (rows in an API answer, see check_records), document,
+                 edition, title, publisher, downloaded_by_hand
+    checked_at   when a later download found the same file (only once one has)
+    history      earlier versions, oldest first, each {"sha256", "fetched_at", "file"} (its copy under snapshots/);
+                 only once the file has changed
+
+A query that answered with nothing is recorded as {"url", "empty": true, "checked_at"} (and an optional "note"), so
+it is not asked again on every --fetch.
 """
 
 import hashlib

@@ -31,7 +31,7 @@ def test_urls_match_the_committed_manifests():
         y = fy(start)
         assert gdp[f"budget/{y}/bag1"]["url"] == bg.url(start, 2026)
     for start in range(2004, 2027):
-        pdf = budget[fy(start)]["summary"]["files"].get("pdf")
+        pdf = budget.get(f"{fy(start)}/summary/pdf")
         if pdf:
             assert pdf["url"] == bg.url(start, 2026)
 

@@ -64,7 +64,7 @@ def test_a_budget_not_downloaded_stops_with_what_is_missing(monkeypatch, tmp_pat
     nxt = sources.fy(sources.LATEST_BUDGET + 1)
     manifest = json.loads(build.MANIFEST.read_text())
     assert sources.missing_documents(manifest) == {nxt: ["summary", "receipts", "ministries", "css", "central_sector"]}
-    manifest[nxt] = {"summary": {"files": {"pdf": {}}}}  # only the headline table found so far
+    manifest[f"{nxt}/summary/pdf"] = {}  # only the headline table found so far
     assert sources.missing_documents(manifest) == {nxt: ["receipts", "ministries", "css", "central_sector"]}
 
     (tmp_path / "manifest.json").write_text(json.dumps(manifest))

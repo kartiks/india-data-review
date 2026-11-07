@@ -50,7 +50,7 @@ def test_every_source_note_is_attached_to_a_published_figure(observations):
 @pytest.mark.parametrize("budget, ext", sorted(annotations.HEADER_FIXES))
 def test_every_heading_fix_is_needed(budget, ext):
     manifest = json.loads(build.MANIFEST.read_text())
-    rows = read_any(build.ROOT / manifest[budget]["summary"]["files"][ext]["file"])
+    rows = read_any(build.ROOT / manifest[f"{budget}/summary/{ext}"]["file"])
     with pytest.raises(ParseError):
         parse_document(rows, fy_start(budget), ext != "pdf")
     for printed, corrected in annotations.HEADER_FIXES[(budget, ext)]:

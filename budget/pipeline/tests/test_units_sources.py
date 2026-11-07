@@ -7,7 +7,7 @@ import urllib.error
 import openpyxl
 import pytest
 
-from budget_pipeline import fetch, reference
+from budget_pipeline import fetch, reference, sources
 from budget_pipeline.sources import LATEST_BUDGET, candidate_urls
 
 # ----- sources.candidate_urls -----------------------------------------------------------------------------------
@@ -115,6 +115,17 @@ def site(monkeypatch, tmp_path):
     return answers, asked
 
 
+def test_documents_view_of_the_manifest():
+    manifest = {"2016-17/summary/xls": {"n": 1}, "2016-17/summary/pdf": {"n": 2}, "2016-17/ministries/pdf": {"n": 3},
+                "2000-01/summary/htm": {"n": 4}, "reference/rbi/table86_key_deficit_indicators": {"n": 5}}
+    docs = sources.documents(manifest)
+    assert list(docs) == ["2000-01", "2016-17"]
+    assert list(docs["2016-17"]) == ["summary", "ministries"]  # DOC_TYPES' order
+    assert list(docs["2016-17"]["summary"]) == ["pdf", "xls"]  # FORMAT_PRIORITY's order
+    assert docs["2016-17"]["summary"]["xls"] == {"n": 1}
+    assert sources.manifest_key("2016-17", "summary", "pdf") in manifest
+
+
 def test_fetch_saves_only_the_right_table(site, tmp_path):
     answers, _ = site
     base = "https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag1"
@@ -123,8 +134,8 @@ def test_fetch_saves_only_the_right_table(site, tmp_path):
     answers[f"{base}.htm"] = html("Budget at a Glance")
     fetch.main(docs=["summary"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
-    files = manifest["2005-06"]["summary"]["files"]
-    assert list(files) == ["htm"]
+    files = sources.documents(manifest)["2005-06"]["summary"]
+    assert list(manifest) == ["2005-06/summary/htm"]
     assert files["htm"]["url"] == f"{base}.htm"
     assert files["htm"]["file"] == "sources/raw/2005-06/summary.htm"
     assert files["htm"]["bytes"] == len(answers[f"{base}.htm"])
@@ -137,7 +148,7 @@ def test_fetch_refuses_a_file_without_the_table_title(site, tmp_path):
     answers["https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag1.htm"] = html("Receipts")
     fetch.main(docs=["summary"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
-    assert "summary" not in manifest.get("2005-06", {})  # fetch writes no empty entries
+    assert manifest == {}  # fetch writes no empty entries
     assert not (tmp_path / "sources" / "raw").exists()
 
 
@@ -150,9 +161,15 @@ def test_fetch_keeps_files_already_saved_unless_forced(site, tmp_path):
     fetch.main(docs=["summary"])
     assert url not in asked
     answers[url] = html("Budget at a Glance, revised")
+    first = json.loads((tmp_path / "sources" / "manifest.json").read_text())["2005-06/summary/htm"]
     fetch.main(force=True, docs=["summary"])
     assert url in asked
     assert (tmp_path / "sources" / "raw" / "2005-06" / "summary.htm").read_bytes() == answers[url]
+    # the previous copy is kept, as in every area (pipeline_common.download.save)
+    entry = json.loads((tmp_path / "sources" / "manifest.json").read_text())["2005-06/summary/htm"]
+    [old] = entry["history"]
+    assert old["sha256"] == first["sha256"] and (tmp_path / old["file"]).read_bytes() == html("Budget at a Glance")
+    assert old["file"].startswith("sources/snapshots/") and old["file"].endswith("/2005-06/summary.htm")
 
 
 def test_fetch_keeps_the_first_statement_found(site, tmp_path, monkeypatch):
@@ -165,7 +182,7 @@ def test_fetch_keeps_the_first_statement_found(site, tmp_path, monkeypatch):
     answers[f"{base}/stat3.htm"] = html("Ministry-wise statement 3")
     fetch.main(docs=["ministries"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
-    assert manifest["2020-21"]["ministries"]["files"]["htm"]["url"] == f"{base}/stat3a.htm"
+    assert manifest["2020-21/ministries/htm"]["url"] == f"{base}/stat3a.htm"
 
 
 def test_refresh_keeps_the_same_statement_as_fetch(site, tmp_path, monkeypatch):
@@ -177,7 +194,7 @@ def test_refresh_keeps_the_same_statement_as_fetch(site, tmp_path, monkeypatch):
     answers[f"{base}/stat3.htm"] = html("Ministry-wise statement 3")
     fetch.main(force=True, docs=["ministries"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
-    assert manifest["2020-21"]["ministries"]["files"]["htm"]["url"] == f"{base}/stat3a.htm"
+    assert manifest["2020-21/ministries/htm"]["url"] == f"{base}/stat3a.htm"
     assert (tmp_path / "sources" / "raw" / "2020-21" / "ministries.htm").read_bytes() == html("Ministry-wise statement 3A")
 
 
@@ -194,7 +211,8 @@ def test_refresh_keeps_a_mix_of_statements_by_format(site, tmp_path, monkeypatch
     monkeypatch.setattr(fetch, "has_title", lambda doc, ext, content: True)
     for force in (False, True):
         fetch.main(force=force, docs=["ministries"])
-        files = json.loads((tmp_path / "sources" / "manifest.json").read_text())["2023-24"]["ministries"]["files"]
+        manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
+        files = sources.documents(manifest)["2023-24"]["ministries"]
         assert {ext: f["url"].rsplit("/", 1)[-1] for ext, f in files.items()} == {"pdf": "stat3a.pdf", "htm": "stat3.htm"}
 
 
@@ -282,22 +300,26 @@ def test_load_rbi_on_the_committed_tables():
 def test_reference_fetch_refuses_an_error_page(monkeypatch, tmp_path):
     monkeypatch.setattr(reference, "get", lambda url: html("Page not found"))
     monkeypatch.setattr(reference, "REF_DIR", tmp_path / "rbi")
-    monkeypatch.setattr(reference, "REF_MANIFEST", tmp_path / "manifest.json")
+    monkeypatch.setattr(reference, "MANIFEST", tmp_path / "manifest.json")
     with pytest.raises(RuntimeError, match="is not an Excel file"):
         reference.fetch()
-    assert list((tmp_path / "rbi").iterdir()) == []
+    assert not (tmp_path / "rbi").exists()
     assert not (tmp_path / "manifest.json").exists()
 
 
-def test_reference_fetch_saves_each_table_and_its_manifest(monkeypatch, tmp_path):
+def test_reference_fetch_saves_each_table_in_the_manifest(monkeypatch, tmp_path):
     monkeypatch.setattr(reference, "get", lambda url: b"PK\x03\x04 " + url.encode())
     monkeypatch.setattr(reference, "ROOT", tmp_path)
-    monkeypatch.setattr(reference, "REF_DIR", tmp_path / "rbi")
-    monkeypatch.setattr(reference, "REF_MANIFEST", tmp_path / "manifest.json")
+    monkeypatch.setattr(reference, "REF_DIR", tmp_path / "sources" / "reference" / "rbi")
+    monkeypatch.setattr(reference, "MANIFEST", tmp_path / "sources" / "manifest.json")
+    (tmp_path / "sources").mkdir()
+    (tmp_path / "sources" / "manifest.json").write_text('{"2026-27/summary/pdf": {"url": "u"}}')
     reference.fetch()
-    manifest = json.loads((tmp_path / "manifest.json").read_text())
-    assert set(manifest) == set(reference.RBI_TABLES)
+    manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
+    assert set(manifest) == {"2026-27/summary/pdf"} | {f"reference/rbi/{name}" for name in reference.RBI_TABLES}
+    listed = reference.reference_sources(manifest)  # as fiscal.json lists them
     for name, spec in reference.RBI_TABLES.items():
-        assert manifest[name]["url"] == spec["url"]
-        assert manifest[name]["file"] == f"rbi/{name}.xlsx"
-        assert (tmp_path / "rbi" / f"{name}.xlsx").read_bytes().endswith(spec["url"].encode())
+        assert listed[name]["url"] == spec["url"] and listed[name]["title"] == spec["title"]
+        assert list(listed[name]) == ["title", "publisher", "index_page", "url", "file", "sha256", "fetched_at"]
+        assert listed[name]["file"] == f"sources/reference/rbi/{name}.xlsx"
+        assert (tmp_path / listed[name]["file"]).read_bytes().endswith(spec["url"].encode())

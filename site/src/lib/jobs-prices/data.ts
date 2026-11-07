@@ -3,8 +3,7 @@
 // - yearly averages of published monthly price indices, and the change between two such averages;
 // - earnings divided by a price index (earnings "after inflation");
 // - differences between two published figures.
-import fs from "node:fs";
-import path from "node:path";
+import { readAreaJson } from "../area-data";
 import { fyMonths, isFy, prevFy } from "../fy";
 import { stateKey } from "../states";
 
@@ -34,8 +33,7 @@ interface Dataset {
   source_problems: string[];
 }
 
-const file = path.resolve(process.cwd(), "..", "jobs-prices", "data", "jobs_prices.json");
-export const DS: Dataset = JSON.parse(fs.readFileSync(file, "utf8"));
+export const DS = readAreaJson<Dataset>("jobs-prices", "jobs_prices.json");
 export const GENERATED = DS.generated_at;
 export const SOURCES = DS.sources;
 

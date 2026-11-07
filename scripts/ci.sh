@@ -15,7 +15,10 @@ export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 REF="${1:-HEAD}"
-AREAS=(budget gdp jobs-prices)
+# The areas: the list in site/src/data/areas.json of the commit checked, which the site and its build gate use too.
+AREA_IDS="$(git -C "$REPO" show "$REF:site/src/data/areas.json" | node -p 'JSON.parse(require("fs").readFileSync(0, "utf8")).map((a) => a.id).join(" ")')"
+[ -n "$AREA_IDS" ] || { echo "site/src/data/areas.json lists no areas" >&2; exit 1; }
+read -r -a AREAS <<< "$AREA_IDS"
 RUFF_VERSION=0.17.4  # pinned, so a new ruff release cannot fail a commit that passed before
 
 SHA="$(git -C "$REPO" rev-parse --verify "$REF^{commit}")"

@@ -1,10 +1,8 @@
 // Build-time access to the verified datasets in ../data (produced by the pipeline).
 // Nothing here changes a number: it only picks, sums and labels published values.
-import fs from "node:fs";
-import path from "node:path";
+import { readAreaJson, readAreaText } from "../area-data";
 
-const DATA_DIR = path.resolve(process.cwd(), "..", "budget", "data");
-const load = <T>(name: string): T => JSON.parse(fs.readFileSync(path.join(DATA_DIR, name), "utf8"));
+const load = <T>(name: string): T => readAreaJson<T>("budget", name);
 
 export type Kind = "be" | "re" | "actual";
 export const KIND_LABEL: Record<Kind, string> = {
@@ -313,7 +311,7 @@ export function bestSeries(years: string[], get: (year: string, kind: Kind) => n
 
 // ---------- scheme -> department link, via Demand number in the same budget ----------
 function readCsv(name: string): Record<string, string>[] {
-  const text = fs.readFileSync(path.join(DATA_DIR, name), "utf8");
+  const text = readAreaText("budget", name);
   const rows: string[][] = [];
   let row: string[] = [], field = "", quoted = false;
   for (let i = 0; i < text.length; i++) {

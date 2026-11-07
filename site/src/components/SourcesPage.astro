@@ -1,0 +1,67 @@
+---
+// An area's "Sources and checks" page: what the area's pages are built from, the result of its checks (from
+// <area>/data/validation_summary.json) and its downloads. The page passes its own text:
+// - the default slot: the opening paragraph(s);
+// - "checks": <li> items saying what is checked, listed in the "Checked automatically" card;
+// - "checks-summary" (optional): the sentence after the number of checks;
+// - "checks-note" (optional): text after the list of what is checked;
+// - "before-checks" (optional): cards before "Checked automatically"; "after-checks": the cards after it;
+// - "download-note" (optional): text under the list of downloads.
+import { link } from "../lib/url";
+import { AREAS } from "../lib/area-data";
+import { passed, validation } from "../lib/validation";
+import Base from "../layouts/Base.astro";
+
+interface Props {
+  area: string; // id in src/data/areas.json
+  description: string;
+  files: [name: string, what: string][]; // the downloads, in /data/<area>/
+}
+const { area, description, files } = Astro.props;
+if (!AREAS.some((a) => a.id === area)) throw new Error(`SourcesPage: unknown area ${area}`);
+const v = validation(area);
+const checks = v.checks.toLocaleString("en-IN");
+---
+<Base title="Sources and checks" section="about" description={description}>
+  <h1>Sources and checks</h1>
+  <slot />
+
+  <slot name="before-checks" />
+
+  <section class="card">
+    <h2>Checked automatically</h2>
+    <p>
+      <strong>{checks} checks{passed(v) ? ", all passing" : ""}.</strong>{" "}
+      <slot name="checks-summary">
+        The site cannot be built unless every check passes. Known problems in the official data are allowed only
+        with a written reason, listed in the report.
+      </slot>
+    </p>
+    <ul>
+      <slot name="checks" />
+    </ul>
+    <slot name="checks-note" />
+    <details class="table-view">
+      <summary>All {v.sections.length} groups of checks</summary>
+      <ul class="checklist small">
+        {v.sections.map((s) => <li>{s.failures === 0 ? "✅" : "❌"} {s.title}</li>)}
+      </ul>
+    </details>
+    <p class="small"><a href={link(`/data/${area}/validation_report.md`)}>Full validation report</a></p>
+  </section>
+
+  <slot name="after-checks" />
+
+  <section class="card">
+    <h2>Download the data</h2>
+    <ul>
+      {files.map(([f, d]) => <li><a href={link(`/data/${area}/${f}`)}>{f}</a>: {d}</li>)}
+    </ul>
+    <slot name="download-note" />
+  </section>
+</Base>
+
+<style>
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 2px 0; }
+</style>

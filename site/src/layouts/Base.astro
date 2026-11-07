@@ -1,5 +1,6 @@
 ---
 import { link } from "../lib/url";
+import { AREAS } from "../lib/area-data";
 import "../styles/global.css";
 import InlineScript from "../components/InlineScript.astro";
 import themeJs from "../scripts/inline/theme.js?raw";
@@ -16,19 +17,15 @@ interface Props {
 const SITE = "India Data Review";
 const { title, description = "India's economy and public finances from official data, checked: the Union Budget since 2000-01, GDP from MoSPI's national accounts, and jobs, prices and household spending.", section } = Astro.props;
 
-// The area comes from the URL: /budget/..., /gdp/..., /jobs-prices/..., /about/, or the home page.
+// The section comes from the URL: /<area>/... (src/data/areas.json), /about/, or the home page.
 const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const pathname = Astro.url.pathname.slice(base.length) || "/";
-const AREAS = ["budget", "gdp", "jobs-prices", "about"];
-const area = AREAS.find((a) => pathname.startsWith(`/${a}/`)) ?? (pathname === "/" ? "home" : "");
-
 const tabs = [
   { id: "home", href: "/", label: "Home" },
-  { id: "budget", href: "/budget/", label: "Budget" },
-  { id: "gdp", href: "/gdp/", label: "GDP" },
-  { id: "jobs-prices", href: "/jobs-prices/", label: "Jobs & prices" },
+  ...AREAS.map((a) => ({ id: a.id, href: `/${a.id}/`, label: a.label })),
   { id: "about", href: "/about/", label: "About" },
 ];
+const area = tabs.find((t) => t.id !== "home" && pathname.startsWith(t.href))?.id ?? (pathname === "/" ? "home" : "");
 const subnav: Record<string, { id: string; href: string; label: string }[]> = {
   budget: [
     { id: "overview", href: "/budget/", label: "Overview" },
@@ -60,7 +57,7 @@ const subnav: Record<string, { id: string; href: string; label: string }[]> = {
     { id: "about", href: "/jobs-prices/sources/", label: "Sources" },
   ],
 };
-const AREA_LABEL: Record<string, string> = { budget: "Budget", gdp: "GDP", "jobs-prices": "Jobs & prices" };
+const AREA_LABEL: Record<string, string> = Object.fromEntries(AREAS.map((a) => [a.id, a.label]));
 const sub = subnav[area];
 // "Prices · Jobs & prices · India Data Review"; an area's own overview page is just "GDP · India Data Review".
 const fullTitle = title === SITE ? title : `${title} · ${AREA_LABEL[area] && AREA_LABEL[area] !== title ? `${AREA_LABEL[area]} · ` : ""}${SITE}`;

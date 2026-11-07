@@ -56,7 +56,9 @@ Tests: `uv run pytest` in each `pipeline/` folder (including `shared/pipeline/`)
 
 Vercel only builds the site. It never runs a pipeline: it reads the `data/` folders committed to this repository.
 Data reaches the site in two ways: a **weekly GitHub Action** re-downloads the sources that are published as data and
-revised in place, and everything else is **updated by hand** when it is released. Data added to the site later gets the
+revised in place, and everything else is **updated by hand** when it is released; for a new budget, an Economic Survey,
+an RBI policy statement and a year's population, the weekly refresh also checks whether one is probably out and not
+yet added, and fails its run with a line saying what to add. Data added to the site later gets the
 same decision: see [Adding data](#adding-data).
 
 ### What refreshes itself, and what doesn't
@@ -71,11 +73,11 @@ same decision: see [Adding data](#adding-data).
 | Household spending (HCES): new rounds with the same indicators | MoSPI API | **Weekly refresh**; a new indicator or breakdown needs code ([Jobs and prices README](jobs-prices/README.md#new-survey-rounds)) | When a survey is published |
 | States: unemployment, income per person, state GDP, state inflation, rural wages | RBI Handbook of Statistics on Indian States (tables 8–9, 19–22, 108, 112–115) | **Weekly refresh**: a new edition is picked up from RBI's page automatically; if RBI renumbers a table, it needs code ([Jobs and prices README](jobs-prices/README.md#each-december-a-new-rbi-handbook-edition)) | Each December |
 | Consumer prices, base 2024 (from January 2026) | MoSPI monthly press releases on PIB | **By hand**: add the release's address, then `--fetch`; MoSPI's API does not serve this series yet ([Jobs and prices README](jobs-prices/README.md#each-month)) | 12th of each month |
-| GDP per person (GDP › Per person): GDP, national income and household spending per person | MoSPI national accounts API, divided by population: the official 2019 projections, then MoSPI's own figures from its press notes (cross-checked with the RBI's Handbook of Statistics on the Indian Economy) | **Weekly refresh** of the totals. The population is **by hand**: add each new year from MoSPI's press note, and each year's *National Accounts Statistics* per-capita statement, downloaded from MoSPI's site in a browser ([GDP README](gdp/README.md#adding-a-years-population)); until then the report lists the year, it has no per-person figures, and the Per person page stays on the year before | Population for a new year: early January (First Advance Estimates); National Accounts Statistics: August or September |
-| Union Budget: headline figures, taxes, ministries, schemes | Budget documents on indiabudget.gov.in | **By hand**: move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)) | 1 February, or the full budget after an election |
+| GDP per person (GDP › Per person): GDP, national income and household spending per person | MoSPI national accounts API, divided by population: the official 2019 projections, then MoSPI's own figures from its press notes (cross-checked with the RBI's Handbook of Statistics on the Indian Economy) | **Weekly refresh** of the totals. The population is **by hand**: add each new year from MoSPI's press note, and each year's *National Accounts Statistics* per-capita statement, downloaded from MoSPI's site in a browser ([GDP README](gdp/README.md#adding-a-years-population)); the weekly refresh fails its run when a year is missing (`gdp_pipeline.due`), and until then the report lists the year, it has no per-person figures, and the Per person page stays on the year before | Population for a new year: early January (First Advance Estimates); National Accounts Statistics: August or September |
+| Union Budget: headline figures, taxes, ministries, schemes | Budget documents on indiabudget.gov.in | **By hand**: move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)); the weekly refresh fails its run once a newer budget is on indiabudget.gov.in (`budget_pipeline.due`) | 1 February, or the full budget after an election |
 | The Budget's GDP assumption (GDP pages) | Budget at a Glance | **By hand**, with the new budget (step 5 of the Budget README) | 1 February |
-| Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Late January |
-| RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)) | Every two months |
+| Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)); the weekly refresh fails its run when one is probably out (`gdp_pipeline.due`) | Late January |
+| RBI growth projection (GDP forecasts page) | RBI monetary policy statements | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/rbi.json` ([GDP README](gdp/README.md#adding-a-forecast)); the weekly refresh fails its run when the latest is over 66 days old (`gdp_pipeline.due`) | Every two months |
 | Overall (rural + urban) household spending 2023-24 | MoSPI's HCES 2023-24 report, Table A2 | Fixed: a published report | Never |
 | Budget cross-checks (used by the checks, described in the Budget pages' notes) | RBI Handbook of Statistics on Indian Economy; PRS budget analysis | **By hand** (step 4 of the Budget README) | RBI: yearly, second half of the year; PRS: after each budget |
 | India map | DataMeet state boundaries | Fixed | Never |
@@ -94,7 +96,10 @@ changed. It:
    (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Each area has its
    own time limit (30 and 150 minutes), so a slow source fails only its own area. Fixed documents
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
-   listed in the code but missing is downloaded.
+   listed in the code but missing is downloaded. It also runs `budget_pipeline.due` and `gdp_pipeline.due`, which
+   say whether a release added by hand is probably out and not yet added: a new budget (from indiabudget.gov.in), an
+   Economic Survey, an RBI policy statement, a year's population or National Accounts Statistics (from dates). These
+   never hold back the data; step 6 fails the run with one line per release, saying what to add and where.
 2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
    pipeline keeps the old file under `<area>/sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; folders from before
    are named by date only) and records it in the
@@ -110,8 +115,9 @@ changed. It:
    `data-refresh/<date>` and opens a pull request listing the new text, for you to review and merge. If `main` moved
    again between the checks and the push, the commit also goes to a pull request (run `scripts/ci.sh` on it before
    merging).
-6. If anything failed, the run fails and GitHub emails whoever last changed the workflow's schedule (or started the
-   run by hand). Every run keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation report
+6. If anything failed, or a release added by hand is due, the run fails (after the data is published) and GitHub
+   emails whoever last changed the workflow's schedule (or started the run by hand). The due releases are also listed
+   in the run's summary and in any pull request it opens. Every run keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation report
    and refresh output, the refresh commit (`refresh.bundle`), the new text (`labels.md`) and every changed file that
    was not committed.
 

@@ -13,7 +13,7 @@
 #                   date, stale, labels_changed, publish (true when the publish job should push it)
 #   refresh.bundle  the refresh commit (git bundle, branch data-refresh), if there is one
 #   labels.md       text that is new in a committed area's data/ (pipeline_common.labels), if any
-#   notices.md      ::notice:: lines and out-of-date messages from the areas' logs, if any
+#   notices.md      DUE: lines (release-due commands), ::notice:: lines and out-of-date messages from the logs, if any
 #   files/          each area's validation report and summary, and every changed file not committed (held back)
 #   logs/           each area's refresh output
 # Step outputs: publish, labels_changed.
@@ -88,8 +88,13 @@ fi
 
 # Notices from the areas' refresh output, for the pull request.
 if [ -d "$logs" ]; then
-  grep -h -e '^::notice' -e '^FAIL: out of date' "$logs"/*.log 2>/dev/null | sed 's/^/- /' >"$out/notices.md" || true
-  [ -s "$out/notices.md" ] || rm -f "$out/notices.md"
+  grep -h -e '^DUE: ' -e '^::notice' -e '^FAIL: out of date' "$logs"/*.log 2>/dev/null | sed 's/^/- /' \
+    >"$out/notices.md" || true
+  if [ -s "$out/notices.md" ]; then
+    { echo "### Notices"; echo; cat "$out/notices.md"; } >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
+  else
+    rm -f "$out/notices.md"
+  fi
 fi
 
 publish=false

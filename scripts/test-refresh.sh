@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Dry run of the weekly refresh's scripts (scripts/refresh/, used by .github/workflows/data-refresh.yml) against a
-# temporary local repository: commit, held-back areas, out-of-date data, push, replay when main moved, the pull
-# request for new text, and the refusals. No network: origin is a local bare repository, gh is a stub on PATH, the
+# temporary local repository: commit, held-back areas, out-of-date data, releases due, push, replay when main moved,
+# the pull request for new text, and the refusals. No network: origin is a local bare repository, gh is a stub on PATH, the
 # local CI is a stub, and uv runs offline (the label diff needs shared/pipeline's environment, which
 # `uv run --locked` in shared/pipeline sets up). scripts/ci.sh runs it; it takes a few seconds.
 #
@@ -168,6 +168,33 @@ has "$S/artifact/notices.md" "- ::notice::A new release is due"
 has "$S/artifact/notices.md" "- FAIL: out of date: CPI 2026-09"
 has "$S/artifact/logs/gdp.log" "checks failed"
 
+new_scenario release-due
+mkdir -p "$S/logs"
+code=0
+LOG_DIR="$S/logs" "$R/run-area.sh" budget-due 5m bash -c 'echo "ok: budget 2026-27 is in"; echo "WARNING: slow" >&2
+  echo "DUE: Union Budget 2027-28: it is on indiabudget.gov.in. budget/README.md, Adding a new budget"; exit 11' \
+  >"$S/run.log" || code=$?
+same "$code" 11 "a due release fails its step"
+same "$(out exit_code)" 11 "exit_code"
+code=0
+LOG_DIR="$S/logs" "$R/run-area.sh" gdp-due 5m bash -c 'echo Traceback >&2; exit 1' >"$S/run.log" || code=$?
+same "$code" 1 "a crash fails its step"
+same "$(out exit_code)" 1 "exit_code"
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+replay
+package true
+same "$(out publish)" true "a due release does not hold back the data"
+has "$S/artifact/notices.md" "- DUE: Union Budget 2027-28: it is on indiabudget.gov.in."
+lacks "$S/artifact/notices.md" "ok: budget"
+code=0
+LOG_DIR="$S/logs" "$R/check-due.sh" budget-due=11 gdp-due=1 >"$S/due.log" || code=$?
+same "$code" 1 "check-due fails the run"
+has "$S/due.log" "::error::Union Budget 2027-28: it is on indiabudget.gov.in. budget/README.md, Adding a new budget (budget-due)"
+has "$S/due.log" "::error::gdp-due crashed (exit 1)"
+LOG_DIR="$S/logs" "$R/check-due.sh" budget-due= gdp-due= >"$S/due.log" || fail "nothing due should pass"
+ok
+
 # ---------------------------------------------------------------------------------------------------------------
 new_scenario main-moved-during-refresh
 (cd "$S/work" && gdp_new_figures && jobs_downloaded)
@@ -219,6 +246,7 @@ expect "no branch" test ! -e "$S/gh.log"
 
 # ---------------------------------------------------------------------------------------------------------------
 new_scenario new-text-pull-request
+write "$S/logs/gdp-due.log" "DUE: RBI monetary policy statement: the latest is 70 days old. gdp/README.md"
 (cd "$S/work" && gdp_new_figures && jobs_new_state)
 commit gdp=success jobs-prices=success
 same "$(out committed)" "gdp jobs-prices" "committed"
@@ -234,6 +262,7 @@ same "$(git -C "$S/origin.git" rev-parse data-refresh/2026-11-08)" "$(git -C "$S
 has "$S/gh.log" "--title Data refresh 2026-11-08: gdp jobs-prices"
 has "$S/pr-body.md" "adds text that is not in the data on main"
 has "$S/pr-body.md" "  - \`Ladakh\`"
+has "$S/pr-body.md" "- DUE: RBI monetary policy statement: the latest is 70 days old."
 
 new_scenario new-text-no-pull-requests-allowed
 (cd "$S/work" && jobs_new_state)

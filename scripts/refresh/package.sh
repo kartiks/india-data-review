@@ -13,7 +13,8 @@
 #                   date, stale, labels_changed, publish (true when the publish job should push it)
 #   refresh.bundle  the refresh commit (git bundle, branch data-refresh), if there is one
 #   labels.md       text that is new in a committed area's data/ (pipeline_common.labels), if any
-#   notices.md      DUE: lines (release-due commands), ::notice:: lines and out-of-date messages from the logs, if any
+#   notices.md      DUE: and WARNING: lines from the release-due commands, ::notice:: lines and out-of-date
+#                   messages from the logs, if any (also in the job summary; warnings also as annotations)
 #   files/          each area's validation report and summary, and every changed file not committed (held back)
 #   logs/           each area's refresh output
 # Step outputs: publish, labels_changed.
@@ -88,8 +89,12 @@ fi
 
 # Notices from the areas' refresh output, for the pull request.
 if [ -d "$logs" ]; then
-  grep -h -e '^DUE: ' -e '^::notice' -e '^FAIL: out of date' "$logs"/*.log 2>/dev/null | sed 's/^/- /' \
-    >"$out/notices.md" || true
+  {
+    grep -h -e '^DUE: ' -e '^::notice' -e '^FAIL: out of date' "$logs"/*.log 2>/dev/null || true
+    # A release-due probe that could not tell (a network error) only warns: show it, so one that keeps failing is seen.
+    grep -h '^WARNING: ' "$logs"/*-due.log 2>/dev/null || true
+  } | sed 's/^/- /' >"$out/notices.md"
+  grep -h '^WARNING: ' "$logs"/*-due.log 2>/dev/null | sed 's/^WARNING: /::warning::/' || true
   if [ -s "$out/notices.md" ]; then
     { echo "### Notices"; echo; cat "$out/notices.md"; } >>"${GITHUB_STEP_SUMMARY:-/dev/null}"
   else

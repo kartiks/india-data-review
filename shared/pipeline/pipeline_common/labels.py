@@ -21,6 +21,10 @@ validation_report.md and other files that are not JSON or CSV are not compared. 
 checks' code, which a refresh does not change; its lines repeat figures and labels from the data (already compared
 here) and counts that change every time, so comparing it would only add noise. The figures it prints are reviewed
 the usual way (README, "The weekly refresh").
+
+The publish job runs this with the runner's own python3 (Python 3.12 on ubuntu-latest) and installs nothing, so it
+and the pipeline_common modules it imports use only the standard library and Python 3.12 syntax
+(tests/test_labels.py checks).
 """
 
 import csv

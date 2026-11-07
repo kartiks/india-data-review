@@ -5,7 +5,7 @@
 #   check-due.sh <name>=<exit code>...      e.g. check-due.sh budget-due=11 gdp-due=
 #
 # <name> is the run-area.sh name of a `python -m <area>_pipeline.due` step, whose output is in $LOG_DIR/<name>.log;
-# <exit code> is that step's exit_code output (empty when it exited 0). Exit 11: something is due, and each of the
+# <exit code> is that step's exit_code output (empty if the step did not run). Exit 11: something is due, and each of the
 # log's "DUE: <what>: <why>. <where to add it>" lines becomes an error. Anything else non-zero: the command crashed.
 
 set -euo pipefail
@@ -16,7 +16,8 @@ failed=0
 for pair in "$@"; do
   name="${pair%%=*}" code="${pair#*=}"
   log="$(log_dir)/$name.log"
-  case "${code:-0}" in
+  case "$code" in
+    "") echo "$name: skipped (did not run)" ;;
     0) echo "$name: nothing due" ;;
     11)
       failed=1

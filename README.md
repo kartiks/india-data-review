@@ -112,11 +112,12 @@ The **refresh** job (read-only token):
 5. Keeps an artifact (`data-refresh-<run id>`, for 90 days): each area's validation report and refresh output, the
    commit (`refresh.bundle`), the new text (`labels.md`) and every changed file that was not committed.
 
-The **publish** job (write token) installs and builds nothing. It takes the commit from the artifact, checks that it
-changes only the committed areas' `sources/` and `data/`, and pushes it to `main`; Vercel then deploys the live site.
-It opens a pull request (branch `data-refresh/<date>`) instead when the data has **new text** (a new state, item,
-unit, note or source address: anything but figures, dates and periods;
-[`labels.py`](shared/pipeline/pipeline_common/labels.py) says exactly what counts), listing it for you to review, or
+The **publish** job (write token) installs and builds nothing, and trusts nothing from the refresh job but the commit,
+which it checks: one commit on top of `main` (or a commit in its history) changing only plain files in the `sources/`
+and `data/` of GDP or jobs and prices. It pushes it to `main`; Vercel then deploys the live site. It opens a pull
+request (branch `data-refresh/<date>`) instead when the data has **new text** (a new state, item, unit, note or source
+address: anything but figures, dates and periods; [`labels.py`](shared/pipeline/pipeline_common/labels.py) says
+exactly what counts, and the job runs it itself with the runner's own Python), listing it for you to review, or
 when `main` moved again after the checks (run `scripts/ci.sh` on the branch before merging). Opening a pull request
 needs **Settings › Actions › General › "Allow GitHub Actions to create and approve pull requests"**, which is
 currently off: the job then pushes the branch and fails the run with a link to open the pull request yourself.

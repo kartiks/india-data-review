@@ -1,16 +1,13 @@
 ---
 import { link } from "../../lib/url";
+import { AREAS } from "../../lib/area-data";
 import { passed, validation } from "../../lib/validation";
 import Base from "../../layouts/Base.astro";
 
 // Read each area's check results: the site is only built when all of them pass.
-const areas = [
-  { id: "budget", name: "Union Budget", sources: "/budget/sources/" },
-  { id: "gdp", name: "GDP", sources: "/gdp/sources/" },
-  { id: "jobs-prices", name: "Jobs & prices", sources: "/jobs-prices/sources/" },
-].map((a) => {
+const areas = AREAS.map((a) => {
   const v = validation(a.id);
-  return { ...a, passed: passed(v), checks: v.checks };
+  return { ...a, sources: `/${a.id}/sources/`, passed: passed(v), checks: v.checks };
 });
 const total = areas.reduce((s, a) => s + a.checks, 0);
 ---

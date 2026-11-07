@@ -1,5 +1,5 @@
 ---
-import { link } from "../../lib/url";
+import LinkCard from "../../components/LinkCard.astro";
 import Base from "../../layouts/Base.astro";
 import LineChart from "../../components/LineChart.astro";
 import Money from "../../components/Money.astro";
@@ -108,53 +108,16 @@ const newPoints = years.map((y) => {
     </p>
   </section>
 
-  <div class="grid-2">
-    <div class="card link-card">
-      <h2><a href={link("/gdp/growth/")}>Growth since 2000-01</a></h2>
-      <p class="muted">Real and nominal growth year by year, and the size of the economy on both series.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/per-person/")}>Per person</a></h2>
-      <p class="muted">{ppIncome !== undefined && `Income per person was ${rupees(ppIncome)} in ${PP_YEAR}. `}GDP, income and household spending per person, and their growth after inflation.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/revisions/")}>Revisions</a></h2>
-      <p class="muted">Growth is estimated up to six times. {big.y} was first put at {gpct(big.first)}; it is now {gpct(big.last)}.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/forecasts/")}>Forecasts vs outcome</a></h2>
-      <p class="muted">What the Economic Survey, the RBI and the Budget expected, against what happened.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/sectors/")}>Sectors</a></h2>
-      <p class="muted">Agriculture, industry and services: their share of the economy and how fast each grows.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/states/")}>States</a></h2>
-      <p class="muted">Each state's economy: its size, growth, income per person and sectors, with a map.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/spending/")}>Spending, investment and saving</a></h2>
-      <p class="muted">Household and government spending, investment by who invests, and the saving rate.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/quarters/")}>Quarters</a></h2>
-      <p class="muted">Quarter-by-quarter growth, the most recent signal of where the economy is going.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/gdp/sources/")}>Sources and checks</a></h2>
-      <p class="muted">Where every number comes from, how it is checked, and problems found in the official data.</p>
-    </div>
+  <div class="grid-2 link-cards">
+    <LinkCard href="/gdp/growth/" title="Growth since 2000-01">Real and nominal growth year by year, and the size of the economy on both series.</LinkCard>
+    <LinkCard href="/gdp/per-person/" title="Per person">{ppIncome !== undefined && `Income per person was ${rupees(ppIncome)} in ${PP_YEAR}. `}GDP, income and household spending per person, and their growth after inflation.</LinkCard>
+    <LinkCard href="/gdp/revisions/" title="Revisions">Growth is estimated up to six times. {big.y} was first put at {gpct(big.first)}; it is now {gpct(big.last)}.</LinkCard>
+    <LinkCard href="/gdp/forecasts/" title="Forecasts vs outcome">What the Economic Survey, the RBI and the Budget expected, against what happened.</LinkCard>
+    <LinkCard href="/gdp/sectors/" title="Sectors">Agriculture, industry and services: their share of the economy and how fast each grows.</LinkCard>
+    <LinkCard href="/gdp/states/" title="States">Each state's economy: its size, growth, income per person and sectors, with a map.</LinkCard>
+    <LinkCard href="/gdp/spending/" title="Spending, investment and saving">Household and government spending, investment by who invests, and the saving rate.</LinkCard>
+    <LinkCard href="/gdp/quarters/" title="Quarters">Quarter-by-quarter growth, the most recent signal of where the economy is going.</LinkCard>
+    <LinkCard href="/gdp/sources/" title="Sources and checks">Where every number comes from, how it is checked, and problems found in the official data.</LinkCard>
   </div>
 </Base>
 
-<style>
-  .lede { font-size: 1.08rem; max-width: 46em; }
-  .link-card { position: relative; }
-  .link-card h2 a { text-decoration: none; }
-  .link-card h2 a::after { content: ""; position: absolute; inset: 0; }
-  .link-card:hover { border-color: var(--accent); }
-  .link-card p { margin: 0; }
-  .grid-2 { margin-bottom: 16px; }
-  @media (min-width: 860px) { .grid-2 { grid-template-columns: 1fr 1fr 1fr; } } /* nine cards: three full rows */
-</style>

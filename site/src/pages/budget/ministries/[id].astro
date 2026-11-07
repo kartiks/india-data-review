@@ -4,6 +4,7 @@ import Money from "../../../components/Money.astro";
 import Base from "../../../layouts/Base.astro";
 import LineChart from "../../../components/LineChart.astro";
 import BarList from "../../../components/BarList.astro";
+import SourceLine from "../../../components/budget/SourceLine.astro";
 import {
   MINISTRIES, YEARS, LATEST_YEAR, SCHEME_YEARS, ministryTotal, deptValue, announcedVsOutcome, schemesOfMinistry,
   schemeValue, best, headline, type Ministry,
@@ -35,6 +36,9 @@ const schemes = schemesOfMinistry(m)
   .map((s) => ({ s, v: schemeValue(schemeYear, s.key, "be") }))
   .filter((x) => x.v && x.v.value > 0)
   .sort((a, b) => b.v!.value - a.v!.value);
+// Centrally Sponsored and Central Sector schemes are in two statements: link one only if all come from it.
+const schemeUrls = new Set(schemes.map(({ v }) => v!.source.url));
+const schemeUrl = schemeUrls.size === 1 ? [...schemeUrls][0] ?? null : null;
 const isFinance = m.id === "finance";
 const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"));
 ---
@@ -95,6 +99,7 @@ const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"))
         </tbody>
       </table>
     </div>
+    {latestBE && <SourceLine year={LATEST_YEAR} kind="be" docs={["Expenditure Profile, Statement 3"]} url={latestBE.source.url ?? null} />}
   </section>
 
   {schemes.length > 0 && (
@@ -103,6 +108,7 @@ const hasPre2017 = YEARS.some((y) => y < "2017-18" && ministryTotal(y, m, "be"))
       <p class="muted small">Budget Estimates for each scheme run by this ministry.</p>
       <BarList label="Schemes" rows={schemes.slice(0, 25).map(({ s, v }) => ({ label: s.name, value: v!.value, display: money(v!.value), href: `/budget/schemes/${s.slug}/` }))} />
       {schemes.length > 25 && <p class="small muted">And {schemes.length - 25} smaller schemes. <a href={link("/budget/schemes/")}>Search all schemes</a>.</p>}
+      <SourceLine year={schemeYear} kind="be" docs={["Expenditure Profile, Statements 4A and 4B"]} url={schemeUrl} />
     </section>
   )}
 </Base>

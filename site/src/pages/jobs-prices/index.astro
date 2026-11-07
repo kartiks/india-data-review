@@ -1,5 +1,5 @@
 ---
-import { link } from "../../lib/url";
+import LinkCard from "../../components/LinkCard.astro";
 import Base from "../../layouts/Base.astro";
 import LineChart from "../../components/LineChart.astro";
 import {
@@ -56,41 +56,13 @@ const peak = months.filter((mm) => mm <= CPI_LAST).reduce((a, b) => ((general.fi
     />
   </section>
 
-  <div class="grid-2">
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/jobs/")}>Jobs</a></h2>
-      <p class="muted">Who is working or looking for work, by sex, age, area, education and state; unemployment each quarter and month.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/work/")}>Work &amp; earnings</a></h2>
-      <p class="muted">The industries people work in, salaried vs casual work, job conditions, and earnings before and after inflation.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/prices/")}>Prices</a></h2>
-      <p class="muted">Consumer price inflation since 2014: rural and urban, food and other groups, by state, and for farm labourers.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/spending/")}>Household spending</a></h2>
-      <p class="muted">What households spend per person, on what, by state and spending class, and how unequal it is.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/states/")}>States</a></h2>
-      <p class="muted">Every state side by side: unemployment, women at work, salaried jobs, inflation and spending.</p>
-    </div>
-    <div class="card link-card">
-      <h2><a href={link("/jobs-prices/sources/")}>Sources and checks</a></h2>
-      <p class="muted">Where every number comes from, how it is checked, and the errors found in the official data.</p>
-    </div>
+  <div class="grid-2 link-cards">
+    <LinkCard href="/jobs-prices/jobs/" title="Jobs">Who is working or looking for work, by sex, age, area, education and state; unemployment each quarter and month.</LinkCard>
+    <LinkCard href="/jobs-prices/work/" title="Work & earnings">The industries people work in, salaried vs casual work, job conditions, and earnings before and after inflation.</LinkCard>
+    <LinkCard href="/jobs-prices/prices/" title="Prices">Consumer price inflation since 2014: rural and urban, food and other groups, by state, and for farm labourers.</LinkCard>
+    <LinkCard href="/jobs-prices/spending/" title="Household spending">What households spend per person, on what, by state and spending class, and how unequal it is.</LinkCard>
+    <LinkCard href="/jobs-prices/states/" title="States">Every state side by side: unemployment, women at work, salaried jobs, inflation and spending.</LinkCard>
+    <LinkCard href="/jobs-prices/sources/" title="Sources and checks">Where every number comes from, how it is checked, and the errors found in the official data.</LinkCard>
   </div>
 </Base>
 
-<style>
-  .lede { font-size: 1.08rem; max-width: 46em; }
-  .link-card { position: relative; }
-  .link-card h2 a { text-decoration: none; }
-  .link-card h2 a::after { content: ""; position: absolute; inset: 0; }
-  .link-card:hover { border-color: var(--accent); }
-  .link-card p { margin: 0; }
-  .grid-2 { margin-bottom: 16px; }
-  @media (min-width: 860px) { .grid-2 { grid-template-columns: 1fr 1fr 1fr; } }
-</style>

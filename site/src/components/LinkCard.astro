@@ -1,0 +1,12 @@
+---
+// A card linking to one of an area's pages, for the grid on the area's overview: <div class="grid-2 link-cards">.
+// The whole card is the link (styles in global.css).
+import { link } from "../lib/url";
+
+interface Props { href: string; title: string }
+const { href, title } = Astro.props;
+---
+<div class="card link-card">
+  <h2><a href={link(href)}>{title}</a></h2>
+  <p class="muted"><slot /></p>
+</div>

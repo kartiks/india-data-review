@@ -5,9 +5,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { AREA_IDS } from "../src/lib/area-data.ts";
 import { dataMismatches, passed, readValidation, SUMMARY_FILE } from "../src/lib/validation.ts";
-
-export const AREAS = ["budget", "gdp", "jobs-prices"];
 
 /** A file copied for download: the data files, the check report and its summary (.json, .csv or .md). */
 export const isPublished = (name) => /\.(json|csv|md)$/.test(name);
@@ -49,7 +48,7 @@ export function gateErrors(area, src) {
  * @param {(msg: string) => void} log
  * @returns {string[]}
  */
-export function copyData(root, out, areas = AREAS, log = console.log) {
+export function copyData(root, out, areas = AREA_IDS, log = console.log) {
   fs.rmSync(out, { recursive: true, force: true });
   for (const area of areas) {
     const src = path.join(root, area, "data");

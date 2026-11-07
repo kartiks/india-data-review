@@ -1,0 +1,5 @@
+[
+  { "id": "budget", "label": "Budget", "name": "Union Budget" },
+  { "id": "gdp", "label": "GDP", "name": "GDP" },
+  { "id": "jobs-prices", "label": "Jobs & prices", "name": "Jobs & prices" }
+]

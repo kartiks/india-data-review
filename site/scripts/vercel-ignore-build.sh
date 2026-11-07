@@ -24,7 +24,13 @@ if ! git cat-file -e "$PREV^{commit}" 2>/dev/null; then
   exit 1
 fi
 
-PATHS=(. ../budget/data ../gdp/data ../jobs-prices/data)
+# site/ and every area's data/ folder (the areas are listed in src/data/areas.json).
+if ! AREA_IDS="$(node -p 'require("./src/data/areas.json").map((a) => a.id).join(" ")')" || [ -z "$AREA_IDS" ]; then
+  echo "Build: could not read the list of areas."
+  exit 1
+fi
+PATHS=(.)
+for id in $AREA_IDS; do PATHS+=("../$id/data"); done
 git diff --quiet "$PREV" HEAD -- "${PATHS[@]}"
 case $? in
   0)

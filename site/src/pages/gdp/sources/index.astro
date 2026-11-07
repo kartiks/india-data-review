@@ -1,14 +1,10 @@
 ---
 import { link } from "../../../lib/url";
-import { passed, validation } from "../../../lib/validation";
-import Base from "../../../layouts/Base.astro";
+import SourcesPage from "../../../components/SourcesPage.astro";
 import { DS, GENERATED, SURVEY, RBI, BUDGET } from "../../../lib/gdp/data";
 import { DERIVED_STATES } from "../../../lib/gdp/states";
 
-const v = validation("gdp");
-const sections = v.sections.map((s) => ({ ok: s.failures === 0, title: s.title }));
-const checks = v.checks.toLocaleString("en-IN");
-const files = [
+const files: [string, string][] = [
   ["gdp.json", "Everything on this site: national accounts by series, year and estimate stage; Budget assumptions; forecasts"],
   ["national_accounts.csv", "Every row MoSPI published, one value per line, with names as printed and the source URL"],
   ["per_person.csv", "GDP, national income, GNI and household spending per person, with the population used, by series and year (latest estimate)"],
@@ -19,8 +15,7 @@ const files = [
 ];
 const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" });
 ---
-<Base title="Sources and checks" section="about" description="Where every GDP figure on India Data Review comes from, and how it is checked.">
-  <h1>Sources and checks</h1>
+<SourcesPage area="gdp" files={files} description="Where every GDP figure on India Data Review comes from, and how it is checked.">
   <p>
     National and state accounts come from the Ministry of Statistics and Programme Implementation (MoSPI), through its official
     data service (<a href="https://esankhyiki.mospi.gov.in" rel="external noopener">eSankhyiki</a>, api.mospi.gov.in).
@@ -31,32 +26,24 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
     downloads every file, keeps a copy with its fingerprint (SHA-256), builds the data and checks it. Data last built {updated}.
   </p>
 
-  <section class="card">
-    <h2>Checked automatically</h2>
-    <p>
-      <strong>{checks} checks{passed(v) ? ", all passing" : ""}.</strong> The site cannot be built unless
-      every check passes. Known problems in the official data are allowed only with a written reason, listed in the report.
-    </p>
-    <ul>
-      <li><strong>Accounting identities</strong> in every year, estimate and price basis: industries add up to total GVA; GDP = GVA + net product taxes; net taxes = taxes − subsidies; NDP = GDP − depreciation; national income = GDP + income from abroad; investment and saving by sector add up to the totals.</li>
-      <li><strong>Growth rates</strong>: every published annual and quarterly growth rate, for GDP and for each industry, is compared with the levels it should follow from.</li>
-      <li><strong>Quarters</strong> add up to the year.</li>
-      <li><strong>State accounts</strong>: each state's GSDP and NSDP add up from its industries, taxes and subsidies; industries add up to total value added; every published state growth rate follows from the levels; and the per-person tables agree.</li>
-      <li><strong>Population and figures per person</strong>: the population projections are read from the official report and must add up (men plus women) and rise every year; every per-person figure MoSPI or the RBI printed implies the same population within its table, close to the projection for that year, and MoSPI's documents agree with each other; the population used agrees with the RBI's to the lakh; and every printed per-person figure whose total is the same estimate as MoSPI's latest is reproduced to within ₹2 (where MoSPI has revised a total since, there is nothing to compare).</li>
-      <li><strong>The long-run back series</strong> (1950-51 to 2011-12) joins the current series in 2011-12.</li>
-      <li><strong>Forecasts</strong>: each of the {SURVEY.length} Economic Survey and {RBI.length} RBI forecasts is stored with the sentence it was read from; the program finds that sentence in the downloaded document and checks the numbers in it. The {BUDGET.length} Budget GDP assumptions are read from the Budget at a Glance PDFs and their stated growth is re-computed.</li>
-    </ul>
+  <Fragment slot="checks">
+    <li><strong>Accounting identities</strong> in every year, estimate and price basis: industries add up to total GVA; GDP = GVA + net product taxes; net taxes = taxes − subsidies; NDP = GDP − depreciation; national income = GDP + income from abroad; investment and saving by sector add up to the totals.</li>
+    <li><strong>Growth rates</strong>: every published annual and quarterly growth rate, for GDP and for each industry, is compared with the levels it should follow from.</li>
+    <li><strong>Quarters</strong> add up to the year.</li>
+    <li><strong>State accounts</strong>: each state's GSDP and NSDP add up from its industries, taxes and subsidies; industries add up to total value added; every published state growth rate follows from the levels; and the per-person tables agree.</li>
+    <li><strong>Population and figures per person</strong>: the population projections are read from the official report and must add up (men plus women) and rise every year; every per-person figure MoSPI or the RBI printed implies the same population within its table, close to the projection for that year, and MoSPI's documents agree with each other; the population used agrees with the RBI's to the lakh; and every printed per-person figure whose total is the same estimate as MoSPI's latest is reproduced to within ₹2 (where MoSPI has revised a total since, there is nothing to compare).</li>
+    <li><strong>The long-run back series</strong> (1950-51 to 2011-12) joins the current series in 2011-12.</li>
+    <li><strong>Forecasts</strong>: each of the {SURVEY.length} Economic Survey and {RBI.length} RBI forecasts is stored with the sentence it was read from; the program finds that sentence in the downloaded document and checks the numbers in it. The {BUDGET.length} Budget GDP assumptions are read from the Budget at a Glance PDFs and their stated growth is re-computed.</li>
+  </Fragment>
+  <Fragment slot="checks-note">
     <p>
       Some comparisons are listed in the report for review, not checked, so they cannot stop the build. One is the
       states' GSDP added up and compared with India's GDP: the total usually comes to within a few percent of it, but
       the states are compiled separately and keep being revised, so the two are not expected to agree.
     </p>
-    <ul class="checklist small">
-      {sections.map((s) => <li>{s.ok ? "✅" : "❌"} {s.title}</li>)}
-    </ul>
-    <p class="small"><a href={link("/data/gdp/validation_report.md")}>Full validation report</a></p>
-  </section>
+  </Fragment>
 
+  <Fragment slot="after-checks">
   <section class="card">
     <h2>Which numbers are shown</h2>
     <ul>
@@ -92,16 +79,5 @@ const updated = new Date(GENERATED).toLocaleDateString("en-IN", { day: "numeric"
       <li><strong>IMF forecasts</strong> (World Economic Outlook).</li>
     </ul>
   </section>
-
-  <section class="card">
-    <h2>Download the data</h2>
-    <ul>
-      {files.map(([f, d]) => <li><a href={link(`/data/gdp/${f}`)}>{f}</a>: {d}</li>)}
-    </ul>
-  </section>
-</Base>
-
-<style>
-  .checklist { list-style: none; padding: 0; }
-  .checklist li { padding: 2px 0; }
-</style>
+  </Fragment>
+</SourcesPage>

@@ -1,6 +1,7 @@
 ---
 import Base from "../../../layouts/Base.astro";
 import BarList from "../../../components/BarList.astro";
+import SourceLine from "../../../components/budget/SourceLine.astro";
 import { MINISTRIES, LATEST_YEAR, YEARS, ministryTotal, headline } from "../../../lib/budget/data";
 import { money, signedPct } from "../../../lib/format";
 
@@ -33,6 +34,7 @@ const rows = MINISTRIES.map((m) => {
         href: `/budget/ministries/${m.id}/`,
       }))}
     />
+    <SourceLine year={LATEST_YEAR} kind="be" docs={["Expenditure Profile, Statement 3"]} url={rows[0]?.v?.source.url ?? null} />
   </section>
   <p class="note">
     Ministries are compared using their departments' lines in the Expenditure Budget. Before 2017-18 the budget was split

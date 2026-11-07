@@ -23,6 +23,8 @@ figure on the site can be traced to an official source.
    and per-person figures reproduce MoSPI's published ones (see population_checks.py).
 10. State accounts: identities, growth, per-person figures and the sum of states
    against India's GDP (see states_checks.py).
+11. Text: no '<', '>' or control characters in any key or value of the data files
+   (pipeline_common.data_text).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS and KNOWN_RULES, each with a reason, and are counted in
 validation_summary.json.
@@ -35,13 +37,14 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common.data_text import check_data_text
 from pipeline_common.report import Allowed, Exceptions, Report
 from pipeline_common.text import fy, fy_start, prev_fy
 
 from . import population_checks, states_checks
 from .ids import BROAD, GROUPS, STAGE_ORDER
 from .forecasts import verify_quotes
-from .sources import BUDGETS
+from .sources import BUDGETS, LATEST_BUDGET
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -440,7 +443,9 @@ def check_budget(ds: dict, report: Report) -> None:
         checked += 1
         a = found.get(y)
         if not a:
-            failures.append(f"Budget {y}: GDP assumption not found in Budget at a Glance")
+            hint = (f" (not downloaded? LATEST_BUDGET is {LATEST_BUDGET}, set in pipeline_common/budget_glance.py: run "
+                    "--fetch once the budget is published)") if start == LATEST_BUDGET else ""
+            failures.append(f"Budget {y}: GDP assumption not found in Budget at a Glance{hint}")
             continue
         if a["printed_year"].replace("20", "", 1) != y and a["printed_year"] != y:
             if a["printed_year"][:4] != y[:4]:
@@ -504,6 +509,7 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
     check_unused_exceptions(report)
     population_checks.check(ds, report)
     states_checks.check(ds, report)
+    check_data_text(out or DATA, report)
     return report.write(out or DATA)
 
 

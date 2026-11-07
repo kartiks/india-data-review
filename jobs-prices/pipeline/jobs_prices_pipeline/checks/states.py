@@ -4,7 +4,7 @@ indices, totals within their parts, and state GDP and income per person at curre
 import re
 from collections import defaultdict
 
-from pipeline_common.report import Report
+from pipeline_common.report import Allowed, Report
 from pipeline_common.text import fy_start, prev_fy
 
 from ..rbi import RBI_STATE_TABLES
@@ -12,6 +12,7 @@ from ..rbi import RBI_STATE_TABLES
 # points: RBI's state inflation (printed to one decimal) against the rate worked out from MoSPI's monthly indices,
 # which are printed to one decimal too and averaged over the year
 RBI_INFLATION_TOL = 0.15
+NEW_SERIES_START = "2026-01"  # the first month of the base-2024 CPI (press releases); base 2012 ends the month before
 
 
 def state_key(s: str) -> str:
@@ -45,39 +46,94 @@ def check_rbi_read(ds: dict, report: Report) -> None:
     report.add("RBI state tables: every table read", checked, failures, notes)
 
 
-def fy_average(months: dict[str, float], fy: str) -> float | None:
-    """The average index over a financial year ('2023-24': April 2023 to March 2024), if every month has one."""
-    y = fy_start(fy)
-    vals = [months.get(m) for m in [f"{y}-{m:02d}" for m in range(4, 13)] + [f"{y + 1}-{m:02d}" for m in range(1, 4)]]
-    return None if None in vals else sum(vals) / 12
+# months of MoSPI's base-2012 state indices missing because of the April-May 2020 lockdown (June too for three states)
+LOCKDOWN_MONTHS = {"2020-04", "2020-05", "2020-06"}
+LOCKDOWN = (
+    "MoSPI published no state index for April and May 2020 (the lockdown; June too for Manipur, Nagaland and "
+    "Puducherry), so 2020-21, and 2021-22 compared with it, lack months. RBI's notes say it used fewer months for "
+    "those years. Not compared."
+)
 
 
-def check_rbi_inflation(ds: dict, report: Report) -> None:
-    """The handbook's average inflation by state (table 108) equals the change in the yearly average of MoSPI's
-    monthly general index (combined)."""
-    failures, notes, checked = [], [], 0
+def month_before(month: str, years: int = 1) -> str:
+    return f"{int(month[:4]) - years}{month[4:]}"
+
+
+def chained_indices(ds: dict) -> tuple[dict[str, dict[str, float]], dict[str, set[str]]]:
+    """MoSPI's monthly general index (combined) by state key and month, on base 2012: the old series to December 2025,
+    then the base-2024 press releases chained on with their year-on-year inflation (index a year earlier × (1 +
+    inflation)), which is how the new series links to the old one month by month: states as first published, All
+    India from the latest release's series. Also the months chained, by state."""
     idx: dict[str, dict[str, float]] = defaultdict(dict)
     for r in ds["cpi"]:
         if r["subgroup"] == "General-Overall" and r["sector"] == "Combined" and r["index"] is not None:
             idx[state_key(r["state"])][r["month"]] = r["index"]
-    skipped = defaultdict(int)
+    c = ds.get("cpi2024", {})
+    # (month, state, combined inflation): each release's states, and All India from the latest release's series
+    new = [(m, s["name"], s["values"][5]) for m, rel in c.get("releases", {}).items() for s in rel["states"]]
+    new += [(x["month"], "All India", x["values"][5]) for x in c.get("series", []) if x["month"] >= NEW_SERIES_START]
+    chained: dict[str, set[str]] = defaultdict(set)
+    for month, name, inflation in sorted(new):
+        k = state_key(name)
+        prev = idx.get(k, {}).get(month_before(month))
+        if month in idx.get(k, {}) or prev is None or inflation is None:
+            continue
+        idx[k][month] = prev * (1 + inflation / 100)
+        chained[k].add(month)
+    return idx, chained
+
+
+def fy_months(fy: str) -> list[str]:
+    y = fy_start(fy)
+    return [f"{y}-{m:02d}" for m in range(4, 13)] + [f"{y + 1}-{m:02d}" for m in range(1, 4)]
+
+
+def check_rbi_inflation(ds: dict, report: Report) -> None:
+    """The handbook's average inflation by state (table 108) equals the change in the yearly average of MoSPI's
+    monthly general index (combined), base 2012 chained on with the base-2024 releases. Every pair not compared is
+    counted under its reason: lockdown months (allowed), a state with no MoSPI index under its name, or months not
+    published yet; any other missing month is a failure."""
+    failures, notes, checked, allowed = [], [], 0, Allowed(more_hint=" state-years")
+    idx, chained = chained_indices(ds)
+    latest = max((m for months in idx.values() for m in months), default="")
+    no_state: dict[str, list[str]] = defaultdict(list)
+    not_yet: dict[str, int] = defaultdict(int)
+    with_chained = 0
     for r in ds["rbi"]:
         if r["table"] != 108 or r["value"] is None:
             continue
         k, fy = state_key(r["state"]), r["year"]
-        prev = prev_fy(fy)
-        a, b = fy_average(idx[k], fy), fy_average(idx[k], prev)
-        if a is None or b is None:
-            skipped[fy] += 1
+        months = fy_months(prev_fy(fy)) + fy_months(fy)
+        have = idx.get(k, {})
+        missing = [m for m in months if m not in have]
+        if not have:
+            no_state[r["state"]].append(fy)
+            continue
+        if missing:
+            if set(missing) <= LOCKDOWN_MONTHS:
+                allowed.add(LOCKDOWN, f"{r['state']} {fy}")
+            elif min(missing) > latest:
+                not_yet[fy] += 1
+            elif (late := [m for m in missing if m >= NEW_SERIES_START]) == missing:
+                no_state[r["state"]].append(f"{fy} (no base-2024 index for {late[0]} onward)")
+            else:
+                failures.append(f"{r['state']} {fy}: MoSPI's indices lack {', '.join(missing)}")
             continue
         checked += 1
+        with_chained += bool(chained.get(k, set()) & set(months))
+        a, b = (sum(have[m] for m in fy_months(y)) / 12 for y in (fy, prev_fy(fy)))
         calc = (a / b - 1) * 100
         if abs(calc - r["value"]) > RBI_INFLATION_TOL:
             failures.append(f"{r['state']} {fy}: RBI {r['value']}%, MoSPI's indices give {calc:.2f}%")
-    if skipped:
-        notes.append("Not compared (a year without all 12 monthly indices in MoSPI's data, such as the April-May 2020 "
-                     f"lockdown; RBI's notes say it used fewer months for those years): {dict(sorted(skipped.items()))}.")
-    report.add("RBI state inflation agrees with MoSPI's consumer price indices", checked, failures, notes)
+    if no_state:
+        notes.append(f"Not compared, {sum(map(len, no_state.values()))} state-years: no MoSPI index under the "
+                     f"handbook's state name: {dict(sorted(no_state.items()))}.")
+    if not_yet:
+        notes.append(f"Not compared yet (MoSPI's indices so far run to {latest}): {dict(sorted(not_yet.items()))}.")
+    notes.append(f"From January {NEW_SERIES_START[:4]} the index is the base-2024 series from MoSPI's press releases "
+                 f"(each state as first published), chained to base 2012 with its year-on-year inflation; "
+                 f"{with_chained} comparisons use chained months.")
+    report.add("RBI state inflation agrees with MoSPI's consumer price indices", checked, failures, notes, allowed, limit=6)
 
 
 def check_rbi_totals(ds: dict, report: Report) -> None:

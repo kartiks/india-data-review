@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 117426,
+ "checks": 124079,
  "failures": 0,
  "allowed": 124,
  "sections": [
@@ -434,13 +434,20 @@
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
+  },
+  {
+   "title": "Text in the data: no '<', '>' or control characters",
+   "checks": 6653,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
   }
  ],
  "files": {
   "fiscal.json": "f72c1df948cd4139457bc542f94e0dd07737464c4a004345a0d7847ae92cd1db",
   "format_comparison.json": "52c0a981d68d75f03c89f6a831155bd48f96c7e06414a3e3d4ecef9eaa551322",
   "ministries.csv": "d78317be0741c29421269bcea8d0932c2add2a54979d15ec5b9e912bf307442f",
-  "ministries.json": "5b26b922028684e13ab736a8640d763461073968c85b7c93093b18a7f1cea6e6",
+  "ministries.json": "8a25e44e7ab492c29cf90639e9842b97b27a5d22a1b1c289a30d59125c7a3b65",
   "observations.csv": "54971cecdc8b20b09eedf6cc203c2015fd7b39a5c5b24ebef0c458d51cc2b685",
   "schemes.csv": "83f6b7e80533ec7438ef3112ce25d950e116712e3dfce5e818dbce03865fdb4f",
   "schemes.json": "1f02795f487d116424735f736f695dc721336cbc9c2d30b1cda906cd5f4f4ba8",

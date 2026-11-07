@@ -2,7 +2,7 @@
 
 Headline figures, taxes, ministries and schemes. Every allowed exception lists its reason.
 
-**Result: PASSED** (117426 checks, 0 failures)
+**Result: PASSED** (124079 checks, 0 failures)
 
 ## ✅ Accounting rules hold in every source column
 1066 checks, 0 failures.
@@ -486,3 +486,8 @@ Headline figures, taxes, ministries and schemes. Every allowed exception lists i
 ## ✅ Published taxes.json: net tax = gross tax - states' share - other deductions
 78 checks, 0 failures.
 
+
+## ✅ Text in the data: no '<', '>' or control characters
+6653 checks, 0 failures.
+
+- Every key and text value (each distinct text counted once) in fiscal.json, format_comparison.json, ministries.csv, ministries.json, observations.csv, schemes.csv, schemes.json, taxes.csv, taxes.json.

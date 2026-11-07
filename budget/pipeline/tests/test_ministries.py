@@ -96,7 +96,8 @@ def test_every_budget_parses_in_every_format(everything):
 
 
 def test_all_checks_pass(everything):
-    summary = list(csv.DictReader((DATA / "observations.csv").open()))
+    with (DATA / "observations.csv").open(encoding="utf-8") as f:
+        summary = list(csv.DictReader(f))
     results = M.checks(everything, summary)
     failures = {title: fails for title, _, fails, _, _ in results if fails}
     assert failures == {}

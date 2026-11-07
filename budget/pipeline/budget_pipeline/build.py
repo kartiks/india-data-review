@@ -27,7 +27,7 @@ from pipeline_common.text import fy, fy_start
 from .annotations import HEADER_FIXES, SOURCE_NOTES
 from .parse import FIELD_PATTERNS, ParseError, parse_document, stated_gdp
 from .readers import read_any
-from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
+from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, missing_documents, missing_message
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -56,9 +56,17 @@ FIELD_LABELS = {
 assert set(FIELD_LABELS) == {f for f, _ in FIELD_PATTERNS}
 
 
+class MissingDocuments(RuntimeError):
+    """A budget up to LATEST_BUDGET whose documents are not in sources/ (it was raised before running --fetch, or
+    before the budget was published)."""
+
+
 def parse_all() -> tuple[list[dict], dict, list[dict]]:
-    """Parse every file. Returns (observations from each year's primary file, GDP notes, format comparisons)."""
+    """Parse every file. Returns (observations from each year's primary file, GDP notes, format comparisons).
+    Raises MissingDocuments if a budget up to LATEST_BUDGET has not been downloaded in full."""
     manifest = json.loads(MANIFEST.read_text())
+    if missing := missing_documents(manifest):
+        raise MissingDocuments(missing_message(missing))
     rows: list[dict] = []
     gdp: dict[str, dict] = {}
     comparisons: list[dict] = []

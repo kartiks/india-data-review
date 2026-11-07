@@ -47,9 +47,12 @@ def read_xlsx(path: Path) -> list[list[str]]:
     import openpyxl
 
     book = openpyxl.load_workbook(path, data_only=True, read_only=True)
-    sheet = book.worksheets[0]
+    try:  # a read-only workbook keeps its file open until closed
+        table = list(book.worksheets[0].iter_rows(values_only=True))
+    finally:
+        book.close()
     rows = []
-    for values in sheet.iter_rows(values_only=True):
+    for values in table:
         cells = []
         for v in values:
             if v is None:

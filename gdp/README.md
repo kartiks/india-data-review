@@ -32,6 +32,7 @@ uv run python -m gdp_pipeline             # build data from saved sources and ru
 uv run python -m gdp_pipeline --fetch     # also download anything missing
 uv run python -m gdp_pipeline --refresh   # re-download everything, including budget and forecast documents
 uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (what the weekly refresh runs)
+uv run python -m gdp_pipeline.due   # which hand-added releases are probably out but not added (exit 11 if any)
 uv run pytest
 ```
 
@@ -50,7 +51,11 @@ stage of their own, so only their latest figures are used.
 Not refreshed by it, and updated by hand: the Budget's GDP assumption (with each new budget), the Economic Survey
 and RBI growth projections ([Adding a forecast](#adding-a-forecast)), and the population for a new year
 ([Adding a year's population](#adding-a-years-population)). Figures per person are worked out again from the
-refreshed totals every week.
+refreshed totals every week. The weekly refresh also runs `gdp_pipeline.due`, which works out from dates (no
+downloads) which of these are probably out and not yet added, and fails the run (exit code 11, after committing the
+refreshed data) with one line for each: an Economic Survey for the latest budget's year (or from 1 August), an RBI
+statement once the latest recorded is 66 days old (they come every 56 to 65 days), a year in the national accounts
+with no population, and from 1 October a National Accounts Statistics statement for the year.
 
 ## What's in `data/`
 
@@ -76,7 +81,9 @@ and on the site's Sources page: a ₹ lakh unit label on figures that are in ₹
 "Additional Revision" rows, inconsistent early net-tax figures, the back series' non-additivity before 2004-05, and
 one mistyped GVA growth rate (2019-20, Second Advance Estimates). Every row must be in the unit its indicator is
 published in (`UNITS` in `build.py`); a row in any other unit is left out and fails the checks. The back series
-writes one year "1999-2000"; it is stored as "1999-00", like every other year.
+writes one year "1999-2000"; it is stored as "1999-00", like every other year. Text: no key or value in any `data/`
+file (JSON or CSV) has `<`, `>` or a control character (`pipeline_common.data_text`): such text comes from a garbled
+download, never from a label.
 
 ### State accounts
 

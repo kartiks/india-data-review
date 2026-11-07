@@ -147,8 +147,9 @@ def build_ministries() -> tuple[dict, list[tuple]]:
                            "(Revenue/Capital, with scheme categories) from 2017-18. Department ids are kept "
                            "across renames via data_maps/ministry_names.csv.",
             "comparability": "Up to 2016-17 a department's line excludes State Plan assistance routed through it "
-                             "(listed separately as state_plans:<id>); from 2017-18 it is included. Several "
-                             "demands were split or merged in 2017-18 (see the name map notes).",
+                             "(listed separately, as state_plans: and the department's id, e.g. state_plans:agriculture); "
+                             "from 2017-18 it is included. Several demands were split or merged in 2017-18 (see the "
+                             "name map notes).",
             "items": items,
         },
     )

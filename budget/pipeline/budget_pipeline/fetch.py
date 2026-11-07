@@ -69,6 +69,7 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                 try:
                     content = get(url)
                 except urllib.error.HTTPError as exc:
+                    exc.close()
                     if exc.code != 404:  # most candidate addresses do not exist
                         print(f"{year} {doc}: {url} -> {exc}")
                 except Exception as exc:  # noqa: BLE001 - a network error after get()'s retries: report and carry on
@@ -94,7 +95,8 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                 entry[doc] = {"files": files}
             elif candidate_urls(start, doc):
                 print(f"{year} {doc}: NO SOURCE FOUND")
-    MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=2) + "\n")
+    # a budget with nothing found (not published yet) gets no entry; build reports what is missing
+    MANIFEST.write_text(json.dumps({k: v for k, v in sorted(manifest.items()) if v}, indent=2) + "\n")
 
 
 if __name__ == "__main__":

@@ -25,6 +25,7 @@ cd pipeline
 uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
 uv run python -m budget_pipeline --fetch    # also download anything missing
 uv run python -m budget_pipeline --refresh  # re-download every budget document (overwrites sources/raw/)
+uv run python -m budget_pipeline.due        # whether the next budget is out on indiabudget.gov.in (exit 11 if so)
 uv run pytest                               # parser tests + end-to-end checks (~6 min; builds in a temporary
                                             # folder and fails if anything in data/ changes)
 ```
@@ -36,10 +37,14 @@ build. The results of the last build are in [`data/validation_report.md`](data/v
 ## Adding a new budget
 
 Once a year, after the Union Budget (usually 1 February; in an election year, the full budget that follows the
-interim one, which the pipeline skips):
+interim one, which the pipeline skips). The weekly refresh runs `budget_pipeline.due`, which downloads the Budget at
+a Glance headline table at indiabudget.gov.in's root (where the latest budget is) and fails the run (exit code 11)
+once it is for a newer budget than `LATEST_BUDGET`, or in any case from 1 August of the next budget's year. It skips
+an interim budget, and a network error is only a warning.
 
-1. Set `LATEST_BUDGET` to the new budget's first year in **both** `pipeline/budget_pipeline/sources.py` and
-   `../gdp/pipeline/gdp_pipeline/sources.py` (for example `2027` for 2027-28). The latest budget's documents live at
+1. Set `LATEST_BUDGET` to the new budget's first year in `../shared/pipeline/pipeline_common/budget_glance.py`
+   (for example `2027` for 2027-28); the budget and gdp areas both read it. Until its documents are downloaded,
+   the pipeline stops with an error naming the documents missing. The latest budget's documents live at
    `indiabudget.gov.in/doc/…`; earlier ones move to `indiabudget.gov.in/budget<year>/doc/…`, which `sources.py`
    already handles. Files already downloaded are kept; nothing is fetched again.
 2. Run `uv run python -m budget_pipeline --fetch`. It downloads the new year's documents in every format and
@@ -124,7 +129,8 @@ Research's *Union Budget 2026-27 Analysis*.
      and schemes) must match to the crore.
 
    The counts are in [`data/validation_report.md`](data/validation_report.md).
-6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
+6. **Text:** no key or value in any `data/` file (JSON or CSV) has `<`, `>` or a control character (`pipeline_common.data_text`): such text comes from a garbled download, never from a label.
+7. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
 
 ### Problems found in the official files (examples)
 

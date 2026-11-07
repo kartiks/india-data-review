@@ -122,6 +122,8 @@ def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
         except Exception as exc:
             if not _retryable(exc) or attempt == tries - 1:
                 raise
+            if isinstance(exc, urllib.error.HTTPError):
+                exc.close()  # it holds the server's response open
             print(f"  retry {attempt + 1} for {url}: {exc}", flush=True)
             time.sleep(BACKOFF_S * (attempt + 1))
     raise AssertionError

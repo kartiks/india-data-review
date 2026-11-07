@@ -16,7 +16,17 @@ series and year:
   (population_sources/mospi_press_notes.json, each row quoted and found in the document), or, where no press note
   here covers the year, from the RBI's reprint of MoSPI's tables. Per-person figures here then reproduce MoSPI's to
   the rupee whenever the totals are the same estimate; the years where that is checked are listed in gdp.json
-  (population.checked).
+  (population.checked). A year whose total MoSPI has revised since the document quoted is not checked: its figure
+  divides the revised total by that document's population (the site's Per person page says so).
+
+MoSPI's documents agree on population: for 2022-23 to 2024-25, the June 2026 press note's implied population and NAS
+2026's printed one are within 3,000 people (the implied figure's own precision), as MoSPI kept its population when it
+revised the totals in August. Where they agree, the printed figure is used. A NAS statement prints no totals: its
+unrounded per-person figure times its population gives the total back (to within ₹1 crore of the API's in NAS 2026),
+which is how its figures are matched to the API's estimate.
+
+From 2022-23 MoSPI's population is about 0.1-0.2% above the 2019 projections, so in the 2011-12 series population
+grows 1.05% in 2022-23 (0.91% from one projection to the next); MoSPI's own per-person figures have the same step.
 
 Per-person figures are worked out for the latest estimate of each year (earlier estimates were divided by the
 population known at the time, which is not kept here): the total (from MoSPI's API, refreshed weekly) divided by the

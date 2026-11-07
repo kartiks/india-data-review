@@ -1,12 +1,18 @@
 """Checks of the population and the figures per person (population.py), added to gdp/data/validation_report.md by
-check(). Every source must read cleanly (the readers' problems are failures), and:
+check(). Every source must read cleanly (the readers' problems are failures; every quoted press-note row must be
+found on its PDF page, with one figure for each year), and:
 
 1. The projections table reads cleanly: 2011 to 2036, persons = male + female, rising.
 2. Within each table, every per-person figure implies the same population, and it rounds to the printed one.
 3. MoSPI's documents (and the RBI's reprint) agree on a year's population within a series.
 4. The population used here agrees with the RBI's reprint (to the lakh).
-5. MoSPI's own population equals the projection up to 2021-22, and is a little above it (never far off) after.
-6. Per-person figures here reproduce every published one whose total is the same estimate as the API's latest.
+5. MoSPI's own population equals the projection up to 2021-22 where a source covers it (2020-21, 2021-22), and from
+   2022-23 is within PROJECTION_GAP_MAX (0.5%) of it: a quoted row under the wrong year would be about 0.9% off. This
+   assumes MoSPI's population stays close to the 2019 projections. When MoSPI moves to figures based on the next
+   census, a correctly quoted year may fail it: check the years first, then raise PROJECTION_GAP_MAX with a note.
+6. Per-person figures here reproduce, to within PER_PERSON_TOL (₹2), every one MoSPI or the RBI printed whose total is
+   the same estimate as the API's latest. Totals MoSPI has revised since are not compared; the report says how many,
+   for each series.
 7. For review: years with national accounts but no population.
 
 Each check returns (checks, failures, notes).

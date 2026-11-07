@@ -101,24 +101,41 @@ changed. It:
    manifest's `history`. This is how the revision history of each release builds up.
 3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
    no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
-4. Runs the local CI (`scripts/ci.sh`, below) on that commit, and pushes it to `main` only if it passes. Vercel then
-   deploys the live site. If both areas changed, they go in one commit, so a CI failure holds back both. If `main`
-   moved during the run (a PR was merged), the commit is replayed on top of it and checked again before the push.
-5. If anything failed, the run fails and GitHub emails whoever last changed the workflow's schedule (or started the
-   run by hand). The run then keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation
-   report and every changed file that was not pushed.
+4. Runs the local CI (`scripts/ci.sh`, below) on that commit. If both areas changed, they go in one commit, so a CI
+   failure holds back both. If `main` moved during the run (a PR was merged), the commit is replayed on top of it and
+   checked again.
+5. Pushes the commit to `main` if the data has only new figures; Vercel then deploys the live site. If the data has
+   **new text** (a new state, item, unit, note or source address, anything but figures, dates, months, quarters and
+   years: [`labels.py`](shared/pipeline/pipeline_common/labels.py) says exactly what counts), it pushes the branch
+   `data-refresh/<date>` and opens a pull request listing the new text, for you to review and merge. If `main` moved
+   again between the checks and the push, the commit also goes to a pull request (run `scripts/ci.sh` on it before
+   merging).
+6. If anything failed, the run fails and GitHub emails whoever last changed the workflow's schedule (or started the
+   run by hand). Every run keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation report
+   and refresh output, the refresh commit (`refresh.bundle`), the new text (`labels.md`) and every changed file that
+   was not committed.
 
-Only a run on `main` pushes. A run started by hand on another branch does everything else and keeps its downloads
-as an artifact. The push is made as `github-actions[bot]` straight to `main`, so `main` must not get branch
-protection or a ruleset that requires a pull request; if it does, every refresh with new data fails at the push.
+The work is split in two jobs so that no token that can write to the repository exists while packages are installed
+and code runs: the `refresh` job (steps 1 to 4, and the artifact) has a read-only token, and the `publish` job
+(step 5) installs and builds nothing: it fetches the commit from the artifact, checks that it changes only the
+areas' `sources/` and `data/`, and pushes it. The shell they run is in `scripts/refresh/`; `scripts/ci.sh` lints it
+and dry-runs it against a local repository (`scripts/test-refresh.sh`).
 
-**When it passes**, nothing is needed. Look over the `Data refresh` commit on `main` now and then: the
-"Large revisions to growth" section of `gdp/data/validation_report.md` lists big revisions for review.
+Only a run on `main` publishes. A run started by hand on another branch does everything else and keeps its
+downloads in the artifact. The push is made as `github-actions[bot]` straight to `main`, so `main` must not get
+branch protection or a ruleset that requires a pull request; if it does, every refresh with new data fails at the
+push. The pull request for new text needs **Settings › Actions › General › "Allow GitHub Actions to create and
+approve pull requests"**; while that is off, the run pushes the branch and fails with a link to open the pull request
+yourself.
+
+**When it passes**, nothing is needed, unless it opened a pull request: look at the new text it lists (and the
+pages that show it, on the branch's Vercel preview) and merge it. Look over the `Data refresh` commit on `main` now
+and then: the "Large revisions to growth" section of `gdp/data/validation_report.md` lists big revisions for review.
 
 **When it fails:**
 
 1. Open the run from the email (or the Actions tab) and read the failed step's log. The artifact has each area's
-   `data/validation_report.md` and any new downloads.
+   `data/validation_report.md` and any new downloads (under `files/`).
 2. Reproduce it locally: run the same command in the area's `pipeline/` folder (`--refresh-nas` for GDP,
    `--refresh-api` for jobs and prices). It downloads the same files.
 3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
@@ -162,6 +179,9 @@ It checks out that commit in a temporary folder (your working folder is not touc
 - the rebuilt `data/` matches what is committed, apart from the build time (`generated_at`);
 - the build changes no committed file in `sources/` and writes no new files;
 - the Python code passes `ruff check` (`ruff.toml`; to run it yourself: `uvx ruff@0.17.4 check .`);
+- the workflow passes actionlint and every `.sh` file ShellCheck (versions pinned in `scripts/ci.sh`), and the
+  weekly refresh's scripts pass their dry run (`scripts/test-refresh.sh`: a local repository, `gh` stubbed, no
+  network);
 - every area's tests pass, and the shared pipeline code's;
 - the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds. The build's own
   gate (`site/scripts/copy-data.mjs`) also checks every area's `validation_summary.json`: it must say PASSED, and
@@ -217,9 +237,9 @@ which takes about an hour on GitHub) and 240 minutes in all.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
 4. Add the area to `AREAS` in `scripts/ci.sh`, and to the folder table at the top of this README.
 5. If any of its sources are refreshed weekly, give its pipeline an option that re-downloads only those (with tests in
-   `tests/test_fetch.py`), add a step for it to `.github/workflows/data-refresh.yml` with its own `timeout`, and add
-   the area wherever the workflow names `gdp` and `jobs-prices` (the commit step's `env` and list of areas, the
-   artifact paths and conditions, the final failure check).
+   `tests/test_fetch.py`), add a step for it to `.github/workflows/data-refresh.yml` that runs it with
+   `scripts/refresh/run-area.sh` and its own time limit, and add the area wherever the workflow names `gdp` and
+   `jobs-prices` (the commit step's `env` and arguments, the pack step's arguments, the final failure check).
 6. Add its datasets to the table, as above.
 
 ## Deployment

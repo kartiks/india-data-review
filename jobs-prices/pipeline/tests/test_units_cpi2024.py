@@ -63,10 +63,6 @@ def test_divisions_with_the_all_india_row():
         {"code": "00", "name": "All India", "values": [110.11, 108.71, 109.49, 6.08, 4.88, 5.54]}]
 
 
-@pytest.mark.xfail(strict=True, reason=(
-    "cpi2024.divisions looks for 'All India' in the first cell, but every saved release prints the All-India row of "
-    "Annexure I with an empty first cell (&nbsp;) and the name in the second, so the row (code '00') is never read "
-    "and check_headline_agrees silently compares one source fewer"))
 def test_divisions_reads_the_all_india_row_as_the_releases_print_it():
     t = tables(html_table(["Division code", "Division name", "Index", "Inflation"],
                           ["01", "Food and beverages", "111.86", "111.61", "111.77", "7.71", "6.75", "7.36"],

@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists its reason.
 
-**Result: PASSED** (593524 checks, 0 failures)
+**Result: PASSED** (593533 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -514,7 +514,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Indices are printed to two decimals but compiled unrounded, so a difference of up to 0.03 points is allowed.
 
 ## ✅ Prices, new series: combined index lies between rural and urban
-946 checks, 0 failures.
+955 checks, 0 failures.
 
 
 ## ✅ Prices, new series: only provisional figures are revised

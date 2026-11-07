@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 57473,
+ "checks": 59001,
  "failures": 0,
  "allowed": 548,
  "sections": [
@@ -172,6 +172,13 @@
   {
    "title": "State accounts: the states' GSDP against India's GDP (for review, not failures)",
    "checks": 0,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Text in the data: no '<', '>' or control characters",
+   "checks": 1528,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []

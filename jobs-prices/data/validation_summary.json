@@ -1,8 +1,8 @@
 {
  "result": "PASSED",
- "checks": 593524,
+ "checks": 595335,
  "failures": 0,
- "allowed": 7430,
+ "allowed": 7500,
  "sections": [
   {
    "title": "Every published value is understood",
@@ -121,8 +121,13 @@
    "title": "RBI state inflation agrees with MoSPI's consumer price indices",
    "checks": 326,
    "failures": 0,
-   "allowed": 0,
-   "allowed_reasons": []
+   "allowed": 70,
+   "allowed_reasons": [
+    {
+     "reason": "MoSPI published no state index for April and May 2020 (the lockdown; June too for Manipur, Nagaland and Puducherry), so 2020-21, and 2021-22 compared with it, lack months. RBI's notes say it used fewer months for those years. Not compared.",
+     "cases": 70
+    }
+   ]
   },
   {
    "title": "RBI state tables: totals lie within their parts",
@@ -188,6 +193,13 @@
   {
    "title": "Prices, new series: release page tables match the PDF",
    "checks": 8,
+   "failures": 0,
+   "allowed": 0,
+   "allowed_reasons": []
+  },
+  {
+   "title": "Text in the data: no '<', '>' or control characters",
+   "checks": 1811,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []

@@ -39,21 +39,22 @@ mospi.gov.in; and state comparisons from the RBI's handbook:
 
 ## Run it
 
+In `pipeline/`:
+
 ```bash
-cd pipeline
-uv run python -m jobs_prices_pipeline             # build data from saved sources and run all checks
-uv run python -m jobs_prices_pipeline --fetch     # also download anything missing
-uv run python -m jobs_prices_pipeline --refresh   # re-download everything, including press releases and report tables
-uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and RBI's tables (what the weekly refresh runs)
-uv run pytest                                     # tests write to temporary folders, never to data/
+uv run python -m jobs_prices_pipeline    # build data/ and run every check; options below
+uv run pytest
 ```
+
+The options are the same in every area ([Run it](../README.md#run-it)). Here `--refresh-api` re-downloads MoSPI's API
+and the RBI handbook tables, and `--refresh` also the press releases and report tables.
 
 The code, in `pipeline/jobs_prices_pipeline/`: `sources.py` (what is downloaded) and `fetch.py`; one reader per
 source (`plfs.py`, `prices.py`, `hces.py`, `cpi2024.py`, `rbi.py`, sharing `common.py`); `build.py`, which writes
 `data/`; and `checks/`, one module per topic, which writes the validation report.
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
-re-download differs, the old file is kept in `sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`).
+re-download differs, the old file is kept in `sources/snapshots/`.
 
 ## Keeping it up to date
 
@@ -62,11 +63,9 @@ price index. The full list for the site is in [Keeping the data up to date](../R
 
 ### Every week, automatically
 
-A GitHub Action runs `--refresh-api` every Sunday at 02:00 IST. It re-downloads everything from MoSPI's data service
-(PLFS, CPI base 2012, CPI for farm and rural labourers, HCES) and the RBI handbook tables, rebuilds `data/`, runs every
-check, and commits and pushes what changed once the local CI passes. Files that changed are kept in
-`sources/snapshots/`. Nothing needs doing unless a run fails; then see
-[When it fails](../README.md#the-weekly-refresh).
+[The weekly refresh](../README.md#the-weekly-refresh) runs `--refresh-api`: everything from MoSPI's data service
+(PLFS, CPI base 2012, CPI for farm and rural labourers, HCES) and the RBI handbook tables. Nothing needs doing unless
+a run fails.
 
 It does **not** download the base-2024 CPI press releases or the HCES report tables again: those are fixed
 documents. A release listed in `CPI2024_RELEASES` but not yet downloaded is downloaded by the next run, but add new
@@ -74,8 +73,8 @@ releases by hand as below, so that you see the checks.
 
 It does notice when they are out of date: if the latest base-2024 month's release (about the 12th of the next month)
 is more than 45 days old, so the following month's release has been out for about two weeks, the refresh exits with
-code 10 after building and checking (`sources.cpi2024_overdue`). The weekly workflow still commits the other data,
-then fails the run (so GitHub emails) until the new month is added.
+code 10 after building and checking (`sources.cpi2024_overdue`). The weekly refresh still commits the data, then
+fails the run (so GitHub emails) until the new month is added.
 Only `--refresh-api` and `--refresh` do this: the plain build, and `scripts/ci.sh`, keep passing on committed data
 however much time has passed.
 
@@ -169,8 +168,6 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food
   totals, and those to the average. Table A2's averages match the data service's; its states' persons add up to All
   India; every overall average lies between the rural and urban averages.
-- **Text**: no key or value in any `data/` file (JSON or CSV) has `<`, `>` or a control character
-  (`pipeline_common.data_text`): such text comes from a garbled download, never from a label.
 
 ### Problems found in MoSPI's data (each left out and listed in the report)
 

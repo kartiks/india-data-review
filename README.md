@@ -11,17 +11,16 @@ type of data, and a shared home page with charts that use more than one area.
 | [`gdp/`](gdp/README.md) | GDP and national accounts (MoSPI), the Budget's GDP assumption, Economic Survey and RBI forecasts |
 | [`jobs-prices/`](jobs-prices/README.md) | Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES), from MoSPI |
 | [`site/`](site/README.md) | The website: `/` home, `/budget/…`, `/gdp/…`, `/jobs-prices/…`, `/about/` |
-| [`shared/pipeline/`](shared/pipeline/) | `pipeline_common`, the Python code the three pipelines share (a uv path dependency of each) |
+| [`shared/pipeline/`](shared/pipeline/) | `pipeline_common`, the Python code the pipelines share (the validation report, downloading, options, reading Budget at a Glance, fiscal-year labels, ids, number parsing); a uv path dependency of each |
 
 Each data area is self-contained: its own `pipeline/` (a Python package run with uv), `data/` (the verified
-datasets the site reads) and `sources/` (every downloaded file, listed in `sources/manifest.json` with its
-URL and SHA-256; the manifest has the same layout in every area, described in
-[`download.py`](shared/pipeline/pipeline_common/download.py)). Each pipeline's checks write `data/validation_report.md` for people and
-`data/validation_summary.json` for the site, which refuses to build unless every area's summary says PASSED and
-records the SHA-256 of every data file as it is now (so data changed after its checks ran cannot deploy). Code
-the pipelines share (the validation report, downloading, reading Budget at a Glance, fiscal-year labels, ids and
-number parsing) is in `shared/pipeline/` (package `pipeline_common`). Abbreviations (NAS, GVA, BE/RE, PLFS …) are
-explained under [Terms](#terms).
+datasets the site reads) and `sources/` (every downloaded file, with `manifest.json` and `snapshots/`, laid out the
+same way in every area as described in [`download.py`](shared/pipeline/pipeline_common/download.py)). Each
+pipeline's checks write `data/validation_report.md` for people and `data/validation_summary.json` for the site,
+which will not build from data that failed its checks or changed after them ([the data gate](site/README.md#the-data-gate)).
+Every area also checks that no text in its `data/` has `<`, `>` or a control character
+(`pipeline_common.data_text`): such text comes from a garbled download, never from a label. Abbreviations (NAS,
+GVA, BE/RE, PLFS …) are explained under [Terms](#terms).
 
 > This repository previously held an Android app (Expo/React Native), preserved at the tag
 > `android-app-final`. The GDP area was developed in a separate repository; its history is merged here.
@@ -45,25 +44,22 @@ explained under [Terms](#terms).
 The source files are committed, so a fresh clone needs no download. `uv run --locked` (what `scripts/ci.sh` and the
 weekly refresh use) stops with an error if `uv.lock` is out of date instead of updating it.
 
-Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
-`--fetch` downloads anything missing first, and `--refresh` re-downloads everything (a changed file's previous copy is
-kept in `sources/snapshots/`).
-`--refresh-api` (GDP, and jobs and prices; the budget has no such sources) re-downloads only the sources that are
-revised in place; the weekly refresh runs it. The options are the same in every area (`pipeline_common/cli.py`):
-`--help` lists them; an option renamed since (`--refresh-nas`, `--force`…) is refused with its new name, and any
-other is refused too. Output is plain lines: progress and check results on stdout, warnings and errors on stderr
-(`pipeline_common/log.py`).
-Tests: `uv run pytest` in each `pipeline/` folder (including `shared/pipeline/`), and `npm run check` (type check) in
-`site/`.
+Each pipeline command builds its area's `data/` from the files already in `sources/`, runs every check and exits
+with an error if any fails. `--fetch` downloads anything missing first, and `--refresh` re-downloads everything (a
+changed file's previous copy is kept in `sources/snapshots/`). `--refresh-api` (GDP, and jobs and prices; the budget
+has no such sources) re-downloads only the sources that are revised in place; the weekly refresh runs it. The
+options are the same in every area ([`cli.py`](shared/pipeline/pipeline_common/cli.py)); `--help` lists them, and an
+unknown or renamed option is refused. Output is plain lines: progress and check results on stdout, warnings and
+errors on stderr (`pipeline_common/log.py`).
+Tests: `uv run pytest` in each `pipeline/` folder (including `shared/pipeline/`; they never write to `data/`), and
+`npm run check` (type check) and `npm test` in `site/`.
 
 ## Keeping the data up to date
 
 Vercel only builds the site. It never runs a pipeline: it reads the `data/` folders committed to this repository.
 Data reaches the site in two ways: a **weekly GitHub Action** re-downloads the sources that are published as data and
-revised in place, and everything else is **updated by hand** when it is released; for a new budget, an Economic Survey,
-an RBI policy statement and a year's population, the weekly refresh also checks whether one is probably out and not
-yet added, and fails its run with a line saying what to add. Data added to the site later gets the
-same decision: see [Adding data](#adding-data).
+revised in place, and everything else is **updated by hand** when it is released (the weekly run also says when one of
+those is probably out). Data added to the site later gets the same decision: see [Adding data](#adding-data).
 
 ### What refreshes itself, and what doesn't
 
@@ -77,7 +73,7 @@ same decision: see [Adding data](#adding-data).
 | Household spending (HCES): new rounds with the same indicators | MoSPI API | **Weekly refresh**; a new indicator or breakdown needs code ([Jobs and prices README](jobs-prices/README.md#new-survey-rounds)) | When a survey is published |
 | States: unemployment, income per person, state GDP, state inflation, rural wages | RBI Handbook of Statistics on Indian States (tables 8–9, 19–22, 108, 112–115) | **Weekly refresh**: a new edition is picked up from RBI's page automatically; if RBI renumbers a table, it needs code ([Jobs and prices README](jobs-prices/README.md#each-december-a-new-rbi-handbook-edition)) | Each December |
 | Consumer prices, base 2024 (from January 2026) | MoSPI monthly press releases on PIB | **By hand**: add the release's address, then `--fetch`; MoSPI's API does not serve this series yet ([Jobs and prices README](jobs-prices/README.md#each-month)) | 12th of each month |
-| GDP per person (GDP › Per person): GDP, national income and household spending per person | MoSPI national accounts API, divided by population: the official 2019 projections, then MoSPI's own figures from its press notes (cross-checked with the RBI's Handbook of Statistics on the Indian Economy) | **Weekly refresh** of the totals. The population is **by hand**: add each new year from MoSPI's press note, and each year's *National Accounts Statistics* per-capita statement, downloaded from MoSPI's site in a browser ([GDP README](gdp/README.md#adding-a-years-population)); the weekly refresh fails its run when a year is missing (`gdp_pipeline.due`), and until then the report lists the year, it has no per-person figures, and the Per person page stays on the year before | Population for a new year: early January (First Advance Estimates); National Accounts Statistics: August or September |
+| GDP per person (GDP › Per person): GDP, national income and household spending per person | MoSPI national accounts API, divided by population: the official 2019 projections, then MoSPI's own figures from its press notes (cross-checked with the RBI's Handbook of Statistics on the Indian Economy) | **Weekly refresh** of the totals. The population is **by hand**: add each new year from MoSPI's press note, and each year's *National Accounts Statistics* per-capita statement, downloaded from MoSPI's site in a browser ([GDP README](gdp/README.md#adding-a-years-population)); the weekly refresh fails its run when a year is missing (`gdp_pipeline.due`) | Population for a new year: early January (First Advance Estimates); National Accounts Statistics: August or September |
 | Union Budget: headline figures, taxes, ministries, schemes | Budget documents on indiabudget.gov.in | **By hand**: move to the new budget year ([Budget README](budget/README.md#adding-a-new-budget)); the weekly refresh fails its run once a newer budget is on indiabudget.gov.in (`budget_pipeline.due`) | 1 February, or the full budget after an election |
 | The Budget's GDP assumption (GDP pages) | Budget at a Glance | **By hand**, with the new budget (step 5 of the Budget README) | 1 February |
 | Economic Survey growth projection (GDP forecasts page) | Economic Survey | **By hand**: quote it in `gdp/pipeline/gdp_pipeline/forecast_sources/economic_survey.json` ([GDP README](gdp/README.md#adding-a-forecast)); the weekly refresh fails its run when one is probably out (`gdp_pipeline.due`) | Late January |
@@ -94,49 +90,42 @@ mospi.gov.in has the exact dates.
 [`.github/workflows/data-refresh.yml`](.github/workflows/data-refresh.yml) runs every **Sunday at 02:00 IST**
 (Saturday 20:30 UTC; GitHub often starts scheduled runs a little late). A run takes about 65 minutes, most of it the
 1,400 pages of MoSPI's jobs and prices data (about an hour from GitHub's servers), plus the local CI when something
-changed. It:
+changed. It runs in two jobs, so that no token that can write to the repository exists while packages are installed
+and code runs. The shell they run is in [`scripts/refresh/`](scripts/refresh/).
+
+The **refresh** job (read-only token):
 
 1. Re-downloads the GDP sources (`gdp_pipeline --refresh-api`) and the jobs and prices sources
    (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Each area has its
    own time limit (30 and 150 minutes), so a slow source fails only its own area. Fixed documents
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
-   listed in the code but missing is downloaded. It also runs `budget_pipeline.due` and `gdp_pipeline.due`, which
-   say whether a release added by hand is probably out and not yet added: a new budget (from indiabudget.gov.in), an
-   Economic Survey, an RBI policy statement, a year's population or National Accounts Statistics (from dates). These
-   never hold back the data; step 6 fails the run with one line per release, saying what to add and where.
-2. Keeps history. These sources hold only their latest figures, so when a download differs from the saved file, the
-   pipeline keeps the old file under `<area>/sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; folders from before
-   are named by date only) and records it in the
-   manifest's `history`. This is how the revision history of each release builds up.
-3. Commits an area only if its sources changed **and** its download finished with every check passing. An area with
-   no change is left alone, so a quiet week makes no commit. The commit is named `Data refresh <date>: <areas>`.
-4. Runs the local CI (`scripts/ci.sh`, below) on that commit. If both areas changed, they go in one commit, so a CI
-   failure holds back both. If `main` moved during the run (a PR was merged), the commit is replayed on top of it and
-   checked again.
-5. Pushes the commit to `main` if the data has only new figures; Vercel then deploys the live site. If the data has
-   **new text** (a new state, item, unit, note or source address, anything but figures, dates, months, quarters and
-   years: [`labels.py`](shared/pipeline/pipeline_common/labels.py) says exactly what counts), it pushes the branch
-   `data-refresh/<date>` and opens a pull request listing the new text, for you to review and merge. If `main` moved
-   again between the checks and the push, the commit also goes to a pull request (run `scripts/ci.sh` on it before
-   merging).
-6. If anything failed, or a release added by hand is due, the run fails (after the data is published) and GitHub
-   emails whoever last changed the workflow's schedule (or started the run by hand). The due releases are also listed
-   in the run's summary and in any pull request it opens. Every run keeps an artifact (`data-refresh-<run id>`, for 90 days) with each area's validation report
-   and refresh output, the refresh commit (`refresh.bundle`), the new text (`labels.md`) and every changed file that
-   was not committed.
+   listed in the code but missing is downloaded. When a download differs from the saved file, the old file is kept
+   under `<area>/sources/snapshots/` and in the manifest's `history`: these sources hold only their latest figures,
+   so this is how the revision history of each release builds up.
+2. Runs `budget_pipeline.due` and `gdp_pipeline.due`, which say whether a release added by hand is probably out and
+   not yet added: a new budget, an Economic Survey, an RBI policy statement, a year's population or National Accounts
+   Statistics (when each counts as due: the area's `due.py`). These never hold back the data.
+3. Commits an area only if its sources changed **and** every check passed (a quiet week makes no commit), as
+   `Data refresh <date>: <areas>`. The areas share one commit, so a failure in step 4 holds them all back.
+4. Runs the local CI (`scripts/ci.sh`, below) on the commit. If `main` moved during the run (a pull request was
+   merged), the commit is replayed on top of it and checked again.
+5. Keeps an artifact (`data-refresh-<run id>`, for 90 days): each area's validation report and refresh output, the
+   commit (`refresh.bundle`), the new text (`labels.md`) and every changed file that was not committed.
 
-The work is split in two jobs so that no token that can write to the repository exists while packages are installed
-and code runs: the `refresh` job (steps 1 to 4, and the artifact) has a read-only token, and the `publish` job
-(step 5) installs and builds nothing: it fetches the commit from the artifact, checks that it changes only the
-areas' `sources/` and `data/`, and pushes it. The shell they run is in `scripts/refresh/`; `scripts/ci.sh` lints it
-and dry-runs it against a local repository (`scripts/test-refresh.sh`).
+The **publish** job (write token) installs and builds nothing. It takes the commit from the artifact, checks that it
+changes only the committed areas' `sources/` and `data/`, and pushes it to `main`; Vercel then deploys the live site.
+It opens a pull request (branch `data-refresh/<date>`) instead when the data has **new text** (a new state, item,
+unit, note or source address: anything but figures, dates and periods;
+[`labels.py`](shared/pipeline/pipeline_common/labels.py) says exactly what counts), listing it for you to review, or
+when `main` moved again after the checks (run `scripts/ci.sh` on the branch before merging). Opening a pull request
+needs **Settings › Actions › General › "Allow GitHub Actions to create and approve pull requests"**, which is
+currently off: the job then pushes the branch and fails the run with a link to open the pull request yourself.
 
-Only a run on `main` publishes. A run started by hand on another branch does everything else and keeps its
-downloads in the artifact. The push is made as `github-actions[bot]` straight to `main`, so `main` must not get
-branch protection or a ruleset that requires a pull request; if it does, every refresh with new data fails at the
-push. The pull request for new text needs **Settings › Actions › General › "Allow GitHub Actions to create and
-approve pull requests"**; while that is off, the run pushes the branch and fails with a link to open the pull request
-yourself.
+Only a run on `main` publishes; a run started by hand on another branch does everything else. The push is made as
+`github-actions[bot]` straight to `main`, so `main` must not get branch protection or a ruleset that requires a pull
+request. If anything failed, or a release added by hand is due, the run fails at the end (after the data is
+published), with one line per release due saying what to add and where (also in any pull request it opens), and
+GitHub emails whoever last changed the workflow's schedule (or started the run by hand).
 
 **When it passes**, nothing is needed, unless it opened a pull request: look at the new text it lists (and the
 pages that show it, on the branch's Vercel preview) and merge it. Look over the `Data refresh` commit on `main` now
@@ -192,12 +181,12 @@ It checks out that commit in a temporary folder (your working folder is not touc
   weekly refresh's scripts pass their dry run (`scripts/test-refresh.sh`: a local repository, `gh` stubbed, no
   network);
 - every area's tests pass, and the shared pipeline code's;
-- the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds. The build's own
-  gate (`site/scripts/copy-data.mjs`) also checks every area's `validation_summary.json`: it must say PASSED, and
-  each data file's SHA-256, with its `generated_at` left out, must match the one the checks recorded.
+- the site type-checks, passes its tests (`npm test`, if `site/package.json` has one) and builds, which includes
+  [the data gate](site/README.md#the-data-gate).
 
-Running a pipeline's tests rewrites its `data/` files with only a new `generated_at`; discard those changes rather
-than committing them (the hashes leave `generated_at` out, so they never trip the gate).
+The areas are those in `site/src/data/areas.json` of the commit checked, so it cannot check a commit from before that
+file existed. Running a pipeline yourself rewrites `generated_at` (the build time) in its `data/` files even when
+nothing else changed; discard those changes rather than committing them.
 
 It downloads no data (npm and uv may download packages) and takes about 10 to 15 minutes, most of it the budget
 tests. Only the weekly refresh pushes to `main` directly, and it runs the same script on its commit first.
@@ -223,43 +212,42 @@ which takes about an hour on GitHub) and 240 minutes in all.
 
 1. Add it to the area's `sources.py` and `fetch.py`, read it in `build.py`, and add checks for it.
 2. If it is refreshed weekly, make the area's `--refresh-api` re-download it, with the area's `save()`
-   (`pipeline_common.download.save`, which keeps the old file as a snapshot) and the same guard against data that vanishes, and extend `tests/test_fetch.py`. If its download is
-   slow, raise the area's `timeout` in `.github/workflows/data-refresh.yml`.
+   (`pipeline_common.download.save`, which keeps the old file as a snapshot) and the same guard against data that
+   vanishes, and extend `tests/test_fetch.py`. If its download is slow, raise the area's time limit (the
+   `run-area.sh` argument) in `.github/workflows/data-refresh.yml`.
 3. Update the table and the area's README, as above.
 
 ### A new area
 
-1. Create `<area>/` with `pipeline/`, `data/` and `sources/`, following `gdp/` (fetch → build → checks). Add
+1. Create `<area>/` with `pipeline/`, `data/` and `sources/`, following `gdp/` (fetch → build → checks). The
+   package is `<area>_pipeline`, with `-` as `_` (`scripts/ci.sh` runs it by that name). Add
    `pipeline-common` to the pipeline's dependencies as a path dependency (copy `[tool.uv.sources]` from
    `gdp/pipeline/pyproject.toml`), and write the checks with its `Report`, which writes `data/validation_report.md`
    and the `data/validation_summary.json` the site reads. Code that more than one area needs goes in
    `shared/pipeline/pipeline_common/`, with tests in `shared/pipeline/tests/`; area-specific code stays in the area.
-2. In the site: add the area to `AREAS` in `site/scripts/copy-data.mjs` and its `data/` folder to `PATHS` in
-   `site/scripts/vercel-ignore-build.sh`; a data module in `site/src/lib/<area>/`;
-   pages in `site/src/pages/<area>/`, including a sources page listing its downloads and check results (copy
-   `site/src/pages/gdp/sources/index.astro`). In `site/src/layouts/Base.astro`, add it to the `AREAS` list that
-   works out the area from the URL, to `tabs` and `subnav`, to `AREA_LABEL`, and give it a footer paragraph like
-   the other areas'. Add it to the `areas` list in `site/src/pages/about/index.astro` (its check results), to the
-   links on `site/src/pages/404.astro` and the home page's area sections (`site/src/pages/index.astro`), to the
-   default page description in `Base.astro`, and to the Pages table and data folders in `site/README.md`.
-3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
-4. Add the area to `AREAS` in `scripts/ci.sh`, and to the folder table at the top of this README.
-5. Give its `__main__.py` the shared options (`pipeline_common.cli.parser`) and call `pipeline_common.log.setup()`
+2. Add it to `site/src/data/areas.json` (id = folder name, tab label, full name). The site's tabs and About page,
+   the build's data gate, `site/scripts/vercel-ignore-build.sh` and `scripts/ci.sh` all take the areas from there.
+   Add it to the folder table at the top of this README too.
+3. In the site: a data module in `site/src/lib/<area>/` (reading its files with `src/lib/area-data.ts`); pages in
+   `site/src/pages/<area>/`, including a sources page built on `SourcesPage.astro` (copy
+   `site/src/pages/gdp/sources/index.astro`); in `site/src/layouts/Base.astro`, its `subnav`, a footer paragraph
+   like the other areas' and a mention in the default page description; its links on `site/src/pages/404.astro` and
+   a section on the home page (`site/src/pages/index.astro`), where charts that combine areas go too; and the
+   Pages table and data folders in `site/README.md`.
+4. Give its `__main__.py` the shared options (`pipeline_common.cli.parser`) and call `pipeline_common.log.setup()`
    first. If any of its sources are refreshed weekly, its `--refresh-api` re-downloads only those (with tests in
    `tests/test_fetch.py`); add a step for it to `.github/workflows/data-refresh.yml` that runs it with
    `scripts/refresh/run-area.sh` and its own time limit, and add the area wherever the workflow names `gdp` and
-   `jobs-prices` (the commit step's `env` and arguments, the pack step's arguments, the final failure check).
-6. Add its datasets to the table, as above.
+   `jobs-prices` (the commit step's `env` and arguments, the pack step's arguments, the final failure check). If it
+   has a `due` command (`pipeline_common.due`), add a step like the budget's and name it in the last step's
+   arguments (`check-due.sh`).
+5. Add its datasets to the table, as above.
 
 ## Deployment
 
-Vercel, project Root Directory `site` (it reads each area's `data/` folder, so "Include files
-outside the root directory" must stay on).
-
-Each deployment stores a full copy of the built site (about 100 MB, mostly the download files in `data/`), so
-`site/vercel.json` skips the ones that would change nothing: Dependabot branches never deploy, and
-`site/scripts/vercel-ignore-build.sh` skips a commit when nothing in `site/` or any area's `data/` folder changed
-since the branch's last deployment. A new area's `data/` folder must be added to that script's list.
+Vercel builds the site from `site/` and the committed `data/` folders: `main` deploys the live site, other branches
+get previews. The project's settings, the commits it skips and the security headers are in the
+[site README](site/README.md#deployment).
 
 ## Terms
 

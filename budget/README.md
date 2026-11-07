@@ -6,41 +6,35 @@ This folder holds the data pipeline (`pipeline/`), the verified datasets
 (`data/`) and the downloaded source files (`sources/`). The website is in `../site/`
 (pages under `/budget/`).
 
-## Data pipeline
+## What's covered
 
-Verified data on the Union Budget of India, **2000-01 to the latest budget**, taken
-straight from official budget documents and checked automatically:
+**2000-01 to the latest budget**:
 
 - **Headline figures:** receipts, spending, deficits (every budget).
 - **Taxes by type:** corporation tax, income tax, GST, customs, excise, states' share, non-tax revenue (2000-01 onward).
 - **Spending by ministry/department** (2000-01 onward).
 - **Spending by scheme:** every Centrally Sponsored and Central Sector scheme (from Budget 2017-18).
 
-The website that presents this data is in `../site/` (see `../site/README.md`); it can only be built when every data check passes.
-
 ## Run it
 
+In `pipeline/`:
+
 ```bash
-cd pipeline
-uv run python -m budget_pipeline            # parse saved sources, build data, run all checks (~3 min)
-uv run python -m budget_pipeline --fetch    # also download anything missing
-uv run python -m budget_pipeline --refresh  # re-download every budget document (a changed file is kept in sources/snapshots/)
-uv run python -m budget_pipeline.due        # whether the next budget is out on indiabudget.gov.in (exit 11 if so)
-uv run pytest                               # parser tests + end-to-end checks (~6 min; builds in a temporary
-                                            # folder and fails if anything in data/ changes)
+uv run python -m budget_pipeline        # build data/ and run every check (~3 min)
+uv run python -m budget_pipeline.due    # whether the next budget is out on indiabudget.gov.in (exit 11 if so)
+uv run pytest                           # parser tests + end-to-end checks (~6 min)
 ```
 
-The source files are committed, so `--fetch` downloads only what is missing; `--refresh` (or `--fetch` with an empty
-`sources/raw/`) downloads about 55 MB. The command exits with an error if any check fails, so it can gate a website
-build. The results of the last build are in [`data/validation_report.md`](data/validation_report.md).
+The options are the same in every area ([Run it](../README.md#run-it)); the budget has no `--refresh-api`, as its
+documents are never revised in place. `--refresh` (or `--fetch` with an empty `sources/raw/`) downloads about 55 MB.
+The results of the last build are in [`data/validation_report.md`](data/validation_report.md).
 
 ## Adding a new budget
 
 Once a year, after the Union Budget (usually 1 February; in an election year, the full budget that follows the
-interim one, which the pipeline skips). The weekly refresh runs `budget_pipeline.due`, which downloads the Budget at
-a Glance headline table at indiabudget.gov.in's root (where the latest budget is) and fails the run (exit code 11)
-once it is for a newer budget than `LATEST_BUDGET`, or in any case from 1 August of the next budget's year. It skips
-an interim budget, and a network error is only a warning.
+interim one, which the pipeline skips). The weekly refresh runs `budget_pipeline.due`, which fails the run once a
+newer budget than `LATEST_BUDGET` is on indiabudget.gov.in, or in any case from 1 August of its year (how it tells:
+`pipeline/budget_pipeline/due.py`).
 
 1. Set `LATEST_BUDGET` to the new budget's first year in `../shared/pipeline/pipeline_common/budget_glance.py`
    (for example `2027` for 2027-28); the budget and gdp areas both read it. Until its documents are downloaded,
@@ -99,8 +93,9 @@ So the latest budget year has no RE or Actual yet, and the year before it no Act
 
 ## Sources
 
-All from indiabudget.gov.in, with URL and SHA-256 of every file in
-`sources/manifest.json` (as `<budget year>/<document>/<format>`; the RBI reference tables as `reference/rbi/<table>`). The printed PDF is the primary copy; Excel/HTML
+All from indiabudget.gov.in, each file listed in `sources/manifest.json` as `<budget year>/<document>/<format>` (the
+RBI reference tables as `reference/rbi/<table>`; the manifest's layout is in
+[`download.py`](../shared/pipeline/pipeline_common/download.py)). The printed PDF is the primary copy; Excel/HTML
 copies are parsed too and must agree (several don't — see below).
 
 | Data | Document |
@@ -129,8 +124,7 @@ Research's *Union Budget 2026-27 Analysis*.
      and schemes) must match to the crore.
 
    The counts are in [`data/validation_report.md`](data/validation_report.md).
-6. **Text:** no key or value in any `data/` file (JSON or CSV) has `<`, `>` or a control character (`pipeline_common.data_text`): such text comes from a garbled download, never from a label.
-7. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
+6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
 
 ### Problems found in the official files (examples)
 

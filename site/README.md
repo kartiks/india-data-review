@@ -9,9 +9,10 @@ small script for hover/touch/keyboard readouts and a table view under every char
 ```bash
 npm ci
 npm run dev      # http://localhost:4321
-npm run build    # static site in dist/ (refuses to build unless every area's checks passed on its current data)
+npm run build    # static site in dist/ (only from data that passed its checks: see the data gate below)
 npm run preview  # serve dist/ locally
 npm run check    # type check
+npm test         # unit tests (test/)
 ```
 
 ## Pages
@@ -58,15 +59,17 @@ area's own text in its slots. Shared page parts are styled once in `src/styles/g
 picking figures goes in `src/lib/` with tests in `test/`, and browser scripts longer than a few lines in
 `src/scripts/`, imported from a `<script>` so Astro bundles them. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
 (CC BY 4.0, following the Survey of India's map) simplified by `scripts/make-india-map.py`, whose header says how to
-redo it; the page must credit DataMeet.
+redo it; the page must credit DataMeet. Adding an area: see the root README's
+[checklist](../README.md#a-new-area).
+
+## The data gate
 
 `scripts/copy-data.mjs` (run before every `dev` and `build`) copies each area's checked data into
 `public/data/<area>/` for download. It stops the build if an area's `data/validation_summary.json` is missing or
 does not say PASSED, or if any data file differs from the SHA-256 the summary recorded when the checks ran (so data
 edited or rebuilt without its checks cannot go live); it names the file. The hashes leave out each file's
 `generated_at` (the build time), so rebuilding the same data, as the tests do, never trips it. Pages and the gate read
-the check results through `src/lib/validation.ts`, never by parsing `validation_report.md`. Adding an area: see the
-root README's checklist.
+the check results through `src/lib/validation.ts`, never by parsing `validation_report.md`.
 
 ## How numbers are chosen
 
@@ -100,9 +103,10 @@ Every push to `main` deploys; other branches get preview URLs (behind Vercel's l
 deployment storage down (each deployment is a ~100 MB copy): Dependabot branches never deploy (`git.deploymentEnabled`
 in `vercel.json`), and `scripts/vercel-ignore-build.sh` skips a commit that changed nothing in `site/` or any area's
 `data/` since the branch's last deployment (it takes the areas from `src/data/areas.json`). Vercel runs no
-pipeline: it builds from the `data/` folders committed to the repository, so data updates are run locally and
-committed (see the root README). `vercel.json` also sets security headers on every page (no framing, no MIME
-sniffing, a strict referrer policy, and browser features such as the camera turned off).
+pipeline: it builds from the `data/` folders committed to the repository
+([Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). `vercel.json` also sets security headers
+on every page (no framing, no MIME sniffing, a strict referrer policy, and browser features such as the camera
+turned off).
 
 Content-Security-Policy: `security.csp` in `astro.config.mjs` puts a CSP `<meta>` tag on every page, with the hash
 of every script and stylesheet Astro emits; only the site's own origin may load anything. A script that must run

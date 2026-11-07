@@ -17,6 +17,11 @@ from .text import fy
 
 INDIABUDGET = "https://www.indiabudget.gov.in"
 
+# The latest Union Budget the site covers (its first year: 2026 is 2026-27), for both areas that read Budget at a
+# Glance: raise it here, and only here, when a new budget is out (budget/README.md, "Adding a new budget"). Its
+# documents are at the site's root (site()); earlier budgets move to folders of their own.
+LATEST_BUDGET = 2026
+
 
 # ---- where the tables are ------------------------------------------------------------------------
 

@@ -27,9 +27,10 @@ replaces their estimates.
 """
 
 from pipeline_common import budget_glance
+from pipeline_common.text import fy
 
 FIRST_BUDGET = 2000  # 2000-01
-LATEST_BUDGET = 2026  # 2026-27
+LATEST_BUDGET = budget_glance.LATEST_BUDGET  # set in pipeline_common/budget_glance.py, which the gdp area reads too
 FIRST_SCHEME_BUDGET = 2017  # 2017-18, the first budget without the Plan/Non-plan split
 
 # Preferred order when choosing the primary file for a year.
@@ -83,3 +84,28 @@ def candidate_urls(start: int, doc: str) -> list[str]:
 
 
 BUDGETS = list(range(FIRST_BUDGET, LATEST_BUDGET + 1))
+
+
+def expected_documents(start: int) -> list[str]:
+    """The document types a budget must have downloaded (those with somewhere to look for them)."""
+    return [doc for doc in DOC_TYPES if candidate_urls(start, doc)]
+
+
+def missing_documents(manifest: dict) -> dict[str, list[str]]:
+    """{budget year: [document types]} for every budget up to LATEST_BUDGET whose documents are not all in the
+    manifest: usually the newest budget, when LATEST_BUDGET is raised before its documents are downloaded."""
+    out = {}
+    for start in BUDGETS:
+        year = fy(start)
+        have = manifest.get(year, {})
+        if missing := [doc for doc in expected_documents(start) if not have.get(doc, {}).get("files")]:
+            out[year] = missing
+    return out
+
+
+def missing_message(missing: dict[str, list[str]]) -> str:
+    years = "; ".join(f"{year}: {', '.join(docs)}" for year, docs in missing.items())
+    return (f"Budget documents not downloaded ({years}). LATEST_BUDGET is {LATEST_BUDGET} "
+            f"({fy(LATEST_BUDGET)}, set in shared/pipeline/pipeline_common/budget_glance.py): run "
+            "`uv run python -m budget_pipeline --fetch` once that budget is on indiabudget.gov.in "
+            "(budget/README.md, Adding a new budget), or lower LATEST_BUDGET until it is.")

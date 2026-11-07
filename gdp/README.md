@@ -32,6 +32,7 @@ uv run python -m gdp_pipeline             # build data from saved sources and ru
 uv run python -m gdp_pipeline --fetch     # also download anything missing
 uv run python -m gdp_pipeline --refresh   # re-download everything, including budget and forecast documents
 uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (what the weekly refresh runs)
+uv run python -m gdp_pipeline.due   # which hand-added releases are probably out but not added (exit 11 if any)
 uv run pytest
 ```
 
@@ -50,7 +51,11 @@ stage of their own, so only their latest figures are used.
 Not refreshed by it, and updated by hand: the Budget's GDP assumption (with each new budget), the Economic Survey
 and RBI growth projections ([Adding a forecast](#adding-a-forecast)), and the population for a new year
 ([Adding a year's population](#adding-a-years-population)). Figures per person are worked out again from the
-refreshed totals every week.
+refreshed totals every week. The weekly refresh also runs `gdp_pipeline.due`, which works out from dates (no
+downloads) which of these are probably out and not yet added, and fails the run (exit code 11, after committing the
+refreshed data) with one line for each: an Economic Survey for the latest budget's year (or from 1 August), an RBI
+statement once the latest recorded is 66 days old (they come every 56 to 65 days), a year in the national accounts
+with no population, and from 1 October a National Accounts Statistics statement for the year.
 
 ## What's in `data/`
 

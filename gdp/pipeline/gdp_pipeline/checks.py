@@ -44,7 +44,7 @@ from pipeline_common.text import fy, fy_start, prev_fy
 from . import population_checks, states_checks
 from .ids import BROAD, GROUPS, STAGE_ORDER
 from .forecasts import verify_quotes
-from .sources import BUDGETS
+from .sources import BUDGETS, LATEST_BUDGET
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -443,7 +443,9 @@ def check_budget(ds: dict, report: Report) -> None:
         checked += 1
         a = found.get(y)
         if not a:
-            failures.append(f"Budget {y}: GDP assumption not found in Budget at a Glance")
+            hint = (f" (not downloaded? LATEST_BUDGET is {LATEST_BUDGET}, set in pipeline_common/budget_glance.py: run "
+                    "--fetch once the budget is published)") if start == LATEST_BUDGET else ""
+            failures.append(f"Budget {y}: GDP assumption not found in Budget at a Glance{hint}")
             continue
         if a["printed_year"].replace("20", "", 1) != y and a["printed_year"] != y:
             if a["printed_year"][:4] != y[:4]:

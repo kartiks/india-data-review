@@ -124,6 +124,7 @@ def fetch_budgets(manifest: dict, force: bool) -> None:
             try:
                 content = get(url)
             except urllib.error.HTTPError as exc:
+                exc.close()
                 print(f"{key}: {url} -> {exc.code}")
                 continue
             if file_kind(content) != "pdf":  # a web page or an error under the address: try the next one

@@ -30,7 +30,11 @@ def main() -> int:
     if OPTIONS & set(args):
         fetch.main(force="--refresh" in args)
         reference.fetch()
-    build.main()
+    try:
+        build.main()
+    except build.MissingDocuments as exc:
+        print(f"FAIL: {exc}", file=sys.stderr)
+        return 1
     return checks.main(datasets.build_all())
 
 

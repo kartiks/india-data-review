@@ -25,6 +25,18 @@ revised the totals in August. Where they agree, the printed figure is used. A NA
 unrounded per-person figure times its population gives the total back (to within ₹1 crore of the API's in NAS 2026),
 which is how its figures are matched to the API's estimate.
 
+Which document gives each year's population today (sources/raw/population/; gdp.json names each year's source in
+population.by_series):
+
+    2011-12 series, 2011-12 to 2021-22   the 2019 projections, Table 14, PDF page 125 (projections-2019.pdf)
+    2022-23 series, 2022-23 to 2024-25   MoSPI, National Accounts Statistics 2026 (31 August 2026), Statement 1.2:
+                                         Per capita income, product and final consumption, printed to the thousand
+                                         (nas-2026-statement-1.2.xlsx, downloaded by hand)
+    2011-12 series, 2023-24 to 2025-26;  MoSPI's press notes, implied by their per-person figures (press-note-*.pdf,
+    2022-23 series, 2025-26              rows quoted in population_sources/mospi_press_notes.json)
+    2011-12 series, 2022-23              RBI, Handbook of Statistics on the Indian Economy 2025-26, Tables 1 and 2,
+                                         reprinting MoSPI's (rbi-hbs-table-1.xlsx, rbi-hbs-table-2.xlsx)
+
 From 2022-23 MoSPI's population is about 0.1-0.2% above the 2019 projections, so in the 2011-12 series population
 grows 1.05% in 2022-23 (0.91% from one projection to the next); MoSPI's own per-person figures have the same step.
 

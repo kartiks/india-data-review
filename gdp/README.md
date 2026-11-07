@@ -132,7 +132,8 @@ from:
   `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json`), or else from the RBI's *Handbook of Statistics
   on the Indian Economy*, which reprints it and is also used to check it.
 
-How the population is chosen and the figures worked out: the docstring of `pipeline/gdp_pipeline/population.py`; the
+Which document gives each year's population, how it is chosen and how the figures are worked out: the docstring of
+`pipeline/gdp_pipeline/population.py`; the
 documents and how they are read: `population_read.py`; the checks ("Population and figures per person" in the
 report): `population_checks.py`. A year in the API with no population yet has no per-person figures; the report
 lists it (not a failure), and the site's Per person page stays on the year before and says which year is waiting.

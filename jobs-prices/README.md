@@ -21,8 +21,9 @@ mospi.gov.in; and state comparisons from the RBI's handbook:
 - **Consumer Price Index, base 2024** (from January 2026), from MoSPI's monthly press releases on PIB, listed by hand
   in `sources.CPI2024_RELEASES` (add each new month's page). The API lists base-2024 filters but returns no figures
   yet. The pipeline keeps each release's content (title to end, without the page's visitor counter) and its PDF where
-  one is attached, and reads the HTML tables (`cpi2024.py`): 12 divisions, 43 groups, 36 states, and the All-India
-  series from January 2025. The first release also gives the linking factors and old vs new weights.
+  one is attached, and reads the HTML tables (`cpi2024.py`): 12 divisions and their All-India row (code 00), 43
+  groups, 36 states, and the All-India series from January 2025. The first release also gives the linking factors
+  and old vs new weights.
 - **CPI for agricultural and rural labourers** (Labour Bureau), `/api/cpialrl/getCpialrlRecords`: base 1986-87 and,
   from June 2025, base 2019.
 - **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`. MoSPI publishes

@@ -85,8 +85,14 @@ def load_rbi() -> dict[tuple[str, str, str], dict]:
         rows = read_xlsx(REF_DIR / f"{name}.xlsx")
         kinds = _latest_kinds(rows)
         # The row of column numbers ("1", "2", ...) tells us where each numbered column sits.
-        number_row = next(r for r in rows if r[1:4] == ["1", "2", "3"])
+        number_row = next((r for r in rows if r[1:4] == ["1", "2", "3"]), None)
+        if number_row is None:
+            raise ValueError(f"{name}.xlsx: no row of column numbers (1, 2, 3, ...) under the header; "
+                             "the table's layout has changed")
         pos = {int(c): i for i, c in enumerate(number_row) if c.isdigit()}
+        if missing := sorted(set(spec["columns"].values()) - pos.keys()):
+            raise ValueError(f"{name}.xlsx: column number(s) {missing} not in the row of column numbers; "
+                             "the table's layout has changed")
         for r in rows:
             year = r[1]
             if not (len(year) == 7 and year[4] == "-"):

@@ -15,7 +15,7 @@ import re
 from collections.abc import Callable, Iterator
 from pathlib import Path
 
-from .report import REPORT_FILE, SUMMARY_FILE, Allowed, Report
+from .report import BUILD_TIME_KEY, REPORT_FILE, SUMMARY_FILE, Allowed, Report
 
 # '<', '>', the C0 and C1 control characters (tab, newline and carriage return among them), DEL, and the Unicode line
 # and paragraph separators
@@ -25,13 +25,16 @@ TITLE = "Text in the data: no '<', '>' or control characters"
 
 
 def strings(value, where: str) -> Iterator[tuple[str, str]]:
-    """(where, string) for every string in a JSON value: object keys and values, at any depth."""
+    """(where, string) for every string in a JSON value: object keys and values, at any depth. The build time's value
+    (BUILD_TIME_KEY) is left out: it differs from file to file by chance (two files written in the same second share
+    one distinct text), so counting it would make the number of checks change from build to build."""
     if isinstance(value, str):
         yield where, value
     elif isinstance(value, dict):
         for k, v in value.items():
             yield f"{where}: key", str(k)
-            yield from strings(v, f"{where}.{k}")
+            if k != BUILD_TIME_KEY:
+                yield from strings(v, f"{where}.{k}")
     elif isinstance(value, list):
         for i, v in enumerate(value):
             yield from strings(v, f"{where}[{i}]")
@@ -47,8 +50,11 @@ def file_strings(path: Path) -> Iterator[tuple[str, str]]:
             header = next(rows, [])
             for col in header:
                 yield f"{path.name} header", col
+            skip = {i for i, h in enumerate(header) if h == BUILD_TIME_KEY}
             for n, row in enumerate(rows, start=2):
                 for i, cell in enumerate(row):
+                    if i in skip:
+                        continue
                     yield f"{path.name} line {n}, {header[i] if i < len(header) else f'column {i + 1}'}", cell
 
 

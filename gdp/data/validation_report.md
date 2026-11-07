@@ -2,7 +2,7 @@
 
 National and state accounts (MoSPI), the Union Budget's GDP assumption and published forecasts. Every allowed exception lists its reason.
 
-**Result: PASSED** (59001 checks, 0 failures)
+**Result: PASSED** (58999 checks, 0 failures)
 
 ## ✅ Every published row is understood
 10272 checks, 0 failures.
@@ -320,6 +320,6 @@ National and state accounts (MoSPI), the Union Budget's GDP assumption and publi
 - 2024-25: 32 states and UTs add up to 103.2% of India's GDP (PE estimate)
 
 ## ✅ Text in the data: no '<', '>' or control characters
-1528 checks, 0 failures.
+1526 checks, 0 failures.
 
 - Every key and text value (each distinct text counted once) in gdp.json, national_accounts.csv, per_person.csv, state_accounts.csv, states.json.

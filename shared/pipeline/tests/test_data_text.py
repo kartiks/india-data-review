@@ -65,3 +65,18 @@ def test_long_lists_of_failures_are_cut(tmp_path):
 def test_no_data_folder_yet(tmp_path):
     s = run(tmp_path / "data")
     assert (s.checks, s.failures) == (0, []) and s.notes[0].startswith("No data files in")
+
+
+def test_the_build_time_is_not_counted(tmp_path):
+    """Two files written in the same second share one distinct generated_at text, and in different seconds have two:
+    the count of checks must not depend on that (scripts/ci.sh compares the rebuilt report with the committed one)."""
+    counts = []
+    for n, times in enumerate((("2026-11-07T10:00:00+00:00", "2026-11-07T10:00:00+00:00"),
+                               ("2026-11-07T10:00:00+00:00", "2026-11-07T10:00:01+00:00"))):
+        d = tmp_path / str(n)
+        d.mkdir()
+        write(d, {"a.json": json.dumps({"generated_at": times[0], "x": "Goa"}),
+                  "b.json": json.dumps({"generated_at": times[1], "y": "Goa"}),
+                  "c.csv": f"generated_at,state\n{times[1]},Goa\n"})
+        counts.append(run(d).checks)
+    assert counts == [5, 5]  # generated_at (the key), x, y, Goa, state

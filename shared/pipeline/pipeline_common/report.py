@@ -35,6 +35,9 @@ REPORT_FILE = "validation_report.md"
 SUMMARY_FILE = "validation_summary.json"
 FAILURE_MARK = "- FAIL: "
 DATA_SUFFIXES = (".json", ".csv", ".md")
+# The key of the build time in every area's data files: its value changes on every build, so the data hashes, the
+# text check (data_text) and the new-text diff (labels) leave it out.
+BUILD_TIME_KEY = "generated_at"
 # The build time, '"generated_at": "..."' (or without the space, in compact JSON). Keep in step with
 # site/src/lib/validation.ts and the STRIP in scripts/ci.sh.
 GENERATED_AT = re.compile(rb'"generated_at": ?"[^"]*"')

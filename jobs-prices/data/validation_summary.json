@@ -1,6 +1,6 @@
 {
  "result": "PASSED",
- "checks": 595344,
+ "checks": 595343,
  "failures": 0,
  "allowed": 7500,
  "sections": [
@@ -199,7 +199,7 @@
   },
   {
    "title": "Text in the data: no '<', '>' or control characters",
-   "checks": 1811,
+   "checks": 1810,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []

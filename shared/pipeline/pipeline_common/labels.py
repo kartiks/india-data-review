@@ -31,7 +31,9 @@ import unicodedata
 from collections.abc import Iterator
 from pathlib import Path
 
-IGNORED_KEYS = {"generated_at"}  # its value is the build time
+from .report import BUILD_TIME_KEY
+
+IGNORED_KEYS = {BUILD_TIME_KEY}  # its value is the build time
 SUFFIXES = {".json", ".csv"}
 
 _MONTHS = ("january|february|march|april|may|june|july|august|september|october|november|december"

@@ -141,7 +141,8 @@ def markdown(found: dict[str, list[str]], *, limit: int = 40) -> str:
         for s in added[:limit]:
             one_line = " ".join(s.split())
             shown = one_line if len(one_line) <= 200 else one_line[:199] + "…"
-            lines.append(f"  - `{shown.replace('`', "'")}`")
+            quoted = shown.replace("`", "'")  # (no quotes reused inside the f-string: runs on Python < 3.12 too)
+            lines.append(f"  - `{quoted}`")
         if len(added) > limit:
             lines.append(f"  - … and {len(added) - limit} more")
     return "\n".join(lines) + ("\n" if lines else "")
@@ -159,8 +160,8 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     try:
         found = new_labels(old, new)
-    except (OSError, UnicodeDecodeError, json.JSONDecodeError, csv.Error) as e:
-        log.error(f"cannot read the data: {e}")
+    except Exception as e:  # noqa: BLE001 - any failure must be exit 2 (refused), never 1 ("new text")
+        log.error(f"cannot read the data: {type(e).__name__}: {e}")
         return 2
     sys.stdout.write(markdown(found))
     return 1 if found else 0

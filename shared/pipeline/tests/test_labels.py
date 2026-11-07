@@ -224,3 +224,12 @@ def test_labels_runs_without_site_packages(old, new):
     done = subprocess.run([sys.executable, "-S", "-B", "-m", "pipeline_common.labels", str(old), str(new)],
                           cwd=PACKAGE.parent, capture_output=True, text=True)
     assert (done.returncode, done.stdout) == (1, "- `states.csv`: 1 new\n  - `Ladakh`\n"), done.stderr
+
+
+def test_a_crash_is_exit_2_never_new_text(tmp_path):
+    """publish.sh reads exit 1 as new text (a PR) and 2 as refused; a crash must be 2."""
+    old, new = tmp_path / "old", tmp_path / "new"
+    old.mkdir(), new.mkdir()
+    (old / "a.json").write_text("{}")
+    (new / "a.json").write_text("[" * 100_000 + "]" * 100_000)  # too deep: RecursionError
+    assert labels.main([str(old), str(new)]) == 2

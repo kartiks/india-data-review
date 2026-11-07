@@ -54,7 +54,7 @@ SENTENCES = [
               "`18840731 crore"}),
     ("Notes: (i) - ` (i) Nominal GDP for BE 2023-2024 has been projected at % `3,01,75,065 crore assuming 10.5 % "
      "growth over the - ` estimated Nominal GDP of `2,73,07,751 crore as per the First Advance Estimates of FY 2022-23.",
-     {"gdp_crore": 30175065, "printed_year": "2023-2024", "growth_pct": 10.5, "over": "- ` estimated Nominal GDP",
+     {"gdp_crore": 30175065, "printed_year": "2023-2024", "growth_pct": 10.5, "over": "estimated Nominal GDP",
       "base_gdp_crore": 27307751,
       "text": "GDP for BE 2023-2024 has been projected at % `3,01,75,065 crore assuming 10.5 % growth over the - ` "
               "estimated Nominal GDP of `2,73,07,751 crore"}),

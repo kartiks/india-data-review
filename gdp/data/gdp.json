@@ -1,7 +1,7 @@
 {
  "description": "India's GDP and national accounts from MoSPI, with the Union Budget's GDP assumption and published forecasts.",
  "units": "₹ crore for levels; ₹ for per-person figures (per_person); % for growth rates. 'cur' = current prices (nominal), 'con' = constant prices of the base year (real).",
- "generated_at": "2026-11-06T00:47:21+00:00",
+ "generated_at": "2026-11-07T07:42:21+00:00",
  "series": {
   "2011-12": "Base year 2011-12, released January 2015 and replaced in February 2026. Annual figures at every estimate stage.",
   "2011-12-back": "1950-51 to 2011-12 recomputed on the 2011-12 base by MoSPI (one estimate per year).",
@@ -41455,7 +41455,7 @@
    "gdp_crore": 30175065.0,
    "printed_year": "2023-2024",
    "growth_pct": 10.5,
-   "over": "- ` estimated Nominal GDP",
+   "over": "estimated Nominal GDP",
    "base_gdp_crore": 27307751.0,
    "text": "GDP for BE 2023-2024 has been projected at % `3,01,75,065 crore assuming 10.5 % growth over the - ` estimated Nominal GDP of `2,73,07,751 crore",
    "url": "https://www.indiabudget.gov.in/budget2023-24/doc/Budget_at_Glance/bag1.pdf",

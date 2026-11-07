@@ -11,9 +11,11 @@ Run: uv run python -m budget_pipeline.reference   (downloads the tables)
 
 import hashlib
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import file_kind, get
 from pipeline_common.numbers import number
 from pipeline_common.text import is_fy
@@ -23,6 +25,8 @@ from .readers import read_xlsx
 ROOT = Path(__file__).resolve().parents[2]
 REF_DIR = ROOT / "sources" / "reference" / "rbi"
 REF_MANIFEST = ROOT / "sources" / "reference" / "manifest.json"
+
+log = logging.getLogger(__name__)
 
 RBI_HANDBOOK_PAGE = "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20Economy"
 RBI_TABLES = {
@@ -63,7 +67,7 @@ def fetch() -> None:
             "sha256": hashlib.sha256(content).hexdigest(),
             "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
         }
-        print(f"saved {dest.name}")
+        log.info(f"saved {dest.name}")
     REF_MANIFEST.write_text(json.dumps(manifest, indent=2) + "\n")
 
 
@@ -108,4 +112,8 @@ def load_rbi() -> dict[tuple[str, str, str], dict]:
 
 
 if __name__ == "__main__":
+    import argparse
+
+    argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter).parse_args()
+    pipeline_log.setup(__package__)
     fetch()

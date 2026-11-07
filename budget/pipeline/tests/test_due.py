@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from budget_pipeline import due
+from pipeline_common import log as pipeline_log
 from pipeline_common.due import DUE
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -57,6 +58,7 @@ def test_nothing_due_while_the_site_has_the_committed_budget():
 
 
 def test_a_new_budget_is_due(monkeypatch, capsys):
+    pipeline_log.setup()  # as the command does
     f = run({ROOT_URL: b"%PDF new"}, text="Actuals 2025-2026 BE 2026-2027 RE 2026-2027 BE 2027-2028", monkeypatch=monkeypatch)
     assert len(f.due) == 1 and f.due[0].startswith("Union Budget 2027-28: Budget at a Glance for 2027-28 is on "
                                                    "indiabudget.gov.in")
@@ -89,6 +91,7 @@ def test_an_unreadable_year_is_due_only_if_the_budget_moved(monkeypatch):
 @pytest.mark.parametrize("answer", [urllib.error.URLError("timed out"), TimeoutError("slow"), b"<html>maintenance</html>",
                                     urllib.error.HTTPError(ROOT_URL, 503, "Unavailable", {}, None)])
 def test_network_trouble_is_a_warning_not_a_failure(answer, capsys):
+    pipeline_log.setup()  # as the command does
     f = run({ROOT_URL: answer})
     assert f.due == [] and len(f.warnings) == 1 and "could not check indiabudget.gov.in" in f.warnings[0]
     assert f.finish() == 0
@@ -105,8 +108,8 @@ def test_due_from_august_whatever_the_probe_says():
 
 def test_the_command(monkeypatch, capsys):
     monkeypatch.setattr(due, "check", lambda today: due.Findings(due=["x"]))
-    monkeypatch.setattr(due.sys, "argv", ["due"])
-    assert due.main() == 11
+    assert due.main([]) == 11
     assert capsys.readouterr().out == "DUE: x\n"
-    monkeypatch.setattr(due.sys, "argv", ["due", "--bogus"])
-    assert due.main() == 2
+    with pytest.raises(SystemExit) as e:
+        due.main(["--bogus"])
+    assert e.value.code == 2

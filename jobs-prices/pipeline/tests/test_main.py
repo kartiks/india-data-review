@@ -20,15 +20,22 @@ def calls(monkeypatch):
 
 
 def run(monkeypatch, *args, today=date(2026, 11, 3)):
-    monkeypatch.setattr(cli.sys, "argv", ["jobs_prices_pipeline", *args])
-    return cli.main(today)
+    try:
+        return cli.main(list(args), today)
+    except SystemExit as e:  # argparse: --help (0), a mistake (2)
+        return e.code
 
 
-@pytest.mark.parametrize("args", [["--refrsh"], ["--refresh-nas"], ["--fetch", "extra"]])
-def test_unknown_option_builds_nothing(monkeypatch, capsys, calls, args):
+@pytest.mark.parametrize("args, message", [
+    (["--refrsh"], "unrecognized arguments: --refrsh"),
+    (["--fetch", "extra"], "unrecognized arguments: extra"),
+    (["--fetch", "--refresh-api"], "not allowed with argument --fetch"),
+    (["--force-api"], "--force-api was renamed: use --refresh-api"),
+])
+def test_unknown_option_builds_nothing(monkeypatch, capsys, calls, args, message):
     assert run(monkeypatch, *args) == 2
     assert calls == []
-    assert "unknown option" in capsys.readouterr().err
+    assert message in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("flag", ["--help", "-h"])

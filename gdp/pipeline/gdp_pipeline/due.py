@@ -15,10 +15,12 @@ From dates alone, no downloads:
   August or September).
 """
 
+import argparse
 import json
 import sys
 from datetime import date, timedelta
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.due import Findings
 from pipeline_common.text import fy
 
@@ -102,10 +104,9 @@ def check(today: date, ds: dict | None = None, latest_budget: int = LATEST_BUDGE
     return out
 
 
-def main(today: date | None = None) -> int:
-    if sys.argv[1:]:
-        print(__doc__)
-        return 0 if set(sys.argv[1:]) <= {"-h", "--help"} else 2
+def main(argv: list[str] | None = None, today: date | None = None) -> int:
+    pipeline_log.setup(__package__)
+    argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter).parse_args(argv)
     return check(today or date.today()).finish()
 
 

@@ -2,7 +2,7 @@
 # what changed to main. What this covers and what still needs a person is in the README ("Keeping the data
 # up to date").
 #
-#   GDP              MoSPI national accounts API                        gdp_pipeline --refresh-nas
+#   GDP              MoSPI national accounts API                        gdp_pipeline --refresh-api
 #   Jobs and prices  MoSPI API (PLFS, CPI, CPI-AL/RL, HCES)             jobs_prices_pipeline --refresh-api
 #                    and the RBI Handbook of Statistics on Indian States tables
 #
@@ -73,7 +73,7 @@ jobs:
         continue-on-error: true
         working-directory: gdp/pipeline
         # A time limit per area: a slow source fails its own step rather than cancelling the whole run.
-        run: ../../scripts/refresh/run-area.sh gdp 30m uv run --locked python -m gdp_pipeline --refresh-nas
+        run: ../../scripts/refresh/run-area.sh gdp 30m uv run --locked python -m gdp_pipeline --refresh-api
 
       - name: "Jobs and prices: download MoSPI API and RBI tables, rebuild, check"
         id: jobs

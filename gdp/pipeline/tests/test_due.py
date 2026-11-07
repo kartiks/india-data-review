@@ -2,6 +2,8 @@
 
 from datetime import date
 
+import pytest
+
 from gdp_pipeline import due
 from pipeline_common.due import DUE
 
@@ -65,8 +67,9 @@ def test_national_accounts_statistics_due_from_october():
 
 def test_the_command(monkeypatch, capsys):
     monkeypatch.setattr(due, "check", lambda today: due.Findings(due=["a", "b"], ok=["c"]))
-    monkeypatch.setattr(due.sys, "argv", ["due"])
-    assert due.main() == DUE == 11
+    assert due.main([]) == DUE == 11
     assert capsys.readouterr().out == "ok: c\nDUE: a\nDUE: b\n"
-    monkeypatch.setattr(due.sys, "argv", ["due", "--help"])
-    assert due.main() == 0
+    for argv, code in ((["--help"], 0), (["--bogus"], 2)):
+        with pytest.raises(SystemExit) as e:
+            due.main(argv)
+        assert e.value.code == code

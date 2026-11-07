@@ -5,19 +5,21 @@ in budget/sources/manifest.json (URL, SHA-256, size, download time), so every
 number we publish can be traced back to an exact official file. A file only
 counts if its text contains the table's title (see sources.TITLE_MUST_CONTAIN).
 
-Run: uv run python -m budget_pipeline.fetch [--force]
+Run: uv run python -m budget_pipeline.fetch [--refresh]   (downloads only; see __main__.py)
 """
 
 import hashlib
 import json
+import logging
 import re
-import sys
 import tempfile
 import time
 import urllib.error
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pipeline_common import cli
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import POLITE_PAUSE_S, file_kind, get
 from pipeline_common.text import fy
 
@@ -27,6 +29,8 @@ from .sources import BUDGETS, DOC_TYPES, TITLE_MUST_CONTAIN, candidate_urls
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 MANIFEST = ROOT / "sources" / "manifest.json"
+
+log = logging.getLogger(__name__)
 
 
 MIN_BYTES = 500  # smaller than any real table: an empty or error answer
@@ -74,14 +78,14 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                 except urllib.error.HTTPError as exc:
                     exc.close()
                     if exc.code != 404:  # most candidate addresses do not exist
-                        print(f"{year} {doc}: {url} -> {exc}")
+                        log.warning(f"{year} {doc}: {url} -> {exc}")
                 except Exception as exc:  # noqa: BLE001 - a network error after get()'s retries: report and carry on
-                    print(f"{year} {doc}: {url} -> {exc}")
+                    log.warning(f"{year} {doc}: {url} -> {exc}")
                 time.sleep(POLITE_PAUSE_S)
                 if content is None or not looks_valid(ext, content):
                     continue
                 if not has_title(doc, ext, content):
-                    print(f"{year} {doc}: {url} is not the expected table, skipped")
+                    log.info(f"{year} {doc}: {url} is not the expected table, skipped")
                     continue
                 dest = RAW / year / f"{doc}.{ext}"
                 dest.parent.mkdir(parents=True, exist_ok=True)
@@ -94,14 +98,15 @@ def main(force: bool = False, docs: list[str] | None = None) -> None:
                     "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
                 }
                 saved_now.add(ext)
-                print(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
+                log.info(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
             if files:
                 entry[doc] = {"files": files}
             elif candidate_urls(start, doc):
-                print(f"{year} {doc}: NO SOURCE FOUND")
+                log.warning(f"{year} {doc}: NO SOURCE FOUND")
     # a budget with nothing found (not published yet) gets no entry; build reports what is missing
     MANIFEST.write_text(json.dumps({k: v for k, v in sorted(manifest.items()) if v}, indent=2) + "\n")
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv)
+    pipeline_log.setup(__package__)
+    main(force=cli.parser(__doc__, fetch=False).parse_args().refresh)

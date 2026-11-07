@@ -18,16 +18,20 @@ Run: uv run python -m budget_pipeline.build
 
 import csv
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common import budget_glance
+from pipeline_common import log as pipeline_log
 from pipeline_common.text import fy, fy_start
 
 from .annotations import HEADER_FIXES, SOURCE_NOTES
 from .parse import FIELD_PATTERNS, ParseError, parse_document, stated_gdp
 from .readers import read_any
 from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, missing_documents, missing_message
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -202,8 +206,9 @@ def main() -> None:
     }
     (DATA / "format_comparison.json").write_text(json.dumps(comparisons, indent=1, default=list) + "\n")
     (DATA / "fiscal.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {len(rows)} observations and {len(dataset['years'])} years")
+    log.info(f"wrote {len(rows)} observations and {len(dataset['years'])} years")
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     main()

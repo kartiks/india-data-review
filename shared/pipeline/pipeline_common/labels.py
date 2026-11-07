@@ -25,13 +25,17 @@ the usual way (README, "The weekly refresh").
 
 import csv
 import json
+import logging
 import re
 import sys
 import unicodedata
 from collections.abc import Iterator
 from pathlib import Path
 
+from . import log as pipeline_log
 from .report import BUILD_TIME_KEY
+
+log = logging.getLogger(__name__)
 
 IGNORED_KEYS = {BUILD_TIME_KEY}  # its value is the build time
 SUFFIXES = {".json", ".csv"}
@@ -140,18 +144,19 @@ def markdown(found: dict[str, list[str]], *, limit: int = 40) -> str:
 
 
 def main(argv: list[str] | None = None) -> int:
+    pipeline_log.setup()
     args = sys.argv[1:] if argv is None else argv
     if len(args) != 2 or {"-h", "--help"} & set(args):
         print(__doc__, file=sys.stderr if len(args) != 2 else sys.stdout)
         return 0 if {"-h", "--help"} & set(args) else 2
     old, new = (Path(a) for a in args)
     if not new.is_dir():
-        print(f"not a folder: {new}", file=sys.stderr)
+        log.error(f"not a folder: {new}")
         return 2
     try:
         found = new_labels(old, new)
     except (OSError, UnicodeDecodeError, json.JSONDecodeError, csv.Error) as e:
-        print(f"cannot read the data: {e}", file=sys.stderr)
+        log.error(f"cannot read the data: {e}")
         return 2
     sys.stdout.write(markdown(found))
     return 1 if found else 0

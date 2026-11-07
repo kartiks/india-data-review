@@ -215,14 +215,24 @@ def latest(stages: dict) -> tuple[str, dict]:
     return s, stages[s]
 
 
-if __name__ == "__main__":
-    import sys
+def main(argv: list[str] | None = None) -> None:
+    """Add a hand-downloaded NAS statement: python -m gdp_pipeline.population --add <file> [--replace]."""
+    import argparse
+
+    from pipeline_common import log as pipeline_log
 
     from .fetch import add_by_hand  # the downloader is needed only here
 
-    args = sys.argv[1:]
-    if len(args) in (2, 3) and args[0] == "--add" and (len(args) == 2 or args[2] == "--replace"):
-        add_by_hand(Path(args[1]).expanduser(), NAS_STATEMENTS[-1]["key"], replace=len(args) == 3)
-    else:
-        raise SystemExit("usage: uv run python -m gdp_pipeline.population --add <downloaded NAS statement .xlsx> "
-                         "[--replace]\n(the file goes under the last entry of NAS_STATEMENTS)")
+    pipeline_log.setup(__package__)
+    p = argparse.ArgumentParser(
+        description="Add a National Accounts Statistics per-capita statement downloaded by hand (gdp/README.md, "
+                    "Adding a year's population). The file goes under the last entry of NAS_STATEMENTS in "
+                    "population_read.py.")
+    p.add_argument("--add", metavar="FILE", required=True, help="the downloaded NAS statement (.xlsx)")
+    p.add_argument("--replace", action="store_true", help="replace the file already added for that edition")
+    args = p.parse_args(argv)
+    add_by_hand(Path(args.add).expanduser(), NAS_STATEMENTS[-1]["key"], replace=args.replace)
+
+
+if __name__ == "__main__":
+    main()

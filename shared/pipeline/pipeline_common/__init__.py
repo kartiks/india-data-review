@@ -6,6 +6,8 @@
 - text: ids made from labels (slug) and fiscal-year labels (fy, fy_start, is_fy, prev_fy, next_fy)
 - numbers: reading numbers as sources print them (number, blank_or_number, strict_number)
 - labels: text that is new in a data/ folder (the weekly refresh opens a pull request for it)
+- cli: the options every area's command takes (--fetch, --refresh, --refresh-api)
+- log: logging set up as plain lines (info on stdout, warnings and errors on stderr), for every command
 
 Area-specific code stays in the areas.
 """

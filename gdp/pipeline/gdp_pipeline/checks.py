@@ -37,6 +37,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.data_text import check_data_text
 from pipeline_common.report import Allowed, Exceptions, Report
 from pipeline_common.text import fy, fy_start, prev_fy
@@ -514,4 +515,5 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     sys.exit(main())

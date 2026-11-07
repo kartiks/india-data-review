@@ -14,6 +14,7 @@ A network error or an unexpected answer is a warning, never a failure. Whatever 
 due from 1 August of its year (1 February, or July after an election, has long passed).
 """
 
+import argparse
 import io
 import json
 import re
@@ -24,6 +25,7 @@ from hashlib import sha256
 from pathlib import Path
 
 from pipeline_common import budget_glance
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import file_kind, get
 from pipeline_common.due import Findings
 from pipeline_common.text import fy, fy_start, is_fy
@@ -120,10 +122,9 @@ def backstop(out: Findings, today: date, nxt: int) -> Findings:
     return out
 
 
-def main(today: date | None = None) -> int:
-    if sys.argv[1:]:
-        print(__doc__)
-        return 0 if set(sys.argv[1:]) <= {"-h", "--help"} else 2
+def main(argv: list[str] | None = None, today: date | None = None) -> int:
+    pipeline_log.setup(__package__)
+    argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter).parse_args(argv)
     return check(today or date.today()).finish()
 
 

@@ -27,6 +27,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.data_text import check_data_text
 from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Allowed, Exceptions, Report
@@ -331,4 +332,5 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     sys.exit(main())

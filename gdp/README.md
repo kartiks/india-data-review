@@ -31,7 +31,7 @@ cd pipeline
 uv run python -m gdp_pipeline             # build data from saved sources and run all checks
 uv run python -m gdp_pipeline --fetch     # also download anything missing
 uv run python -m gdp_pipeline --refresh   # re-download everything, including budget and forecast documents
-uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (what the weekly refresh runs)
+uv run python -m gdp_pipeline --refresh-api  # re-download only MoSPI's API files (what the weekly refresh runs)
 uv run python -m gdp_pipeline.due   # which hand-added releases are probably out but not added (exit 11 if any)
 uv run pytest
 ```
@@ -39,7 +39,7 @@ uv run pytest
 The command exits with an error if any check fails, and the website (`../site/`) refuses to build unless
 `data/validation_summary.json` says PASSED.
 
-**MoSPI's national and state accounts are refreshed every week** by a GitHub Action that runs `--refresh-nas`, commits what
+**MoSPI's national and state accounts are refreshed every week** by a GitHub Action that runs `--refresh-api`, commits what
 changed and pushes it to `main` once every check and the local CI pass (see
 [Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
 estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in

@@ -17,18 +17,26 @@ def calls(monkeypatch):
 
 
 def run(monkeypatch, *args):
-    monkeypatch.setattr(cli.sys, "argv", ["budget_pipeline", *args])
-    return cli.main()
+    try:
+        return cli.main(list(args))
+    except SystemExit as e:  # argparse: --help (0), a mistake (2)
+        return e.code
 
 
 BUILD = [("build",), ("datasets",), ("checks",)]
 
 
-@pytest.mark.parametrize("args", [["--force"], ["--refresh-nas"], ["--fetch", "extra"]])
-def test_unknown_option_builds_nothing(monkeypatch, capsys, calls, args):
+@pytest.mark.parametrize("args, message", [
+    (["--refrsh"], "unrecognized arguments: --refrsh"),
+    (["--refresh-api"], "unrecognized arguments: --refresh-api"),  # the budget has no sources revised in place
+    (["--fetch", "extra"], "unrecognized arguments: extra"),
+    (["--fetch", "--refresh"], "not allowed with argument --fetch"),
+    (["--force"], "--force was renamed: use --refresh"),
+])
+def test_unknown_option_builds_nothing(monkeypatch, capsys, calls, args, message):
     assert run(monkeypatch, *args) == 2
     assert calls == []
-    assert "unknown option" in capsys.readouterr().err
+    assert message in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("flag", ["--help", "-h"])

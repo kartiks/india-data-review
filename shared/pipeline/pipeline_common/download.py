@@ -8,6 +8,7 @@ snapshot_name). The areas pass their own paths, so these functions hold no state
 import hashlib
 import http.client
 import json
+import logging
 import shutil
 import ssl
 import time
@@ -17,6 +18,8 @@ import urllib.request
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 USER_AGENT = "india-data-review-data-pipeline/0.1 (python-urllib)"
 
@@ -124,7 +127,7 @@ def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
                 raise
             if isinstance(exc, urllib.error.HTTPError):
                 exc.close()  # it holds the server's response open
-            print(f"  retry {attempt + 1} for {url}: {exc}", flush=True)
+            log.info(f"  retry {attempt + 1} for {url}: {exc}")
             time.sleep(BACKOFF_S * (attempt + 1))
     raise AssertionError
 
@@ -145,7 +148,7 @@ def fetch_pages(page_url: Callable[[int], str], what: str) -> list[dict]:
         if not data or page >= (meta.get("totalPages") or 1):
             break
         if page % 20 == 0:
-            print(f"  {what}: page {page} of {meta.get('totalPages')}", flush=True)
+            log.info(f"  {what}: page {page} of {meta.get('totalPages')}")
         page += 1
         time.sleep(PAGE_PAUSE_S)
     if len(rows) != total:

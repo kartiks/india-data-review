@@ -47,8 +47,11 @@ weekly refresh use) stops with an error if `uv.lock` is out of date instead of u
 Each pipeline command builds its area's `data/` from the files already in `sources/` and runs every check;
 `--fetch` downloads anything missing first, and `--refresh` re-downloads everything (GDP and jobs and prices keep
 changed files in `sources/snapshots/`; the budget overwrites its files, so compare them with the committed copies).
-`--refresh-nas` (GDP) and `--refresh-api` (jobs and prices) re-download only the sources that are revised in place;
-the weekly refresh runs them. `--help` lists an area's options; any other option is refused.
+`--refresh-api` (GDP, and jobs and prices; the budget has no such sources) re-downloads only the sources that are
+revised in place; the weekly refresh runs it. The options are the same in every area (`pipeline_common/cli.py`):
+`--help` lists them; an option renamed since (`--refresh-nas`, `--force`…) is refused with its new name, and any
+other is refused too. Output is plain lines: progress and check results on stdout, warnings and errors on stderr
+(`pipeline_common/log.py`).
 Tests: `uv run pytest` in each `pipeline/` folder (including `shared/pipeline/`), and `npm run check` (type check) in
 `site/`.
 
@@ -92,7 +95,7 @@ mospi.gov.in has the exact dates.
 1,400 pages of MoSPI's jobs and prices data (about an hour from GitHub's servers), plus the local CI when something
 changed. It:
 
-1. Re-downloads the GDP sources (`gdp_pipeline --refresh-nas`) and the jobs and prices sources
+1. Re-downloads the GDP sources (`gdp_pipeline --refresh-api`) and the jobs and prices sources
    (`jobs_prices_pipeline --refresh-api`), then rebuilds each area's `data/` and runs every check. Each area has its
    own time limit (30 and 150 minutes), so a slow source fails only its own area. Fixed documents
    (budget papers, press releases, report tables, forecast documents) are not downloaded again; a document that is
@@ -142,8 +145,7 @@ and then: the "Large revisions to growth" section of `gdp/data/validation_report
 
 1. Open the run from the email (or the Actions tab) and read the failed step's log. The artifact has each area's
    `data/validation_report.md` and any new downloads (under `files/`).
-2. Reproduce it locally: run the same command in the area's `pipeline/` folder (`--refresh-nas` for GDP,
-   `--refresh-api` for jobs and prices). It downloads the same files.
+2. Reproduce it locally: run the same command in the area's `pipeline/` folder (`--refresh-api`). It downloads the same files.
 3. Fix it: compare the failing figure with the source's own publication, then fix the code or add an allowed exception
    with its reason (each area's README says where). A message saying a query returned no rows although it had data
    before usually means the source is having trouble; the saved file is kept, so wait and run again.
@@ -219,9 +221,8 @@ which takes about an hour on GitHub) and 240 minutes in all.
 ### A new source in an existing area
 
 1. Add it to the area's `sources.py` and `fetch.py`, read it in `build.py`, and add checks for it.
-2. If it is refreshed weekly, make the area's refresh option (`--refresh-nas` for GDP, `--refresh-api` for jobs and
-   prices) re-download it, with the area's `save()` (`pipeline_common.download.save`, which keeps the old file as a
-   snapshot) and the same guard against data that vanishes, and extend `tests/test_fetch.py`. If its download is
+2. If it is refreshed weekly, make the area's `--refresh-api` re-download it, with the area's `save()`
+   (`pipeline_common.download.save`, which keeps the old file as a snapshot) and the same guard against data that vanishes, and extend `tests/test_fetch.py`. If its download is
    slow, raise the area's `timeout` in `.github/workflows/data-refresh.yml`.
 3. Update the table and the area's README, as above.
 
@@ -242,8 +243,9 @@ which takes about an hour on GitHub) and 240 minutes in all.
    default page description in `Base.astro`, and to the Pages table and data folders in `site/README.md`.
 3. Charts that combine areas go on the home page (`site/src/pages/index.astro`).
 4. Add the area to `AREAS` in `scripts/ci.sh`, and to the folder table at the top of this README.
-5. If any of its sources are refreshed weekly, give its pipeline an option that re-downloads only those (with tests in
-   `tests/test_fetch.py`), add a step for it to `.github/workflows/data-refresh.yml` that runs it with
+5. Give its `__main__.py` the shared options (`pipeline_common.cli.parser`) and call `pipeline_common.log.setup()`
+   first. If any of its sources are refreshed weekly, its `--refresh-api` re-downloads only those (with tests in
+   `tests/test_fetch.py`); add a step for it to `.github/workflows/data-refresh.yml` that runs it with
    `scripts/refresh/run-area.sh` and its own time limit, and add the area wherever the workflow names `gdp` and
    `jobs-prices` (the commit step's `env` and arguments, the pack step's arguments, the final failure check).
 6. Add its datasets to the table, as above.
@@ -263,7 +265,7 @@ since the branch's last deployment. A new area's `data/` folder must be added to
 | Term | Meaning |
 |---|---|
 | MoSPI | Ministry of Statistics and Programme Implementation, which publishes the national accounts, PLFS, CPI and HCES |
-| NAS | National Accounts Statistics: MoSPI's GDP and related accounts (`--refresh-nas` re-downloads them), and its yearly publication of that name |
+| NAS | National Accounts Statistics: MoSPI's GDP and related accounts (`gdp_pipeline --refresh-api` re-downloads them), and its yearly publication of that name |
 | Base year | The year whose prices the constant-price figures use; MoSPI moves it every decade or so (2011-12, now 2022-23), and series on different bases are never mixed |
 | GVA, GSVA | Gross value added (output less inputs) for India, and for a state; GDP = GVA + taxes − subsidies on products |
 | GSDP, NSDP | Gross and net state domestic product: a state's GDP, and its GDP less depreciation |

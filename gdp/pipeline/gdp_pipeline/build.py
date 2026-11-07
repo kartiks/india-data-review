@@ -25,10 +25,12 @@ Run: uv run python -m gdp_pipeline.build
 
 import csv
 import json
+import logging
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.numbers import number
 from pipeline_common.text import fy, fy_start, is_fy, slug
 
@@ -36,6 +38,8 @@ from . import budget, forecasts, population, states
 from .ids import (BROAD, GROUPS, GROWTH_INDICATORS, INDICATORS, INDUSTRIES, INDUSTRY_LABELS, SECTOR_LABELS, SECTORS,
                   STAGE_BY_LABEL, STAGE_ORDER, STAGES, latest_stage)
 from .sources import BUDGETS, NAS_INDICATORS, NAS_SERIES
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -340,13 +344,14 @@ def main() -> dict:
         "earlier_releases": earlier,
     }
     n = population.write_csv(tree, pop["by_series"], DATA / "per_person.csv")
-    print(f"per_person.csv: {n} rows")
+    log.info(f"per_person.csv: {n} rows")
     (DATA / "gdp.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
-    print(f"national_accounts.csv: {len(rows)} rows; gdp.json written; {len(problems)} problems, {len(dup_notes)} duplicate notes")
+    log.info(f"national_accounts.csv: {len(rows)} rows; gdp.json written; {len(problems)} problems, {len(dup_notes)} duplicate notes")
 
     states.build(manifest)
     return dataset
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     main()

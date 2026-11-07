@@ -11,18 +11,19 @@ kept under sources/snapshots/<time it was fetched>/ (UTC, e.g. 2026-11-06T093000
 see pipeline_common.download.snapshot_name) before being replaced: run
 after every release and the revision history builds up.
 
-Run: uv run python -m gdp_pipeline.fetch [--force | --force-nas]
+Run: uv run python -m gdp_pipeline.fetch [--refresh | --refresh-api]   (downloads only; see __main__.py)
 """
 
 import hashlib
 import json
-import sys
+import logging
 import time
 import urllib.error
 import urllib.parse
 from pathlib import Path
 
-from pipeline_common import download
+from pipeline_common import cli, download
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import PAGE_PAUSE_S, POLITE_PAUSE_S, fetch_pages, file_kind, get, now
 from pipeline_common.text import fy
 
@@ -34,6 +35,8 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 SNAPSHOTS = ROOT / "sources" / "snapshots"
 MANIFEST = ROOT / "sources" / "manifest.json"
+
+log = logging.getLogger(__name__)
 
 
 def save(manifest: dict, key: str, dest: Path, content: bytes, url: str, extra: dict | None = None) -> bool:
@@ -95,21 +98,21 @@ def fetch_all_nas(manifest: dict, force: bool) -> None:
             if manifest.get(key, {}).get("sha256"):
                 # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
                 # Keep the saved file, fetch the rest, and fail at the end.
-                print(f"{key}: NO ROWS, but it had data before; keeping the saved file")
+                log.warning(f"{key}: NO ROWS, but it had data before; keeping the saved file")
                 vanished.append(key)
                 continue
             manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
-            print(f"{key}: no data")
+            log.info(f"{key}: no data")
             continue
         try:  # far fewer rows than before: kept, like a vanished indicator
             download.check_records(manifest, key, result["total_records"])
         except download.RecordsDropped as e:
-            print(e)
+            log.warning(str(e))
             vanished.append(key)
             continue
         content = (json.dumps(result, ensure_ascii=False, indent=1) + "\n").encode()
         changed = save(manifest, key, RAW / f"{key}.json", content, result["url"], {"records": result["total_records"]})
-        print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
+        log.info(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
         time.sleep(PAGE_PAUSE_S)
     if vanished:
         raise RuntimeError(f"MoSPI returned no rows, or far fewer than before, for indicators that had data: {', '.join(vanished)}")
@@ -125,16 +128,16 @@ def fetch_budgets(manifest: dict, force: bool) -> None:
                 content = get(url)
             except urllib.error.HTTPError as exc:
                 exc.close()
-                print(f"{key}: {url} -> {exc.code}")
+                log.info(f"{key}: {url} -> {exc.code}")
                 continue
             if file_kind(content) != "pdf":  # a web page or an error under the address: try the next one
-                print(f"{key}: {url} is not a PDF")
+                log.info(f"{key}: {url} is not a PDF")
                 continue
             save(manifest, key, RAW / f"{key}.pdf", content, url)
-            print(f"{key}: saved ({len(content):,} bytes)")
+            log.info(f"{key}: saved ({len(content):,} bytes)")
             break
         else:
-            print(f"{key}: NO SOURCE FOUND")
+            log.warning(f"{key}: NO SOURCE FOUND")
         time.sleep(POLITE_PAUSE_S)
 
 
@@ -149,11 +152,11 @@ def fetch_forecasts(manifest: dict, force: bool) -> None:
                 try:
                     content = get(url)
                 except Exception as exc:  # noqa: BLE001 - report and carry on; the check will fail
-                    print(f"{key}: {url} -> {exc}")
+                    log.warning(f"{key}: {url} -> {exc}")
                     continue
                 ext = "pdf" if file_kind(content) == "pdf" else "html"  # forecasts are quoted from PDFs or web pages
                 save(manifest, key, RAW / f"{key}.{ext}", content, url, {"document": f"{name} {r['fiscal_year']}"})
-                print(f"{key}: saved {url} ({len(content):,} bytes)")
+                log.info(f"{key}: saved {url} ({len(content):,} bytes)")
                 time.sleep(POLITE_PAUSE_S)
 
 
@@ -161,7 +164,7 @@ def fetch_population(manifest: dict, force: bool) -> None:
     """The documents population is read from (population_read.py). NAS statements are added by hand (add_by_hand)."""
     for n in population_read.NAS_STATEMENTS:  # downloaded by hand: never fetched, only reported if missing
         if n["key"] not in manifest:
-            print(f"{n['key']}: not added. Download it from {n['url']} and run "
+            log.warning(f"{n['key']}: not added. Download it from {n['url']} and run "
                   "`uv run python -m gdp_pipeline.population --add <file>` (gdp/README.md).")
 
     for key, url, ext in population_read.documents():
@@ -170,13 +173,13 @@ def fetch_population(manifest: dict, force: bool) -> None:
         try:
             content = get(url)
         except Exception as exc:  # noqa: BLE001 - report and carry on; the checks will fail
-            print(f"{key}: {url} -> {exc}")
+            log.warning(f"{key}: {url} -> {exc}")
             continue
         if file_kind(content) != ext:  # skipped, not saved: the checks report it missing
-            print(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
+            log.warning(f"{key}: {url} is not a {ext} file (a web page or an error); not saved")
             continue
         save(manifest, key, RAW / f"{key}.{ext}", content, url)
-        print(f"{key}: saved {url} ({len(content):,} bytes)")
+        log.info(f"{key}: saved {url} ({len(content):,} bytes)")
 
 
 def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
@@ -198,16 +201,16 @@ def add_by_hand(source: Path, key: str, replace: bool = False) -> None:
                    {"downloaded_by_hand": f"from {n['url']} (the publication page needs a browser)",
                     "file_name": source.name})
     write_manifest(manifest)
-    print(f"{key}: {'added' if changed else 'unchanged'} {source} ({len(content):,} bytes)")
+    log.info(f"{key}: {'added' if changed else 'unchanged'} {source} ({len(content):,} bytes)")
 
 
-def main(force: bool = False, force_nas: bool = False) -> None:
-    """force: re-download everything. force_nas: re-download only the MoSPI API files (they are the ones that
+def main(force: bool = False, force_api: bool = False) -> None:
+    """force: re-download everything. force_api: re-download only the MoSPI API files (they are the ones that
     change after a release; budget, forecast and population documents are fixed), and anything else that is
     missing."""
     manifest = load_manifest()
     try:
-        fetch_all_nas(manifest, force or force_nas)
+        fetch_all_nas(manifest, force or force_api)
         fetch_budgets(manifest, force)
         fetch_forecasts(manifest, force)
         fetch_population(manifest, force)
@@ -216,4 +219,6 @@ def main(force: bool = False, force_nas: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv, force_nas="--force-nas" in sys.argv)
+    pipeline_log.setup(__package__)
+    args = cli.parser(__doc__, fetch=False, refresh_api="download again only MoSPI's API files").parse_args()
+    main(force=args.refresh, force_api=args.refresh_api)

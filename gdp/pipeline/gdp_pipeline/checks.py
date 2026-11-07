@@ -23,6 +23,8 @@ figure on the site can be traced to an official source.
    and per-person figures reproduce MoSPI's published ones (see population_checks.py).
 10. State accounts: identities, growth, per-person figures and the sum of states
    against India's GDP (see states_checks.py).
+11. Text: no '<', '>' or control characters in any key or value of the data files
+   (pipeline_common.data_text).
 
 Exceptions are allowed only through KNOWN_EXCEPTIONS and KNOWN_RULES, each with a reason, and are counted in
 validation_summary.json.
@@ -35,6 +37,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common.data_text import check_data_text
 from pipeline_common.report import Allowed, Exceptions, Report
 from pipeline_common.text import fy, fy_start, prev_fy
 
@@ -504,6 +507,7 @@ def main(ds: dict | None = None, out: Path | None = None) -> int:
     check_unused_exceptions(report)
     population_checks.check(ds, report)
     states_checks.check(ds, report)
+    check_data_text(out or DATA, report)
     return report.write(out or DATA)
 
 

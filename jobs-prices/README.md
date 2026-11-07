@@ -168,6 +168,8 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 - **Spending**: the 12 spending classes reproduce the average; item categories add up to the food and non-food
   totals, and those to the average. Table A2's averages match the data service's; its states' persons add up to All
   India; every overall average lies between the rural and urban averages.
+- **Text**: no key or value in any `data/` file (JSON or CSV) has `<`, `>` or a control character
+  (`pipeline_common.data_text`): such text comes from a garbled download, never from a label.
 
 ### Problems found in MoSPI's data (each left out and listed in the report)
 

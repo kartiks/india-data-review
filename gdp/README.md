@@ -76,7 +76,9 @@ and on the site's Sources page: a ₹ lakh unit label on figures that are in ₹
 "Additional Revision" rows, inconsistent early net-tax figures, the back series' non-additivity before 2004-05, and
 one mistyped GVA growth rate (2019-20, Second Advance Estimates). Every row must be in the unit its indicator is
 published in (`UNITS` in `build.py`); a row in any other unit is left out and fails the checks. The back series
-writes one year "1999-2000"; it is stored as "1999-00", like every other year.
+writes one year "1999-2000"; it is stored as "1999-00", like every other year. Text: no key or value in any `data/`
+file (JSON or CSV) has `<`, `>` or a control character (`pipeline_common.data_text`): such text comes from a garbled
+download, never from a label.
 
 ### State accounts
 

@@ -124,7 +124,8 @@ Research's *Union Budget 2026-27 Analysis*.
      and schemes) must match to the crore.
 
    The counts are in [`data/validation_report.md`](data/validation_report.md).
-6. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
+6. **Text:** no key or value in any `data/` file (JSON or CSV) has `<`, `>` or a control character (`pipeline_common.data_text`): such text comes from a garbled download, never from a label.
+7. **Every exception is written down with its reason** (`annotations.py`, and `KNOWN_EXCEPTIONS` in `taxes/exceptions.py`, `ministries/checks.py`, `schemes/checks.py`). Nothing changes a number; notes are attached to affected figures instead.
 
 ### Problems found in the official files (examples)
 

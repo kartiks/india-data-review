@@ -75,3 +75,7 @@ export const rupeesAxis = (v: number) =>
   shown(v, 0) >= 100000
     ? `${neg(v)}₹${new Intl.NumberFormat("en-IN", { maximumFractionDigits: 2 }).format(Math.abs(v) / 100000)} lakh`
     : rupees(v);
+
+/** Names as a sentence lists them: "A", "A and B", "A, B and C" ("" for none). */
+export const andList = (xs: readonly string[]) =>
+  xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`;

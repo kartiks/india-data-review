@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  andList,
   axisPct, decimal, exact, gpct, money, moneyParts, moneyShort, orDash, pct, pts, rupees, rupeesAxis, signedPct,
 } from "../src/lib/format";
 
@@ -133,5 +134,14 @@ describe("plain numbers and rupees", () => {
     expect(orDash(null, gpct)).toBe("–");
     expect(orDash(undefined, gpct)).toBe("–");
     expect(orDash(0, gpct)).toBe("0.0%");
+  });
+});
+
+describe("andList", () => {
+  it("lists names as a sentence does", () => {
+    expect(andList([])).toBe("");
+    expect(andList(["Goa"])).toBe("Goa");
+    expect(andList(["Goa", "Kerala"])).toBe("Goa and Kerala");
+    expect(andList(["Goa", "Kerala", "Sikkim"])).toBe("Goa, Kerala and Sikkim");
   });
 });

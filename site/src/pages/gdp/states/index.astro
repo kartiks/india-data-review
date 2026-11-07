@@ -1,104 +1,35 @@
 ---
 import Base from "../../../layouts/Base.astro";
-import StateMap, { type MapMetric } from "../../../components/StateMap.astro";
+import StateMap from "../../../components/StateMap.astro";
 import BarList from "../../../components/BarList.astro";
-import PickLines, { type PickOption } from "../../../components/PickLines.astro";
+import PickLines from "../../../components/PickLines.astro";
 import { link } from "../../../lib/url";
-import { STAGE_SHORT } from "../../../lib/gdp/data";
-import { stateKey } from "../../../lib/states";
-import {
-  STATES, STATE_YEARS, FIRST_YEAR, SECTORS, SECTOR_LABEL, LATEST, NOT_COVERED, BOUNDARY, sNode, countWith, gsdpCur,
-  realGrowth, incomePerPerson, gsdpPerPerson, sectorShares, averageGrowth, isDerived, india, indiaAverageGrowth,
-} from "../../../lib/gdp/states";
-import { gpct, money, pct, rupees } from "../../../lib/format";
+import { STATE_YEARS, FIRST_YEAR, SECTORS, SECTOR_LABEL, LATEST as Y, NOT_COVERED, BOUNDARY, countWith, gsdpCur, india, indiaAverageGrowth } from "../../../lib/gdp/states";
+import { growthLines, stateMetrics, stateRankings, stateRows } from "../../../lib/gdp/states-page";
+import { andList as list, gpct, money, pct, rupees } from "../../../lib/format";
 import OrDash from "../../../components/OrDash.astro";
 
-// One year for every measure, so states are compared like with like: the latest year in which the states that have
-// published made up at least 97% of the states' economy the year before.
-const Y = LATEST;
+// Every measure is for one year, Y: the latest in which the states that have published made up at least 97% of the
+// states' economy the year before (lib/gdp/states.ts).
 const NEXT = STATE_YEARS[STATE_YEARS.indexOf(Y) + 1];
 const nextCount = NEXT ? countWith(NEXT, gsdpCur) : 0;
-const list = (xs: string[]) => (xs.length < 2 ? xs.join("") : `${xs.slice(0, -1).join(", ")} and ${xs[xs.length - 1]}`);
-
-const rows = STATES.map((st) => {
-  const n = sNode(st, Y);
-  return {
-    st,
-    key: stateKey(st),
-    gsdp: n ? gsdpCur(n) ?? null : null,
-    derived: isDerived(st, Y),
-    growth: n ? realGrowth(n) ?? null : null,
-    growthWorkedOut: n?.growth?.gsdp?.published === false,
-    avg: averageGrowth(st, FIRST_YEAR, Y) ?? null,
-    boundary: BOUNDARY[st] && BOUNDARY[st].until >= FIRST_YEAR && BOUNDARY[st].until < Y,
-    income: n ? incomePerPerson(n) ?? null : null,
-    gsdpPP: n ? gsdpPerPerson(n) ?? null : null,
-    shares: sectorShares(n),
-  };
-});
-const all = rows.filter((r) => r.gsdp != null);
-const total = all.reduce((a, r) => a + r.gsdp!, 0);
+const rows = stateRows(Y);
+const metrics = stateMetrics(rows, Y);
+const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
+const { all, total, richest, sizeRows, incomeRows, biggest } = stateRankings(rows);
 const IN = india(Y);
 const inAvg = indiaAverageGrowth(FIRST_YEAR, Y);
 const derived = rows.filter((r) => r.derived).map((r) => r.st);
 const missing = rows.filter((r) => r.gsdp == null).map((r) => r.st);
-
-const metric = (id: string, label: string, title: string, fmt: (v: number) => string, note: string, get: (r: (typeof rows)[number]) => number | null | undefined): MapMetric => ({
-  id, label, title, note, format: fmt, values: Object.fromEntries(rows.map((r) => [r.key, get(r) ?? null])),
-});
-const metrics: MapMetric[] = [
-  metric("size", "Size", `Size of the state economy (GSDP), ${Y}`, (v) => money(v),
-    `Gross state domestic product at current prices.${IN ? ` India's GDP: ${money(IN.gdp)}.` : ""}`, (r) => r.gsdp),
-  metric("growth", "Growth", `Real growth, ${Y}`, (v) => gpct(v),
-    `GSDP at constant 2011-12 prices, on the year before.${IN?.growth != null ? ` India: ${gpct(IN.growth)}.` : ""}`, (r) => r.growth),
-  metric("avg", `Growth since ${FIRST_YEAR}`, `Average real growth a year, ${FIRST_YEAR} to ${Y}`, (v) => gpct(v),
-    `Worked out from constant-price GSDP in the two years.${inAvg != null ? ` India: ${gpct(inAvg)}.` : ""}`, (r) => r.avg),
-  metric("income", "Income per person", `Income per person, ${Y}`, rupees,
-    "Net state domestic product per person, current prices.", (r) => r.income),
-  ...SECTORS.map((s) => metric(s, SECTOR_LABEL[s], `${SECTOR_LABEL[s]}, share of the state's value added, ${Y}`, (v) => pct(v),
-    `Current prices.${IN?.shares ? ` India: ${pct(IN.shares[s])}.` : ""}`, (r) => r.shares?.[s])),
-];
-const names = Object.fromEntries(rows.map((r) => [r.key, r.st]));
-
-const biggest = [...all].sort((a, b) => b.gsdp! - a.gsdp!);
-const richest = rows.filter((r) => r.income != null).sort((a, b) => b.income! - a.income!);
-const sizeRows = biggest.slice(0, 12).map((r) => ({
-  label: r.st, value: r.gsdp!, display: money(r.gsdp!), sub: `${pct((Number(r.gsdp) / total) * 100)} of all states`,
-}));
-const incomeRows = richest.map((r, i) => ({ label: `${i + 1}. ${r.st}`, value: r.income!, display: rupees(r.income!) }))
-  .filter((_, i) => i < 6 || i >= richest.length - 6);
 const top = richest[0], bottom = richest[richest.length - 1];
 const gap = (Number(top.income) / Number(bottom.income)).toFixed(1);
 const sumShare = IN ? pct((total / IN.gdp) * 100) : undefined;
 const boundaryNotes = rows.filter((r) => r.boundary).map((r) => BOUNDARY[r.st].note);
 
-// Growth over time: every state with constant-price figures, to compare any set; the six largest are shown first.
-// Years run to the latest any state has published; the chart ends at the latest year among the states shown.
-const gyears = STATE_YEARS.filter((y) => y > FIRST_YEAR);
-const nextYear = (y: string) => STATE_YEARS[STATE_YEARS.indexOf(y) + 1];
-const growthOptions: PickOption[] = STATES.map((st) => {
-  const kinds = gyears.map((y) => sNode(st, y)?.growth?.gsdp?.published === false ? "worked out"
-    : BOUNDARY[st] && y === nextYear(BOUNDARY[st].until) ? "area changed" : "");
-  const values = gyears.map((y) => { const n = sNode(st, y); return n ? realGrowth(n) ?? null : null; });
-  const worked = gyears.filter((_, i) => values[i] != null && kinds[i] === "worked out").length;
-  const notes = [
-    worked ? `${st}: growth worked out here from GSDP levels${worked < values.filter((v) => v != null).length ? " in some years" : ""}, because MoSPI's GSDP table leaves ${st} out (see the notes under the table of all states, below).` : "",
-    BOUNDARY[st] ? BOUNDARY[st].note : "",
-  ].filter(Boolean);
-  return { key: stateKey(st), name: st, values, kinds, note: notes.join(" ") };
-}).filter((o) => o.values.some((v) => v != null));
-const noGrowth = STATES.filter((st) => !growthOptions.some((o) => o.name === st));
-const EARLY = new Set(["AE1", "AE2", "PE"]);
-const indiaGrowth: PickOption = {
-  key: "india", name: "All India",
-  values: gyears.map((y) => india(y)?.growth ?? null),
-  // Years still at an early estimate are marked; on the 2011-12 base they will not be revised further.
-  kinds: gyears.map((y) => { const st = india(y)?.stage; return st && EARLY.has(st) ? `${STAGE_SHORT[st].toLowerCase()} estimate` : ""; }),
-  note: "All India (dashed): GDP growth from the national accounts on the same 2011-12 base, the latest estimate for each year. MoSPI moved national GDP to a 2022-23 base in February 2026, so the last years on this base stay at their advance or provisional estimates.",
-};
+// Growth over time: any set of states can be compared; the six largest economies are shown first, and the chart
+// ends at the latest year among the states shown.
+const growth = growthLines();
 const six = biggest.slice(0, 6).map((r) => r.key);
-const GLAST = gyears[gyears.length - 1];
-const glastCount = countWith(GLAST, realGrowth);
 const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 base, via api.mospi.gov.in.";
 ---
 <Base title="States" section="states" description="Each Indian state's economy: size, growth, income per person and the shares of agriculture, industry and services, from MoSPI's state accounts.">
@@ -142,10 +73,10 @@ const SOURCE = "MoSPI, state accounts (gross state domestic product), 2011-12 ba
   <section class="card">
     <PickLines
       title="Real growth, state by state"
-      subtitle={`GSDP at constant 2011-12 prices, on the year before. Starts with the six largest economies in ${Y}.${GLAST > Y ? ` Lines run to ${GLAST} for the ${glastCount} of ${growthOptions.length} states that have published it.` : ""}${noGrowth.length ? ` No constant-price figures for ${list(noGrowth)}.` : ""}`}
-      years={gyears}
-      options={growthOptions}
-      reference={indiaGrowth}
+      subtitle={`GSDP at constant 2011-12 prices, on the year before. Starts with the six largest economies in ${Y}.${growth.last > Y ? ` Lines run to ${growth.last} for the ${growth.lastCount} of ${growth.options.length} states that have published it.` : ""}${growth.noGrowth.length ? ` No constant-price figures for ${list(growth.noGrowth)}.` : ""}`}
+      years={growth.years}
+      options={growth.options}
+      reference={growth.reference}
       initial={six}
       axis="pct"
       tipFormat={(v) => gpct(v)}

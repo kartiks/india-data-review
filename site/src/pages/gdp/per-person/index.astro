@@ -7,7 +7,7 @@ import {
   bestOf, latestStage, popOf, perPersonGrowth, type Node, type PerPersonMeasure,
 } from "../../../lib/gdp/data";
 import { fyRange, fyStart, prevFy } from "../../../lib/fy";
-import { axisPct, decimal, gpct, orDash, rupees, rupeesAxis } from "../../../lib/format";
+import { andList, axisPct, decimal, gpct, orDash, rupees, rupeesAxis } from "../../../lib/format";
 import { OLD_SERIES, NEW_SERIES } from "../../../lib/slots";
 import OrDash from "../../../components/OrDash.astro";
 
@@ -30,7 +30,7 @@ const newChecked = Boolean(POPULATION.checked[NEW]?.[Y]);
 // "2022-23 to 2024-25" for consecutive years, else each year listed.
 const span = (ys: string[]) => {
   const run = ys.every((y, i) => i === 0 || fyStart(y) === fyStart(ys[i - 1]) + 1);
-  return ys.length > 1 && run ? `${ys[0]} to ${ys[ys.length - 1]}` : ys.length > 1 ? `${ys.slice(0, -1).join(", ")} and ${ys[ys.length - 1]}` : ys.join("");
+  return ys.length > 1 && run ? `${ys[0]} to ${ys[ys.length - 1]}` : andList(ys);
 };
 const newCheckedYears = Object.keys(POPULATION.checked[NEW] ?? {}).sort();
 const oldCheckedYears = Object.keys(POPULATION.checked[OLD] ?? {}).sort();

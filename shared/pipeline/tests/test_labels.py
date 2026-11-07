@@ -1,9 +1,14 @@
 """pipeline_common.labels: new figures and periods are not new text; new states, items, units and notes are."""
 
+import ast
 import json
+import subprocess
+import sys
+from pathlib import Path
 
 import pytest
 
+from pipeline_common import labels
 from pipeline_common.labels import is_text, main, markdown, new_labels, pattern
 
 
@@ -180,3 +185,42 @@ def test_main_refuses_bad_arguments_and_unreadable_data(old, new, tmp_path, caps
     assert main([str(old), str(new)]) == 2
     assert "cannot read" in capsys.readouterr().err
     assert main(["--help"]) == 0
+
+
+# ---- runs on the runner's own python3 --------------------------------------------------------------------------
+# The weekly refresh's publish job (scripts/refresh/publish.sh) runs labels.py with the runner's system python3
+# (ubuntu-latest: Python 3.12) and installs nothing, so labels.py and the pipeline_common modules it imports must use
+# only the standard library and Python 3.12 syntax.
+
+PACKAGE = Path(labels.__file__).parent
+
+
+def test_labels_imports_only_the_standard_library_and_reads_as_python_3_12():
+    todo, seen = ["__init__", "labels"], set()
+    while todo:
+        name = todo.pop()
+        if name in seen:
+            continue
+        seen.add(name)
+        tree = ast.parse((PACKAGE / f"{name}.py").read_text(encoding="utf-8"), feature_version=(3, 12))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.level:
+                todo += [node.module] if node.module else [a.name for a in node.names]
+                continue
+            mods = [node.module] if isinstance(node, ast.ImportFrom) else (
+                [a.name for a in node.names] if isinstance(node, ast.Import) else [])
+            for mod in mods:
+                top, _, sub = mod.partition(".")
+                if top == "pipeline_common":
+                    todo.append(sub or "__init__")
+                else:
+                    assert top in sys.stdlib_module_names, f"{name}.py imports {mod}, which is not in the standard library"
+    assert {"labels", "__init__"} <= seen
+
+
+def test_labels_runs_without_site_packages(old, new):
+    write(new, "states.csv", "state,year\nLadakh,2024-25\n")
+    # -S: no site-packages, so only the standard library and the files in shared/pipeline can be imported
+    done = subprocess.run([sys.executable, "-S", "-B", "-m", "pipeline_common.labels", str(old), str(new)],
+                          cwd=PACKAGE.parent, capture_output=True, text=True)
+    assert (done.returncode, done.stdout) == (1, "- `states.csv`: 1 new\n  - `Ladakh`\n"), done.stderr

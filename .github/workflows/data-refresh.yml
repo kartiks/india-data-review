@@ -14,10 +14,11 @@
 #   whose checks passed, and runs the local CI (scripts/ci.sh) on the commit (again on top of main if main moved).
 #   It uploads the run's artifact: the commit as a git bundle, meta.txt, the text new in the data, each area's
 #   validation report and the downloads not committed (scripts/refresh/package.sh).
-# - publish (write token): installs nothing; fetches the bundle and pushes it to main (scripts/refresh/publish.sh).
-#   If the data has new text (a new state, item, unit or note; not new figures or periods: see
-#   shared/pipeline/pipeline_common/labels.py), it pushes branch data-refresh/<date> and opens a pull request for
-#   review instead. That needs "Allow GitHub Actions to create and approve pull requests" (Settings > Actions >
+# - publish (write token): installs nothing; fetches the bundle, checks it (one commit on main's history, only plain
+#   files in the refreshed areas' sources/ and data/), works out the new text itself with the runner's python3, and
+#   pushes it to main (scripts/refresh/publish.sh). If the data has new text (a new state, item, unit or note; not
+#   new figures or periods: see shared/pipeline/pipeline_common/labels.py), it pushes branch data-refresh/<date> and
+#   opens a pull request for review instead. That needs "Allow GitHub Actions to create and approve pull requests" (Settings > Actions >
 #   General); while it is off, the branch is pushed and the run fails with a link to open the pull request by hand.
 # The refresh job also asks budget_pipeline.due and gdp_pipeline.due whether a release added by hand is probably out
 # (a new budget, Economic Survey, RBI statement, population); if one is, the run fails at the end, after the data
@@ -172,16 +173,17 @@ jobs:
   publish:
     needs: refresh
     # Also when the refresh job failed after packing a commit that passed the local CI (one area failed, or the
-    # CPI is out of date): the areas that passed are published.
-    if: ${{ !cancelled() && needs.refresh.outputs.publish == 'true' }}
+    # CPI is out of date): the areas that passed are published. Only on main (the refresh job also says so).
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.refresh.outputs.publish == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
       contents: write # push to main, or to a data-refresh/<date> branch
       pull-requests: write # open the pull request when the data has new text
     steps:
-      # Nothing is installed or built in this job: only git and gh (both on the runner) run, with scripts from the
-      # commit this run started from. The refresh commit is fetched from the bundle and pushed, never checked out.
+      # Nothing is installed or built in this job: only git, gh and the runner's own python3 (for the label diff,
+      # which uses only the standard library) run, with scripts from the commit this run started from. The refresh
+      # commit is fetched from the bundle, checked, and pushed, never checked out.
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2

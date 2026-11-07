@@ -98,12 +98,13 @@ other_commit() { # someone merges a pull request into main: $1 file, $2 content
 }
 
 # The refresh job after the area steps: commit, local CI, fetch main and replay, pack.
-commit() { (cd "$S/work" && "$R/commit.sh" "$@") >"$S/commit.log"; }
+commit() { (cd "$S/work" && "$R/commit.sh" "$@") >"$S/commit.log" 2>&1 || fail "commit.sh failed: $(tail -n 5 "$S/commit.log")"; }
 ci() { (cd "$S/work" && "$REFRESH_CI" HEAD); }
 replay() { (cd "$S/work" && git fetch --quiet --no-tags origin main && "$R/replay.sh") >"$S/replay.log" 2>&1; }
 package() { # CI_OK
   (cd "$S/work" && COMMITTED="$(out committed)" HELD="$(out held)" CI_OK="$1" ON_MAIN=true STALE=false \
-    LOG_DIR="$S/logs" "$R/package.sh" "$S/artifact" gdp jobs-prices) >"$S/package.log" 2>&1
+    LOG_DIR="$S/logs" "$R/package.sh" "$S/artifact" gdp jobs-prices) >"$S/package.log" 2>&1 ||
+    fail "package.sh failed: $(tail -n 5 "$S/package.log")"
 }
 # The publish job: a new clone at the commit the run started from, the artifact, and publish.sh.
 publish() {
@@ -192,8 +193,12 @@ LOG_DIR="$S/logs" "$R/check-due.sh" budget-due=11 gdp-due=1 >"$S/due.log" || cod
 same "$code" 1 "check-due fails the run"
 has "$S/due.log" "::error::Union Budget 2027-28: it is on indiabudget.gov.in. budget/README.md, Adding a new budget (budget-due)"
 has "$S/due.log" "::error::gdp-due crashed (exit 1)"
-LOG_DIR="$S/logs" "$R/check-due.sh" budget-due= gdp-due= >"$S/due.log" || fail "nothing due should pass"
+has "$S/artifact/notices.md" "- WARNING: slow" # a probe that could not tell is shown
+has "$S/package.log" "::warning::slow"
+LOG_DIR="$S/logs" "$R/check-due.sh" budget-due= gdp-due=0 >"$S/due.log" || fail "nothing due should pass"
 ok
+has "$S/due.log" "budget-due: skipped (did not run)"
+has "$S/due.log" "gdp-due: nothing due"
 
 # ---------------------------------------------------------------------------------------------------------------
 new_scenario main-moved-during-refresh
@@ -295,7 +300,68 @@ commit gdp=success jobs-prices=success
 replay
 package true
 if publish; then fail "publish should refuse a commit outside sources/ and data/"; fi
-has "$S/publish.log" "changes files outside the sources/ and data/ of gdp: scripts/evil.sh"
+has "$S/publish.log" "changes more than plain files in the sources/ and data/ of gdp: scripts/evil.sh"
 same "$(origin_main)" "$START" "main is not changed"
+
+# The publish job trusts nothing from the refresh job but the commit, and checks that.
+amend() { (cd "$S/work" && "$@" && git add -A && git commit --quiet --amend --no-edit); }
+set_meta() { sed "s/^$1=.*/$1=$2/" "$S/artifact/meta.txt" >"$S/meta" && mv "$S/meta" "$S/artifact/meta.txt"; }
+refused() { # what the error must say
+  if publish; then fail "publish should refuse: $1"; fi
+  has "$S/publish.log" "$1"
+  same "$(origin_main)" "$START" "main is not changed"
+  expect "no pull request" test ! -e "$S/gh.log"
+}
+
+new_scenario rename-into-data-refused
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+amend git mv README.md gdp/data/readme.txt # would delete README.md
+replay
+package true
+refused "and data/ of gdp: README.md"
+
+new_scenario symlink-refused
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+amend ln -s ../../README.md gdp/data/linked.json
+replay
+package true
+refused "gdp/data/linked.json(mode 120000)"
+
+new_scenario executable-refused
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+amend bash -c 'printf "#!/bin/sh\n" >gdp/sources/raw/run.sh && chmod +x gdp/sources/raw/run.sh'
+replay
+package true
+refused "gdp/sources/raw/run.sh(mode 100755)"
+
+new_scenario area-not-refreshed-refused
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+amend write budget/data/fiscal.json '{"changed": true}'
+replay
+package true
+set_meta committed "gdp budget"
+refused "'budget' is not an area the weekly refresh commits (gdp jobs-prices)"
+
+new_scenario base-not-on-main-refused
+(cd "$S/work" && write gdp/sources/manifest.json '{"nas": "b"}' && git add -A && git commit --quiet -m "Not on main" &&
+  git push --quiet origin HEAD:refs/heads/elsewhere)
+(cd "$S/work" && gdp_new_figures)
+commit gdp=success jobs-prices=success
+package true
+refused "which is neither main nor a commit in main's history"
+
+new_scenario labels-worked-out-by-publish
+(cd "$S/work" && jobs_new_state)
+commit gdp=success jobs-prices=success
+replay
+package true
+set_meta labels_changed false # the artifact says no new text; publish works it out itself
+publish || fail "publish: $(cat "$S/publish.log")"
+same "$(origin_main)" "$START" "main is not changed"
+has "$S/pr-body.md" "  - \`Ladakh\`"
 
 echo "Refresh scripts dry run: $passed checks passed"

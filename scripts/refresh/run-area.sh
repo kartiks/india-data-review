@@ -6,8 +6,8 @@
 #
 # Exit 10 from the pipeline means every check passed but data added by hand is out of date (jobs and prices: the
 # base-2024 CPI). The area is still committed, so this prints stale=true as a step output and exits 0; the
-# workflow fails the run at the end. Any other exit status is passed on, and printed as the step output exit_code
-# (the release-due commands exit 11 when a release added by hand is due: see check-due.sh).
+# workflow fails the run at the end. Any other exit status is passed on. Every exit status is printed as the step
+# output exit_code (the release-due commands exit 11 when a release added by hand is due: see check-due.sh).
 
 set -euo pipefail
 # shellcheck source=scripts/refresh/lib.sh
@@ -27,9 +27,9 @@ fi
 
 code=0
 PYTHONUNBUFFERED=1 "${limited[@]}" 2>&1 | tee "$log" || code=$?
+output exit_code "$code"
 if [ "$code" -eq 10 ]; then
   output stale true
   exit 0
 fi
-if [ "$code" -ne 0 ]; then output exit_code "$code"; fi
 exit "$code"

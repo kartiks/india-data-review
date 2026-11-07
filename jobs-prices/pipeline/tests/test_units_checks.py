@@ -46,7 +46,8 @@ def test_main_writes_the_report_and_fails_on_any_failure(data_dir, monkeypatch):
     monkeypatch.setattr(checks, "CHECKS", (ok,))
     assert checks.main({}) == 0
     summary = json.loads((data_dir / "validation_summary.json").read_text())
-    assert summary["result"] == "PASSED" and [s["title"] for s in summary["sections"]] == ["fine"]
+    # the stubbed checks, then the text check on the data folder that main always runs
+    assert summary["result"] == "PASSED" and [s["title"] for s in summary["sections"]][0] == "fine"
     assert (data_dir / "validation_report.md").exists()
 
     monkeypatch.setattr(checks, "CHECKS", (ok, bad))

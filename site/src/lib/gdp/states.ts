@@ -3,6 +3,7 @@
 // average annual growth between two published constant-price levels.
 import fs from "node:fs";
 import path from "node:path";
+import { readAreaJson } from "../area-data";
 import { OLD, annual, industrySum, latestStage, STAGE_LABEL } from "./data";
 import { stateKey } from "../states";
 import { fyGap, prevFy } from "../fy";
@@ -25,8 +26,7 @@ interface StateDataset {
   left_out: string[];
 }
 
-const file = path.resolve(process.cwd(), "..", "gdp", "data", "states.json");
-export const SDS: StateDataset = JSON.parse(fs.readFileSync(file, "utf8"));
+export const SDS = readAreaJson<StateDataset>("gdp", "states.json");
 
 // MoSPI publishes the state accounts on the 2011-12 base only. When a 2022-23 series appears, the validation report
 // says so; switch this over then (and check the page's wording).

@@ -13,17 +13,18 @@ rows, or with more than 5% fewer rows than the saved file, is more likely a
 fault than a revision: the saved file is kept, the rest is downloaded, and the
 run fails at the end.
 
-Run: uv run python -m jobs_prices_pipeline.fetch [--force | --force-api]
+Run: uv run python -m jobs_prices_pipeline.fetch [--refresh | --refresh-api]   (downloads only; see __main__.py)
 """
 
 import json
+import logging
 import re
-import sys
 import time
 import urllib.parse
 from pathlib import Path
 
-from pipeline_common import download
+from pipeline_common import cli, download
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import PAGE_PAUSE_S, POLITE_PAUSE_S, RELEASE_PAUSE_S, fetch_pages, file_kind, get, now
 
 from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, queries
@@ -32,6 +33,8 @@ ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 SNAPSHOTS = ROOT / "sources" / "snapshots"
 MANIFEST = ROOT / "sources" / "manifest.json"
+log = logging.getLogger(__name__)
+
 SOURCE = "Ministry of Statistics and Programme Implementation (MoSPI), official data API"
 
 
@@ -87,15 +90,15 @@ def release_content(html: str) -> str:
 
 
 def fetch_cpi2024(manifest: dict, force: bool) -> None:
-    """Each month's CPI (base 2024) press release on PIB: the release's text and tables, and its PDF where it has one."""
+    """Each month's CPI (base 2024) press release on PIB: the release's text and tables, and its PDF where it has one.
+    The PDF is downloaded and checked before anything is saved, and the release page is recorded last, so a release
+    whose PDF failed is not in the manifest and is fetched again by the next run."""
     for month, page in CPI2024_RELEASES.items():
         key = f"cpi2024/{month}"
-        if key in manifest and not force:
+        if key in manifest and f"{key}/pdf" in manifest and not force:
             continue
         html = get(page).decode("utf-8", "ignore")
         content = release_content(html).encode()
-        changed = save(manifest, key, RAW / f"{key}.html", content, page)
-        print(f"{key}: release page, {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
         links = sorted(set(re.findall(r"https://static\.pib\.gov\.in/WriteReadData/specificdocs/documents/[^\"'&\s]+\.pdf", html)))
         if len(links) > 1:
             raise RuntimeError(f"{key}: more than one PDF on {page}: {links}")
@@ -104,9 +107,11 @@ def fetch_cpi2024(manifest: dict, force: bool) -> None:
             if file_kind(pdf) != "pdf":  # stop: a release without its PDF must not be saved
                 raise RuntimeError(f"{key}: {links[0]} is not a PDF")
             save(manifest, f"{key}/pdf", RAW / f"{key}.pdf", pdf, links[0], {"release_page": page})
-            print(f"{key}: PDF {len(pdf):,} bytes", flush=True)
+            log.info(f"{key}: PDF {len(pdf):,} bytes")
         else:
             manifest[f"{key}/pdf"] = {"url": page, "empty": True, "note": "no PDF attached to this release", "checked_at": now()}
+        changed = save(manifest, key, RAW / f"{key}.html", content, page)
+        log.info(f"{key}: release page, {len(content):,} bytes{' (changed)' if changed else ''}")
         time.sleep(RELEASE_PAUSE_S)
 
 
@@ -120,7 +125,7 @@ def fetch_hces_tables(manifest: dict, force: bool) -> None:
         if file_kind(content) != "xlsx":  # stop: these tables are required
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url)
-        print(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}", flush=True)
+        log.info(f"{key}: {len(content):,} bytes{' (changed)' if changed else ''}")
 
 
 def fetch_rbi(manifest: dict, force: bool) -> None:
@@ -144,7 +149,7 @@ def fetch_rbi(manifest: dict, force: bool) -> None:
             raise RuntimeError(f"{key}: {url} is not an Excel file")
         changed = save(manifest, key, RAW / f"{key}.xlsx", content, url,
                        {"edition": edition, "title": title, "page": rbi.HANDBOOK_PAGE})
-        print(f"{key}: {title} ({edition}){' (changed)' if changed else ''}", flush=True)
+        log.info(f"{key}: {title} ({edition}){' (changed)' if changed else ''}")
         time.sleep(POLITE_PAUSE_S)
 
 
@@ -163,21 +168,21 @@ def main(force: bool = False, force_api: bool = False) -> None:
                 if manifest.get(key, {}).get("sha256"):
                     # Data MoSPI served before has gone: most likely a fault on their side, not a revision.
                     # Keep the saved file, fetch the rest, and fail at the end.
-                    print(f"{key}: NO ROWS, but it had data before; keeping the saved file", flush=True)
+                    log.warning(f"{key}: NO ROWS, but it had data before; keeping the saved file")
                     vanished.append(key)
                     continue
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
-                print(f"{key}: no data")
+                log.info(f"{key}: no data")
                 continue
             try:  # far fewer rows than before: kept, like a vanished query
                 download.check_records(manifest, key, result["total_records"])
             except download.RecordsDropped as e:
-                print(e, flush=True)
+                log.warning(str(e))
                 dropped.append(str(e))
                 continue
             changed = save(manifest, key, RAW / f"{key}.json", encode(result), result["url"],
                            {"records": result["total_records"]})
-            print(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}", flush=True)
+            log.info(f"{key}: {result['total_records']} rows{' (changed)' if changed else ''}")
             time.sleep(PAGE_PAUSE_S)
         fetch_cpi2024(manifest, force)
         fetch_hces_tables(manifest, force)
@@ -190,4 +195,7 @@ def main(force: bool = False, force_api: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv, force_api="--force-api" in sys.argv)
+    pipeline_log.setup(__package__)
+    args = cli.parser(__doc__, fetch=False,
+                      refresh_api="download again only MoSPI's API files and the RBI handbook tables").parse_args()
+    main(force=args.refresh, force_api=args.refresh_api)

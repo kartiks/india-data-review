@@ -126,7 +126,8 @@ def divisions(t: list[list[str]]) -> list[dict]:
     for r in t:
         if r and re.fullmatch(r"\d{2}", r[0]) and (v := six(r)):
             out.append({"code": r[0], "name": " ".join(r[1:-6]).strip(), "values": v})
-        elif r and r[0].strip() == "All India" and (v := six(r)):
+        # The releases print the All-India row with an empty code cell before the name.
+        elif [c.strip() for c in r[:-6] if c.strip()] == ["All India"] and (v := six(r)):
             out.append({"code": "00", "name": "All India", "values": v})
     return out
 

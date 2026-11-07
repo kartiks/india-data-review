@@ -49,7 +49,7 @@ STATE_SERIES = [
 STATE_INDICATORS = range(23, 35)
 
 FIRST_BUDGET = 2011  # 2011-12: first budget whose GDP assumption is on the 2011-12 base's era
-LATEST_BUDGET = 2026  # 2026-27
+LATEST_BUDGET = budget_glance.LATEST_BUDGET  # set in pipeline_common/budget_glance.py, which the budget area reads too
 
 
 def budget_glance_urls(start: int) -> list[str]:

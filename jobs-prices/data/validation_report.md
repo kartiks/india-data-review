@@ -2,7 +2,7 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists its reason.
 
-**Result: PASSED** (593524 checks, 0 failures)
+**Result: PASSED** (595343 checks, 0 failures)
 
 ## ✅ Every published value is understood
 449190 checks, 0 failures.
@@ -486,7 +486,15 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 ## ✅ RBI state inflation agrees with MoSPI's consumer price indices
 326 checks, 0 failures.
 
-- Not compared (a year without all 12 monthly indices in MoSPI's data, such as the April-May 2020 lockdown; RBI's notes say it used fewer months for those years): {'2020-21': 35, '2021-22': 35}.
+- Allowed (70): MoSPI published no state index for April and May 2020 (the lockdown; June too for Manipur, Nagaland and Puducherry), so 2020-21, and 2021-22 compared with it, lack months. RBI's notes say it used fewer months for those years. Not compared. Cases:
+  - Andaman & Nicobar Islands 2020-21
+  - Andaman & Nicobar Islands 2021-22
+  - Andhra Pradesh 2020-21
+  - Andhra Pradesh 2021-22
+  - Assam 2020-21
+  - Assam 2021-22
+  - and 64 more state-years
+- From January 2026 the index is the base-2024 series from MoSPI's press releases (each state as first published), chained to base 2012 with its year-on-year inflation; 0 comparisons use chained months.
 
 ## ✅ RBI state tables: totals lie within their parts
 883 checks, 0 failures.
@@ -514,7 +522,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Indices are printed to two decimals but compiled unrounded, so a difference of up to 0.03 points is allowed.
 
 ## ✅ Prices, new series: combined index lies between rural and urban
-946 checks, 0 failures.
+955 checks, 0 failures.
 
 
 ## ✅ Prices, new series: only provisional figures are revised
@@ -533,3 +541,8 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 8 checks, 0 failures.
 
 - 2026-06: no PDF attached to the release; page only
+
+## ✅ Text in the data: no '<', '>' or control characters
+1810 checks, 0 failures.
+
+- Every key and text value (each distinct text counted once) in cpi.csv, cpi2024.csv, cpialrl.csv, hces.csv, hces_overall.csv, jobs_prices.json, plfs_conditions.csv, plfs_earnings.csv, plfs_rates.csv, plfs_workers.csv, rbi_states.csv, sources.csv.

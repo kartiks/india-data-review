@@ -26,31 +26,31 @@ and the downloaded source files (`sources/`). The website is in `../site/` (page
 
 ## Run it
 
+In `pipeline/`:
+
 ```bash
-cd pipeline
-uv run python -m gdp_pipeline             # build data from saved sources and run all checks
-uv run python -m gdp_pipeline --fetch     # also download anything missing
-uv run python -m gdp_pipeline --refresh   # re-download everything, including budget and forecast documents
-uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (what the weekly refresh runs)
+uv run python -m gdp_pipeline        # build data/ and run every check; options below
+uv run python -m gdp_pipeline.due    # which releases added by hand are probably out (exit 11 if any)
 uv run pytest
 ```
 
-The command exits with an error if any check fails, and the website (`../site/`) refuses to build unless
-`data/validation_summary.json` says PASSED.
+The options are the same in every area ([Run it](../README.md#run-it)). Here `--refresh-api` re-downloads MoSPI's API
+files, and `--refresh` also the budget, forecast and population documents (not the National Accounts Statistics
+statements, which are [added by hand](#adding-a-years-population)).
 
-**MoSPI's national and state accounts are refreshed every week** by a GitHub Action that runs `--refresh-nas`, commits what
-changed and pushes it to `main` once every check and the local CI pass (see
-[Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). MoSPI's data service keeps only the latest
-estimate for the new 2022-23 series and for quarters. When a re-download differs, the old file is kept in
-`sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`; older folders are named by date only), so the revision history of the new series builds up over time: the build reads an
+**MoSPI's national and state accounts are refreshed every week**
+([The weekly refresh](../README.md#the-weekly-refresh)); figures per person are worked out again from the refreshed
+totals. MoSPI's data service keeps only the latest estimate for the new 2022-23 series and for quarters, so the
+revision history of the new series builds up from the earlier files kept in `sources/snapshots/`: the build reads an
 estimate stage (say a year's Provisional Estimate) from the newest saved file that has it once the current file no
 longer does, and lists those estimates in `gdp.json` (`earlier_releases`) and the validation report. Quarters have no
 stage of their own, so only their latest figures are used.
 
-Not refreshed by it, and updated by hand: the Budget's GDP assumption (with each new budget), the Economic Survey
-and RBI growth projections ([Adding a forecast](#adding-a-forecast)), and the population for a new year
-([Adding a year's population](#adding-a-years-population)). Figures per person are worked out again from the
-refreshed totals every week.
+Updated by hand: the Budget's GDP assumption (step 5 of [Adding a new budget](../budget/README.md#adding-a-new-budget)),
+the Economic Survey and RBI growth projections ([Adding a forecast](#adding-a-forecast)), and the population
+([Adding a year's population](#adding-a-years-population)). `gdp_pipeline.due`, which the weekly refresh runs, works
+out from dates which of these are probably out and not yet added; when each one counts as due is in
+`pipeline/gdp_pipeline/due.py`.
 
 ## What's in `data/`
 
@@ -121,59 +121,26 @@ then, after checking the new figures.
 
 ## Population
 
-Figures per person divide MoSPI's totals by India's population at the middle of the financial year (1 October), as
-MoSPI does (`pipeline/gdp_pipeline/population.py`). MoSPI's population is not in its API, and it differs a little
-between the two series, so it is kept per series and year:
+Figures per person divide MoSPI's totals by India's population on 1 October of the year, as MoSPI does. MoSPI's
+population is not in its API, and it differs a little between the two series, so it is kept per series and year,
+from:
 
-| Years | Population | Source |
-|---|---|---|
-| 2011-12 series, 2011-12 to 2021-22 | The official projection for 1 October. MoSPI's figures equal it in 2020-21 and 2021-22, the years the RBI's reprint covers; earlier years are assumed to be the projection too | *Population Projections for India and States 2011-2036*, Report of the Technical Group on Population Projections (National Commission on Population, November 2019), Table 14, PDF page 125 |
-| 2022-23 series, 2022-23 to 2024-25 | MoSPI's own, printed to the thousand | MoSPI, *National Accounts Statistics 2026* (31 August 2026), Statement 1.2: Per capita income, product and final consumption. Downloaded by hand (`sources/raw/population/nas-2026-statement-1.2.xlsx`) |
-| 2011-12 series, 2023-24 to 2025-26; 2022-23 series, 2025-26 | MoSPI's own, implied by its per-person figures (GDP ÷ GDP per person, to within a few thousand people) | MoSPI's press notes, rows quoted in `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json` |
-| 2011-12 series, 2022-23 | The same, where no press note here covers the year | RBI, *Handbook of Statistics on the Indian Economy* 2025-26, Tables 1 and 2 (reprinting MoSPI's) |
+- the official 2019 projections (*Population Projections for India and States 2011-2036*), for the 2011-12 series up
+  to 2021-22;
+- MoSPI's own population after that and in the 2022-23 series: printed in its yearly *National Accounts Statistics*
+  per-capita statement (downloaded by hand), or implied by the per-person figures in its press notes (rows quoted in
+  `pipeline/gdp_pipeline/population_sources/mospi_press_notes.json`), or else from the RBI's *Handbook of Statistics
+  on the Indian Economy*, which reprints it and is also used to check it.
 
-From 2022-23 MoSPI's population is about 0.1–0.2% above the 2019 projections, so population grows 1.05% in
-2022-23 in the 2011-12 series (0.91% from one projection to the next); MoSPI's own per-person figures have the same
-step. Net national income is not in the API; it is GNI less depreciation, worked out as NDP + GNI − GDP, which also
-works in years with no depreciation figure. Per-person figures are for the latest estimate of each year only: MoSPI
-divided earlier estimates by the population known at the time, which is not kept here.
-
-MoSPI's documents agree on population: for 2022-23 to 2024-25, the June press note's implied population and NAS
-2026's printed one are within 3,000 people (the implied figure's own precision), consistent with MoSPI keeping its
-population when it revised the totals in August. Where they agree, the printed figure is used.
-NAS 2026 prints no totals in its per-capita statement; its unrounded per-person figure times its population gives
-the total back (to within ₹1 crore of the API's), which is how its figures are matched to the API's estimate.
-
-**What is checked.** The per-person figures reproduce MoSPI's in every year where a figure quoted here is for the
-API's latest total (`population.checked` in `gdp.json`; the report lists the years). A year whose total MoSPI has
-revised since is not checked: its figure divides the revised total by the quoted population. The site's Per person
-page says so while it is the case.
-
-Checks ("Population and figures per person" in the report):
-
-- the projections table reads cleanly: 2011 to 2036, men plus women equal persons, and the population rises;
-- every quoted press-note row is found on its PDF page, with one figure for each year;
-- within each press-note statement and RBI table, every per-person figure implies the same population, and it
-  rounds to the printed one;
-- where two of MoSPI's documents give a year's population in the same series, they agree;
-- the population used agrees with the RBI's, printed to the lakh, in every year the RBI covers, for both the
-  projections (2020-21, 2021-22) and MoSPI's own figures;
-- MoSPI's population equals the projection in the years up to 2021-22 that a source covers (2020-21 and 2021-22),
-  and from 2022-23 is within 0.5% of it (a quoted row under the wrong year would be about 0.9% off);
-- every per-person figure MoSPI or the RBI printed is reproduced to within ₹2 where its total is the same estimate
-  as the API's latest. Totals MoSPI has revised since are not compared; the report says how many, for each series.
-
-The 0.5% limit assumes MoSPI's population stays close to the 2019 projections. When MoSPI moves to population
-figures based on the next census, a correctly quoted year may fail it; check the years first, then raise
-`PROJECTION_GAP_MAX` in `population_checks.py` with a note.
-
-A year in the API with no population yet is listed in the report (not a failure) and has no per-person figures;
-the site's Per person page shows the latest year that has them and says which year is waiting.
+Which document gives each year's population, how it is chosen and how the figures are worked out: the docstring of
+`pipeline/gdp_pipeline/population.py`; the
+documents and how they are read: `population_read.py`; the checks ("Population and figures per person" in the
+report): `population_checks.py`. A year in the API with no population yet has no per-person figures; the report
+lists it (not a failure), and the site's Per person page stays on the year before and says which year is waiting.
 
 ### Adding a year's population
 
-Each January MoSPI's First Advance Estimates add a new year. Until its population is added, that year has no
-per-person figures, and the report lists it. To add it:
+Each January MoSPI's First Advance Estimates add a new year. To add its population:
 
 1. In the new press note's statement at **constant prices**, copy five rows exactly as printed, without the growth
    rates at the end: population, GDP, net national income (NNI), per capita GDP and per capita NNI.
@@ -192,18 +159,12 @@ new series), add its per-capita statement, which makes the check cover the revis
 2. Add an entry to `NAS_STATEMENTS` in `pipeline/gdp_pipeline/population_read.py` (`key`, `url` of the publication
    page, `document`, `date`, `base`), as the last entry.
 3. Run `uv run python -m gdp_pipeline.population --add ~/Downloads/<file>.xlsx`. It copies the file into
-   `sources/raw/population/` and records it in the manifest (with its SHA-256 and that it was downloaded by hand).
+   `sources/raw/population/` and records it in the manifest under the last entry of `NAS_STATEMENTS` (it refuses to
+   replace a different file already there unless given `--replace`, which is why the entry comes first).
 4. Run `uv run python -m gdp_pipeline`. The newest document gives each year's population; the report shows the
-   figures reproduced. The weekly refresh never downloads these files; if one is missing, `--fetch` says so and
-   the checks fail (so the weekly refresh stops) until it is added.
-
-The statement is read by its English labels, and a changed layout is reported rather than misread: a section
-heading not understood, a unit other than million or ₹, a row read twice, or a figure whose total (per person ×
-population) is more than 25% from MoSPI's API is a check failure (press-note totals are not tested this way: they
-are quoted and found in the PDF, and a large real revision of one must not stop the weekly refresh). `--add` puts the file under the last entry of
-`NAS_STATEMENTS` and refuses to replace a different file already there unless given `--replace`, so add the new
-edition's entry first. MoSPI divided by the printed population in NAS 2026; the match to the API allows for a
-population rounded to the thousand in case a later edition does not.
+   figures reproduced. The statement is read by its English labels, and a changed layout is a check failure rather
+   than a misread (`parse_nas` in `population_read.py`). The weekly refresh never downloads these files; if one is
+   missing, `--fetch` says so and the checks fail (so the weekly refresh stops) until it is added.
 
 When the RBI publishes a new *Handbook of Statistics on the Indian Economy* (each July or August), the addresses of
 Tables 1 and 2 in `population_read.py` (`RBI_TABLES`) can be updated so that the checks cover the newest years too.

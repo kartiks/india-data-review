@@ -3,6 +3,7 @@ import json
 
 import pytest
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.report import FAILURE_MARK, Allowed, Exceptions, Report, data_hash, data_hashes
 
 
@@ -45,6 +46,7 @@ def test_allowed_cases_beyond_the_limit_are_counted():
 
 
 def test_summary_and_files(tmp_path, capsys):
+    pipeline_log.setup()  # as each pipeline command does: the summary lines go to stdout
     assert sample(fail=False).write(tmp_path) == 0
     summary = json.loads((tmp_path / "validation_summary.json").read_text())
     assert summary == {

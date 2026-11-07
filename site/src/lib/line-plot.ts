@@ -136,3 +136,12 @@ export function yearsWithData(years: string[], lines: { values: (number | null)[
   const last = Math.max(-1, ...lines.flatMap((l) => l.values.map((v, i) => (v == null ? -1 : i))));
   return last >= 0 ? years.slice(0, last + 1) : years;
 }
+
+/** One line a reader can choose in components/PickLines.astro. */
+export interface PickOption {
+  key: string;
+  name: string;
+  values: (number | null)[]; // aligned with `years`
+  kinds?: string[]; // per year, e.g. "worked out"; shown after the name in the readout and the table
+  note?: string; // shown below the chart while this line is shown
+}

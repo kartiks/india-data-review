@@ -5,21 +5,27 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { AREA_IDS } from "../src/lib/area-data.ts";
 import { dataMismatches, passed, readValidation, SUMMARY_FILE } from "../src/lib/validation.ts";
-
-export const AREAS = ["budget", "gdp", "jobs-prices"];
 
 /** A file copied for download: the data files, the check report and its summary (.json, .csv or .md). */
 export const isPublished = (name) => /\.(json|csv|md)$/.test(name);
 
 /**
- * Why an area's data folder may not go live, one line each (none if it may): its summary is missing or unreadable,
- * does not say PASSED, or records hashes that do not match the files.
+ * Why an area's data folder may not go live, one line each (none if it may): a file to publish is not a regular
+ * file (a symlink could publish a file from elsewhere), or its summary is missing or unreadable, does not say PASSED,
+ * or records hashes that do not match the files.
  * @param {string} area
  * @param {string} src the area's data folder
  * @returns {string[]}
  */
 export function gateErrors(area, src) {
+  const irregular = fs.existsSync(src)
+    ? fs.readdirSync(src).filter((f) => isPublished(f) && !fs.lstatSync(path.join(src, f)).isFile())
+    : [];
+  if (irregular.length) {
+    return irregular.map((f) => `${area}/data/${f} is not a regular file (a symlink or folder): only plain files are published.`);
+  }
   let validation;
   try {
     validation = readValidation(src);
@@ -49,7 +55,7 @@ export function gateErrors(area, src) {
  * @param {(msg: string) => void} log
  * @returns {string[]}
  */
-export function copyData(root, out, areas = AREAS, log = console.log) {
+export function copyData(root, out, areas = AREA_IDS, log = console.log) {
   fs.rmSync(out, { recursive: true, force: true });
   for (const area of areas) {
     const src = path.join(root, area, "data");

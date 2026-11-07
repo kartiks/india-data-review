@@ -67,6 +67,16 @@ describe("copyData", () => {
     expect(fs.existsSync(path.join(out, "a"))).toBe(false);
   });
 
+  it("refuses an area with a symlink among its published files, and copies nothing of it", () => {
+    const dir = area("a");
+    const outside = path.join(root, "secret.txt");
+    fs.writeFileSync(outside, "not data");
+    fs.symlinkSync(outside, path.join(dir, "linked.csv"));
+    const errors = copyData(root, out, ["a"], quiet);
+    expect(errors).toEqual(["a/data/linked.csv is not a regular file (a symlink or folder): only plain files are published."]);
+    expect(fs.existsSync(path.join(out, "a"))).toBe(false);
+  });
+
   it("empties the output folder first", () => {
     area("a");
     fs.mkdirSync(path.join(out, "old"), { recursive: true });

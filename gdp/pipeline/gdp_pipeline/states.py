@@ -20,6 +20,7 @@ The checks are in states_checks.py.
 
 import csv
 import json
+import logging
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -29,6 +30,8 @@ from pipeline_common.text import is_fy, prev_fy, slug
 
 from .ids import INDUSTRY_LABELS
 from .sources import STATE_INDICATORS, STATE_SERIES
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -280,7 +283,7 @@ def build(manifest: dict) -> dict:
         "left_out": left_out,
     }
     (DATA / "states.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
-    print(f"state_accounts.csv: {len(rows)} rows; states.json written; {len(problems)} problems, {len(left_out)} left out")
+    log.info(f"state_accounts.csv: {len(rows)} rows; states.json written; {len(problems)} problems, {len(left_out)} left out")
     return dataset
 
 

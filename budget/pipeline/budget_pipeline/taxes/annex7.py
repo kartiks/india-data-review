@@ -8,6 +8,7 @@ from pipeline_common.text import fy, fy_start
 
 from ..parse import NA_TOKENS, YEAR_RE, Column, ParseError, ascii_text, parse_cell
 from ..readers import read_any
+from ..sources import documents
 from .common import MANIFEST, ROOT, english, slug
 
 # ----- Receipt Budget, Annex 7: tax actuals for 2000-01 to 2007-08 -------------
@@ -185,10 +186,10 @@ def parse_annex7(rows: list[list[str]], start: int, header_text: str) -> dict:
 
 def load_receipt_budgets() -> dict:
     """{budget: {"url", "sha256", "parsed"} or {"error"}} for Receipt Budgets 2002-03..2009-10."""
-    manifest = json.loads(MANIFEST.read_text())
+    manifest = documents(json.loads(MANIFEST.read_text()))
     out = {}
     for budget, entry in manifest.items():
-        f = entry.get("receipt_budget", {}).get("files", {}).get("pdf")
+        f = entry.get("receipt_budget", {}).get("pdf")
         if not f:
             continue
         path = ROOT / f["file"]

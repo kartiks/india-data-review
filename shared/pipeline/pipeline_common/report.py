@@ -25,16 +25,22 @@ Two files in the area's data/ folder:
 
 import hashlib
 import json
+import logging
 import re
 from collections import defaultdict
 from collections.abc import Callable, Hashable, Iterable, Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
 
+log = logging.getLogger(__name__)
+
 REPORT_FILE = "validation_report.md"
 SUMMARY_FILE = "validation_summary.json"
 FAILURE_MARK = "- FAIL: "
 DATA_SUFFIXES = (".json", ".csv", ".md")
+# The key of the build time in every area's data files: its value changes on every build, so the data hashes, the
+# text check (data_text) and the new-text diff (labels) leave it out.
+BUILD_TIME_KEY = "generated_at"
 # The build time, '"generated_at": "..."' (or without the space, in compact JSON). Keep in step with
 # site/src/lib/validation.ts and the STRIP in scripts/ci.sh.
 GENERATED_AT = re.compile(rb'"generated_at": ?"[^"]*"')
@@ -199,7 +205,7 @@ class Report:
         return out
 
     def write(self, data_dir: Path) -> int:
-        """Write both files, print one line per group of checks, and return the exit code (1 if anything failed).
+        """Write both files, log one line per group of checks, and return the exit code (1 if anything failed).
 
         Call it after every data file is written: the summary records their hashes as they are now."""
         data_dir.mkdir(parents=True, exist_ok=True)
@@ -207,5 +213,5 @@ class Report:
         summary = self.summary(data_hashes(data_dir))
         (data_dir / SUMMARY_FILE).write_text(json.dumps(summary, indent=1, ensure_ascii=False) + "\n")
         for s in self.sections:
-            print(f"{'FAIL' if s.failures else 'ok  '} {s.title}: {s.checks} checks, {len(s.failures)} failures")
+            log.info(f"{'FAIL' if s.failures else 'ok  '} {s.title}: {s.checks} checks, {len(s.failures)} failures")
         return 1 if self.failed else 0

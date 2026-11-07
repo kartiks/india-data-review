@@ -5,18 +5,26 @@
 #   scripts/ci.sh              # the current commit
 #   scripts/ci.sh my-branch    # a branch, tag or commit (e.g. origin/main)
 #
-# It passes only if the Python code passes ruff (settings in ruff.toml); for every area, the pipeline rebuilds
-# data/ from the committed sources with every check passing, the rebuilt data/ matches what is committed (apart
-# from the build time), and the tests pass; and the site type-checks, passes its tests (if it has an npm test
-# script) and builds. It downloads no data (npm and uv may download packages).
+# It passes only if the Python code passes ruff (settings in ruff.toml); the workflow passes actionlint and the
+# shell scripts ShellCheck; the weekly refresh's scripts pass their dry run (scripts/test-refresh.sh); for every
+# area, the pipeline rebuilds data/ from the committed sources with every check passing, the rebuilt data/ matches
+# what is committed (apart from the build time), and the tests pass; and the site type-checks, passes its tests (if
+# it has an npm test script) and builds. It downloads no data (npm and uv may download packages).
 
 set -euo pipefail
 export PATH="/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH"
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 REF="${1:-HEAD}"
-AREAS=(budget gdp jobs-prices)
-RUFF_VERSION=0.17.4  # pinned, so a new ruff release cannot fail a commit that passed before
+# The areas: the list in site/src/data/areas.json of the commit checked, which the site and its build gate use too.
+AREA_IDS="$(git -C "$REPO" show "$REF:site/src/data/areas.json" | node -p 'JSON.parse(require("fs").readFileSync(0, "utf8")).map((a) => a.id).join(" ")')"
+[ -n "$AREA_IDS" ] || { echo "site/src/data/areas.json lists no areas" >&2; exit 1; }
+read -r -a AREAS <<< "$AREA_IDS"
+# Pinned, so a new release cannot fail a commit that passed before. actionlint-py and shellcheck-py are PyPI
+# packages of the actionlint and ShellCheck binaries (their versions add a build number), run with uvx.
+RUFF_VERSION=0.17.4
+ACTIONLINT_VERSION=1.7.12.25  # actionlint 1.7.12
+SHELLCHECK_VERSION=0.11.0.1   # ShellCheck 0.11.0
 
 SHA="$(git -C "$REPO" rev-parse --verify "$REF^{commit}")"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/india-data-review-ci.XXXXXX")"
@@ -34,8 +42,16 @@ git -C "$REPO" worktree add --quiet --detach "$WORK" "$SHA"
 step "Python lint (ruff)"
 (cd "$WORK" && uvx "ruff@$RUFF_VERSION" check --no-cache .)
 
+step "Workflow and shell script lint (actionlint, shellcheck)"
+# actionlint also runs shellcheck on each workflow step's script.
+(cd "$WORK" && uvx --from "actionlint-py==$ACTIONLINT_VERSION" --with "shellcheck-py==$SHELLCHECK_VERSION" actionlint)
+(cd "$WORK" && git ls-files -z '*.sh' | xargs -0 uvx --from "shellcheck-py==$SHELLCHECK_VERSION" shellcheck -x)
+
 step "shared pipeline code: tests"
 (cd "$WORK/shared/pipeline" && uv run --locked pytest -q)
+
+step "Weekly refresh scripts: dry run against a local repository"
+"$WORK/scripts/test-refresh.sh"
 
 for area in "${AREAS[@]}"; do
   pkg="${area//-/_}_pipeline"
@@ -51,15 +67,15 @@ for area in "${AREAS[@]}"; do DATA+=("$area/data"); SOURCES+=("$area/sources"); 
 # Each build writes its time into "generated_at" (some files are one line of compact JSON), so compare every
 # rebuilt file with the committed one after removing that field from both.
 STRIP='s/"generated_at": ?"[^"]*"//g'
-DIFFERS=""
-for f in $(git -C "$WORK" diff --name-only -- "${DATA[@]}"); do
+DIFFERS=()
+while IFS= read -r f; do
   if ! cmp -s <(git -C "$WORK" show "HEAD:$f" | sed -E "$STRIP") <(sed -E "$STRIP" "$WORK/$f"); then
-    DIFFERS="$DIFFERS $f"
+    DIFFERS+=("$f")
   fi
-done
-if [ -n "$DIFFERS" ]; then
-  git -C "$WORK" diff --stat -- $DIFFERS >&2
-  echo "data/ differs from what the pipelines build:$DIFFERS. Run the pipelines and commit their data/." >&2
+done < <(git -C "$WORK" diff --name-only -- "${DATA[@]}")
+if [ ${#DIFFERS[@]} -gt 0 ]; then
+  git -C "$WORK" diff --stat -- "${DIFFERS[@]}" >&2
+  echo "data/ differs from what the pipelines build: ${DIFFERS[*]}. Run the pipelines and commit their data/." >&2
   exit 1
 fi
 if ! git -C "$WORK" diff --quiet -- "${SOURCES[@]}"; then

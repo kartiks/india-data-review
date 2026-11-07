@@ -2,17 +2,32 @@
 # what changed to main. What this covers and what still needs a person is in the README ("Keeping the data
 # up to date").
 #
-#   GDP              MoSPI national accounts API                        gdp_pipeline --refresh-nas
+#   GDP              MoSPI national accounts API                        gdp_pipeline --refresh-api
 #   Jobs and prices  MoSPI API (PLFS, CPI, CPI-AL/RL, HCES)             jobs_prices_pipeline --refresh-api
 #                    and the RBI Handbook of Statistics on Indian States tables
 #
 # These sources keep only their latest figures, so when a download differs from the saved file the pipeline keeps
 # the old one under <area>/sources/snapshots/. Committing both is what builds up the revision history.
 #
-# An area is committed only if its download finished and every one of its checks passed. Then the local CI
-# (scripts/ci.sh) must pass on the commit before it is pushed; Vercel deploys main. If anything fails, the run
-# fails (GitHub emails whoever last changed this schedule, or started the run by hand), and the downloads that were
-# not pushed are kept as a run artifact for 90 days.
+# Two jobs, so that no write token exists while packages are installed and code runs:
+# - refresh (read-only token): downloads, rebuilds and checks each area, commits the areas whose sources changed and
+#   whose checks passed, and runs the local CI (scripts/ci.sh) on the commit (again on top of main if main moved).
+#   It uploads the run's artifact: the commit as a git bundle, meta.txt, the text new in the data, each area's
+#   validation report and the downloads not committed (scripts/refresh/package.sh).
+# - publish (write token): installs nothing; fetches the bundle, checks it (one commit on main's history, only plain
+#   files in the refreshed areas' sources/ and data/), works out the new text itself with the runner's python3, and
+#   pushes it to main (scripts/refresh/publish.sh). If the data has new text (a new state, item, unit or note; not
+#   new figures or periods: see shared/pipeline/pipeline_common/labels.py), it pushes branch data-refresh/<date> and
+#   opens a pull request for review instead. That needs "Allow GitHub Actions to create and approve pull requests" (Settings > Actions >
+#   General); while it is off, the branch is pushed and the run fails with a link to open the pull request by hand.
+# The refresh job also asks budget_pipeline.due and gdp_pipeline.due whether a release added by hand is probably out
+# (a new budget, Economic Survey, RBI statement, population); if one is, the run fails at the end, after the data
+# is published, with a line saying what to add and where (scripts/refresh/check-due.sh).
+# Vercel deploys main. If anything fails, the run fails (GitHub emails whoever last changed this schedule, or
+# started the run by hand); the artifact is kept for 90 days.
+#
+# The shell is in scripts/refresh/ so that scripts/ci.sh can lint it (actionlint, shellcheck) and dry-run it
+# (scripts/test-refresh.sh).
 
 name: Weekly data refresh
 
@@ -21,22 +36,29 @@ on:
     - cron: "30 20 * * 6" # Saturday 20:30 UTC = Sunday 02:00 IST. GitHub may start scheduled runs late.
   workflow_dispatch: # "Run workflow" on the Actions tab, or: gh workflow run data-refresh.yml
 
-permissions:
-  contents: write
+permissions: {} # each job says what it needs
 
 concurrency:
   group: data-refresh
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash # bash -eo pipefail
+
 jobs:
   refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 240 # backstop; each area has its own limit below
+    permissions:
+      contents: read
+    outputs:
+      publish: ${{ steps.package.outputs.publish }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Keep the write token out of .git/config, where the package installs and builds below could read it.
-          # Only the push step gets it.
+          # The token is only read-only here, but still keep it out of .git/config, where the package installs and
+          # builds below could read it.
           persist-credentials: false
 
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
@@ -52,142 +74,124 @@ jobs:
         continue-on-error: true
         working-directory: gdp/pipeline
         # A time limit per area: a slow source fails its own step rather than cancelling the whole run.
-        run: timeout 30m uv run --locked python -m gdp_pipeline --refresh-nas
+        run: ../../scripts/refresh/run-area.sh gdp 30m uv run --locked python -m gdp_pipeline --refresh-api
 
       - name: "Jobs and prices: download MoSPI API and RBI tables, rebuild, check"
         id: jobs
         continue-on-error: true
         working-directory: jobs-prices/pipeline
-        # Exit 10: every check passed but the base-2024 CPI is out of date. The data is still committed;
-        # the last step fails the run so someone adds the new month (jobs-prices/README.md).
-        run: |
-          code=0
-          timeout 150m uv run --locked python -m jobs_prices_pipeline --refresh-api || code=$?
-          if [ "$code" -eq 10 ]; then
-            echo "cpi_stale=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          exit "$code"
+        # Exit 10: every check passed but the base-2024 CPI is out of date. run-area.sh then sets stale=true and
+        # passes; the data is committed and the last step fails the run so someone adds the new month
+        # (jobs-prices/README.md).
+        run: >-
+          ../../scripts/refresh/run-area.sh jobs-prices 150m
+          uv run --locked python -m jobs_prices_pipeline --refresh-api
+
+      # Releases added by hand (a new budget, Economic Survey, RBI statement, population) that are probably out: exit
+      # 11 with a "DUE: ..." line each. They never hold back the data: the last steps fail the run for them.
+      - name: "Budget: is a new budget out?"
+        id: budget_due
+        continue-on-error: true
+        working-directory: budget/pipeline
+        run: ../../scripts/refresh/run-area.sh budget-due 10m uv run --locked python -m budget_pipeline.due
+
+      - name: "GDP: are forecasts or population due?"
+        id: gdp_due
+        continue-on-error: true
+        working-directory: gdp/pipeline
+        # After the GDP refresh: it reads gdp/data/gdp.json.
+        run: ../../scripts/refresh/run-area.sh gdp-due 5m uv run --locked python -m gdp_pipeline.due
 
       - name: Commit the areas whose sources changed and whose checks passed
         id: commit
         env:
           GDP: ${{ steps.gdp.outcome }}
           JOBS: ${{ steps.jobs.outcome }}
-        run: |
-          set -euo pipefail
-          committed=""
-          held=""
-          for pair in "gdp:$GDP" "jobs-prices:$JOBS"; do
-            area="${pair%%:*}"
-            outcome="${pair#*:}"
-            if [ -z "$(git status --porcelain -- "$area/sources/raw" "$area/sources/snapshots")" ]; then
-              echo "$area: no change in its sources ($outcome)"
-            elif [ "$outcome" = success ]; then
-              echo "$area: sources changed and every check passed"
-              git status --short -- "$area/sources"
-              git add "$area/sources" "$area/data"
-              committed="$committed $area"
-            else
-              echo "::warning::$area: sources changed but the refresh failed; not committed (see the artifact)"
-              held="$held $area"
-            fi
-          done
-          echo "committed=${committed# }" >> "$GITHUB_OUTPUT"
-          echo "held=${held# }" >> "$GITHUB_OUTPUT"
-          if [ -n "$committed" ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git commit --quiet -m "Data refresh $(TZ=Asia/Kolkata date +%Y-%m-%d): ${committed# }"
-            git show --stat --format='%h %s' HEAD | sed -n 1,40p
-          fi
+        run: scripts/refresh/commit.sh gdp="$GDP" jobs-prices="$JOBS"
 
       - name: Local CI on the commit
+        id: ci
         if: steps.commit.outputs.committed != ''
         run: scripts/ci.sh HEAD
 
-      # The write token is given only to the two steps that push, which run nothing but git. The replay in between,
-      # which runs the local CI (package installs and builds), does not get it.
-      - name: Push to main
-        id: push
-        # Only from main: a run started by hand on another branch must not push that branch.
+      # Only a run on main publishes: a run started by hand on another branch must not push that branch.
+      - name: Fetch main
         if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main'
         env:
           TOKEN: ${{ github.token }}
         run: |
-          set -euo pipefail
           auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
           echo "::add-mask::$auth"
-          if git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:main; then
-            echo "pushed=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          git fetch origin main
-          if [ "$(git rev-parse origin/main)" = "$(git rev-parse HEAD~1)" ]; then
-            echo "::error::The push was refused or failed although main has not moved. Either main does not let github-actions[bot] push (branch protection or a ruleset that requires a pull request), or it was a network error: re-run the workflow."
-            exit 1
-          fi
-          echo "main moved while this ran"
-          echo "moved=true" >> "$GITHUB_OUTPUT"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" fetch --no-tags origin main
 
-      - name: "main moved: replay the commit on top of it and check again"
-        if: steps.push.outputs.moved == 'true'
-        run: |
-          set -euo pipefail
-          # --autostash sets aside the files of an area that was not committed (its rebuilt data and manifest, or
-          # downloads held back).
-          git rebase --autostash origin/main || { git rebase --abort || true; exit 1; }
-          scripts/ci.sh HEAD
+      - name: "If main moved: replay the commit on top of it and check again"
+        id: replay
+        if: steps.commit.outputs.committed != '' && github.ref == 'refs/heads/main'
+        run: scripts/refresh/replay.sh
 
-      - name: Push the replayed commit
-        id: push_replayed
-        if: steps.push.outputs.moved == 'true'
-        env:
-          TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          auth="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
-          echo "::add-mask::$auth"
-          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" push origin HEAD:main
-
-      - name: Keep downloads that were not pushed
-        # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
-        if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
-          steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
+      - name: Pack the commit, the new text and the downloads not committed
+        id: package
+        if: always()
         env:
           COMMITTED: ${{ steps.commit.outputs.committed }}
-          PUSHED: ${{ steps.push.outputs.pushed == 'true' || steps.push_replayed.outcome == 'success' }}
-        run: |
-          mkdir -p refresh-artifact
-          paths="gdp/sources gdp/data jobs-prices/sources jobs-prices/data"
-          # Downloads not committed (an area whose checks failed), with each area's validation report ...
-          git ls-files --modified --others --exclude-standard -- $paths | xargs -r cp --parents -t refresh-artifact
-          # ... and the refresh commit (always the last one), if it was made but not pushed.
-          if [ -n "$COMMITTED" ] && [ "$PUSHED" != true ]; then
-            git diff --name-only HEAD~1 HEAD -- $paths | xargs -r cp --parents -t refresh-artifact
-          fi
-          cp --parents -t refresh-artifact gdp/data/validation_report.md jobs-prices/data/validation_report.md \
-            gdp/data/validation_summary.json jobs-prices/data/validation_summary.json
-          find refresh-artifact -type f | sed -n 1,60p
+          HELD: ${{ steps.commit.outputs.held }}
+          CI_OK: ${{ steps.ci.outcome == 'success' && steps.replay.outcome == 'success' }}
+          ON_MAIN: ${{ github.ref == 'refs/heads/main' }}
+          STALE: ${{ steps.jobs.outputs.stale == 'true' }}
+        run: scripts/refresh/package.sh "$RUNNER_TEMP/refresh-artifact" gdp jobs-prices
 
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        # Whenever something failed or was held back, or the run is not on main (so nothing is pushed).
-        if: failure() || steps.commit.outputs.held != '' || github.ref != 'refs/heads/main' ||
-          steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
+        if: always()
         with:
           name: data-refresh-${{ github.run_id }}
-          path: refresh-artifact
+          path: ${{ runner.temp }}/refresh-artifact
           if-no-files-found: warn
           retention-days: 90
 
       - name: Fail if any refresh failed
-        if: steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success'
+        if: ${{ !cancelled() && (steps.gdp.outcome != 'success' || steps.jobs.outcome != 'success') }}
+        env:
+          GDP: ${{ steps.gdp.outcome }}
+          JOBS: ${{ steps.jobs.outcome }}
         run: |
-          echo "::error::GDP: ${{ steps.gdp.outcome }}, jobs and prices: ${{ steps.jobs.outcome }}. Read that step's log; the run's artifact has each area's validation report and any downloads not pushed."
+          echo "::error::GDP: $GDP, jobs and prices: $JOBS. Read that step's log; the run's artifact has each area's validation report and any downloads not committed."
           exit 1
 
       - name: Fail if the base-2024 CPI is out of date
-        if: steps.jobs.outputs.cpi_stale == 'true'
+        if: ${{ !cancelled() && steps.jobs.outputs.stale == 'true' }}
         run: |
           echo "::error::The base-2024 CPI is out of date: add the latest PIB release to CPI2024_RELEASES in jobs-prices/pipeline/jobs_prices_pipeline/sources.py. The other jobs and prices data was committed."
           exit 1
+
+      - name: Fail if a release added by hand is due
+        if: ${{ !cancelled() && (steps.budget_due.outcome != 'success' || steps.gdp_due.outcome != 'success') }}
+        env:
+          BUDGET: ${{ steps.budget_due.outputs.exit_code }}
+          GDP: ${{ steps.gdp_due.outputs.exit_code }}
+        run: scripts/refresh/check-due.sh budget-due="$BUDGET" gdp-due="$GDP"
+
+  publish:
+    needs: refresh
+    # Also when the refresh job failed after packing a commit that passed the local CI (one area failed, or the
+    # CPI is out of date): the areas that passed are published. Only on main (the refresh job also says so).
+    if: ${{ !cancelled() && github.ref == 'refs/heads/main' && needs.refresh.outputs.publish == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write # push to main, or to a data-refresh/<date> branch
+      pull-requests: write # open the pull request when the data has new text
+    steps:
+      # Nothing is installed or built in this job: only git, gh and the runner's own python3 (for the label diff,
+      # which uses only the standard library) run, with scripts from the commit this run started from. The refresh
+      # commit is fetched from the bundle, checked, and pushed, never checked out.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: data-refresh-${{ github.run_id }}
+          path: ${{ runner.temp }}/refresh-artifact
+
+      - name: Push the refresh commit to main, or open a pull request if the data has new text
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: scripts/refresh/publish.sh "$RUNNER_TEMP/refresh-artifact"

@@ -1,32 +1,36 @@
 """Download every official table, in every available format.
 
 Files are saved as budget/sources/raw/<budget year>/<document>.<ext> and described
-in budget/sources/manifest.json (URL, SHA-256, size, download time), so every
+in budget/sources/manifest.json under "<budget year>/<document>/<ext>" (URL, SHA-256,
+size, download time; pipeline_common.download has the manifest's layout), so every
 number we publish can be traced back to an exact official file. A file only
 counts if its text contains the table's title (see sources.TITLE_MUST_CONTAIN).
+When --refresh downloads a file that has changed, the previous copy is kept under
+sources/snapshots/<time it was fetched>/ (pipeline_common.download.save).
 
-Run: uv run python -m budget_pipeline.fetch [--force]
+Run: uv run python -m budget_pipeline.fetch [--refresh]   (downloads only; see __main__.py)
 """
 
-import hashlib
-import json
+import logging
 import re
-import sys
 import tempfile
 import time
 import urllib.error
-from datetime import UTC, datetime
 from pathlib import Path
 
+from pipeline_common import cli, download
+from pipeline_common import log as pipeline_log
 from pipeline_common.download import POLITE_PAUSE_S, file_kind, get
 from pipeline_common.text import fy
 
 from .readers import read_any
-from .sources import BUDGETS, DOC_TYPES, TITLE_MUST_CONTAIN, candidate_urls
+from .sources import BUDGETS, DOC_TYPES, TITLE_MUST_CONTAIN, candidate_urls, manifest_key
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
 MANIFEST = ROOT / "sources" / "manifest.json"
+
+log = logging.getLogger(__name__)
 
 
 MIN_BYTES = 500  # smaller than any real table: an empty or error answer
@@ -55,47 +59,45 @@ def has_title(doc: str, ext: str, content: bytes) -> bool:
 
 
 def main(force: bool = False, docs: list[str] | None = None) -> None:
-    manifest = json.loads(MANIFEST.read_text()) if MANIFEST.exists() else {}
+    manifest = download.load_manifest(MANIFEST)
     for start in BUDGETS:
         year = fy(start)
-        entry = manifest.setdefault(year, {})
         for doc in docs or DOC_TYPES:
-            files = entry.get(doc, {}).get("files", {})
+            # One file per format: the first candidate address that holds the table (Statement 3A before
+            # Statement 3). --refresh downloads it again but never lets a later candidate replace it.
+            saved_now: set[str] = set()
             for url in candidate_urls(start, doc):
                 ext = url.rsplit(".", 1)[-1]
-                if ext in files and not force:
+                key = manifest_key(year, doc, ext)
+                if ext in saved_now or (key in manifest and not force):
                     continue
                 content = None
                 try:
                     content = get(url)
                 except urllib.error.HTTPError as exc:
+                    exc.close()
                     if exc.code != 404:  # most candidate addresses do not exist
-                        print(f"{year} {doc}: {url} -> {exc}")
+                        log.warning(f"{year} {doc}: {url} -> {exc}")
                 except Exception as exc:  # noqa: BLE001 - a network error after get()'s retries: report and carry on
-                    print(f"{year} {doc}: {url} -> {exc}")
+                    log.warning(f"{year} {doc}: {url} -> {exc}")
                 time.sleep(POLITE_PAUSE_S)
                 if content is None or not looks_valid(ext, content):
                     continue
                 if not has_title(doc, ext, content):
-                    print(f"{year} {doc}: {url} is not the expected table, skipped")
+                    log.info(f"{year} {doc}: {url} is not the expected table, skipped")
                     continue
                 dest = RAW / year / f"{doc}.{ext}"
-                dest.parent.mkdir(parents=True, exist_ok=True)
-                dest.write_bytes(content)
-                files[ext] = {
-                    "url": url,
-                    "file": str(dest.relative_to(ROOT)),
-                    "sha256": hashlib.sha256(content).hexdigest(),
-                    "bytes": len(content),
-                    "fetched_at": datetime.now(UTC).isoformat(timespec="seconds"),
-                }
-                print(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes)")
-            if files:
-                entry[doc] = {"files": files}
-            elif candidate_urls(start, doc):
-                print(f"{year} {doc}: NO SOURCE FOUND")
-    MANIFEST.write_text(json.dumps(dict(sorted(manifest.items())), indent=2) + "\n")
+                changed = download.save(manifest, key, dest, content, url, root=ROOT, raw=RAW,
+                                        snapshots=RAW.parent / "snapshots")
+                saved_now.add(ext)
+                log.info(f"{year} {doc}: saved {dest.name} ({len(content):,} bytes){'' if changed else ' (unchanged)'}")
+            prefix = manifest_key(year, doc, "")
+            if candidate_urls(start, doc) and not any(k.startswith(prefix) for k in manifest):
+                log.warning(f"{year} {doc}: NO SOURCE FOUND")
+    # a budget with nothing found (not published yet) gets no entry; build reports what is missing
+    download.write_manifest(MANIFEST, manifest)
 
 
 if __name__ == "__main__":
-    main(force="--force" in sys.argv)
+    pipeline_log.setup(__package__)
+    main(force=cli.parser(__doc__, fetch=False).parse_args().refresh)

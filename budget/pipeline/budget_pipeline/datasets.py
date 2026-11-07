@@ -16,6 +16,7 @@ For each table we write <name>.csv (every observation, with its source) and
 
 import csv
 import json
+import logging
 from collections import defaultdict
 from datetime import UTC, datetime
 from pathlib import Path
@@ -23,6 +24,8 @@ from pathlib import Path
 from pipeline_common.numbers import strict_number
 from pipeline_common.report import Allowed, Exceptions
 from pipeline_common.text import fy_start, next_fy
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
@@ -93,7 +96,7 @@ def write_table(name: str, rows: list[dict], id_fields: tuple[str, ...], value_f
         "years": {y: v for y, v in consolidate(rows, id_fields, value_fields).items() if y >= FIRST_YEAR},
     }
     (DATA / f"{name}.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {name}: {len(rows)} observations")
+    log.info(f"wrote {name}: {len(rows)} observations")
     return dataset
 
 
@@ -147,8 +150,9 @@ def build_ministries() -> tuple[dict, list[tuple]]:
                            "(Revenue/Capital, with scheme categories) from 2017-18. Department ids are kept "
                            "across renames via data_maps/ministry_names.csv.",
             "comparability": "Up to 2016-17 a department's line excludes State Plan assistance routed through it "
-                             "(listed separately as state_plans:<id>); from 2017-18 it is included. Several "
-                             "demands were split or merged in 2017-18 (see the name map notes).",
+                             "(listed separately, as state_plans: and the department's id, e.g. state_plans:agriculture); "
+                             "from 2017-18 it is included. Several demands were split or merged in 2017-18 (see the "
+                             "name map notes).",
             "items": items,
         },
     )

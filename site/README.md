@@ -9,9 +9,10 @@ small script for hover/touch/keyboard readouts and a table view under every char
 ```bash
 npm ci
 npm run dev      # http://localhost:4321
-npm run build    # static site in dist/ (refuses to build unless every area's checks passed on its current data)
+npm run build    # static site in dist/ (only from data that passed its checks: see the data gate below)
 npm run preview  # serve dist/ locally
 npm run check    # type check
+npm test         # unit tests (test/)
 ```
 
 ## Pages
@@ -40,7 +41,10 @@ npm run check    # type check
 | `/about/` | What the site is, principles, every area's check results |
 | `/404.html` | Page not found, with links into each area (`src/pages/404.astro`) |
 
-Code layout: `src/lib/budget/`, `src/lib/gdp/` and `src/lib/jobs-prices/` read each area's data (`src/lib/gdp/data.ts` the
+Code layout: the areas are listed once, in `src/data/areas.json` (id, tab label, full name), which the tabs, the
+About page, the build gate, `scripts/vercel-ignore-build.sh` and the root `scripts/ci.sh` all read;
+`src/lib/area-data.ts` gives the list and reads a file from an area's `data/` folder. `src/lib/budget/`,
+`src/lib/gdp/` and `src/lib/jobs-prices/` read each area's data (`src/lib/gdp/data.ts` the
 national accounts in `gdp.json`, `src/lib/gdp/states.ts` the state accounts in `states.json` and India's figures on
 the same base); `src/lib/format.ts`, `chart.ts`, `line-plot.ts` and `url.ts` are shared helpers (`link()` adds the
 site's base path to internal links); `src/components/` holds the shared
@@ -49,17 +53,23 @@ rural vs urban by state; `OrDash.astro` shows "–", read as "no data", for an e
 the colour slot of the old and new GDP and CPI series, so each keeps one colour on every page; `src/lib/states.ts`
 turns state names into keys the same way as the jobs-prices pipeline (both are tested against
 `shared/fixtures/state-names.json`); `src/layouts/Base.astro` has the tabs and sub-navigation, and works out the area from
-the URL. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
+the URL. Each area's Sources page is a `SourcesPage.astro` (check results, the full report, downloads) with the
+area's own text in its slots. Shared page parts are styled once in `src/styles/global.css` (`.lede`, `.card`,
+`.note-card`, `.link-card` via `LinkCard.astro`, `details.table-view`, `.source`). Page logic that is more than
+picking figures goes in `src/lib/` with tests in `test/`, and browser scripts longer than a few lines in
+`src/scripts/`, imported from a `<script>` so Astro bundles them. `StateMap.astro` draws the India map from `src/data/india-states.json`: DataMeet's state boundaries
 (CC BY 4.0, following the Survey of India's map) simplified by `scripts/make-india-map.py`, whose header says how to
-redo it; the page must credit DataMeet.
+redo it; the page must credit DataMeet. Adding an area: see the root README's
+[checklist](../README.md#a-new-area).
+
+## The data gate
 
 `scripts/copy-data.mjs` (run before every `dev` and `build`) copies each area's checked data into
 `public/data/<area>/` for download. It stops the build if an area's `data/validation_summary.json` is missing or
 does not say PASSED, or if any data file differs from the SHA-256 the summary recorded when the checks ran (so data
 edited or rebuilt without its checks cannot go live); it names the file. The hashes leave out each file's
 `generated_at` (the build time), so rebuilding the same data, as the tests do, never trips it. Pages and the gate read
-the check results through `src/lib/validation.ts`, never by parsing `validation_report.md`. Adding an area: see the
-root README's checklist.
+the check results through `src/lib/validation.ts`, never by parsing `validation_report.md`.
 
 ## How numbers are chosen
 
@@ -92,7 +102,16 @@ Vercel's "Include files outside the root directory" setting must stay on (the de
 Every push to `main` deploys; other branches get preview URLs (behind Vercel's login). Two exceptions, to keep
 deployment storage down (each deployment is a ~100 MB copy): Dependabot branches never deploy (`git.deploymentEnabled`
 in `vercel.json`), and `scripts/vercel-ignore-build.sh` skips a commit that changed nothing in `site/` or any area's
-`data/` since the branch's last deployment (a new area's `data/` must be added to its list). Vercel runs no
-pipeline: it builds from the `data/` folders committed to the repository, so data updates are run locally and
-committed (see the root README). `vercel.json` also sets security headers on every page (no framing, no MIME
-sniffing, a strict referrer policy, and browser features such as the camera turned off).
+`data/` since the branch's last deployment (it takes the areas from `src/data/areas.json`). Vercel runs no
+pipeline: it builds from the `data/` folders committed to the repository
+([Keeping the data up to date](../README.md#keeping-the-data-up-to-date)). `vercel.json` also sets security headers
+on every page (no framing, no MIME sniffing, a strict referrer policy, and browser features such as the camera
+turned off).
+
+Content-Security-Policy: `security.csp` in `astro.config.mjs` puts a CSP `<meta>` tag on every page, with the hash
+of every script and stylesheet Astro emits; only the site's own origin may load anything. A script that must run
+inline, unbundled (before first paint, say), goes in `src/scripts/inline/` and is rendered with
+`InlineScript.astro`, which adds its hash; a plain `<script is:inline>` would be blocked. Style attributes are
+allowed (charts set sizes and colours with them). `frame-ancestors`, which a `<meta>` tag cannot set, is in the
+`vercel.json` header. The policy is not applied by `npm run dev`: check it with `npm run build` and
+`npm run preview` (violations show in the browser console).

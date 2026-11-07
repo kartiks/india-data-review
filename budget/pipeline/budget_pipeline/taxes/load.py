@@ -9,7 +9,7 @@ from pipeline_common.text import fy_start
 
 from ..parse import ParseError
 from ..readers import read_any
-from ..sources import FORMAT_PRIORITY
+from ..sources import FORMAT_PRIORITY, documents
 from .annex7 import load_receipt_budgets
 from .common import DATA, MANIFEST, ROOT
 from .exceptions import HEADER_FIXES
@@ -22,11 +22,11 @@ def load_all() -> dict:
     Returns {"budgets": {budget: {"primary": ext, "url", "sha256", "parsed": {...}}},
              "comparisons": [{"budget", "primary", "others": {ext: {...}}, "unparseable": {...}}]}
     """
-    manifest = json.loads(MANIFEST.read_text())
+    manifest = documents(json.loads(MANIFEST.read_text()))
     budgets: dict[str, dict] = {}
     comparisons: list[dict] = []
     for budget, entry in manifest.items():
-        files = entry.get("receipts", {}).get("files", {})
+        files = entry.get("receipts", {})
         start = fy_start(budget)
         parsed: dict[str, dict] = {}
         errors: dict[str, str] = {}

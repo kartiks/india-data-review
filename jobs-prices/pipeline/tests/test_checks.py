@@ -203,6 +203,72 @@ def test_rbi_inflation_agrees_with_mospi_indices():
         "Kerala 2023-24: RBI 5.0%, MoSPI's indices give 10.00%"]
 
 
+def test_rbi_inflation_chains_the_base_2024_series():
+    """FY 2025-26 needs January-March 2026, from the base-2024 releases: each month's index a year earlier × (1 +
+    its inflation). Kerala's base-2012 index is 100 through 2024-25 and 110 from April 2025; the releases give 10%
+    for January-March 2026 (against 100 a year earlier), so 2025-26 averages 110: 10% inflation."""
+    cpi = [cpi_row(f"{y}-{m:02d}", 100.0 if (y, m) < (2025, 4) else 110.0, state="Kerala")
+           for y in (2024, 2025) for m in range(1, 13)]
+    releases = {f"2026-{m:02d}": {"states": [{"name": "Kerala", "values": six(999.0, 10.0)}]} for m in (1, 2, 3)}
+    ds = {"cpi": cpi, "cpi2024": {"releases": releases}, "rbi": [rbi_rec(108, "Kerala", "2025-26", 10.0)]}
+    report = run_check(states.check_rbi_inflation, ds)
+    assert report.checks == 1 and report.failures == 0
+    assert "1 comparisons use chained months" in " ".join(report.sections[0].notes)
+    assert failures_of(states.check_rbi_inflation, {**ds, "rbi": [rbi_rec(108, "Kerala", "2025-26", 8.0)]}) == [
+        "Kerala 2025-26: RBI 8.0%, MoSPI's indices give 10.00%"]
+
+
+def test_rbi_inflation_counts_what_it_does_not_compare():
+    """Lockdown months are allowed with their reason; a state with no index, or a year not published yet, is a
+    note with its count; any other missing month fails."""
+    months = [f"{y}-{m:02d}" for y in range(2019, 2024) for m in range(1, 13)]
+    cpi = [cpi_row(m, 100.0, state=s) for m in months for s in ("Goa", "Bihar")
+           if not (m in ("2020-04", "2020-05") or (s == "Bihar" and m == "2022-06"))]
+    rbi = [rbi_rec(108, "Goa", "2020-21", 0.0), rbi_rec(108, "Goa", "2021-22", 0.0),  # lockdown
+           rbi_rec(108, "Ladakh", "2021-22", 4.0),  # no index
+           rbi_rec(108, "Goa", "2024-25", 4.0),  # not published yet
+           rbi_rec(108, "Bihar", "2022-23", 0.0)]  # a month missing for no known reason
+    report = run_check(states.check_rbi_inflation, {"cpi": cpi, "rbi": rbi})
+    s = report.sections[0]
+    assert s.failures == ["Bihar 2022-23: MoSPI's indices lack 2022-06"]
+    assert s.allowed == [{"reason": states.LOCKDOWN, "cases": 2}]
+    notes = " ".join(s.notes)
+    assert "1 state-years: no MoSPI index under the handbook's state name: {'Ladakh': ['2021-22']}" in notes
+    assert "Not compared yet (MoSPI's indices so far run to 2023-12): {'2024-25': 1}" in notes
+
+
+def chained_ds(release_states: dict[str, list[str]], rbi_states=("Kerala",)) -> dict:
+    """Base-2012 indices for 2024-2025, releases for January-March 2026 with the states given per month (10%
+    inflation each), and RBI's 2025-26 inflation (10%) for rbi_states."""
+    cpi = [cpi_row(f"{y}-{m:02d}", 100.0 if (y, m) < (2025, 4) else 110.0, state=s)
+           for s in ("Kerala", "Goa") for y in (2024, 2025) for m in range(1, 13)]
+    releases = {m: {"states": [{"name": s, "values": six(999.0, 10.0)} for s in names]}
+                for m, names in release_states.items()}
+    return {"cpi": cpi, "cpi2024": {"releases": releases}, "rbi": [rbi_rec(108, s, "2025-26", 10.0) for s in rbi_states]}
+
+
+def test_rbi_inflation_fails_on_a_state_missing_from_one_release():
+    """A state the base-2024 releases carry, but missing from one of them (dropped from its table, or spelled
+    differently), fails rather than becoming a note."""
+    months = ("2026-01", "2026-02", "2026-03")
+    ok = chained_ds({m: ["Kerala", "Goa"] for m in months}, ("Kerala", "Goa"))
+    assert failures_of(states.check_rbi_inflation, ok) == []
+    dropped = chained_ds({"2026-01": ["Kerala", "Goa"], "2026-02": ["Goa"], "2026-03": ["Kerala", "Goa"]})
+    assert failures_of(states.check_rbi_inflation, dropped) == ["Kerala 2025-26: MoSPI's indices lack 2026-02"]
+    respelled = chained_ds({"2026-01": ["Kerala", "Goa"], "2026-02": ["Kerela", "Goa"], "2026-03": ["Kerala", "Goa"]})
+    assert failures_of(states.check_rbi_inflation, respelled) == ["Kerala 2025-26: MoSPI's indices lack 2026-02"]
+
+
+def test_rbi_inflation_lists_a_state_in_no_base_2024_release():
+    """A state with base-2012 indices but in no base-2024 release (as Daman & Diu, merged with Dadra & Nagar Haveli in
+    the new series) is not compared, and listed by name."""
+    report = run_check(states.check_rbi_inflation, chained_ds({m: ["Goa"] for m in ("2026-01", "2026-02", "2026-03")}))
+    s = report.sections[0]
+    assert (s.checks, s.failures) == (0, [])
+    assert ("1 state-years: no MoSPI index under the handbook's state name: "
+            "{'Kerala': ['2025-26 (in no base-2024 release, from 2026-01 on)']}") in " ".join(s.notes)
+
+
 def test_rbi_totals_within_their_parts():
     unemployment = [rbi_rec(8, "Goa", "2023-24", v, f"Rural {g}") for g, v in (("Male", 50.0), ("Female", 60.0))]
     wages = [rbi_rec(112, s, "2023-24", v) for s, v in (("Goa", 400.0), ("Bihar", 300.0))]

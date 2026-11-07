@@ -33,12 +33,15 @@
      rural and urban; only provisional figures revised;
    - the linking factor equals the 2025 average, new base / old base;
    - the release page's tables match its PDF.
+7. Text: no '<', '>' or control characters in any key or value of the data files
+   (pipeline_common.data_text).
 
 Exceptions are allowed only through the rules in each module (values, jobs, prices, spending, states,
 prices2024), each with a reason.
 Writes jobs-prices/data/validation_report.md and validation_summary.json; exits non-zero on any failure.
 """
 
+from pipeline_common.data_text import check_data_text
 from pipeline_common.report import Report
 
 from ..common import ROOT
@@ -69,4 +72,5 @@ def main(ds: dict | None = None) -> int:
     report = Report(INTRO)
     for check in CHECKS:
         check(ds, report)
+    check_data_text(DATA, report)
     return report.write(DATA)

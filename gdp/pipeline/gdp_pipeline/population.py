@@ -16,7 +16,29 @@ series and year:
   (population_sources/mospi_press_notes.json, each row quoted and found in the document), or, where no press note
   here covers the year, from the RBI's reprint of MoSPI's tables. Per-person figures here then reproduce MoSPI's to
   the rupee whenever the totals are the same estimate; the years where that is checked are listed in gdp.json
-  (population.checked).
+  (population.checked). A year whose total MoSPI has revised since the document quoted is not checked: its figure
+  divides the revised total by that document's population (the site's Per person page says so).
+
+MoSPI's documents agree on population: for 2022-23 to 2024-25, the June 2026 press note's implied population and NAS
+2026's printed one are within 3,000 people (the implied figure's own precision), as MoSPI kept its population when it
+revised the totals in August. Where they agree, the printed figure is used. A NAS statement prints no totals: its
+unrounded per-person figure times its population gives the total back (to within ₹1 crore of the API's in NAS 2026),
+which is how its figures are matched to the API's estimate.
+
+Which document gives each year's population today (sources/raw/population/; gdp.json names each year's source in
+population.by_series):
+
+    2011-12 series, 2011-12 to 2021-22   the 2019 projections, Table 14, PDF page 125 (projections-2019.pdf)
+    2022-23 series, 2022-23 to 2024-25   MoSPI, National Accounts Statistics 2026 (31 August 2026), Statement 1.2:
+                                         Per capita income, product and final consumption, printed to the thousand
+                                         (nas-2026-statement-1.2.xlsx, downloaded by hand)
+    2011-12 series, 2023-24 to 2025-26;  MoSPI's press notes, implied by their per-person figures (press-note-*.pdf,
+    2022-23 series, 2025-26              rows quoted in population_sources/mospi_press_notes.json)
+    2011-12 series, 2022-23              RBI, Handbook of Statistics on the Indian Economy 2025-26, Tables 1 and 2,
+                                         reprinting MoSPI's (rbi-hbs-table-1.xlsx, rbi-hbs-table-2.xlsx)
+
+From 2022-23 MoSPI's population is about 0.1-0.2% above the 2019 projections, so in the 2011-12 series population
+grows 1.05% in 2022-23 (0.91% from one projection to the next); MoSPI's own per-person figures have the same step.
 
 Per-person figures are worked out for the latest estimate of each year (earlier estimates were divided by the
 population known at the time, which is not kept here): the total (from MoSPI's API, refreshed weekly) divided by the
@@ -215,14 +237,24 @@ def latest(stages: dict) -> tuple[str, dict]:
     return s, stages[s]
 
 
-if __name__ == "__main__":
-    import sys
+def main(argv: list[str] | None = None) -> None:
+    """Add a hand-downloaded NAS statement: python -m gdp_pipeline.population --add <file> [--replace]."""
+    import argparse
+
+    from pipeline_common import log as pipeline_log
 
     from .fetch import add_by_hand  # the downloader is needed only here
 
-    args = sys.argv[1:]
-    if len(args) in (2, 3) and args[0] == "--add" and (len(args) == 2 or args[2] == "--replace"):
-        add_by_hand(Path(args[1]).expanduser(), NAS_STATEMENTS[-1]["key"], replace=len(args) == 3)
-    else:
-        raise SystemExit("usage: uv run python -m gdp_pipeline.population --add <downloaded NAS statement .xlsx> "
-                         "[--replace]\n(the file goes under the last entry of NAS_STATEMENTS)")
+    pipeline_log.setup(__package__)
+    p = argparse.ArgumentParser(
+        description="Add a National Accounts Statistics per-capita statement downloaded by hand (gdp/README.md, "
+                    "Adding a year's population). The file goes under the last entry of NAS_STATEMENTS in "
+                    "population_read.py.")
+    p.add_argument("--add", metavar="FILE", required=True, help="the downloaded NAS statement (.xlsx)")
+    p.add_argument("--replace", action="store_true", help="replace the file already added for that edition")
+    args = p.parse_args(argv)
+    add_by_hand(Path(args.add).expanduser(), NAS_STATEMENTS[-1]["key"], replace=args.replace)
+
+
+if __name__ == "__main__":
+    main()

@@ -6,31 +6,35 @@ and data/validation_report.md.
     uv run python -m budget_pipeline            # use files already in sources/
     uv run python -m budget_pipeline --fetch    # also download anything missing
     uv run python -m budget_pipeline --refresh  # re-download every budget file (after a new budget or a
-                                                # corrected file); overwrites the files in sources/raw/
+                                                # corrected file); a changed file is kept in sources/snapshots/
 
-Both --fetch and --refresh also re-download the RBI reference tables (sources/reference/).
+Both --fetch and --refresh also re-download the RBI reference tables (sources/reference/). The budget has no
+sources revised in place, so it has no --refresh-api (pipeline_common.cli).
 Exits non-zero if any check fails, so it can gate a website build.
 """
 
+import logging
 import sys
+
+from pipeline_common import cli
+from pipeline_common import log as pipeline_log
 
 from . import build, checks, datasets, fetch, reference
 
-OPTIONS = {"--fetch", "--refresh"}
+log = logging.getLogger(__name__)
 
 
-def main() -> int:
-    args = sys.argv[1:]
-    if {"-h", "--help"} & set(args):
-        print(__doc__)
-        return 0
-    if unknown := [a for a in args if a not in OPTIONS]:
-        print(f"unknown option: {' '.join(unknown)} (options: {', '.join(sorted(OPTIONS))}; --help for more)", file=sys.stderr)
-        return 2
-    if OPTIONS & set(args):
-        fetch.main(force="--refresh" in args)
+def main(argv: list[str] | None = None) -> int:
+    pipeline_log.setup(__package__)
+    args = cli.parser(__doc__).parse_args(argv)
+    if args.fetch or args.refresh:
+        fetch.main(force=args.refresh)
         reference.fetch()
-    build.main()
+    try:
+        build.main()
+    except build.MissingDocuments as exc:
+        log.error(f"FAIL: {exc}")
+        return 1
     return checks.main(datasets.build_all())
 
 

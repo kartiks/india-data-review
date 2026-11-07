@@ -35,6 +35,9 @@ division,2026-01,11,Restaurants and accommodation services,Combined,105.71,2.87,
 division,2026-01,13,"Personal care, social protection and miscellaneous goods and services",Rural,123.07,19.59,provisional,2026-01,cpi2024/2026-01
 division,2026-01,13,"Personal care, social protection and miscellaneous goods and services",Urban,122.05,18.28,provisional,2026-01,cpi2024/2026-01
 division,2026-01,13,"Personal care, social protection and miscellaneous goods and services",Combined,122.63,19.02,provisional,2026-01,cpi2024/2026-01
+division,2026-01,00,All India,Rural,104.59,2.73,provisional,2026-01,cpi2024/2026-01
+division,2026-01,00,All India,Urban,104.3,2.77,provisional,2026-01,cpi2024/2026-01
+division,2026-01,00,All India,Combined,104.46,2.75,provisional,2026-01,cpi2024/2026-01
 group,2026-01,01.1,Food,Rural,103.89,1.96,provisional,2026-01,cpi2024/2026-01
 group,2026-01,01.1,Food,Urban,104.31,2.44,provisional,2026-01,cpi2024/2026-01
 group,2026-01,01.1,Food,Combined,104.04,2.13,provisional,2026-01,cpi2024/2026-01
@@ -321,6 +324,9 @@ division,2026-02,11,Restaurants and accommodation services,Combined,105.96,2.73,
 division,2026-02,13,"Personal care, social protection and miscellaneous goods and services",Rural,125.24,20.6,provisional,2026-02,cpi2024/2026-02
 division,2026-02,13,"Personal care, social protection and miscellaneous goods and services",Urban,123.41,18.4,provisional,2026-02,cpi2024/2026-02
 division,2026-02,13,"Personal care, social protection and miscellaneous goods and services",Combined,124.45,19.64,provisional,2026-02,cpi2024/2026-02
+division,2026-02,00,All India,Rural,104.74,3.37,provisional,2026-02,cpi2024/2026-02
+division,2026-02,00,All India,Urban,104.37,3.02,provisional,2026-02,cpi2024/2026-02
+division,2026-02,00,All India,Combined,104.57,3.21,provisional,2026-02,cpi2024/2026-02
 group,2026-02,01.1,Food,Rural,103.79,3.46,provisional,2026-02,cpi2024/2026-02
 group,2026-02,01.1,Food,Urban,104.04,3.48,provisional,2026-02,cpi2024/2026-02
 group,2026-02,01.1,Food,Combined,103.88,3.47,provisional,2026-02,cpi2024/2026-02
@@ -636,6 +642,9 @@ division,2026-03,11,Restaurants and accommodation services,Combined,106.34,2.88,
 division,2026-03,13,"Personal care, social protection and miscellaneous goods and services",Rural,124.91,19.55,provisional,2026-03,cpi2024/2026-03
 division,2026-03,13,"Personal care, social protection and miscellaneous goods and services",Urban,123.11,17.46,provisional,2026-03,cpi2024/2026-03
 division,2026-03,13,"Personal care, social protection and miscellaneous goods and services",Combined,124.13,18.65,provisional,2026-03,cpi2024/2026-03
+division,2026-03,00,All India,Rural,105.01,3.63,provisional,2026-03,cpi2024/2026-03
+division,2026-03,00,All India,Urban,104.62,3.11,provisional,2026-03,cpi2024/2026-03
+division,2026-03,00,All India,Combined,104.84,3.4,provisional,2026-03,cpi2024/2026-03
 group,2026-03,01.1,Food,Rural,104.01,3.96,provisional,2026-03,cpi2024/2026-03
 group,2026-03,01.1,Food,Urban,104.38,3.71,provisional,2026-03,cpi2024/2026-03
 group,2026-03,01.1,Food,Combined,104.14,3.87,provisional,2026-03,cpi2024/2026-03
@@ -954,6 +963,9 @@ division,2026-04,11,Restaurants and accommodation services,Combined,107.98,4.2,p
 division,2026-04,13,"Personal care, social protection and miscellaneous goods and services",Rural,124.83,18.51,provisional,2026-04,cpi2024/2026-04
 division,2026-04,13,"Personal care, social protection and miscellaneous goods and services",Urban,122.95,16.55,provisional,2026-04,cpi2024/2026-04
 division,2026-04,13,"Personal care, social protection and miscellaneous goods and services",Combined,124.02,17.66,provisional,2026-04,cpi2024/2026-04
+division,2026-04,00,All India,Rural,105.28,3.74,provisional,2026-04,cpi2024/2026-04
+division,2026-04,00,All India,Urban,104.92,3.16,provisional,2026-04,cpi2024/2026-04
+division,2026-04,00,All India,Combined,105.12,3.48,provisional,2026-04,cpi2024/2026-04
 group,2026-04,01.1,Food,Rural,104.17,4.26,provisional,2026-04,cpi2024/2026-04
 group,2026-04,01.1,Food,Urban,104.78,4.1,provisional,2026-04,cpi2024/2026-04
 group,2026-04,01.1,Food,Combined,104.39,4.2,provisional,2026-04,cpi2024/2026-04
@@ -1275,6 +1287,9 @@ division,2026-05,11,Restaurants and accommodation services,Combined,109.91,5.75,
 division,2026-05,13,"Personal care, social protection and miscellaneous goods and services",Rural,126.53,19.52,provisional,2026-05,cpi2024/2026-05
 division,2026-05,13,"Personal care, social protection and miscellaneous goods and services",Urban,124.22,17.07,provisional,2026-05,cpi2024/2026-05
 division,2026-05,13,"Personal care, social protection and miscellaneous goods and services",Combined,125.53,18.46,provisional,2026-05,cpi2024/2026-05
+division,2026-05,00,All India,Rural,106.11,4.25,provisional,2026-05,cpi2024/2026-05
+division,2026-05,00,All India,Urban,105.66,3.53,provisional,2026-05,cpi2024/2026-05
+division,2026-05,00,All India,Combined,105.91,3.93,provisional,2026-05,cpi2024/2026-05
 group,2026-05,01.1,Food,Rural,105.07,4.85,provisional,2026-05,cpi2024/2026-05
 group,2026-05,01.1,Food,Urban,105.83,4.66,provisional,2026-05,cpi2024/2026-05
 group,2026-05,01.1,Food,Combined,105.35,4.78,provisional,2026-05,cpi2024/2026-05
@@ -1599,6 +1614,9 @@ division,2026-06,11,Restaurants and accommodation services,Combined,111.46,6.91,
 division,2026-06,13,"Personal care, social protection and miscellaneous goods and services",Rural,125.62,17.71,provisional,2026-06,cpi2024/2026-06
 division,2026-06,13,"Personal care, social protection and miscellaneous goods and services",Urban,123.51,15.43,provisional,2026-06,cpi2024/2026-06
 division,2026-06,13,"Personal care, social protection and miscellaneous goods and services",Combined,124.71,16.72,provisional,2026-06,cpi2024/2026-06
+division,2026-06,00,All India,Rural,107.24,4.74,provisional,2026-06,cpi2024/2026-06
+division,2026-06,00,All India,Urban,106.69,3.92,provisional,2026-06,cpi2024/2026-06
+division,2026-06,00,All India,Combined,107.0,4.38,provisional,2026-06,cpi2024/2026-06
 group,2026-06,01.1,Food,Rural,106.82,5.45,provisional,2026-06,cpi2024/2026-06
 group,2026-06,01.1,Food,Urban,107.72,5.09,provisional,2026-06,cpi2024/2026-06
 group,2026-06,01.1,Food,Combined,107.15,5.32,provisional,2026-06,cpi2024/2026-06
@@ -1923,6 +1941,9 @@ division,2026-07,11,Restaurants and accommodation services,Combined,112.68,7.72,
 division,2026-07,13,"Personal care, social protection and miscellaneous goods and services",Rural,124.28,15.57,provisional,2026-07,cpi2024/2026-07
 division,2026-07,13,"Personal care, social protection and miscellaneous goods and services",Urban,122.5,13.74,provisional,2026-07,cpi2024/2026-07
 division,2026-07,13,"Personal care, social protection and miscellaneous goods and services",Combined,123.51,14.77,provisional,2026-07,cpi2024/2026-07
+division,2026-07,00,All India,Rural,108.34,4.84,provisional,2026-07,cpi2024/2026-07
+division,2026-07,00,All India,Urban,107.45,3.96,provisional,2026-07,cpi2024/2026-07
+division,2026-07,00,All India,Combined,107.94,4.45,provisional,2026-07,cpi2024/2026-07
 group,2026-07,01.1,Food,Rural,109.21,5.79,provisional,2026-07,cpi2024/2026-07
 group,2026-07,01.1,Food,Urban,109.7,5.05,provisional,2026-07,cpi2024/2026-07
 group,2026-07,01.1,Food,Combined,109.39,5.52,provisional,2026-07,cpi2024/2026-07
@@ -2247,6 +2268,9 @@ division,2026-08,11,Restaurants and accommodation services,Combined,113.61,8.38,
 division,2026-08,13,"Personal care, social protection and miscellaneous goods and services",Rural,125.67,15.99,provisional,2026-08,cpi2024/2026-08
 division,2026-08,13,"Personal care, social protection and miscellaneous goods and services",Urban,123.93,14.12,provisional,2026-08,cpi2024/2026-08
 division,2026-08,13,"Personal care, social protection and miscellaneous goods and services",Combined,124.92,15.17,provisional,2026-08,cpi2024/2026-08
+division,2026-08,00,All India,Rural,109.27,5.23,provisional,2026-08,cpi2024/2026-08
+division,2026-08,00,All India,Urban,108.07,4.31,provisional,2026-08,cpi2024/2026-08
+division,2026-08,00,All India,Combined,108.74,4.82,provisional,2026-08,cpi2024/2026-08
 group,2026-08,01.1,Food,Rural,110.7,6.13,provisional,2026-08,cpi2024/2026-08
 group,2026-08,01.1,Food,Urban,110.72,5.64,provisional,2026-08,cpi2024/2026-08
 group,2026-08,01.1,Food,Combined,110.71,5.95,provisional,2026-08,cpi2024/2026-08
@@ -2577,6 +2601,9 @@ division,2026-09,11,Restaurants and accommodation services,Combined,114.79,9.36,
 division,2026-09,13,"Personal care, social protection and miscellaneous goods and services",Rural,126.06,14.52,provisional,2026-09,cpi2024/2026-09
 division,2026-09,13,"Personal care, social protection and miscellaneous goods and services",Urban,124.41,12.75,provisional,2026-09,cpi2024/2026-09
 division,2026-09,13,"Personal care, social protection and miscellaneous goods and services",Combined,125.35,13.75,provisional,2026-09,cpi2024/2026-09
+division,2026-09,00,All India,Rural,110.11,6.08,provisional,2026-09,cpi2024/2026-09
+division,2026-09,00,All India,Urban,108.71,4.88,provisional,2026-09,cpi2024/2026-09
+division,2026-09,00,All India,Combined,109.49,5.54,provisional,2026-09,cpi2024/2026-09
 group,2026-09,01.1,Food,Rural,112.21,8.06,provisional,2026-09,cpi2024/2026-09
 group,2026-09,01.1,Food,Urban,112.1,7.18,provisional,2026-09,cpi2024/2026-09
 group,2026-09,01.1,Food,Combined,112.17,7.74,provisional,2026-09,cpi2024/2026-09

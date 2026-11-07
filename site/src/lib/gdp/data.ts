@@ -1,8 +1,7 @@
 // Read-only access to the verified dataset in ../data/gdp.json (built and checked by ../pipeline).
 // This file only picks, adds up and labels published figures; it never changes a number.
 // The only arithmetic: shares (part ÷ whole, same year, same estimate) and differences between two published figures.
-import fs from "node:fs";
-import path from "node:path";
+import { readAreaJson } from "../area-data";
 import { fyStart, prevFy } from "../fy";
 
 export interface Pair { cur?: number; con?: number; summed?: boolean }
@@ -58,8 +57,7 @@ export interface RbiForecast {
   is_first?: boolean; is_last?: boolean; is_first_april_policy?: boolean; notes?: string;
 }
 
-const file = path.resolve(process.cwd(), "..", "gdp", "data", "gdp.json");
-export const DS: Dataset = JSON.parse(fs.readFileSync(file, "utf8"));
+export const DS = readAreaJson<Dataset>("gdp", "gdp.json");
 
 export const OLD = "2011-12"; // series ids
 export const BACK = "2011-12-back";

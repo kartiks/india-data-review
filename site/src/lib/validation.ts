@@ -5,6 +5,7 @@
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import { areaDataPath } from "./area-data.ts";
 
 export const SUMMARY_FILE = "validation_summary.json";
 export const REPORT_FILE = "validation_report.md";
@@ -34,7 +35,7 @@ export function readValidation(dataDir: string): Validation {
 
 /** An area's summary, read from ../<area>/data (the site is built from the site folder). */
 export function validation(area: string): Validation {
-  return readValidation(path.resolve(process.cwd(), "..", area, "data"));
+  return readValidation(areaDataPath(area));
 }
 
 /** A data file whose hash the summary records: .json, .csv or .md, apart from the report and the summary. */

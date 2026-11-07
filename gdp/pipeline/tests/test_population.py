@@ -4,6 +4,7 @@ from gdp_pipeline import fetch as F
 from gdp_pipeline import population as pop
 from gdp_pipeline import population_checks as pchecks
 from gdp_pipeline import population_read as read
+from pipeline_common import log as pipeline_log
 
 
 class Report:
@@ -318,6 +319,7 @@ def test_add_refuses_to_put_another_file_under_an_edition_unless_told(monkeypatc
     a.write_bytes(b"PK first"), b.write_bytes(b"PK second"), bad.write_bytes(b"<html>")
     F.add_by_hand(a, key)
     assert F.load_manifest()[key]["file_name"] == "a.xlsx"
+    pipeline_log.setup()  # as the command does
     F.add_by_hand(a, key)
     assert "unchanged" in capsys.readouterr().out
     with pytest.raises(SystemExit, match="already holds another file"):
@@ -328,12 +330,18 @@ def test_add_refuses_to_put_another_file_under_an_edition_unless_told(monkeypatc
         F.add_by_hand(tmp_path / "missing.xlsx", key)
     F.add_by_hand(b, key, replace=True)
     assert F.load_manifest()[key]["file_name"] == "b.xlsx"
+    pop.main(["--add", str(a), "--replace"])  # the command: python -m gdp_pipeline.population --add <file>
+    assert F.load_manifest()[key]["file_name"] == "a.xlsx"
+    with pytest.raises(SystemExit) as e:
+        pop.main([str(a)])  # --add is required
+    assert e.value.code == 2
 
 
 def test_fetch_carries_on_when_a_hand_downloaded_file_is_missing(monkeypatch, capsys):
+    pipeline_log.setup()  # as the command does
     monkeypatch.setattr(read, "documents", lambda: [])
     F.fetch_population({}, False)  # no exception: the refresh goes on
-    assert "Download it from" in capsys.readouterr().out
+    assert "Download it from" in capsys.readouterr().err  # a warning
 
 
 # ---- check failures not covered above ---------------------------------------------------------------------------

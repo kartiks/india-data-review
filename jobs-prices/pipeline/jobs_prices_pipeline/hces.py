@@ -55,9 +55,13 @@ def population(manifest: dict) -> list[dict]:
         if not key.startswith("hces_report/") or not key.endswith("/TableA2") or e.get("empty"):
             continue
         year = key.split("/")[1]
-        ws = openpyxl.load_workbook(ROOT / e["file"], data_only=True, read_only=True).worksheets[0]
+        wb = openpyxl.load_workbook(ROOT / e["file"], data_only=True, read_only=True)
+        try:  # a read-only workbook keeps its file open until closed
+            rows = list(wb.worksheets[0].iter_rows(min_row=6, values_only=True))
+        finally:
+            wb.close()
         sector = state = None
-        for r in ws.iter_rows(min_row=6, values_only=True):
+        for r in rows:
             if r[0] in ("Rural", "Urban"):
                 sector = r[0]
             if r[1]:

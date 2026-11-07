@@ -6,7 +6,7 @@ from pathlib import Path
 from pipeline_common.text import fy
 
 from ..parse import ParseError
-from ..sources import FIRST_SCHEME_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
+from ..sources import FIRST_SCHEME_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, documents
 from .common import LEVEL_TOL, MANIFEST, PARTS, ROOT, SCHEME_TYPES
 from .items import parse_schemes
 
@@ -54,12 +54,12 @@ def load_all() -> dict:
     Returns {"budgets": {year: {scheme_type: {"primary": ext, "parsed": result,
     "differences": {ext: [...]}, "errors": {ext: msg}, "source": manifest entry}}}}.
     """
-    manifest = json.loads(MANIFEST.read_text())
+    manifest = documents(json.loads(MANIFEST.read_text()))
     out: dict = {"budgets": {}}
     for start in range(FIRST_SCHEME_BUDGET, LATEST_BUDGET + 1):
         year = fy(start)
         for t in SCHEME_TYPES:
-            files = manifest.get(year, {}).get(t, {}).get("files", {})
+            files = manifest.get(year, {}).get(t, {})
             parsed, errors = {}, {}
             for ext in FORMAT_PRIORITY:
                 if ext not in files:

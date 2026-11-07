@@ -21,14 +21,18 @@ Run: uv run python -m jobs_prices_pipeline.build
 
 import csv
 import json
+import logging
 from collections import defaultdict
 from datetime import UTC, datetime
 
+from pipeline_common import log as pipeline_log
 from pipeline_common.numbers import number
 
 from . import cpi2024, hces, plfs, prices, rbi
 from .common import MANIFEST, ROOT
 from .plfs import RATE_DIMS, STATE_BREAKDOWNS
+
+log = logging.getLogger(__name__)
 
 DATA = ROOT / "data"
 
@@ -185,13 +189,14 @@ def main() -> dict:
         if name.startswith("plfs_"):  # columns that are blank in every row add nothing
             fields = [f for f in fields if any(r.get(f) not in (None, "") for r in rows)]
         write_csv(name, fields, rows)
-        print(f"{name}: {len(rows)} rows")
+        log.info(f"{name}: {len(rows)} rows")
     write_csv("sources.csv", ["key", "url", "sha256", "fetched_at", "records"],
               [{"key": k, **v} for k, v in ds["sources"].items()])
     (DATA / "jobs_prices.json").write_text(json.dumps(site_json(ds), ensure_ascii=False, separators=(",", ":")) + "\n")
-    print(f"jobs_prices.json written; {len(ds['source_problems'])} problems")
+    log.info(f"jobs_prices.json written; {len(ds['source_problems'])} problems")
     return ds
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     main()

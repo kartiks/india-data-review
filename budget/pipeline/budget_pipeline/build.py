@@ -18,20 +18,26 @@ Run: uv run python -m budget_pipeline.build
 
 import csv
 import json
+import logging
 from datetime import UTC, datetime
 from pathlib import Path
 
 from pipeline_common import budget_glance
+from pipeline_common import log as pipeline_log
 from pipeline_common.text import fy, fy_start
 
 from .annotations import HEADER_FIXES, SOURCE_NOTES
 from .parse import FIELD_PATTERNS, ParseError, parse_document, stated_gdp
 from .readers import read_any
-from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET
+from .reference import reference_sources
+from .sources import FIRST_BUDGET, FORMAT_PRIORITY, LATEST_BUDGET, documents, missing_documents, missing_message
+
+log = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
 MANIFEST = ROOT / "sources" / "manifest.json"
+SOURCE_FIELDS = ("url", "file", "sha256", "bytes", "fetched_at")  # of each Budget at a Glance file, in fiscal.json
 
 FIELD_LABELS = {
     "revenue_receipts": "Revenue receipts",
@@ -56,18 +62,26 @@ FIELD_LABELS = {
 assert set(FIELD_LABELS) == {f for f, _ in FIELD_PATTERNS}
 
 
+class MissingDocuments(RuntimeError):
+    """A budget up to LATEST_BUDGET whose documents are not in sources/ (it was raised before running --fetch, or
+    before the budget was published)."""
+
+
 def parse_all() -> tuple[list[dict], dict, list[dict]]:
-    """Parse every file. Returns (observations from each year's primary file, GDP notes, format comparisons)."""
+    """Parse every file. Returns (observations from each year's primary file, GDP notes, format comparisons).
+    Raises MissingDocuments if a budget up to LATEST_BUDGET has not been downloaded in full."""
     manifest = json.loads(MANIFEST.read_text())
+    if missing := missing_documents(manifest):
+        raise MissingDocuments(missing_message(missing))
     rows: list[dict] = []
     gdp: dict[str, dict] = {}
     comparisons: list[dict] = []
-    for doc_year, entry in manifest.items():
+    for doc_year, entry in documents(manifest).items():
         start = fy_start(doc_year)
         parsed_by_format: dict[str, dict] = {}
         errors: dict[str, str] = {}
         for ext in FORMAT_PRIORITY:
-            f = entry["summary"]["files"].get(ext)
+            f = entry["summary"].get(ext)
             if not f:
                 continue
             try:
@@ -81,7 +95,7 @@ def parse_all() -> tuple[list[dict], dict, list[dict]]:
             raise ParseError(f"{doc_year}: no file could be parsed: {errors}")
         primary = next(ext for ext in FORMAT_PRIORITY if ext in parsed_by_format)
         parsed = parsed_by_format[primary]
-        src = entry["summary"]["files"][primary]
+        src = entry["summary"][primary]
         comparisons.append(compare_formats(doc_year, primary, parsed_by_format, errors))
         for o in parsed["observations"]:
             rows.append(
@@ -187,15 +201,17 @@ def main() -> None:
         "units": "Rs crore; pct_gdp is the percentage of GDP as printed in the source",
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "fields": FIELD_LABELS,
-        "sources": {k: v["summary"]["files"] for k, v in manifest.items()},
-        "reference_sources": json.loads((ROOT / "sources" / "reference" / "manifest.json").read_text()),
+        "sources": {year: {ext: {k: e[k] for k in SOURCE_FIELDS} for ext, e in docs["summary"].items()}
+                    for year, docs in documents(manifest).items()},
+        "reference_sources": reference_sources(manifest),
         "gdp_stated_in_budget": gdp,
         "years": choose(rows),
     }
-    (DATA / "format_comparison.json").write_text(json.dumps(comparisons, indent=1, default=list) + "\n")
+    (DATA / "format_comparison.json").write_text(json.dumps(comparisons, indent=1, ensure_ascii=False, default=list) + "\n")
     (DATA / "fiscal.json").write_text(json.dumps(dataset, indent=1, ensure_ascii=False) + "\n")
-    print(f"wrote {len(rows)} observations and {len(dataset['years'])} years")
+    log.info(f"wrote {len(rows)} observations and {len(dataset['years'])} years")
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     main()

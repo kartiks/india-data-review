@@ -118,6 +118,21 @@ main.wrap { padding-top: 20px; padding-bottom: 48px; }
 .grid-2 { display: grid; gap: 16px; }
 @media (min-width: 860px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-2 > .card { margin: 0; } }
 
+/* The paragraph under a page's h1 that says what the page shows */
+.lede { font-size: 1.08rem; max-width: 46em; }
+
+/* A card explaining a term or a break in the data, before the charts that rely on it */
+.note-card p { margin: 0; }
+
+/* Cards linking to an area's pages (components/LinkCard.astro): the whole card is the link */
+.link-cards { margin-bottom: 16px; }
+@media (min-width: 860px) { .link-cards { grid-template-columns: 1fr 1fr 1fr; } }
+.link-card { position: relative; }
+.link-card h2 a { text-decoration: none; }
+.link-card h2 a::after { content: ""; position: absolute; inset: 0; }
+.link-card:hover { border-color: var(--accent); }
+.link-card p { margin: 0; }
+
 /* Stat tiles */
 .tiles { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); margin: 0 0 16px; }
 .tile { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
@@ -144,6 +159,7 @@ thead th { color: var(--ink-2); font-weight: 600; position: sticky; top: 0; back
 td { font-variant-numeric: tabular-nums; }
 td.wrap-text { white-space: normal; min-width: 12em; }
 
+/* A table (or list) folded away under its chart or card: <details class="table-view"><summary>Show as table</summary> */
 details.table-view { margin-top: 10px; }
 details.table-view > summary { cursor: pointer; color: var(--link); font-size: 0.875rem; }
 details.table-view[open] > summary { margin-bottom: 8px; }

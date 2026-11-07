@@ -21,8 +21,9 @@ mospi.gov.in; and state comparisons from the RBI's handbook:
 - **Consumer Price Index, base 2024** (from January 2026), from MoSPI's monthly press releases on PIB, listed by hand
   in `sources.CPI2024_RELEASES` (add each new month's page). The API lists base-2024 filters but returns no figures
   yet. The pipeline keeps each release's content (title to end, without the page's visitor counter) and its PDF where
-  one is attached, and reads the HTML tables (`cpi2024.py`): 12 divisions, 43 groups, 36 states, and the All-India
-  series from January 2025. The first release also gives the linking factors and old vs new weights.
+  one is attached, and reads the HTML tables (`cpi2024.py`): 12 divisions and their All-India row (code 00), 43
+  groups, 36 states, and the All-India series from January 2025. The first release also gives the linking factors
+  and old vs new weights.
 - **CPI for agricultural and rural labourers** (Labour Bureau), `/api/cpialrl/getCpialrlRecords`: base 1986-87 and,
   from June 2025, base 2019.
 - **Household Consumption Expenditure Survey** (HCES) 2022-23 and 2023-24, `/api/hces/getHcesRecords`. MoSPI publishes
@@ -38,21 +39,22 @@ mospi.gov.in; and state comparisons from the RBI's handbook:
 
 ## Run it
 
+In `pipeline/`:
+
 ```bash
-cd pipeline
-uv run python -m jobs_prices_pipeline             # build data from saved sources and run all checks
-uv run python -m jobs_prices_pipeline --fetch     # also download anything missing
-uv run python -m jobs_prices_pipeline --refresh   # re-download everything, including press releases and report tables
-uv run python -m jobs_prices_pipeline --refresh-api  # re-download only MoSPI's API and RBI's tables (what the weekly refresh runs)
-uv run pytest                                     # tests write to temporary folders, never to data/
+uv run python -m jobs_prices_pipeline    # build data/ and run every check; options below
+uv run pytest
 ```
+
+The options are the same in every area ([Run it](../README.md#run-it)). Here `--refresh-api` re-downloads MoSPI's API
+and the RBI handbook tables, and `--refresh` also the press releases and report tables.
 
 The code, in `pipeline/jobs_prices_pipeline/`: `sources.py` (what is downloaded) and `fetch.py`; one reader per
 source (`plfs.py`, `prices.py`, `hces.py`, `cpi2024.py`, `rbi.py`, sharing `common.py`); `build.py`, which writes
 `data/`; and `checks/`, one module per topic, which writes the validation report.
 
 A full download is about 1,400 API pages (30 to 60 minutes). The API keeps only the latest figures, so when a
-re-download differs, the old file is kept in `sources/snapshots/<time it was fetched>/` (UTC, `2026-11-06T093000Z`).
+re-download differs, the old file is kept in `sources/snapshots/`.
 
 ## Keeping it up to date
 
@@ -61,11 +63,9 @@ price index. The full list for the site is in [Keeping the data up to date](../R
 
 ### Every week, automatically
 
-A GitHub Action runs `--refresh-api` every Sunday at 02:00 IST. It re-downloads everything from MoSPI's data service
-(PLFS, CPI base 2012, CPI for farm and rural labourers, HCES) and the RBI handbook tables, rebuilds `data/`, runs every
-check, and commits and pushes what changed once the local CI passes. Files that changed are kept in
-`sources/snapshots/`. Nothing needs doing unless a run fails; then see
-[When it fails](../README.md#the-weekly-refresh).
+[The weekly refresh](../README.md#the-weekly-refresh) runs `--refresh-api`: everything from MoSPI's data service
+(PLFS, CPI base 2012, CPI for farm and rural labourers, HCES) and the RBI handbook tables. Nothing needs doing unless
+a run fails.
 
 It does **not** download the base-2024 CPI press releases or the HCES report tables again: those are fixed
 documents. A release listed in `CPI2024_RELEASES` but not yet downloaded is downloaded by the next run, but add new
@@ -73,8 +73,8 @@ releases by hand as below, so that you see the checks.
 
 It does notice when they are out of date: if the latest base-2024 month's release (about the 12th of the next month)
 is more than 45 days old, so the following month's release has been out for about two weeks, the refresh exits with
-code 10 after building and checking (`sources.cpi2024_overdue`). The weekly workflow still commits the other data,
-then fails the run (so GitHub emails) until the new month is added.
+code 10 after building and checking (`sources.cpi2024_overdue`). The weekly refresh still commits the data, then
+fails the run (so GitHub emails) until the new month is added.
 Only `--refresh-api` and `--refresh` do this: the plain build, and `scripts/ci.sh`, keep passing on committed data
 however much time has passed.
 
@@ -156,7 +156,11 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
 - **RBI handbook**: every table read with at least 30 states (18 for wage tables), each sheet in the table's unit and
   with one of its expected sub-titles (`RBI_STATE_TABLES` in `rbi.py`; the site looks figures up by sub-title); the
   handbook's state inflation for every year equals the average inflation worked out from MoSPI's own monthly indices
-  (within 0.15 points; years with missing months, such as 2020-21, not compared); overall unemployment lies between
+  (within 0.15 points; from January 2026 the base-2024 releases chained on with their year-on-year inflation, so
+  2025-26 onward is compared too). Each pair not compared is counted under its reason: the April-May 2020 lockdown
+  months (2020-21 and 2021-22, allowed), a state with no MoSPI index under the handbook's name (or in no base-2024
+  release at all), or a year not published yet; any other missing month fails, including one missing from a single
+  release for a state the releases carry. Overall unemployment lies between
   men's and women's; the All-India rural wage lies within the states' range. State GDP and income per person:
   current and constant prices are equal in the base year (2011-12) and current ≥ constant after it, and GSDP ÷ per
   capita NSDP is the same at current and constant prices within 25% (it is population × GSDP/NSDP).

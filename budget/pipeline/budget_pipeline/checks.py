@@ -10,6 +10,8 @@
 5. The RBI Handbook of Statistics series (an independent compilation of the
    same accounts) must match, apart from documented differences.
 6. Other copies of each table (Excel/HTML) must agree with the PDF used.
+7. Text: no '<', '>' or control characters in any key or value of the data files
+   (pipeline_common.data_text).
 
 Exceptions are allowed only through EXCEPTIONS below (built from the reviewed lists in annotations.py), each
 with a reason; the report lists every allowed case under its reason and the summary counts them. The taxes,
@@ -25,6 +27,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from pipeline_common import log as pipeline_log
+from pipeline_common.data_text import check_data_text
 from pipeline_common.numbers import blank_or_number
 from pipeline_common.report import Allowed, Exceptions, Report
 from pipeline_common.text import fy
@@ -323,8 +327,10 @@ def main(detailed_sections: list[tuple] | None = None) -> int:
     for title, checked, failures, notes, ok in detailed_sections:
         report.add(title, checked, failures, notes, ok)
     check_unused_exceptions(report)
+    check_data_text(DATA, report)
     return report.write(DATA)
 
 
 if __name__ == "__main__":
+    pipeline_log.setup(__package__)
     sys.exit(main())

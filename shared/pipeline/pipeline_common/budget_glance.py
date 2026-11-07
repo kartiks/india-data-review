@@ -17,6 +17,11 @@ from .text import fy
 
 INDIABUDGET = "https://www.indiabudget.gov.in"
 
+# The latest Union Budget the site covers (its first year: 2026 is 2026-27), for both areas that read Budget at a
+# Glance: raise it here, and only here, when a new budget is out (budget/README.md, "Adding a new budget"). Its
+# documents are at the site's root (site()); earlier budgets move to folders of their own.
+LATEST_BUDGET = 2026
+
 
 # ---- where the tables are ------------------------------------------------------------------------
 
@@ -79,7 +84,9 @@ def parse_sentence(text: str, growth: bool = True) -> dict | None:
     if g:
         out.update(
             growth_pct=float(g.group("pct")),
-            over=re.sub(r"\s+", " ", g.group("basis")).strip(" ,"),
+            # strip(): also a stray dash or rupee mark (printed ` in older PDFs) left in front of the words, as in
+            # 2023-24's "growth over the - ` estimated Nominal GDP" ("text" keeps the sentence as printed)
+            over=re.sub(r"\s+", " ", g.group("basis")).strip(" ,-`₹"),
             base_gdp_crore=strict_number(g.group("base")),
         )
         sentence = text[m.start(): m.start("rest") + g.end()]

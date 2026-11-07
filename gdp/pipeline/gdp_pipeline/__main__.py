@@ -1,31 +1,31 @@
 """Run the whole pipeline: (download) -> build datasets -> checks.
 
-    uv run python -m gdp_pipeline            # use files already in sources/
-    uv run python -m gdp_pipeline --fetch    # download anything missing
-    uv run python -m gdp_pipeline --refresh  # re-download everything (after a MoSPI release);
-                                             # changed files are kept in sources/snapshots/
-    uv run python -m gdp_pipeline --refresh-nas  # re-download only MoSPI's API files (the scheduled job)
+    uv run python -m gdp_pipeline                # use files already in sources/
+    uv run python -m gdp_pipeline --fetch        # download anything missing
+    uv run python -m gdp_pipeline --refresh      # re-download everything (after a MoSPI release);
+                                                 # changed files are kept in sources/snapshots/
+    uv run python -m gdp_pipeline --refresh-api  # re-download only MoSPI's national accounts API files
+                                                 # (what the weekly refresh runs)
 
 Exits non-zero if any check fails, so it can gate a website build.
 """
 
 import sys
 
+from pipeline_common import cli
+from pipeline_common import log as pipeline_log
+
 from . import build, checks, fetch
 
-OPTIONS = {"--fetch", "--refresh", "--refresh-nas"}
+REFRESH_API = ("download again only MoSPI's national accounts API files, which are revised in place, and anything "
+               "missing, then build (what the weekly refresh runs)")
 
 
-def main() -> int:
-    args = sys.argv[1:]
-    if {"-h", "--help"} & set(args):
-        print(__doc__)
-        return 0
-    if unknown := [a for a in args if a not in OPTIONS]:
-        print(f"unknown option: {' '.join(unknown)} (options: {', '.join(sorted(OPTIONS))}; --help for more)", file=sys.stderr)
-        return 2
-    if OPTIONS & set(args):
-        fetch.main(force="--refresh" in args, force_nas="--refresh-nas" in args)
+def main(argv: list[str] | None = None) -> int:
+    pipeline_log.setup(__package__)
+    args = cli.parser(__doc__, refresh_api=REFRESH_API).parse_args(argv)
+    if args.fetch or args.refresh or args.refresh_api:
+        fetch.main(force=args.refresh, force_api=args.refresh_api)
     return checks.main(build.main())
 
 

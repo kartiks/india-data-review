@@ -3,11 +3,35 @@
 Every area keeps its downloads under <area>/sources/: raw/ (the files), manifest.json (one entry per file: URL,
 SHA-256, size, time) and snapshots/<time fetched>/ (earlier versions of files that are revised in place; see
 snapshot_name). The areas pass their own paths, so these functions hold no state.
+
+The manifest, the same in every area (save() writes an entry, write_manifest() the file):
+
+    {"<key>": {entry}, ...}     one object; keys sorted; indent 1; UTF-8 as is (ensure_ascii off); a final newline
+
+<key> names one downloaded file: its path under sources/raw/ (or sources/) without the extension, e.g.
+"nas/2011-12/Back/Annually/ind01", "reference/rbi/table86_key_deficit_indicators", with the format added when one
+document is kept in several, e.g. "2016-17/summary/pdf" and "2016-17/summary/xls" (budget) or "cpi2024/2026-01/pdf".
+An entry has these fields, the first five always and in this order:
+
+    url          the address it was downloaded from
+    file         where it is saved, relative to the area's folder ("sources/raw/...")
+    sha256       of the file
+    bytes        its size
+    fetched_at   when this version was downloaded (ISO 8601, UTC, to the second)
+    ...          fields of the area's own, e.g. records (rows in an API answer, see check_records), document,
+                 edition, title, publisher, downloaded_by_hand
+    checked_at   when a later download found the same file (only once one has)
+    history      earlier versions, oldest first, each {"sha256", "fetched_at", "file"} (its copy under snapshots/);
+                 only once the file has changed
+
+A query that answered with nothing is recorded as {"url", "empty": true, "checked_at"} (and an optional "note"), so
+it is not asked again on every --fetch.
 """
 
 import hashlib
 import http.client
 import json
+import logging
 import shutil
 import ssl
 import time
@@ -17,6 +41,8 @@ import urllib.request
 from collections.abc import Callable
 from datetime import UTC, datetime
 from pathlib import Path
+
+log = logging.getLogger(__name__)
 
 USER_AGENT = "india-data-review-data-pipeline/0.1 (python-urllib)"
 
@@ -122,7 +148,9 @@ def get(url: str, tries: int = TRIES, opener: Callable = _open) -> bytes:
         except Exception as exc:
             if not _retryable(exc) or attempt == tries - 1:
                 raise
-            print(f"  retry {attempt + 1} for {url}: {exc}", flush=True)
+            if isinstance(exc, urllib.error.HTTPError):
+                exc.close()  # it holds the server's response open
+            log.info(f"  retry {attempt + 1} for {url}: {exc}")
             time.sleep(BACKOFF_S * (attempt + 1))
     raise AssertionError
 
@@ -143,7 +171,7 @@ def fetch_pages(page_url: Callable[[int], str], what: str) -> list[dict]:
         if not data or page >= (meta.get("totalPages") or 1):
             break
         if page % 20 == 0:
-            print(f"  {what}: page {page} of {meta.get('totalPages')}", flush=True)
+            log.info(f"  {what}: page {page} of {meta.get('totalPages')}")
         page += 1
         time.sleep(PAGE_PAUSE_S)
     if len(rows) != total:

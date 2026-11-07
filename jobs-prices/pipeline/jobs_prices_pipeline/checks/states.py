@@ -59,6 +59,14 @@ def month_before(month: str, years: int = 1) -> str:
     return f"{int(month[:4]) - years}{month[4:]}"
 
 
+def new_series(ds: dict) -> list[tuple[str, str, float | None]]:
+    """(month, state, combined inflation) from the base-2024 releases: each release's states, and All India from the
+    latest release's series."""
+    c = ds.get("cpi2024", {})
+    new = [(m, s["name"], s["values"][5]) for m, rel in c.get("releases", {}).items() for s in rel["states"]]
+    return new + [(x["month"], "All India", x["values"][5]) for x in c.get("series", []) if x["month"] >= NEW_SERIES_START]
+
+
 def chained_indices(ds: dict) -> tuple[dict[str, dict[str, float]], dict[str, set[str]]]:
     """MoSPI's monthly general index (combined) by state key and month, on base 2012: the old series to December 2025,
     then the base-2024 press releases chained on with their year-on-year inflation (index a year earlier × (1 +
@@ -68,12 +76,8 @@ def chained_indices(ds: dict) -> tuple[dict[str, dict[str, float]], dict[str, se
     for r in ds["cpi"]:
         if r["subgroup"] == "General-Overall" and r["sector"] == "Combined" and r["index"] is not None:
             idx[state_key(r["state"])][r["month"]] = r["index"]
-    c = ds.get("cpi2024", {})
-    # (month, state, combined inflation): each release's states, and All India from the latest release's series
-    new = [(m, s["name"], s["values"][5]) for m, rel in c.get("releases", {}).items() for s in rel["states"]]
-    new += [(x["month"], "All India", x["values"][5]) for x in c.get("series", []) if x["month"] >= NEW_SERIES_START]
     chained: dict[str, set[str]] = defaultdict(set)
-    for month, name, inflation in sorted(new):
+    for month, name, inflation in sorted(new_series(ds)):
         k = state_key(name)
         prev = idx.get(k, {}).get(month_before(month))
         if month in idx.get(k, {}) or prev is None or inflation is None:
@@ -91,10 +95,13 @@ def fy_months(fy: str) -> list[str]:
 def check_rbi_inflation(ds: dict, report: Report) -> None:
     """The handbook's average inflation by state (table 108) equals the change in the yearly average of MoSPI's
     monthly general index (combined), base 2012 chained on with the base-2024 releases. Every pair not compared is
-    counted under its reason: lockdown months (allowed), a state with no MoSPI index under its name, or months not
-    published yet; any other missing month is a failure."""
+    counted under its reason: lockdown months (allowed), a state with no MoSPI index under its name (in neither series,
+    or in no base-2024 release at all), or months not published yet; any other missing month is a failure, including
+    a month from January 2026 on missing for a state the base-2024 releases do carry (dropped from one release's
+    table, or spelled differently in one)."""
     failures, notes, checked, allowed = [], [], 0, Allowed(more_hint=" state-years")
     idx, chained = chained_indices(ds)
+    in_new = {state_key(name) for _, name, _ in new_series(ds)}
     latest = max((m for months in idx.values() for m in months), default="")
     no_state: dict[str, list[str]] = defaultdict(list)
     not_yet: dict[str, int] = defaultdict(int)
@@ -114,10 +121,11 @@ def check_rbi_inflation(ds: dict, report: Report) -> None:
                 allowed.add(LOCKDOWN, f"{r['state']} {fy}")
             elif min(missing) > latest:
                 not_yet[fy] += 1
-            elif (late := [m for m in missing if m >= NEW_SERIES_START]) == missing:
-                no_state[r["state"]].append(f"{fy} (no base-2024 index for {late[0]} onward)")
+            elif min(missing) >= NEW_SERIES_START and k not in in_new:
+                no_state[r["state"]].append(f"{fy} (in no base-2024 release, from {min(missing)} on)")
             else:
-                failures.append(f"{r['state']} {fy}: MoSPI's indices lack {', '.join(missing)}")
+                gaps = [m for m in missing if m <= latest]
+                failures.append(f"{r['state']} {fy}: MoSPI's indices lack {', '.join(gaps)}")
             continue
         checked += 1
         with_chained += bool(chained.get(k, set()) & set(months))

@@ -158,8 +158,9 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   handbook's state inflation for every year equals the average inflation worked out from MoSPI's own monthly indices
   (within 0.15 points; from January 2026 the base-2024 releases chained on with their year-on-year inflation, so
   2025-26 onward is compared too). Each pair not compared is counted under its reason: the April-May 2020 lockdown
-  months (2020-21 and 2021-22, allowed), a state with no MoSPI index under the handbook's name, or a year not
-  published yet; any other missing month fails. Overall unemployment lies between
+  months (2020-21 and 2021-22, allowed), a state with no MoSPI index under the handbook's name (or in no base-2024
+  release at all), or a year not published yet; any other missing month fails, including one missing from a single
+  release for a state the releases carry. Overall unemployment lies between
   men's and women's; the All-India rural wage lies within the states' range. State GDP and income per person:
   current and constant prices are equal in the base year (2011-12) and current ≥ constant after it, and GSDP ÷ per
   capita NSDP is the same at current and constant prices within 25% (it is population × GSDP/NSDP).

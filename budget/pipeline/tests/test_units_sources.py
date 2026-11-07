@@ -137,7 +137,7 @@ def test_fetch_refuses_a_file_without_the_table_title(site, tmp_path):
     answers["https://www.indiabudget.gov.in/budget_archive/ub2005-06/bag/bag1.htm"] = html("Receipts")
     fetch.main(docs=["summary"])
     manifest = json.loads((tmp_path / "sources" / "manifest.json").read_text())
-    assert "summary" not in manifest["2005-06"]
+    assert "summary" not in manifest.get("2005-06", {})  # fetch writes no empty entries
     assert not (tmp_path / "sources" / "raw").exists()
 
 

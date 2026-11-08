@@ -113,3 +113,36 @@ def test_much_shorter_download_keeps_the_saved_file_and_fails(sandbox, monkeypat
     use_api(monkeypatch, {KEY1: [{"v": i} for i in range(95)], KEY2: [{"v": 20}]})
     fetch.main(force_api=True)
     assert len(saved_rows(KEY1)) == 95
+
+
+def test_rows_mospi_withdrew_do_not_count_as_missing(sandbox, monkeypatch):
+    monkeypatch.setattr(fetch, "WITHDRAWN", {KEY1: {"month": "March"}})
+    months = [{"month": m, "v": i} for m in ("February", "March", "April") for i in range(10)]
+    use_api(monkeypatch, {KEY1: months, KEY2: [{"v": 2}]})
+    fetch.main()
+
+    # March gone: 20 rows where there were 30, but the 10 withdrawn rows do not count
+    without_march = [r for r in months if r["month"] != "March"]
+    use_api(monkeypatch, {KEY1: without_march, KEY2: [{"v": 2}]})
+    fetch.main(force_api=True)
+    manifest = json.loads(fetch.MANIFEST.read_text())
+    assert saved_rows(KEY1) == without_march and manifest[KEY1]["records"] == 20
+    old = manifest[KEY1]["history"][-1]["file"]  # the download with March, kept for the build
+    assert len(json.loads((fetch.ROOT / old).read_text())["rows"]) == 30
+
+    # the next run compares with the 20 saved rows
+    use_api(monkeypatch, {KEY1: without_march, KEY2: [{"v": 2}]})
+    fetch.main(force_api=True)
+
+
+def test_withdrawn_rows_do_not_excuse_other_missing_rows(sandbox, monkeypatch):
+    monkeypatch.setattr(fetch, "WITHDRAWN", {KEY1: {"month": "March"}})
+    months = [{"month": m, "v": i} for m in ("February", "March", "April") for i in range(10)]
+    use_api(monkeypatch, {KEY1: months, KEY2: [{"v": 2}]})
+    fetch.main()
+
+    # March gone and 5 April rows too: 15 + 10 withdrawn = 25 of 30, more than 5% fewer
+    use_api(monkeypatch, {KEY1: months[:10] + months[20:25], KEY2: [{"v": 2}]})
+    with pytest.raises(RuntimeError, match=rf"{KEY1}: 25 records, 30 before"):
+        fetch.main(force_api=True)
+    assert saved_rows(KEY1) == months

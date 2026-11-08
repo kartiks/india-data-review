@@ -12,7 +12,13 @@ UNLABELLED = (
 )
 
 
-BAD_VALUE = "MoSPI's data service returns characters instead of a number for this figure. It is left out."
+WITHDRAWN_KEPT = (
+    "MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed "
+    "in sources.WITHDRAWN)."
+)
+
+
+BAD_VALUE ="MoSPI's data service returns characters instead of a number for this figure. It is left out."
 
 
 def cell(d: dict, keys=("frequency", "year", "period", "state", "sector", "gender", "age", "status")) -> str:
@@ -50,4 +56,7 @@ def check_source(ds: dict, report: Report) -> None:
     for u in p.get("unlabelled", []):
         checked += 1
         allowed.add(UNLABELLED, u)
+    for k in p.get("kept", []):
+        checked += 1
+        allowed.add(WITHDRAWN_KEPT, k)
     report.add("Every published value is understood", checked, failures, allowed=allowed, limit=20)

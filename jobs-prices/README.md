@@ -121,6 +121,16 @@ New PLFS releases, CPI-AL/RL months and HCES rounds arrive through the weekly re
 breakdown or a renamed field needs code: the field names are listed in `plfs.py` (`PLFS_FIELDS`) and `build.py` (`HCES_SITE`) and the
 checks will fail on anything they cannot read.
 
+### When MoSPI takes rows out
+
+The fetch refuses a re-download with more than 5% fewer rows than the saved file, and the weekly refresh then holds
+back the whole area. If MoSPI really has taken rows out (compare with its own bulletin), choose one:
+
+- **Keep them:** list the file and the fields that pick out the rows in `WITHDRAWN` in `sources.py`. The fetch stops
+  counting them as missing, the build reads them from the newest earlier download that has them (kept in
+  `sources/snapshots/`), and the validation report lists them. Remove the entry once MoSPI serves them again.
+- **Drop them:** remove `"records"` from the file's entry in `sources/manifest.json` and download again.
+
 ### When a check fails
 
 Every allowed exception is in `pipeline/jobs_prices_pipeline/checks/` (one module per topic), as a reason
@@ -182,3 +192,6 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   Jharkhand, Karnataka) that adds up to other states' averages.
 - Delhi's farm labourers' index (base 2019) published as 0.00.
 - The July 2026 CPI release page prints one food index as `109.\`39`; the next release's final figure is used.
+- PLFS monthly March 2026 (participation, worker ratio, unemployment) dropped out of the data service by 7 November
+  2026, while every other month is still there. It is kept from the download of 30 October 2026 (`WITHDRAWN` above),
+  not left out.

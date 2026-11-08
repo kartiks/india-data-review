@@ -39,7 +39,10 @@ def read(manifest: dict, problems: list[str]) -> dict:
     other: dict[str, list[dict]] = defaultdict(list)  # "distribution" | "conditions" | "earnings"
     unlabelled: list[str] = []
     labels: dict[int, str] = {}
+    kept: list[str] = []
     for key, _entry, body in load(manifest, "plfs/"):
+        if body.get("kept"):
+            kept.append(f"{key}: {body['kept']['rows']} rows from {body['kept']['file']}")
         freq = key.split("/")[1]
         code = body["query"]["indicator_code"]
         for r in body["rows"]:
@@ -86,7 +89,7 @@ def read(manifest: dict, problems: list[str]) -> dict:
     flag_rates(rate_rows)
     return {"indicators": {str(c): labels[c] for c in sorted(labels)}, "rates": rate_rows,
             "distribution": other["distribution"], "conditions": other["conditions"], "earnings": other["earnings"],
-            "unlabelled": unlabelled}
+            "unlabelled": unlabelled, "kept": kept}
 
 SMALL_GAP = 0.3  # points: a worker ratio further than this from participation × (1 − unemployment) is wrong
 # How MoSPI marks "no figure": NaN, a dash, or ** (too few people in the sample to publish)

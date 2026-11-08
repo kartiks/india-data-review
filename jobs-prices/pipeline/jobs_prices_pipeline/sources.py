@@ -44,6 +44,14 @@ PAGE_LIMIT = 200  # the API refuses larger pages
 PLFS_INDICATORS = range(1, 9)
 PLFS_FREQUENCIES = {1: "annual", 2: "quarterly", 3: "monthly"}
 
+# Rows MoSPI's data service has stopped returning that the site keeps: manifest key -> the fields that pick them
+# out. While a download lacks them, the build reads them from the newest earlier download that has them
+# (common.load), the fetch does not count them as missing when it compares a download with the saved file, and
+# the validation report lists them. Remove an entry once MoSPI serves the rows again.
+# - PLFS monthly, March 2026 (participation, worker ratio, unemployment): gone from the service by 2026-11-07, while
+#   every other month is still there.
+WITHDRAWN = {f"plfs/monthly/ind{code:02d}": {"year": "2026", "month": "March"} for code in (1, 2, 3)}
+
 CPI_YEARS = range(2013, 2026)  # base 2012 series: Jan 2013 to Dec 2025
 CPI_ALL_INDIA = 99  # state_code for All India
 CPI_GENERAL = 0  # group_code for the general index

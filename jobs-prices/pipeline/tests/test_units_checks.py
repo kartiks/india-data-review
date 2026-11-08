@@ -67,6 +67,13 @@ def test_source_unlabelled_rows_are_allowed_and_not_compiled_indices_skipped():
     assert allowed_of(values.check_source, ds) == {values.UNLABELLED: 1}  # the 0.00 index is not a bad value
 
 
+def test_source_rows_kept_after_mospi_withdrew_them_are_listed():
+    ds = {"source_problems": [], "cpi": [], "hces": [], "cpialrl": [],
+          "plfs": {"rates": [], "distribution": [], "conditions": [], "earnings": [], "unlabelled": [],
+                   "kept": ["plfs/monthly/ind01: 27 rows from sources/snapshots/x/plfs/monthly/ind01.json"]}}
+    assert failures_of(values.check_source, ds) == []
+    assert allowed_of(values.check_source, ds) == {values.WITHDRAWN_KEPT: 1}
+
 # ---- jobs ------------------------------------------------------------------------------------------
 
 def test_rural_plus_urban_lies_between_rural_and_urban():

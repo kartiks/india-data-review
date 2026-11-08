@@ -11,7 +11,9 @@ saved file, the old file is kept under sources/snapshots/<time it was fetched>/
 before being replaced, so revisions build up over time. A re-download with no
 rows, or with more than 5% fewer rows than the saved file, is more likely a
 fault than a revision: the saved file is kept, the rest is downloaded, and the
-run fails at the end.
+run fails at the end. Rows listed in sources.WITHDRAWN are the exception: MoSPI
+took them out, the build keeps them from the earlier download, and they do not
+count as missing.
 
 Run: uv run python -m jobs_prices_pipeline.fetch [--refresh | --refresh-api]   (downloads only; see __main__.py)
 """
@@ -27,7 +29,8 @@ from pipeline_common import cli, download
 from pipeline_common import log as pipeline_log
 from pipeline_common.download import PAGE_PAUSE_S, POLITE_PAUSE_S, RELEASE_PAUSE_S, fetch_pages, file_kind, get, now
 
-from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, queries
+from .common import matches
+from .sources import API, CPI2024_RELEASES, HCES_REPORT_TABLES, PAGE_LIMIT, WITHDRAWN, queries
 
 ROOT = Path(__file__).resolve().parents[2]
 RAW = ROOT / "sources" / "raw"
@@ -64,6 +67,16 @@ def fetch_query(path: str, params: dict) -> dict:
     rows = fetch_pages(lambda page: url_for(path, params, limit=PAGE_LIMIT, page=page), f"{path} {params}")
     return {"source": SOURCE, "query": {"endpoint": path, **params}, "url": url_for(path, params),
             "total_records": len(rows), "rows": rows}
+
+
+def withdrawn_count(key: str, rows: list[dict]) -> int:
+    """How many of the rows listed in sources.WITHDRAWN the saved file has and this download lacks. The build keeps
+    them from the earlier download, so the download is not short by them."""
+    fields = WITHDRAWN.get(key)
+    saved = RAW / f"{key}.json"
+    if not fields or not saved.exists() or any(matches(r, fields) for r in rows):
+        return 0
+    return sum(matches(r, fields) for r in json.loads(saved.read_text())["rows"])
 
 
 def encode(result: dict) -> bytes:
@@ -174,8 +187,8 @@ def main(force: bool = False, force_api: bool = False) -> None:
                 manifest[key] = {"url": result["url"], "empty": True, "checked_at": now()}
                 log.info(f"{key}: no data")
                 continue
-            try:  # far fewer rows than before: kept, like a vanished query
-                download.check_records(manifest, key, result["total_records"])
+            try:  # far fewer rows than before: kept, like a vanished query (rows MoSPI withdrew do not count)
+                download.check_records(manifest, key, result["total_records"] + withdrawn_count(key, result["rows"]))
             except download.RecordsDropped as e:
                 log.warning(str(e))
                 dropped.append(str(e))

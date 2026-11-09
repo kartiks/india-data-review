@@ -2,13 +2,12 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists its reason.
 
-**Result: PASSED** (595343 checks, 0 failures)
+**Result: PASSED** (634734 checks, 0 failures)
 
 ## ✅ Every published value is understood
-449190 checks, 0 failures.
+484751 checks, 0 failures.
 
-- Allowed (21): MoSPI's data service returns characters instead of a number for this figure. It is left out. Cases:
-  - annual, 2025, Andhra Pradesh, rural + urban, person, CWS secondary sector (Div. 05-43 of NIC 2008) printed as '`'
+- Allowed (20): MoSPI's data service returns characters instead of a number for this figure. It is left out. Cases:
   - quarterly, 2019, Q3, Kerala, urban, male, 15 years and above ur printed as 'l0.8'
   - quarterly, 2019, Q3, Madhya Pradesh, urban, person, All ages ur printed as '12. I'
   - quarterly, 2019, Q4, Assam, urban, female, All ages ur printed as '20. I'
@@ -28,48 +27,38 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - quarterly, 2022, Q2, Bihar, urban, person, All ages ur printed as 'I 1.3'
   - quarterly, 2022, Q2, Chhattisgarh, urban, person, 15 years and above ur printed as 'I 1.3'
   - quarterly, 2022, Q2, Chhattisgarh, urban, person, All ages ur printed as 'II.3'
-  - and 1 more (see the CSV)
-- Allowed (6192): MoSPI's data service returns some 'percentage distribution of workers' rows with no breakdown named (no type of work, industry or employer), often with several different values for the same cell. They cannot be read and are left out. Cases:
-  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS value 35.5
-  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS value 36
-  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS value 36.2
-  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS value 39.1
-  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS value 43.8
-  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS value 44.5
-  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS value 45.9
-  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS value 46.9
-  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS value 5.45
-  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS value 5.56
-  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS value 5.84
-  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS value 5.94
-  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS value 55.2
-  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS value 56
-  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS value 56.5
-  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS value 56.7
-  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS value 56.8
-  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS value 56.8
-  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS value 57.2
-  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS value 58.7
-  - and 6172 more (see the CSV)
+  - quarterly, 2022, Q3, Jharkhand, urban, female, 15 years and above ur printed as '6. I'
+- Allowed (3420): MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type of work within an industry, All India, since November 2026). The site does not use them; they are not read. Cases:
+  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2022, All India, rural, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2023, All India, rural, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2024, All India, rural, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2025, All India, rural, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2022, All India, urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2023, All India, urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2025, All India, urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2024, All India, urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2025, All India, rural + urban, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2023, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2024, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2025, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - plfs/annual/ind04: 2022, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
+  - and 3400 more (see the CSV)
+- Allowed (3): MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed in sources.WITHDRAWN). Cases:
+  - plfs/monthly/ind01: 27 rows from sources/snapshots/2026-10-30T151258Z/plfs/monthly/ind01.json
+  - plfs/monthly/ind02: 27 rows from sources/snapshots/2026-10-30T151301Z/plfs/monthly/ind02.json
+  - plfs/monthly/ind03: 27 rows from sources/snapshots/2026-10-30T151304Z/plfs/monthly/ind03.json
 
 ## ✅ Jobs: worker ratio = participation × (1 − unemployment rate)
-29131 checks, 0 failures.
+29139 checks, 0 failures.
 
-- Allowed (574): MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and unemployment must satisfy worker ratio = participation × (1 − unemployment rate); a total must lie between its two parts). Apr–Jun 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin says 8.9%. Each combination below is left out of the site whole, since which of its figures is wrong cannot be told; plfs_rates.csv keeps it with the reason. Cases:
-  - annual, 2022, Bihar, urban, female, All ages, PS+SS: inconsistent: participation 10.7 and unemployment 14.8 give a worker ratio of 9.1, published 6.7
-  - annual, 2022, Himachal Pradesh, urban, female, All ages, PS+SS: inconsistent: participation 31.3 and unemployment 22.9 give a worker ratio of 24.1, published 23.8
-  - annual, 2022, Himachal Pradesh, urban, male, All ages, PS+SS: inconsistent: participation 61.3 and unemployment 5.4 give a worker ratio of 58.0, published 57.4
-  - annual, 2022, Himachal Pradesh, urban, person, All ages, PS+SS: inconsistent: participation 46.4 and unemployment 11.3 give a worker ratio of 41.2, published 40.7
-  - annual, 2022, Lakshadweep, rural + urban, female, All ages, PS+SS: inconsistent: participation 11.2 and unemployment 23.2 give a worker ratio of 8.6, published 10.8
-  - annual, 2022, Lakshadweep, urban, female, All ages, PS+SS: inconsistent: participation 13.1 and unemployment 25.2 give a worker ratio of 9.8, published 12.0
-  - annual, 2022, Uttar Pradesh, urban, female, All ages, PS+SS: inconsistent: participation 10.5 and unemployment 9.1 give a worker ratio of 9.5, published 12.7
-  - annual, 2023, Lakshadweep, rural, female, All ages, PS+SS: inconsistent: participation 11.6 and unemployment 19.4 give a worker ratio of 9.3, published 14.7
-  - annual, 2023, Lakshadweep, rural + urban, female, All ages, PS+SS: inconsistent: participation 11.8 and unemployment 15.7 give a worker ratio of 9.9, published 13.7
-  - annual, 2024, Bihar, urban, female, All ages, PS+SS: inconsistent: participation 10.2 and unemployment 11.6 give a worker ratio of 9.0, published 12.4
-  - annual, 2024, Lakshadweep, rural, female, All ages, PS+SS: inconsistent: participation 14.4 and unemployment 34.6 give a worker ratio of 9.4, published 12.8
-  - annual, 2025, Bihar, urban, female, All ages, PS+SS: inconsistent: participation 10.2 and unemployment 16.8 give a worker ratio of 8.5, published 11.6
-  - annual, 2025, Delhi, rural + urban, female, All ages, PS+SS: inconsistent: participation 10.4 and unemployment 7.4 give a worker ratio of 9.6, published 12.2
-  - annual, 2025, Delhi, urban, female, All ages, PS+SS: inconsistent: participation 10.5 and unemployment 7.5 give a worker ratio of 9.7, published 12.2
+- Allowed (560): MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and unemployment must satisfy worker ratio = participation × (1 − unemployment rate); a total must lie between its two parts). Apr–Jun 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin says 8.9%. Each combination below is left out of the site whole, since which of its figures is wrong cannot be told; plfs_rates.csv keeps it with the reason. Cases:
   - quarterly, 2019, Q2, All India, urban, female, 15 years and above: inconsistent: participation 19.0 and unemployment 27.4 give a worker ratio of 13.8, published 16.9
   - quarterly, 2019, Q2, All India, urban, female, All ages: inconsistent: participation 15.0 and unemployment 27.4 give a worker ratio of 10.9, published 13.3
   - quarterly, 2019, Q2, All India, urban, male, 15 years and above: inconsistent: participation 73.3 and unemployment 20.1 give a worker ratio of 58.6, published 67.3
@@ -116,12 +105,22 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - quarterly, 2019, Q2, Jammu & Kashmir, urban, male, All ages: inconsistent: participation 56.4 and unemployment 8.9 give a worker ratio of 51.4, published 52.8
   - quarterly, 2019, Q2, Jammu & Kashmir, urban, person, 15 years and above: inconsistent: participation 46.1 and unemployment 8.7 give a worker ratio of 42.1, published 41.1
   - quarterly, 2019, Q2, Jharkhand, urban, female, 15 years and above: inconsistent: participation 10.7 and unemployment 4.3 give a worker ratio of 10.2, published 9.8
-  - and 514 more (see the CSV)
-- Within 0.3 points, shown: annual, 2022, Chhattisgarh, rural, female, All ages, PS+SS: participation 45.8, unemployment 0.9, worker ratio 45.2 (0.19 points off)
-- Within 0.3 points, shown: annual, 2022, Himachal Pradesh, rural + urban, person, All ages, PS+SS: participation 59.5, unemployment 3.8, worker ratio 57.1 (0.14 points off)
+  - quarterly, 2019, Q2, Jharkhand, urban, female, All ages: inconsistent: participation 8.4 and unemployment 4.3 give a worker ratio of 8.0, published 7.7
+  - quarterly, 2019, Q2, Jharkhand, urban, male, 15 years and above: inconsistent: participation 67.9 and unemployment 4.2 give a worker ratio of 65.0, published 62.0
+  - quarterly, 2019, Q2, Jharkhand, urban, male, All ages: inconsistent: participation 51.8 and unemployment 4.3 give a worker ratio of 49.6, published 47.2
+  - quarterly, 2019, Q2, Jharkhand, urban, person, 15 years and above: inconsistent: participation 38.6 and unemployment 4.2 give a worker ratio of 37.0, published 35.3
+  - quarterly, 2019, Q2, Karnataka, urban, female, 15 years and above: inconsistent: participation 19.8 and unemployment 22.2 give a worker ratio of 15.4, published 18.9
+  - quarterly, 2019, Q2, Karnataka, urban, female, All ages: inconsistent: participation 15.5 and unemployment 22.2 give a worker ratio of 12.1, published 14.8
+  - quarterly, 2019, Q2, Karnataka, urban, male, 15 years and above: inconsistent: participation 75.7 and unemployment 8.6 give a worker ratio of 69.2, published 72.6
+  - quarterly, 2019, Q2, Karnataka, urban, male, All ages: inconsistent: participation 57.9 and unemployment 8.6 give a worker ratio of 52.9, published 55.5
+  - quarterly, 2019, Q2, Karnataka, urban, person, 15 years and above: inconsistent: participation 48.5 and unemployment 12.8 give a worker ratio of 42.3, published 46.5
+  - quarterly, 2019, Q2, Kerala, urban, female, 15 years and above: inconsistent: participation 26.2 and unemployment 11.6 give a worker ratio of 23.2, published 20.4
+  - quarterly, 2019, Q2, Kerala, urban, female, All ages: inconsistent: participation 21.4 and unemployment 11.6 give a worker ratio of 18.9, published 16.6
+  - quarterly, 2019, Q2, Kerala, urban, male, 15 years and above: inconsistent: participation 70.2 and unemployment 13.0 give a worker ratio of 61.1, published 64.1
+  - quarterly, 2019, Q2, Kerala, urban, male, All ages: inconsistent: participation 55.2 and unemployment 13.1 give a worker ratio of 48.0, published 50.5
+  - quarterly, 2019, Q2, Madhya Pradesh, urban, male, 15 years and above: inconsistent: participation 72.3 and unemployment 6.5 give a worker ratio of 67.6, published 62.8
+  - and 500 more (see the CSV)
 - Within 0.3 points, shown: annual, 2025, Jammu & Kashmir, urban, person, 15-29 years, PS+SS: participation 46.4, unemployment 25.9, worker ratio 34.2 (0.18 points off)
-- Within 0.3 points, shown: annual, 2025, Rajasthan, rural, person, All ages, PS+SS: participation 50.5, unemployment 2.5, worker ratio 49.1 (0.14 points off)
-- Within 0.3 points, shown: annual, 2025, Rajasthan, rural + urban, person, All ages, PS+SS: participation 47.9, unemployment 4.3, worker ratio 45.7 (0.14 points off)
 - Within 0.3 points, shown: quarterly, 2019, Q2, Bihar, urban, female, All ages: participation 4.8, unemployment 12.5, worker ratio 4.4 (0.20 points off)
 - Within 0.3 points, shown: quarterly, 2019, Q2, Chhattisgarh, urban, female, 15 years and above: participation 22.2, unemployment 11.3, worker ratio 19.4 (0.29 points off)
 - Within 0.3 points, shown: quarterly, 2019, Q2, Chhattisgarh, urban, female, All ages: participation 16.7, unemployment 11.0, worker ratio 14.7 (0.16 points off)
@@ -146,13 +145,13 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Within 0.3 points, shown: quarterly, 2025, Q3, West Bengal, rural, person, 15-29 years: participation 44.0, unemployment 12.4, worker ratio 38.3 (0.24 points off)
 
 ## ✅ Jobs: persons lie between men and women, rural + urban between rural and urban
-61459 checks, 0 failures.
+65056 checks, 0 failures.
 
 
 ## ✅ Jobs: shares of workers add up to 100%
-9994 checks, 0 failures.
+10210 checks, 0 failures.
 
-- Allowed (27): Chandigarh has almost no rural population. MoSPI publishes its rural figures as 'NaN' or as zeros in every category; they are treated as not published. Cases:
+- Allowed (19): Chandigarh has almost no rural population. MoSPI publishes its rural figures as 'NaN' or as zeros in every category; they are treated as not published. Cases:
   - annual broad_industry_work: 2024, Chandigarh, rural, female, CWS
   - annual broad_industry_work: 2024, Chandigarh, rural, male, CWS
   - annual broad_industry_work: 2024, Chandigarh, rural, person, CWS
@@ -168,82 +167,31 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - annual broad_status_employment: 2025, Chandigarh, rural, male, PS+SS
   - annual broad_status_employment: 2025, Chandigarh, rural, person, CWS
   - annual broad_status_employment: 2025, Chandigarh, rural, person, PS+SS
-  - annual enterprise_type: 2024, Chandigarh, rural, female, PS+SS
   - annual enterprise_type: 2024, Chandigarh, rural, male, PS+SS
-  - annual enterprise_type: 2024, Chandigarh, rural, person, PS+SS
   - annual enterprise_type: 2025, Chandigarh, rural, female, PS+SS
   - annual enterprise_type: 2025, Chandigarh, rural, male, PS+SS
   - annual enterprise_type: 2025, Chandigarh, rural, person, PS+SS
-  - annual industry_section: 2024, Chandigarh, rural, female, PS+SS
-  - annual industry_section: 2024, Chandigarh, rural, male, PS+SS
-  - annual industry_section: 2024, Chandigarh, rural, person, PS+SS
-  - annual industry_section: 2025, Chandigarh, rural, female, PS+SS
-  - annual industry_section: 2025, Chandigarh, rural, male, PS+SS
-  - annual industry_section: 2025, Chandigarh, rural, person, PS+SS
-- Allowed (1): MoSPI's data service returns characters instead of a number for this figure. It is left out. Cases:
-  - annual broad_industry_work: 2025, Andhra Pradesh, rural + urban, person, CWS: shares add up to 75.2%
-- Allowed (75): MoSPI's data service returns All-India shares of workers by type of work (self-employed, regular, casual) that do not add up to 100% (for example 0.3%, 0.4%, 0.6% and 0.6% for women in 2022), while every state's shares do. The All-India figures are not used; the site shows this breakdown by state. Cases:
-  - annual broad_status_employment: 2022, All India, rural, female, PS+SS: all self-employed 0.4 ≠ 0.0 + 0.0
-  - annual broad_status_employment: 2022, All India, rural, female, PS+SS: shares add up to 1.0%
-  - annual broad_status_employment: 2022, All India, rural, male, PS+SS: all self-employed 11.1 ≠ 10.8 + 0.0
-  - annual broad_status_employment: 2022, All India, rural, male, PS+SS: shares add up to 23.0%
-  - annual broad_status_employment: 2022, All India, rural, person, PS+SS: all self-employed 10.1 ≠ 13.1 + 0.4
-  - annual broad_status_employment: 2022, All India, rural, person, PS+SS: shares add up to 25.6%
-  - annual broad_status_employment: 2022, All India, rural + urban, female, PS+SS: shares add up to 1.9%
-  - annual broad_status_employment: 2022, All India, rural + urban, male, PS+SS: shares add up to 25.2%
-  - annual broad_status_employment: 2022, All India, rural + urban, person, PS+SS: shares add up to 22.9%
-  - annual broad_status_employment: 2022, All India, urban, female, PS+SS: all self-employed 10.0 ≠ 0.0 + 0.0
-  - annual broad_status_employment: 2022, All India, urban, female, PS+SS: shares add up to 22.8%
-  - annual broad_status_employment: 2022, All India, urban, male, PS+SS: all self-employed 20.9 ≠ 19.8 + 0.6
-  - annual broad_status_employment: 2022, All India, urban, male, PS+SS: shares add up to 41.4%
-  - annual broad_status_employment: 2022, All India, urban, person, PS+SS: all self-employed 19.5 ≠ 18.5 + 0.6
-  - annual broad_status_employment: 2022, All India, urban, person, PS+SS: shares add up to 40.8%
-  - annual broad_status_employment: 2023, All India, rural, female, PS+SS: shares add up to 1.9%
-  - annual broad_status_employment: 2023, All India, rural, male, PS+SS: shares add up to 25.8%
-  - annual broad_status_employment: 2023, All India, rural, person, PS+SS: shares add up to 22.2%
-  - annual broad_status_employment: 2023, All India, rural + urban, female, PS+SS: all self-employed 1.0 ≠ 0.0 + 0.6
-  - annual broad_status_employment: 2023, All India, rural + urban, female, PS+SS: shares add up to 2.3%
-  - annual broad_status_employment: 2023, All India, rural + urban, male, PS+SS: shares add up to 26.6%
-  - annual broad_status_employment: 2023, All India, rural + urban, person, PS+SS: shares add up to 25.5%
-  - annual broad_status_employment: 2023, All India, urban, female, PS+SS: all self-employed 14.6 ≠ 0.0 + 11.0
-  - annual broad_status_employment: 2023, All India, urban, female, PS+SS: shares add up to 23.3%
-  - annual broad_status_employment: 2023, All India, urban, male, PS+SS: all self-employed 20.6 ≠ 17.8 + 0.0
-  - annual broad_status_employment: 2023, All India, urban, male, PS+SS: shares add up to 40.3%
-  - annual broad_status_employment: 2023, All India, urban, person, PS+SS: all self-employed 21.0 ≠ 18.1 + 0.4
-  - annual broad_status_employment: 2023, All India, urban, person, PS+SS: shares add up to 40.5%
-  - annual broad_status_employment: 2024, All India, rural, female, PS+SS: all self-employed 0.3 ≠ 0.1 + 0.0
-  - annual broad_status_employment: 2024, All India, rural, female, PS+SS: shares add up to 1.8%
-  - annual broad_status_employment: 2024, All India, rural, male, PS+SS: shares add up to 26.6%
-  - annual broad_status_employment: 2024, All India, rural, person, PS+SS: shares add up to 23.8%
-  - annual broad_status_employment: 2024, All India, rural + urban, female, PS+SS: shares add up to 12.4%
-  - annual broad_status_employment: 2024, All India, rural + urban, male, PS+SS: shares add up to 27.3%
-  - annual broad_status_employment: 2024, All India, rural + urban, person, PS+SS: shares add up to 25.7%
-  - annual broad_status_employment: 2024, All India, urban, female, PS+SS: all self-employed 12.3 ≠ 0.0 + 10.0
-  - annual broad_status_employment: 2024, All India, urban, female, PS+SS: shares add up to 21.2%
-  - annual broad_status_employment: 2024, All India, urban, male, PS+SS: all self-employed 21.1 ≠ 19.7 + 0.1
-  - annual broad_status_employment: 2024, All India, urban, male, PS+SS: shares add up to 44.1%
-  - annual broad_status_employment: 2024, All India, urban, person, PS+SS: all self-employed 20.0 ≠ 18.5 + 0.9
-  - annual broad_status_employment: 2024, All India, urban, person, PS+SS: shares add up to 44.1%
+- Allowed (1): MoSPI's data service has no figure for one or more of this breakdown's categories here (named in each case), so the shares it has add up to less than 100%. Cases:
+  - annual broad_industry_work: 2025, Andhra Pradesh, rural + urban, person, CWS: shares add up to 75.2%; no figure for secondary sector (Div. 05-43 of NIC 2008)
+- Allowed (18): MoSPI's data service returns All-India shares of workers by type of work (self-employed, regular, casual) that do not add up to 100% (for example 0.3%, 0.4%, 0.6% and 0.6% for women in 2022), while every state's shares do. The All-India figures are not used; the site shows this breakdown by state. Cases:
   - annual broad_status_employment: 2025, All India, rural, female, CWS: all self-employed 71.3 ≠ 36.6 + 33.8
   - annual broad_status_employment: 2025, All India, rural, female, CWS: shares add up to 99.2%
-  - annual broad_status_employment: 2025, All India, rural, female, PS+SS: all self-employed 14.5 ≠ 10.6 + 0.2
-  - annual broad_status_employment: 2025, All India, rural, female, PS+SS: shares add up to 12.2%
   - annual broad_status_employment: 2025, All India, rural, male, CWS: all self-employed 56.9 ≠ 46.0 + 9.4
   - annual broad_status_employment: 2025, All India, rural, male, CWS: shares add up to 98.5%
-  - annual broad_status_employment: 2025, All India, rural, male, PS+SS: all self-employed 11.0 ≠ 12.3 + 0.7
-  - annual broad_status_employment: 2025, All India, rural, male, PS+SS: shares add up to 26.8%
   - annual broad_status_employment: 2025, All India, rural, person, CWS: all self-employed 61.8 ≠ 42.8 + 17.7
   - annual broad_status_employment: 2025, All India, rural, person, CWS: shares add up to 98.7%
-  - annual broad_status_employment: 2025, All India, rural, person, PS+SS: shares add up to 25.3%
   - annual broad_status_employment: 2025, All India, rural + urban, female, CWS: all self-employed 63.5 ≠ 33.9 + 28.7
   - annual broad_status_employment: 2025, All India, rural + urban, female, CWS: shares add up to 99.1%
-  - annual broad_status_employment: 2025, All India, rural + urban, female, PS+SS: all self-employed 13.7 ≠ 12.3 + 0.2
-  - annual broad_status_employment: 2025, All India, rural + urban, female, PS+SS: shares add up to 23.8%
   - annual broad_status_employment: 2025, All India, rural + urban, male, CWS: all self-employed 51.4 ≠ 42.3 + 7.8
   - annual broad_status_employment: 2025, All India, rural + urban, male, CWS: shares add up to 98.7%
-  - annual broad_status_employment: 2025, All India, rural + urban, male, PS+SS: shares add up to 27.6%
   - annual broad_status_employment: 2025, All India, rural + urban, person, CWS: all self-employed 55.2 ≠ 39.7 + 14.3
-  - and 15 more (see the CSV)
+  - annual broad_status_employment: 2025, All India, rural + urban, person, CWS: shares add up to 98.8%
+  - annual broad_status_employment: 2025, All India, urban, female, CWS: all self-employed 37.9 ≠ 25.3 + 11.6
+  - annual broad_status_employment: 2025, All India, urban, female, CWS: shares add up to 99.0%
+  - annual broad_status_employment: 2025, All India, urban, male, CWS: all self-employed 40.0 ≠ 34.4 + 4.4
+  - annual broad_status_employment: 2025, All India, urban, male, CWS: shares add up to 98.9%
+  - annual broad_status_employment: 2025, All India, urban, person, CWS: all self-employed 39.5 ≠ 32.2 + 6.1
+  - annual broad_status_employment: 2025, All India, urban, person, CWS: shares add up to 98.9%
 - Allowed (533): For 2025 in current weekly status (CWS), MoSPI's 'all self-employed' share is not the sum of its two parts (own-account workers and helpers) in most states, and the shares add up to less than 100%. The site uses the usual status (PS+SS) figures, where they add up. Cases:
   - annual broad_status_employment: 2025, Andaman & Nicobar Islands, rural, female, CWS: all self-employed 71.8 ≠ 8.1 + 60.9
   - annual broad_status_employment: 2025, Andaman & Nicobar Islands, rural, female, CWS: shares add up to 97.1%
@@ -543,6 +491,6 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - 2026-06: no PDF attached to the release; page only
 
 ## ✅ Text in the data: no '<', '>' or control characters
-1810 checks, 0 failures.
+1819 checks, 0 failures.
 
 - Every key and text value (each distinct text counted once) in cpi.csv, cpi2024.csv, cpialrl.csv, hces.csv, hces_overall.csv, jobs_prices.json, plfs_conditions.csv, plfs_earnings.csv, plfs_rates.csv, plfs_workers.csv, rbi_states.csv, sources.csv.

@@ -30,6 +30,12 @@ NO_SAMPLE = (
     "Chandigarh has almost no rural population. MoSPI publishes its rural figures as 'NaN' or as zeros in every "
     "category; they are treated as not published."
 )
+MISSING_CATEGORY = (
+    "MoSPI's data service has no figure for one or more of this breakdown's categories here (named in each case), "
+    "so the shares it has add up to less than 100%."
+)
+
+
 CWS_STATUS_2025 = (
     "For 2025 in current weekly status (CWS), MoSPI's 'all self-employed' share is not the sum of its two parts "
     "(own-account workers and helpers) in most states, and the shares add up to less than 100%. The site uses the "
@@ -109,6 +115,9 @@ def check_distribution(ds: dict, report: Report) -> None:
         g[r["category"]] = r["value"]
         if r["value"] is None and r["value_as_printed"] not in MISSING:
             g["_bad"] = True
+    categories: dict[tuple, set] = defaultdict(set)  # every category a breakdown has anywhere
+    for (freq, b, *_), cats in groups.items():
+        categories[(freq, b)] |= set(cats) - {"_bad"}
     checked = 0
     for (freq, b, year, per, state, sector, gender, status), cats in sorted(groups.items()):
         bad_value = cats.pop("_bad", False)
@@ -140,7 +149,12 @@ def check_distribution(ds: dict, report: Report) -> None:
                 total = sum(vals)
                 tol = max(SHARE_SUM_TOL, SHARE_ROUNDING * len(vals))
             if abs(total - 100) > tol:
-                problems.append(f"{where}: shares add up to {total:.1f}%")
+                missing = sorted(categories[(freq, b)] - set(cats))
+                if missing and total < 100 and rule is None:
+                    rule = MISSING_CATEGORY
+                    problems.append(f"{where}: shares add up to {total:.1f}%; no figure for {'; '.join(missing)}")
+                else:
+                    problems.append(f"{where}: shares add up to {total:.1f}%")
         for msg in problems:
             if rule:
                 allowed.add(rule, msg)

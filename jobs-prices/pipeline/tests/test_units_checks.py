@@ -122,6 +122,24 @@ def test_distribution_with_no_figures_fails_and_a_bad_value_is_allowed():
     assert values.BAD_VALUE in allowed_of(jobs.check_distribution, plfs_ds(distribution=rows))
 
 
+def test_distribution_short_of_a_category_mospi_left_out_is_allowed():
+    full = shares({"Agriculture": 40.0, "Industry": 25.0, "Services": 35.0}, state="Assam")
+    gap = shares({"Agriculture": 40.0, "Services": 35.0})  # no Industry figure for Bihar
+    ds = plfs_ds(distribution=full + gap)
+    assert failures_of(jobs.check_distribution, ds) == []
+    assert allowed_of(jobs.check_distribution, ds) == {jobs.MISSING_CATEGORY: 1}
+    # more than 100% is not explained by a missing category
+    over = shares({"Agriculture": 70.0, "Services": 35.0})
+    assert failures_of(jobs.check_distribution, plfs_ds(distribution=full + over))
+
+
+def test_source_rows_with_two_breakdowns_are_listed():
+    ds = {"source_problems": [], "cpi": [], "hces": [], "cpialrl": [],
+          "plfs": {"rates": [], "distribution": [], "conditions": [], "earnings": [], "unlabelled": [],
+                   "crossed": ["plfs/annual/ind04: 2025, All India 4.regular wage/salary × 10-33 (manufacturing)"]}}
+    assert failures_of(values.check_source, ds) == []
+    assert allowed_of(values.check_source, ds) == {values.CROSSED: 1}
+
 # ---- prices ----------------------------------------------------------------------------------------
 
 def test_cpialrl_rural_labourers_inflation_and_not_compiled_note():

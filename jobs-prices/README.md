@@ -145,7 +145,7 @@ in `data/validation_report.md`, compare the figure with MoSPI's own publication,
 |---|---|
 | `jobs_prices.json` | What the site shows, in compact form (text columns stored once in `labels`) |
 | `plfs_rates.csv` | Participation, worker ratio and unemployment; `left_out` gives the reason where a combination is not shown |
-| `plfs_workers.csv`, `plfs_conditions.csv`, `plfs_earnings.csv` | Workers by breakdown, job conditions, earnings |
+| `plfs_workers.csv`, `plfs_conditions.csv`, `plfs_earnings.csv` | Workers by breakdown (industry and occupation at every level MoSPI publishes), job conditions (by July–June year, and by calendar year from 2022), earnings |
 | `cpi.csv`, `cpialrl.csv` | Price indices and inflation |
 | `cpi2024.csv` | Every figure read from the base-2024 releases, with the release it came from |
 | `hces.csv` | Household spending; `left_out` as above |
@@ -192,6 +192,17 @@ Columns ending `_as_printed` are filled only where MoSPI's text is not simply th
   Jharkhand, Karnataka) that adds up to other states' averages.
 - Delhi's farm labourers' index (base 2019) published as 0.00.
 - The July 2026 CPI release page prints one food index as `109.\`39`; the next release's final figure is used.
+- Since November 2026 the annual PLFS files have a new layout, read so that the data keeps its earlier labels
+  (`plfs.py`): years as `PLFS 2025` (read as `2025`); each rate row names only its own breakdown, with the others
+  blank where they said `all`; occupation (NCO) and industry (NIC) at every level in one field (each level becomes a
+  breakdown of its own: `nco_division`, `nco_subdivision`, `nco_group`, `nic_section` … `nic_class`, in the CSV
+  only); and job conditions by calendar year inside the distribution of workers (in `plfs_conditions.csv`; the site
+  keeps the July–June years). Rows with two breakdowns at once (type of work within an industry) are not read.
+- Education rates are for ages 15 and over: MoSPI's own `all` row for that breakdown is the 15-and-over figure. Until
+  November 2026 they were labelled "All ages", and in 67 cells the "All ages" total was the 15-and-over figure; the
+  new layout corrects both.
+- One annual figure with no value for one category (Andhra Pradesh 2025, secondary sector): its shares add up to
+  less than 100%, and the report names the missing category.
 - PLFS monthly March 2026 (participation, worker ratio, unemployment) dropped out of the data service by 7 November
   2026, while every other month is still there. It is kept from the download of 30 October 2026 (`WITHDRAWN` above),
   not left out.

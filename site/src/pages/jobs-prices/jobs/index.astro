@@ -49,10 +49,10 @@ const mSeries = SECTORS.map(([s, label], i) => ({
 }));
 const lastM = ms[ms.length - 1];
 
-// Education (MoSPI publishes this breakdown for all ages)
-const EDU = distinct("education", { frequency: "annual", year: Y, age: "All ages" }).filter((e) => e !== "all");
+// Education (aged 15 and over: MoSPI's own 'all' row for this breakdown is the 15-and-over figure)
+const EDU = distinct("education", { frequency: "annual", year: Y }).filter((e) => e !== "all");
 const eduRows = EDU.map((e) => {
-  const r = rate({ year: Y, age: "All ages", education: e });
+  const r = rate({ year: Y, education: e });
   return r?.ur != null ? { label: cleanLabel(e), value: r.ur, display: pct(r.ur), sub: r.lfpr != null ? `${pct(r.lfpr)} in the labour force` : undefined } : null;
 }).filter((r): r is NonNullable<typeof r> => !!r);
 
@@ -168,7 +168,7 @@ const longRows = LONG_YEARS.map((y) => ({ label: y, values: [rUr[y] != null ? rU
     </section>
     <section class="card">
       <h2>Unemployment by education, {Y}</h2>
-      <p class="muted small">All ages, usual status. Graduates are far more likely to be looking for work than people with little schooling, who mostly cannot afford not to work.</p>
+      <p class="muted small">Aged 15 and over, usual status. Graduates are far more likely to be looking for work than people with little schooling, who mostly cannot afford not to work.</p>
       <BarList rows={eduRows} tone={3} label="Unemployment rate by level of education" />
       <p class="source">{SRC}</p>
     </section>

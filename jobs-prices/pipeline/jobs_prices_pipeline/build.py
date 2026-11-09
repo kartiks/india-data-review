@@ -30,7 +30,7 @@ from pipeline_common.numbers import number
 
 from . import cpi2024, hces, plfs, prices, rbi
 from .common import MANIFEST, ROOT
-from .plfs import RATE_DIMS, STATE_BREAKDOWNS
+from .plfs import DETAIL_BREAKDOWNS, RATE_DIMS, STATE_BREAKDOWNS
 
 log = logging.getLogger(__name__)
 
@@ -90,7 +90,7 @@ def site_json(ds: dict) -> dict:
     # Usual status (PS+SS), except broad industry, which MoSPI publishes only in current weekly status (CWS).
     workers = [r for r in p["distribution"] if r["frequency"] == "annual"
                and (r["status"] == "PS+SS" or (r["breakdown"] == "broad_industry_work" and r["status"] == "CWS"))
-               and r["category"].lower() != "all"
+               and r["category"].lower() != "all" and r["breakdown"] not in DETAIL_BREAKDOWNS
                and (r["breakdown"] in STATE_BREAKDOWNS or r["state"] == "All India")
                # MoSPI's All-India shares by type of work do not add up (see the checks); states only
                and not (r["breakdown"] == "broad_status_employment" and r["state"] == "All India")]
@@ -113,8 +113,11 @@ def site_json(ds: dict) -> dict:
             "indicators": p["indicators"],
             "rates": table(rate_fields, [[r[f] for f in rate_fields] for r in p["rates"] if not r["left_out"]]),
             "workers": table(wf, [[r[f] for f in wf] for r in workers]),
-            # Annual figures only: the site's keys have no period, so quarterly or monthly rows would merge into them.
-            "conditions": table(cf, [[r[f] for f in cf] for r in p["conditions"] if r["frequency"] == "annual"]),
+            # Annual figures by July-June year only: the site's keys have no period, so quarterly or monthly rows
+            # would merge into them, and its chart runs by survey year (the calendar years from the distribution of
+            # workers are in the CSV).
+            "conditions": table(cf, [[r[f] for f in cf] for r in p["conditions"]
+                                     if r["frequency"] == "annual" and r["year_type"] == "Agriculture Year"]),
             "earnings": table(ef, [[r[f] for f in ef] for r in p["earnings"] if r["frequency"] == "annual"]),
         },
         "cpi": {"point_fields": ["month", "index", "inflation"], "all_india": cpi_all, "states": cpi_states},

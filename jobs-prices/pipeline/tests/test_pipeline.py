@@ -161,8 +161,10 @@ def test_site_json_shows_annual_job_conditions_and_earnings_only():
                 "gender": "male", "age": "", "status": "", "value": value, **kw}
 
     plfs = {"indicators": {}, "rates": [], "distribution": [],
-            "conditions": [row("annual", "", 50.0, condition="no written contract"),
-                           row("quarterly", "Q2", 51.0, condition="no written contract")],
+            "conditions": [row("annual", "", 50.0, condition="no written contract", year_type="Agriculture Year"),
+                           row("quarterly", "Q2", 51.0, condition="no written contract", year_type="Agriculture Year"),
+                           # by calendar year, from the distribution of workers: in the CSV only
+                           row("annual", "", 52.0, condition="no written contract", year_type="Calendar Year")],
             "earnings": [row("annual", "", 20000.0, kind="regular"), row("monthly", "07", 21000.0, kind="regular"),
                          row("quarterly", "Q3", 22000.0, kind="regular")]}
     ds = {"description": "", "generated_at": "", "sources": {}, "plfs": plfs, "cpi": [], "cpialrl": [], "hces": [],

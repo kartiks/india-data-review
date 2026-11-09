@@ -12,13 +12,19 @@ UNLABELLED = (
 )
 
 
+CROSSED = (
+    "MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type "
+    "of work within an industry, All India, since November 2026). The site does not use them; they are not read."
+)
+
+
 WITHDRAWN_KEPT = (
     "MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed "
     "in sources.WITHDRAWN)."
 )
 
 
-BAD_VALUE ="MoSPI's data service returns characters instead of a number for this figure. It is left out."
+BAD_VALUE = "MoSPI's data service returns characters instead of a number for this figure. It is left out."
 
 
 def cell(d: dict, keys=("frequency", "year", "period", "state", "sector", "gender", "age", "status")) -> str:
@@ -56,6 +62,9 @@ def check_source(ds: dict, report: Report) -> None:
     for u in p.get("unlabelled", []):
         checked += 1
         allowed.add(UNLABELLED, u)
+    for c in p.get("crossed", []):
+        checked += 1
+        allowed.add(CROSSED, c)
     for k in p.get("kept", []):
         checked += 1
         allowed.add(WITHDRAWN_KEPT, k)

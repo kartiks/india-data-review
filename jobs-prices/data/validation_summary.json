@@ -1,61 +1,65 @@
 {
  "result": "PASSED",
- "checks": 595343,
+ "checks": 634734,
  "failures": 0,
- "allowed": 7500,
+ "allowed": 4651,
  "sections": [
   {
    "title": "Every published value is understood",
-   "checks": 449190,
+   "checks": 484751,
    "failures": 0,
-   "allowed": 6213,
+   "allowed": 3443,
    "allowed_reasons": [
     {
      "reason": "MoSPI's data service returns characters instead of a number for this figure. It is left out.",
-     "cases": 21
+     "cases": 20
     },
     {
-     "reason": "MoSPI's data service returns some 'percentage distribution of workers' rows with no breakdown named (no type of work, industry or employer), often with several different values for the same cell. They cannot be read and are left out.",
-     "cases": 6192
+     "reason": "MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type of work within an industry, All India, since November 2026). The site does not use them; they are not read.",
+     "cases": 3420
+    },
+    {
+     "reason": "MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed in sources.WITHDRAWN).",
+     "cases": 3
     }
    ]
   },
   {
    "title": "Jobs: worker ratio = participation × (1 − unemployment rate)",
-   "checks": 29131,
+   "checks": 29139,
    "failures": 0,
-   "allowed": 574,
+   "allowed": 560,
    "allowed_reasons": [
     {
      "reason": "MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and unemployment must satisfy worker ratio = participation × (1 − unemployment rate); a total must lie between its two parts). Apr–Jun 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin says 8.9%. Each combination below is left out of the site whole, since which of its figures is wrong cannot be told; plfs_rates.csv keeps it with the reason.",
-     "cases": 574
+     "cases": 560
     }
    ]
   },
   {
    "title": "Jobs: persons lie between men and women, rural + urban between rural and urban",
-   "checks": 61459,
+   "checks": 65056,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
   },
   {
    "title": "Jobs: shares of workers add up to 100%",
-   "checks": 9994,
+   "checks": 10210,
    "failures": 0,
-   "allowed": 636,
+   "allowed": 571,
    "allowed_reasons": [
     {
      "reason": "Chandigarh has almost no rural population. MoSPI publishes its rural figures as 'NaN' or as zeros in every category; they are treated as not published.",
-     "cases": 27
+     "cases": 19
     },
     {
-     "reason": "MoSPI's data service returns characters instead of a number for this figure. It is left out.",
+     "reason": "MoSPI's data service has no figure for one or more of this breakdown's categories here (named in each case), so the shares it has add up to less than 100%.",
      "cases": 1
     },
     {
      "reason": "MoSPI's data service returns All-India shares of workers by type of work (self-employed, regular, casual) that do not add up to 100% (for example 0.3%, 0.4%, 0.6% and 0.6% for women in 2022), while every state's shares do. The All-India figures are not used; the site shows this breakdown by state.",
-     "cases": 75
+     "cases": 18
     },
     {
      "reason": "For 2025 in current weekly status (CWS), MoSPI's 'all self-employed' share is not the sum of its two parts (own-account workers and helpers) in most states, and the shares add up to less than 100%. The site uses the usual status (PS+SS) figures, where they add up.",
@@ -199,7 +203,7 @@
   },
   {
    "title": "Text in the data: no '<', '>' or control characters",
-   "checks": 1810,
+   "checks": 1819,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
@@ -211,12 +215,12 @@
   "cpialrl.csv": "7b275129d770fad9a69b48676c0f7b7b671886b9b4eee6410d9949616c322565",
   "hces.csv": "6a7560779e72b2469b1dcadd3404e059d52df947d7b69519ce2c512ade4f23f7",
   "hces_overall.csv": "6c40823fb05b17c0517d5d205356a3b4dc27248fda24efb1cd410d40154fc106",
-  "jobs_prices.json": "2d9e36faf08cfcf776e75101a6e0c0bf28555e6811d8a6c2d13a4a7f19ba8e4d",
-  "plfs_conditions.csv": "03b8c8dc6b3c1c5eda884f703a30c0c980469f47b54b0e6b389fa390681f0a2d",
-  "plfs_earnings.csv": "fe84dcb0a48937f0c46540e55b8b67f66f3d0733087f6e84642edaafb4f61750",
-  "plfs_rates.csv": "6af787592650fedbc771376a8a9ac23d764e1edb180023ddb71c2f33b047e538",
-  "plfs_workers.csv": "1866cce2b7de067823fd58041c4a0f54243d62937e48775c325028fa412e59d8",
+  "jobs_prices.json": "900605c87067d4ef9be615d701247ae02e54a3e6e5c7f612349ec97604a7ff03",
+  "plfs_conditions.csv": "0bca55b4aa458a477be39e06d75683568e53238c2cb54f2d231b0b981042130e",
+  "plfs_earnings.csv": "8458a4996cecd11b71ce307b3870e941a807c252dc05aa8345441d548641b6fd",
+  "plfs_rates.csv": "bf271589cecb675801f542d875b0da69746a29ea95d82700efa782d0c5ad838c",
+  "plfs_workers.csv": "26c3aac711c12b7779207a330acb3d4a0a1b1c1335cfc65e67d720effebb05d2",
   "rbi_states.csv": "fe5393da1e3e8a36e50ece88013953925e5b7671469c1564649842aa8c10a089",
-  "sources.csv": "9b25c5a1faffebbcf5921d02b44f3fe8e58cd8829e8b2d6da8a0f25fe8721b6e"
+  "sources.csv": "25b428e636d152248e09ec919d21e2e0ddf9a357a7ebcf6ccdde6f6cd205952d"
  }
 }

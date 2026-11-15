@@ -2,10 +2,10 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists its reason.
 
-**Result: PASSED** (634734 checks, 0 failures)
+**Result: PASSED** (639296 checks, 0 failures)
 
 ## ✅ Every published value is understood
-484751 checks, 0 failures.
+487446 checks, 0 failures.
 
 - Allowed (20): MoSPI's data service returns characters instead of a number for this figure. It is left out. Cases:
   - quarterly, 2019, Q3, Kerala, urban, male, 15 years and above ur printed as 'l0.8'
@@ -28,7 +28,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - quarterly, 2022, Q2, Chhattisgarh, urban, person, 15 years and above ur printed as 'I 1.3'
   - quarterly, 2022, Q2, Chhattisgarh, urban, person, All ages ur printed as 'II.3'
   - quarterly, 2022, Q3, Jharkhand, urban, female, 15 years and above ur printed as '6. I'
-- Allowed (3420): MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type of work within an industry, All India, since November 2026). The site does not use them; they are not read. Cases:
+- Allowed (4248): MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type of work within an industry, All India, since November 2026). The site does not use them; they are not read. Cases:
   - plfs/annual/ind04: 2022, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
   - plfs/annual/ind04: 2023, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
   - plfs/annual/ind04: 2024, All India, rural + urban, female, PS+SS 01-03 (agriculture) × 1.self-employed: own account worker, employer
@@ -49,14 +49,14 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - plfs/annual/ind04: 2024, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
   - plfs/annual/ind04: 2025, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
   - plfs/annual/ind04: 2022, All India, rural, female, PS+SS 05-09 (mining & quarrying) × 1.self-employed: own account worker, employer
-  - and 3400 more (see the CSV)
+  - and 4228 more (see the CSV)
 - Allowed (3): MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed in sources.WITHDRAWN). Cases:
   - plfs/monthly/ind01: 27 rows from sources/snapshots/2026-10-30T151258Z/plfs/monthly/ind01.json
   - plfs/monthly/ind02: 27 rows from sources/snapshots/2026-10-30T151301Z/plfs/monthly/ind02.json
   - plfs/monthly/ind03: 27 rows from sources/snapshots/2026-10-30T151304Z/plfs/monthly/ind03.json
 
 ## ✅ Jobs: worker ratio = participation × (1 − unemployment rate)
-29139 checks, 0 failures.
+29760 checks, 0 failures.
 
 - Allowed (560): MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and unemployment must satisfy worker ratio = participation × (1 − unemployment rate); a total must lie between its two parts). Apr–Jun 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin says 8.9%. Each combination below is left out of the site whole, since which of its figures is wrong cannot be told; plfs_rates.csv keeps it with the reason. Cases:
   - quarterly, 2019, Q2, All India, urban, female, 15 years and above: inconsistent: participation 19.0 and unemployment 27.4 give a worker ratio of 13.8, published 16.9
@@ -145,7 +145,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Within 0.3 points, shown: quarterly, 2025, Q3, West Bengal, rural, person, 15-29 years: participation 44.0, unemployment 12.4, worker ratio 38.3 (0.24 points off)
 
 ## ✅ Jobs: persons lie between men and women, rural + urban between rural and urban
-65056 checks, 0 failures.
+66298 checks, 0 failures.
 
 
 ## ✅ Jobs: shares of workers add up to 100%
@@ -285,11 +285,11 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Not shown on the site: quarterly nic_group: 2022 Q3, All India, urban, person, : shares add up to 3203.6%
 
 ## ✅ Prices (CPI): inflation reproduced from the index a year earlier
-26573 checks, 0 failures.
+26575 checks, 0 failures.
 
 
 ## ✅ Prices (CPI): combined index lies between rural and urban
-9583 checks, 0 failures.
+9585 checks, 0 failures.
 
 
 ## ✅ Prices (CPI): no month missing

@@ -10158,7 +10158,6 @@ month,state,sector,group,subgroup,index,inflation,index_as_printed,inflation_as_
 2014-07,All India,Urban,Miscellaneous,Health,111.5,4.11,,,F,2012,cpi/all_india/2014
 2014-08,All India,Urban,Miscellaneous,Health,112.2,4.28,,,F,2012,cpi/all_india/2014
 2014-09,All India,Urban,Miscellaneous,Health,112.3,4.08,,,F,2012,cpi/all_india/2014
-2014-10,All India,Urban,Miscellaneous,Health,112.6,4.07,,,F,2012,cpi/all_india/2014
 2014-11,All India,Urban,Miscellaneous,Health,113.0,4.05,,,F,2012,cpi/all_india/2014
 2014-12,All India,Urban,Miscellaneous,Health,113.2,3.85,,,F,2012,cpi/all_india/2014
 2015-01,All India,Urban,Miscellaneous,Health,113.7,3.65,,,F,2012,cpi/all_india/2015
@@ -10614,6 +10613,7 @@ month,state,sector,group,subgroup,index,inflation,index_as_printed,inflation_as_
 2013-07,All India,Urban,Miscellaneous,Household Goods and Services,108.1,,,,F,2012,cpi/all_india/2013
 2013-08,All India,Urban,Miscellaneous,Household Goods and Services,108.7,,,,F,2012,cpi/all_india/2013
 2013-09,All India,Urban,Miscellaneous,Household Goods and Services,109.6,,,,F,2012,cpi/all_india/2013
+2013-10,All India,Urban,Miscellaneous,Household Goods and Services,110.2,,,,F,2012,cpi/all_india/2013
 2013-11,All India,Urban,Miscellaneous,Household Goods and Services,110.9,,,,F,2012,cpi/all_india/2013
 2013-12,All India,Urban,Miscellaneous,Household Goods and Services,111.3,,,,F,2012,cpi/all_india/2013
 2014-01,All India,Urban,Miscellaneous,Household Goods and Services,111.9,6.77,,,F,2012,cpi/all_india/2014
@@ -11547,6 +11547,7 @@ month,state,sector,group,subgroup,index,inflation,index_as_printed,inflation_as_
 2013-07,All India,Urban,Miscellaneous,Personal Care and Effects,103.2,,,,F,2012,cpi/all_india/2013
 2013-08,All India,Urban,Miscellaneous,Personal Care and Effects,106.0,,,,F,2012,cpi/all_india/2013
 2013-09,All India,Urban,Miscellaneous,Personal Care and Effects,106.9,,,,F,2012,cpi/all_india/2013
+2013-10,All India,Urban,Miscellaneous,Personal Care and Effects,107.3,,,,F,2012,cpi/all_india/2013
 2013-11,All India,Urban,Miscellaneous,Personal Care and Effects,107.9,,,,F,2012,cpi/all_india/2013
 2013-12,All India,Urban,Miscellaneous,Personal Care and Effects,107.7,,,,F,2012,cpi/all_india/2013
 2014-01,All India,Urban,Miscellaneous,Personal Care and Effects,108.0,3.55,,,F,2012,cpi/all_india/2014
@@ -11558,6 +11559,7 @@ month,state,sector,group,subgroup,index,inflation,index_as_printed,inflation_as_
 2014-07,All India,Urban,Miscellaneous,Personal Care and Effects,109.7,6.3,,,F,2012,cpi/all_india/2014
 2014-08,All India,Urban,Miscellaneous,Personal Care and Effects,110.5,4.25,,,F,2012,cpi/all_india/2014
 2014-09,All India,Urban,Miscellaneous,Personal Care and Effects,110.0,2.9,,,F,2012,cpi/all_india/2014
+2014-10,All India,Urban,Miscellaneous,Personal Care and Effects,110.1,2.61,,,F,2012,cpi/all_india/2014
 2014-11,All India,Urban,Miscellaneous,Personal Care and Effects,109.6,1.58,,,F,2012,cpi/all_india/2014
 2014-12,All India,Urban,Miscellaneous,Personal Care and Effects,110.4,2.51,,,F,2012,cpi/all_india/2014
 2015-01,All India,Urban,Miscellaneous,Personal Care and Effects,111.4,3.15,,,F,2012,cpi/all_india/2015

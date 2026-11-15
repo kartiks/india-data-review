@@ -1,14 +1,14 @@
 {
  "result": "PASSED",
- "checks": 634734,
+ "checks": 639296,
  "failures": 0,
- "allowed": 4651,
+ "allowed": 5479,
  "sections": [
   {
    "title": "Every published value is understood",
-   "checks": 484751,
+   "checks": 487446,
    "failures": 0,
-   "allowed": 3443,
+   "allowed": 4271,
    "allowed_reasons": [
     {
      "reason": "MoSPI's data service returns characters instead of a number for this figure. It is left out.",
@@ -16,7 +16,7 @@
     },
     {
      "reason": "MoSPI's data service returns some 'percentage distribution of workers' rows with two breakdowns at once (type of work within an industry, All India, since November 2026). The site does not use them; they are not read.",
-     "cases": 3420
+     "cases": 4248
     },
     {
      "reason": "MoSPI's data service no longer returns these rows. They are kept from the last download that had them (listed in sources.WITHDRAWN).",
@@ -26,7 +26,7 @@
   },
   {
    "title": "Jobs: worker ratio = participation × (1 − unemployment rate)",
-   "checks": 29139,
+   "checks": 29760,
    "failures": 0,
    "allowed": 560,
    "allowed_reasons": [
@@ -38,7 +38,7 @@
   },
   {
    "title": "Jobs: persons lie between men and women, rural + urban between rural and urban",
-   "checks": 65056,
+   "checks": 66298,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
@@ -69,14 +69,14 @@
   },
   {
    "title": "Prices (CPI): inflation reproduced from the index a year earlier",
-   "checks": 26573,
+   "checks": 26575,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
   },
   {
    "title": "Prices (CPI): combined index lies between rural and urban",
-   "checks": 9583,
+   "checks": 9585,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
@@ -210,17 +210,17 @@
   }
  ],
  "files": {
-  "cpi.csv": "2971b4fafc37b6018489626a60fed6bcb9e6082498b946c28c0b4f93009d0a40",
+  "cpi.csv": "87e5627fd0c3496ef885e58078d8de81f3086dc04554bc6fd7e725b58bb35f95",
   "cpi2024.csv": "ce94af816fff1ed6c6e8a2a884827cbcac9e87be3ee455e81e3aa4ca321cac03",
   "cpialrl.csv": "7b275129d770fad9a69b48676c0f7b7b671886b9b4eee6410d9949616c322565",
   "hces.csv": "6a7560779e72b2469b1dcadd3404e059d52df947d7b69519ce2c512ade4f23f7",
   "hces_overall.csv": "6c40823fb05b17c0517d5d205356a3b4dc27248fda24efb1cd410d40154fc106",
-  "jobs_prices.json": "900605c87067d4ef9be615d701247ae02e54a3e6e5c7f612349ec97604a7ff03",
+  "jobs_prices.json": "458f394df9fbe931137c46332b5e689e4d361eba97de13c60f87b95cec9254ca",
   "plfs_conditions.csv": "0bca55b4aa458a477be39e06d75683568e53238c2cb54f2d231b0b981042130e",
   "plfs_earnings.csv": "8458a4996cecd11b71ce307b3870e941a807c252dc05aa8345441d548641b6fd",
-  "plfs_rates.csv": "bf271589cecb675801f542d875b0da69746a29ea95d82700efa782d0c5ad838c",
+  "plfs_rates.csv": "9b69a9d01a81d0ba9fac2b5aa155626863b9e8e2a6d9ab1b8236248eb1ab97f5",
   "plfs_workers.csv": "26c3aac711c12b7779207a330acb3d4a0a1b1c1335cfc65e67d720effebb05d2",
   "rbi_states.csv": "fe5393da1e3e8a36e50ece88013953925e5b7671469c1564649842aa8c10a089",
-  "sources.csv": "25b428e636d152248e09ec919d21e2e0ddf9a357a7ebcf6ccdde6f6cd205952d"
+  "sources.csv": "395783dd899ea25860c7016eb9b3ace53336131c08c0688af953d34e860bf1bc"
  }
 }

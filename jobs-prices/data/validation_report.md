@@ -2,10 +2,10 @@
 
 Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from MoSPI's official data service (CPI-AL/RL is the Labour Bureau's), the base-2024 CPI from MoSPI's press releases on PIB, and state comparisons from the RBI's Handbook of Statistics on Indian States. Every allowed exception lists its reason.
 
-**Result: PASSED** (639296 checks, 0 failures)
+**Result: PASSED** (639458 checks, 0 failures)
 
 ## ✅ Every published value is understood
-487446 checks, 0 failures.
+487527 checks, 0 failures.
 
 - Allowed (20): MoSPI's data service returns characters instead of a number for this figure. It is left out. Cases:
   - quarterly, 2019, Q3, Kerala, urban, male, 15 years and above ur printed as 'l0.8'
@@ -56,7 +56,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
   - plfs/monthly/ind03: 27 rows from sources/snapshots/2026-10-30T151304Z/plfs/monthly/ind03.json
 
 ## ✅ Jobs: worker ratio = participation × (1 − unemployment rate)
-29760 checks, 0 failures.
+29787 checks, 0 failures.
 
 - Allowed (560): MoSPI's PLFS figures in its data service carry transcription errors, mostly in the quarterly series: letters for digits ('l0.8', 'IN.4', '20J') and figures that cannot all be right (participation, worker ratio and unemployment must satisfy worker ratio = participation × (1 − unemployment rate); a total must lie between its two parts). Apr–Jun 2019, for example, shows urban unemployment of 21.6% where MoSPI's bulletin says 8.9%. Each combination below is left out of the site whole, since which of its figures is wrong cannot be told; plfs_rates.csv keeps it with the reason. Cases:
   - quarterly, 2019, Q2, All India, urban, female, 15 years and above: inconsistent: participation 19.0 and unemployment 27.4 give a worker ratio of 13.8, published 16.9
@@ -145,7 +145,7 @@ Jobs (PLFS), consumer prices (CPI, CPI-AL/RL) and household spending (HCES) from
 - Within 0.3 points, shown: quarterly, 2025, Q3, West Bengal, rural, person, 15-29 years: participation 44.0, unemployment 12.4, worker ratio 38.3 (0.24 points off)
 
 ## ✅ Jobs: persons lie between men and women, rural + urban between rural and urban
-66298 checks, 0 failures.
+66352 checks, 0 failures.
 
 
 ## ✅ Jobs: shares of workers add up to 100%

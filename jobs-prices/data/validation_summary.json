@@ -1,12 +1,12 @@
 {
  "result": "PASSED",
- "checks": 639296,
+ "checks": 639458,
  "failures": 0,
  "allowed": 5479,
  "sections": [
   {
    "title": "Every published value is understood",
-   "checks": 487446,
+   "checks": 487527,
    "failures": 0,
    "allowed": 4271,
    "allowed_reasons": [
@@ -26,7 +26,7 @@
   },
   {
    "title": "Jobs: worker ratio = participation × (1 − unemployment rate)",
-   "checks": 29760,
+   "checks": 29787,
    "failures": 0,
    "allowed": 560,
    "allowed_reasons": [
@@ -38,7 +38,7 @@
   },
   {
    "title": "Jobs: persons lie between men and women, rural + urban between rural and urban",
-   "checks": 66298,
+   "checks": 66352,
    "failures": 0,
    "allowed": 0,
    "allowed_reasons": []
@@ -210,17 +210,17 @@
   }
  ],
  "files": {
-  "cpi.csv": "87e5627fd0c3496ef885e58078d8de81f3086dc04554bc6fd7e725b58bb35f95",
+  "cpi.csv": "6be5dfcf673f2fd182cadafe1148c353d3a0c2c196016581ef4e73ca35aff199",
   "cpi2024.csv": "ce94af816fff1ed6c6e8a2a884827cbcac9e87be3ee455e81e3aa4ca321cac03",
   "cpialrl.csv": "7b275129d770fad9a69b48676c0f7b7b671886b9b4eee6410d9949616c322565",
   "hces.csv": "6a7560779e72b2469b1dcadd3404e059d52df947d7b69519ce2c512ade4f23f7",
   "hces_overall.csv": "6c40823fb05b17c0517d5d205356a3b4dc27248fda24efb1cd410d40154fc106",
-  "jobs_prices.json": "458f394df9fbe931137c46332b5e689e4d361eba97de13c60f87b95cec9254ca",
+  "jobs_prices.json": "cecb02a656a84d3d33fdf40534982fc4b772638fcc123f44046fb76571e13986",
   "plfs_conditions.csv": "0bca55b4aa458a477be39e06d75683568e53238c2cb54f2d231b0b981042130e",
   "plfs_earnings.csv": "8458a4996cecd11b71ce307b3870e941a807c252dc05aa8345441d548641b6fd",
-  "plfs_rates.csv": "9b69a9d01a81d0ba9fac2b5aa155626863b9e8e2a6d9ab1b8236248eb1ab97f5",
+  "plfs_rates.csv": "7ec3bb54a9b1b28fe9ca4f3b3cd160cd2ef6465166315e6463546356104bb2d8",
   "plfs_workers.csv": "26c3aac711c12b7779207a330acb3d4a0a1b1c1335cfc65e67d720effebb05d2",
   "rbi_states.csv": "fe5393da1e3e8a36e50ece88013953925e5b7671469c1564649842aa8c10a089",
-  "sources.csv": "395783dd899ea25860c7016eb9b3ace53336131c08c0688af953d34e860bf1bc"
+  "sources.csv": "1b8c97747f83cfc470ce771734864df9ad25d286edd94d841913609c5fd9025a"
  }
 }

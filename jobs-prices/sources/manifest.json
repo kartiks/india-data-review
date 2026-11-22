@@ -2,30 +2,40 @@
  "cpi/all_india/2013": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2013&state_code=99&Format=JSON",
   "file": "sources/raw/cpi/all_india/2013.json",
-  "sha256": "5e5ff08958a3e11659567d299d016a94b037a021736a16d8969c60598d31bc0e",
-  "bytes": 215115,
-  "fetched_at": "2026-11-15T01:13:59+00:00",
+  "sha256": "45bfe63151b7fec24b24d2ca629a3c348696a784653bff86b47f1784429e1112",
+  "bytes": 215114,
+  "fetched_at": "2026-11-22T01:40:48+00:00",
   "records": 1008,
   "history": [
    {
     "sha256": "b268d3420c4501b9e986646ce6e467a3dbff01ee9909c2b141435320d5e7827b",
     "fetched_at": "2026-10-30T15:13:12+00:00",
     "file": "sources/snapshots/2026-10-30T151312Z/cpi/all_india/2013.json"
+   },
+   {
+    "sha256": "5e5ff08958a3e11659567d299d016a94b037a021736a16d8969c60598d31bc0e",
+    "fetched_at": "2026-11-15T01:13:59+00:00",
+    "file": "sources/snapshots/2026-11-15T011359Z/cpi/all_india/2013.json"
    }
   ]
  },
  "cpi/all_india/2014": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2014&state_code=99&Format=JSON",
   "file": "sources/raw/cpi/all_india/2014.json",
-  "sha256": "945e35be7410ffbfeea6b06af046d14308b0cc5e2715f760ef3ca3410eaf212f",
-  "bytes": 217266,
-  "fetched_at": "2026-11-15T01:14:25+00:00",
+  "sha256": "46131bae984bcdb1824c8dbc3cef1b372c26597f1b8edea3132ce3edbed88e95",
+  "bytes": 217265,
+  "fetched_at": "2026-11-22T01:41:15+00:00",
   "records": 1008,
   "history": [
    {
     "sha256": "46131bae984bcdb1824c8dbc3cef1b372c26597f1b8edea3132ce3edbed88e95",
     "fetched_at": "2026-10-30T15:13:25+00:00",
     "file": "sources/snapshots/2026-10-30T151325Z/cpi/all_india/2014.json"
+   },
+   {
+    "sha256": "945e35be7410ffbfeea6b06af046d14308b0cc5e2715f760ef3ca3410eaf212f",
+    "fetched_at": "2026-11-15T01:14:25+00:00",
+    "file": "sources/snapshots/2026-11-15T011425Z/cpi/all_india/2014.json"
    }
   ]
  },
@@ -36,7 +46,7 @@
   "bytes": 217235,
   "fetched_at": "2026-10-30T15:13:39+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:14:50+00:00"
+  "checked_at": "2026-11-22T01:41:42+00:00"
  },
  "cpi/all_india/2016": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2016&state_code=99&Format=JSON",
@@ -45,7 +55,7 @@
   "bytes": 217214,
   "fetched_at": "2026-10-30T15:13:52+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:15:19+00:00"
+  "checked_at": "2026-11-22T01:42:07+00:00"
  },
  "cpi/all_india/2017": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2017&state_code=99&Format=JSON",
@@ -54,7 +64,7 @@
   "bytes": 217276,
   "fetched_at": "2026-10-30T15:14:04+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:15:46+00:00"
+  "checked_at": "2026-11-22T01:42:32+00:00"
  },
  "cpi/all_india/2018": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2018&state_code=99&Format=JSON",
@@ -63,7 +73,7 @@
   "bytes": 217281,
   "fetched_at": "2026-10-30T15:14:16+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:16:12+00:00"
+  "checked_at": "2026-11-22T01:42:58+00:00"
  },
  "cpi/all_india/2019": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2019&state_code=99&Format=JSON",
@@ -72,7 +82,7 @@
   "bytes": 217251,
   "fetched_at": "2026-10-30T15:14:29+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:16:38+00:00"
+  "checked_at": "2026-11-22T01:43:23+00:00"
  },
  "cpi/all_india/2020": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2020&state_code=99&Format=JSON",
@@ -81,7 +91,7 @@
   "bytes": 217098,
   "fetched_at": "2026-10-30T15:14:41+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:17:04+00:00"
+  "checked_at": "2026-11-22T01:43:47+00:00"
  },
  "cpi/all_india/2021": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2021&state_code=99&Format=JSON",
@@ -90,7 +100,7 @@
   "bytes": 217392,
   "fetched_at": "2026-10-30T15:14:54+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:17:27+00:00"
+  "checked_at": "2026-11-22T01:44:10+00:00"
  },
  "cpi/all_india/2022": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2022&state_code=99&Format=JSON",
@@ -99,7 +109,7 @@
   "bytes": 217298,
   "fetched_at": "2026-10-30T15:15:06+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:17:53+00:00"
+  "checked_at": "2026-11-22T01:44:36+00:00"
  },
  "cpi/all_india/2023": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2023&state_code=99&Format=JSON",
@@ -108,7 +118,7 @@
   "bytes": 217334,
   "fetched_at": "2026-10-30T15:15:18+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:18:19+00:00"
+  "checked_at": "2026-11-22T01:45:03+00:00"
  },
  "cpi/all_india/2024": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2024&state_code=99&Format=JSON",
@@ -117,7 +127,7 @@
   "bytes": 217285,
   "fetched_at": "2026-10-30T15:15:31+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:18:44+00:00"
+  "checked_at": "2026-11-22T01:45:29+00:00"
  },
  "cpi/all_india/2025": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2025&state_code=99&Format=JSON",
@@ -126,7 +136,7 @@
   "bytes": 217407,
   "fetched_at": "2026-10-30T15:15:45+00:00",
   "records": 1008,
-  "checked_at": "2026-11-15T01:19:11+00:00"
+  "checked_at": "2026-11-22T01:45:54+00:00"
  },
  "cpi/states_general/2013": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2013&group_code=0&Format=JSON",
@@ -135,7 +145,7 @@
   "bytes": 268266,
   "fetched_at": "2026-10-30T15:13:19+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:14:13+00:00"
+  "checked_at": "2026-11-22T01:41:03+00:00"
  },
  "cpi/states_general/2014": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2014&group_code=0&Format=JSON",
@@ -144,7 +154,7 @@
   "bytes": 271044,
   "fetched_at": "2026-10-30T15:13:32+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:14:38+00:00"
+  "checked_at": "2026-11-22T01:41:29+00:00"
  },
  "cpi/states_general/2015": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2015&group_code=0&Format=JSON",
@@ -153,7 +163,7 @@
   "bytes": 270926,
   "fetched_at": "2026-10-30T15:13:46+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:15:06+00:00"
+  "checked_at": "2026-11-22T01:41:55+00:00"
  },
  "cpi/states_general/2016": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2016&group_code=0&Format=JSON",
@@ -162,7 +172,7 @@
   "bytes": 270955,
   "fetched_at": "2026-10-30T15:13:58+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:15:35+00:00"
+  "checked_at": "2026-11-22T01:42:21+00:00"
  },
  "cpi/states_general/2017": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2017&group_code=0&Format=JSON",
@@ -171,7 +181,7 @@
   "bytes": 270972,
   "fetched_at": "2026-10-30T15:14:11+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:16:00+00:00"
+  "checked_at": "2026-11-22T01:42:47+00:00"
  },
  "cpi/states_general/2018": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2018&group_code=0&Format=JSON",
@@ -180,7 +190,7 @@
   "bytes": 270999,
   "fetched_at": "2026-10-30T15:14:23+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:16:26+00:00"
+  "checked_at": "2026-11-22T01:43:11+00:00"
  },
  "cpi/states_general/2019": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2019&group_code=0&Format=JSON",
@@ -189,7 +199,7 @@
   "bytes": 271016,
   "fetched_at": "2026-10-30T15:14:35+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:16:52+00:00"
+  "checked_at": "2026-11-22T01:43:36+00:00"
  },
  "cpi/states_general/2020": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2020&group_code=0&Format=JSON",
@@ -198,7 +208,7 @@
   "bytes": 225772,
   "fetched_at": "2026-10-30T15:14:47+00:00",
   "records": 1107,
-  "checked_at": "2026-11-15T01:17:16+00:00"
+  "checked_at": "2026-11-22T01:43:58+00:00"
  },
  "cpi/states_general/2021": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2021&group_code=0&Format=JSON",
@@ -207,7 +217,7 @@
   "bytes": 270477,
   "fetched_at": "2026-10-30T15:15:00+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:17:41+00:00"
+  "checked_at": "2026-11-22T01:44:23+00:00"
  },
  "cpi/states_general/2022": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2022&group_code=0&Format=JSON",
@@ -216,7 +226,7 @@
   "bytes": 270917,
   "fetched_at": "2026-10-30T15:15:13+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:18:07+00:00"
+  "checked_at": "2026-11-22T01:44:51+00:00"
  },
  "cpi/states_general/2023": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2023&group_code=0&Format=JSON",
@@ -225,7 +235,7 @@
   "bytes": 270909,
   "fetched_at": "2026-10-30T15:15:25+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:18:33+00:00"
+  "checked_at": "2026-11-22T01:45:18+00:00"
  },
  "cpi/states_general/2024": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2024&group_code=0&Format=JSON",
@@ -234,7 +244,7 @@
   "bytes": 270902,
   "fetched_at": "2026-10-30T15:15:38+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:18:58+00:00"
+  "checked_at": "2026-11-22T01:45:43+00:00"
  },
  "cpi/states_general/2025": {
   "url": "https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2025&group_code=0&Format=JSON",
@@ -243,7 +253,7 @@
   "bytes": 271049,
   "fetched_at": "2026-10-30T15:15:52+00:00",
   "records": 1332,
-  "checked_at": "2026-11-15T01:19:26+00:00"
+  "checked_at": "2026-11-22T01:46:08+00:00"
  },
  "cpi2024/2026-01": {
   "url": "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227012&reg=3&lang=1",
@@ -385,7 +395,7 @@
   "bytes": 1478637,
   "fetched_at": "2026-10-30T15:16:30+00:00",
   "records": 7091,
-  "checked_at": "2026-11-15T01:20:40+00:00"
+  "checked_at": "2026-11-22T01:47:19+00:00"
  },
  "cpialrl/group_index": {
   "url": "https://api.mospi.gov.in/api/cpialrl/getCpialrlRecords?indicator_code=Group+Index&Format=JSON",
@@ -394,7 +404,7 @@
   "bytes": 9419986,
   "fetched_at": "2026-10-30T15:20:07+00:00",
   "records": 40020,
-  "checked_at": "2026-11-15T01:28:19+00:00"
+  "checked_at": "2026-11-22T01:54:36+00:00"
  },
  "hces/categories_rs": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Monthly+Per+Capita+Consumption+Expenditure+%28MPCE%29+over+Broad+Categories+in+30+Days&Format=JSON",
@@ -403,7 +413,7 @@
   "bytes": 2493289,
   "fetched_at": "2026-10-30T15:21:13+00:00",
   "records": 9176,
-  "checked_at": "2026-11-15T01:30:25+00:00"
+  "checked_at": "2026-11-22T01:56:39+00:00"
  },
  "hces/categories_share": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Percentage+Share+of+Monthly+Per+Capita+Consumption+Expenditure+%28MPCE%29+over+Broad+Categories+in+30+Days&Format=JSON",
@@ -412,7 +422,7 @@
   "bytes": 2644090,
   "fetched_at": "2026-10-30T15:22:04+00:00",
   "records": 9176,
-  "checked_at": "2026-11-15T01:32:15+00:00"
+  "checked_at": "2026-11-22T01:58:23+00:00"
  },
  "hces/gini": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Gini+Coefficient+for+Per+Capita+Consumption+Expenditure&Format=JSON",
@@ -421,7 +431,7 @@
   "bytes": 61284,
   "fetched_at": "2026-10-30T15:22:27+00:00",
   "records": 296,
-  "checked_at": "2026-11-15T01:33:23+00:00"
+  "checked_at": "2026-11-22T01:59:25+00:00"
  },
  "hces/mpce": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+monthly+per+capita+consumption+expenditure+%28MPCE%29&Format=JSON",
@@ -430,7 +440,7 @@
   "bytes": 62231,
   "fetched_at": "2026-10-30T15:20:09+00:00",
   "records": 296,
-  "checked_at": "2026-11-15T01:28:22+00:00"
+  "checked_at": "2026-11-22T01:54:40+00:00"
  },
  "hces/mpce_classes": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+monthly+per+capita+consumption+expenditure+%28MPCE%29+Over+12+Fractile+Classes&Format=JSON",
@@ -439,7 +449,7 @@
   "bytes": 518435,
   "fetched_at": "2026-10-30T15:20:19+00:00",
   "records": 1924,
-  "checked_at": "2026-11-15T01:28:44+00:00"
+  "checked_at": "2026-11-22T01:55:00+00:00"
  },
  "hces/mpce_household_type": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+Monthly+Per+Capita+Consumption+Expenditure+%28MPCE%29+across+different+Household+Type&Format=JSON",
@@ -448,7 +458,7 @@
   "bytes": 564065,
   "fetched_at": "2026-10-30T15:22:26+00:00",
   "records": 1924,
-  "checked_at": "2026-11-15T01:33:02+00:00"
+  "checked_at": "2026-11-22T01:59:07+00:00"
  },
  "hces/mpce_social_group": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+Monthly+Per+Capita+Consumption+Expenditure+%28MPCE%29+across+different+Social+Group&Format=JSON",
@@ -457,7 +467,7 @@
   "bytes": 400971,
   "fetched_at": "2026-10-30T15:24:29+00:00",
   "records": 1480,
-  "checked_at": "2026-11-15T01:33:19+00:00"
+  "checked_at": "2026-11-22T01:59:22+00:00"
  },
  "hces/quantity": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+Per+Capita+Monthly+Quantity+Consumption+&Format=JSON",
@@ -466,7 +476,7 @@
   "bytes": 167376,
   "fetched_at": "2026-10-30T15:22:08+00:00",
   "records": 740,
-  "checked_at": "2026-11-15T01:32:24+00:00"
+  "checked_at": "2026-11-22T01:58:31+00:00"
  },
  "hces/value_of_consumption": {
   "url": "https://api.mospi.gov.in/api/hces/getHcesRecords?indicator_code=Average+Monthly+Per+Capita+Value+of+Consumption+%28Rs.%29&Format=JSON",
@@ -475,7 +485,7 @@
   "bytes": 339702,
   "fetched_at": "2026-10-30T15:22:15+00:00",
   "records": 1480,
-  "checked_at": "2026-11-15T01:32:40+00:00"
+  "checked_at": "2026-11-22T01:58:46+00:00"
  },
  "hces_report/2023-24/TableA2": {
   "url": "https://mospi.gov.in/sites/default/files/publication_reports/HCES-23-24/TableA2.xlsx",
@@ -498,7 +508,7 @@
     "file": "sources/snapshots/2026-10-30T145158Z/plfs/annual/ind01.json"
    }
   ],
-  "checked_at": "2026-11-15T00:23:16+00:00"
+  "checked_at": "2026-11-22T00:50:41+00:00"
  },
  "plfs/annual/ind02": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=1&Format=JSON",
@@ -514,7 +524,7 @@
     "file": "sources/snapshots/2026-10-30T145443Z/plfs/annual/ind02.json"
    }
   ],
-  "checked_at": "2026-11-15T00:28:01+00:00"
+  "checked_at": "2026-11-22T00:55:07+00:00"
  },
  "plfs/annual/ind03": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=1&Format=JSON",
@@ -530,7 +540,7 @@
     "file": "sources/snapshots/2026-10-30T145700Z/plfs/annual/ind03.json"
    }
   ],
-  "checked_at": "2026-11-15T00:32:43+00:00"
+  "checked_at": "2026-11-22T00:59:33+00:00"
  },
  "plfs/annual/ind04": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=4&frequency_code=1&Format=JSON",
@@ -546,7 +556,7 @@
     "file": "sources/snapshots/2026-10-30T150718Z/plfs/annual/ind04.json"
    }
   ],
-  "checked_at": "2026-11-15T01:02:45+00:00"
+  "checked_at": "2026-11-22T01:30:03+00:00"
  },
  "plfs/annual/ind05": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=5&frequency_code=1&Format=JSON",
@@ -566,7 +576,8 @@
     "fetched_at": "2026-11-08T20:37:36+00:00",
     "file": "sources/snapshots/2026-11-08T203736Z/plfs/annual/ind05.json"
    }
-  ]
+  ],
+  "checked_at": "2026-11-22T01:31:57+00:00"
  },
  "plfs/annual/ind06": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=6&frequency_code=1&Format=JSON",
@@ -582,7 +593,7 @@
     "file": "sources/snapshots/2026-10-30T150830Z/plfs/annual/ind06.json"
    }
   ],
-  "checked_at": "2026-11-15T01:04:55+00:00"
+  "checked_at": "2026-11-22T01:32:12+00:00"
  },
  "plfs/annual/ind07": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=7&frequency_code=1&Format=JSON",
@@ -598,7 +609,7 @@
     "file": "sources/snapshots/2026-10-30T150838Z/plfs/annual/ind07.json"
    }
   ],
-  "checked_at": "2026-11-15T01:05:11+00:00"
+  "checked_at": "2026-11-22T01:32:29+00:00"
  },
  "plfs/annual/ind08": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=8&frequency_code=1&Format=JSON",
@@ -614,80 +625,92 @@
     "file": "sources/snapshots/2026-10-30T150847Z/plfs/annual/ind08.json"
    }
   ],
-  "checked_at": "2026-11-15T01:05:26+00:00"
+  "checked_at": "2026-11-22T01:32:45+00:00"
  },
  "plfs/monthly/ind01": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=3&Format=JSON",
   "file": "sources/raw/plfs/monthly/ind01.json",
-  "sha256": "534594f44968b38cfb959180ecdbeb7120d26ae70f9a8079c98e42e5b20b1202",
-  "bytes": 115138,
-  "fetched_at": "2026-11-08T20:46:15+00:00",
-  "records": 459,
+  "sha256": "a2ee0a1bb088365387793bf3e28da3c13682e5833719f2df1a589e5f74b7f84c",
+  "bytes": 121920,
+  "fetched_at": "2026-11-22T01:40:15+00:00",
+  "records": 486,
   "history": [
    {
     "sha256": "bc7bcdc651fd20ad932b12a67880eb2ab4eebb4ebc87f1095587312a79dda531",
     "fetched_at": "2026-10-30T15:12:58+00:00",
     "file": "sources/snapshots/2026-10-30T151258Z/plfs/monthly/ind01.json"
+   },
+   {
+    "sha256": "534594f44968b38cfb959180ecdbeb7120d26ae70f9a8079c98e42e5b20b1202",
+    "fetched_at": "2026-11-08T20:46:15+00:00",
+    "file": "sources/snapshots/2026-11-08T204615Z/plfs/monthly/ind01.json"
    }
-  ],
-  "checked_at": "2026-11-15T01:13:29+00:00"
+  ]
  },
  "plfs/monthly/ind02": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=3&Format=JSON",
   "file": "sources/raw/plfs/monthly/ind02.json",
-  "sha256": "2467935419b3bffb1e0ca01a07f1edfb58322afba0d0ba77697b6b3830bc110c",
-  "bytes": 110983,
-  "fetched_at": "2026-11-08T20:46:22+00:00",
-  "records": 459,
+  "sha256": "593e1ff4e0ec5be7e2cfb2269bf6438194e059a5df0d3ec53967fddf587cc83f",
+  "bytes": 117518,
+  "fetched_at": "2026-11-22T01:40:22+00:00",
+  "records": 486,
   "history": [
    {
     "sha256": "5555d500a1c14f335022dff1c816d5f8d3514959f241e62f903ec09f67ae3bfd",
     "fetched_at": "2026-10-30T15:13:01+00:00",
     "file": "sources/snapshots/2026-10-30T151301Z/plfs/monthly/ind02.json"
+   },
+   {
+    "sha256": "2467935419b3bffb1e0ca01a07f1edfb58322afba0d0ba77697b6b3830bc110c",
+    "fetched_at": "2026-11-08T20:46:22+00:00",
+    "file": "sources/snapshots/2026-11-08T204622Z/plfs/monthly/ind02.json"
    }
-  ],
-  "checked_at": "2026-11-15T01:13:35+00:00"
+  ]
  },
  "plfs/monthly/ind03": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=3&Format=JSON",
   "file": "sources/raw/plfs/monthly/ind03.json",
-  "sha256": "a3ffe4d740f6226ad9caa4f3b0efd46c10e5f6bdd921a9448a10be3197c8fdc9",
-  "bytes": 107466,
-  "fetched_at": "2026-11-08T20:46:28+00:00",
-  "records": 459,
+  "sha256": "9c365af3360fa5ed67a0c2a43b7a47527a7876931036bcbcc4dd7f90de640a23",
+  "bytes": 113792,
+  "fetched_at": "2026-11-22T01:40:28+00:00",
+  "records": 486,
   "history": [
    {
     "sha256": "87a60671e61708d2fce964b11cc92137a297dfc86e545251ef649c06b173de67",
     "fetched_at": "2026-10-30T15:13:04+00:00",
     "file": "sources/snapshots/2026-10-30T151304Z/plfs/monthly/ind03.json"
+   },
+   {
+    "sha256": "a3ffe4d740f6226ad9caa4f3b0efd46c10e5f6bdd921a9448a10be3197c8fdc9",
+    "fetched_at": "2026-11-08T20:46:28+00:00",
+    "file": "sources/snapshots/2026-11-08T204628Z/plfs/monthly/ind03.json"
    }
-  ],
-  "checked_at": "2026-11-15T01:13:41+00:00"
+  ]
  },
  "plfs/monthly/ind04": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=4&frequency_code=3&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:43+00:00"
+  "checked_at": "2026-11-22T01:40:30+00:00"
  },
  "plfs/monthly/ind05": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=5&frequency_code=3&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:44+00:00"
+  "checked_at": "2026-11-22T01:40:32+00:00"
  },
  "plfs/monthly/ind06": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=6&frequency_code=3&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:45+00:00"
+  "checked_at": "2026-11-22T01:40:34+00:00"
  },
  "plfs/monthly/ind07": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=7&frequency_code=3&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:46+00:00"
+  "checked_at": "2026-11-22T01:40:35+00:00"
  },
  "plfs/monthly/ind08": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=8&frequency_code=3&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:47+00:00"
+  "checked_at": "2026-11-22T01:40:37+00:00"
  },
  "plfs/quarterly/ind01": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=2&Format=JSON",
@@ -707,7 +730,8 @@
     "fetched_at": "2026-11-08T20:40:16+00:00",
     "file": "sources/snapshots/2026-11-08T204016Z/plfs/quarterly/ind01.json"
    }
-  ]
+  ],
+  "checked_at": "2026-11-22T01:34:27+00:00"
  },
  "plfs/quarterly/ind02": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=2&Format=JSON",
@@ -727,7 +751,8 @@
     "fetched_at": "2026-11-08T20:42:01+00:00",
     "file": "sources/snapshots/2026-11-08T204201Z/plfs/quarterly/ind02.json"
    }
-  ]
+  ],
+  "checked_at": "2026-11-22T01:36:04+00:00"
  },
  "plfs/quarterly/ind03": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=2&Format=JSON",
@@ -747,7 +772,8 @@
     "fetched_at": "2026-11-08T20:43:43+00:00",
     "file": "sources/snapshots/2026-11-08T204343Z/plfs/quarterly/ind03.json"
    }
-  ]
+  ],
+  "checked_at": "2026-11-22T01:37:50+00:00"
  },
  "plfs/quarterly/ind04": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=4&frequency_code=2&Format=JSON",
@@ -767,27 +793,28 @@
     "fetched_at": "2026-11-08T20:46:03+00:00",
     "file": "sources/snapshots/2026-11-08T204603Z/plfs/quarterly/ind04.json"
    }
-  ]
+  ],
+  "checked_at": "2026-11-22T01:40:05+00:00"
  },
  "plfs/quarterly/ind05": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=5&frequency_code=2&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:19+00:00"
+  "checked_at": "2026-11-22T01:40:07+00:00"
  },
  "plfs/quarterly/ind06": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=6&frequency_code=2&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:21+00:00"
+  "checked_at": "2026-11-22T01:40:08+00:00"
  },
  "plfs/quarterly/ind07": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=7&frequency_code=2&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:22+00:00"
+  "checked_at": "2026-11-22T01:40:09+00:00"
  },
  "plfs/quarterly/ind08": {
   "url": "https://api.mospi.gov.in/api/plfs/getData?indicator_code=8&frequency_code=2&Format=JSON",
   "empty": true,
-  "checked_at": "2026-11-15T01:13:23+00:00"
+  "checked_at": "2026-11-22T01:40:10+00:00"
  },
  "rbi/table008": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/8T_111220254070338D01844B439710F4990CDAF4DF.XLSX",
@@ -798,7 +825,7 @@
   "edition": "2024-25",
   "title": "Table 8: State-wise Unemployment Rate: Usual Status (Adjusted) (Rural)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:26+00:00"
+  "checked_at": "2026-11-22T01:59:28+00:00"
  },
  "rbi/table009": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/9T_11122025FD98FA2EE6704C18AB8D5EC9966548B6.XLSX",
@@ -809,7 +836,7 @@
   "edition": "2024-25",
   "title": "Table 9: State-wise Unemployment Rate: Usual Status (Adjusted) (Urban)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:28+00:00"
+  "checked_at": "2026-11-22T01:59:29+00:00"
  },
  "rbi/table019": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/19T_11122025B8CC230E4A34431999B4D6A107707BCA.XLSX",
@@ -820,7 +847,7 @@
   "edition": "2024-25",
   "title": "Table 19: Per Capita Net State Domestic Product (Current Prices)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:29+00:00"
+  "checked_at": "2026-11-22T01:59:31+00:00"
  },
  "rbi/table020": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/20T_111220252B6EE27737FD4931A99C5A448B7CEC68.XLSX",
@@ -831,7 +858,7 @@
   "edition": "2024-25",
   "title": "Table 20: Per Capita Net State Domestic Product (Constant Prices)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:31+00:00"
+  "checked_at": "2026-11-22T01:59:32+00:00"
  },
  "rbi/table021": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/21T_11122025D994949B48C44B68B4465FBB9ADDFF3D.XLSX",
@@ -842,7 +869,7 @@
   "edition": "2024-25",
   "title": "Table 21: Gross State Domestic Product (Current Prices)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:32+00:00"
+  "checked_at": "2026-11-22T01:59:34+00:00"
  },
  "rbi/table022": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/22T_11122025E6BC0CB35180406EAB6E0D49DE51C8E8.XLSX",
@@ -853,7 +880,7 @@
   "edition": "2024-25",
   "title": "Table 22: Gross State Domestic Product (Constant Prices)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:34+00:00"
+  "checked_at": "2026-11-22T01:59:35+00:00"
  },
  "rbi/table108": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/108T_111220251942D16B3BED4D73BE851D15D2329168.XLSX",
@@ -864,7 +891,7 @@
   "edition": "2024-25",
   "title": "Table 108: State-wise Average Inflation (CPI) - General",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:35+00:00"
+  "checked_at": "2026-11-22T01:59:37+00:00"
  },
  "rbi/table112": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/112T_11122025771E55EB688044CE8A85E52A901B5D22.XLSX",
@@ -875,7 +902,7 @@
   "edition": "2024-25",
   "title": "Table 112: State-wise Average Daily Wage Rates in Rural India (Men - Construction Workers)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:37+00:00"
+  "checked_at": "2026-11-22T01:59:38+00:00"
  },
  "rbi/table113": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/113T_111220256FEBCC253D4A47419892925F897E2537.XLSX",
@@ -886,7 +913,7 @@
   "edition": "2024-25",
   "title": "Table 113: State-wise Average Daily Wage Rates in Rural India (Men - General Agricultural Labourers)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:39+00:00"
+  "checked_at": "2026-11-22T01:59:40+00:00"
  },
  "rbi/table114": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/114T_111220259CA566982E7F4BF38B3FDAC0D7587F2E.XLSX",
@@ -897,7 +924,7 @@
   "edition": "2024-25",
   "title": "Table 114: State-wise Average Daily Wage Rates in Rural India (Men - Horticulture Workers)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:40+00:00"
+  "checked_at": "2026-11-22T01:59:41+00:00"
  },
  "rbi/table115": {
   "url": "https://rbidocs.rbi.org.in/rdocs/Publications/DOCs/115T_1112202585CF99F21E654CED8990A734A043B3DA.XLSX",
@@ -908,6 +935,6 @@
   "edition": "2024-25",
   "title": "Table 115: State-wise Average Daily Wage Rates in Rural India (Men - Non-Agricultural Labourers)",
   "page": "https://www.rbi.org.in/Scripts/AnnualPublications.aspx?head=Handbook%20of%20Statistics%20on%20Indian%20States",
-  "checked_at": "2026-11-15T01:33:42+00:00"
+  "checked_at": "2026-11-22T01:59:43+00:00"
  }
 }

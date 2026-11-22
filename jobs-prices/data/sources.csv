@@ -1,6 +1,6 @@
 key,url,sha256,fetched_at,records
-cpi/all_india/2013,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2013&state_code=99&Format=JSON,5e5ff08958a3e11659567d299d016a94b037a021736a16d8969c60598d31bc0e,2026-11-15T01:13:59+00:00,1008
-cpi/all_india/2014,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2014&state_code=99&Format=JSON,945e35be7410ffbfeea6b06af046d14308b0cc5e2715f760ef3ca3410eaf212f,2026-11-15T01:14:25+00:00,1008
+cpi/all_india/2013,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2013&state_code=99&Format=JSON,45bfe63151b7fec24b24d2ca629a3c348696a784653bff86b47f1784429e1112,2026-11-22T01:40:48+00:00,1008
+cpi/all_india/2014,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2014&state_code=99&Format=JSON,46131bae984bcdb1824c8dbc3cef1b372c26597f1b8edea3132ce3edbed88e95,2026-11-22T01:41:15+00:00,1008
 cpi/all_india/2015,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2015&state_code=99&Format=JSON,43bb85d06d3349b05345a4a8770e5c03c9e9dcd7f8f458357088b25daf4df633,2026-10-30T15:13:39+00:00,1008
 cpi/all_india/2016,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2016&state_code=99&Format=JSON,75ad6d7f87f37ba0c69ee105b1c563f824a7ece2863959401e33bd9a513a9dd2,2026-10-30T15:13:52+00:00,1008
 cpi/all_india/2017,https://api.mospi.gov.in/api/cpi/getCPIIndex?base_year=2012&series=Current&year=2017&state_code=99&Format=JSON,f096f7d86cb575e0a8a408cfe0947a7ed3d11d6ed9574701a02de116a936fc43,2026-10-30T15:14:04+00:00,1008
@@ -62,9 +62,9 @@ plfs/annual/ind05,https://api.mospi.gov.in/api/plfs/getData?indicator_code=5&fre
 plfs/annual/ind06,https://api.mospi.gov.in/api/plfs/getData?indicator_code=6&frequency_code=1&Format=JSON,bcc3f6a7a92ad82323675f9c764b527c435213b605fa91d0cf7283e0d7f8e0b3,2026-11-08T20:37:52+00:00,1326
 plfs/annual/ind07,https://api.mospi.gov.in/api/plfs/getData?indicator_code=7&frequency_code=1&Format=JSON,dc2e9a60313adef75bbe9120a7ef014e0581ed3e74b709a8bd901ca8eea50f07,2026-11-08T20:38:09+00:00,1326
 plfs/annual/ind08,https://api.mospi.gov.in/api/plfs/getData?indicator_code=8&frequency_code=1&Format=JSON,06af923969d08d00aff3b46f178584c26f7e7a418bb19ee8b28a1c6b6bd9d3b9,2026-11-08T20:38:25+00:00,1326
-plfs/monthly/ind01,https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=3&Format=JSON,534594f44968b38cfb959180ecdbeb7120d26ae70f9a8079c98e42e5b20b1202,2026-11-08T20:46:15+00:00,459
-plfs/monthly/ind02,https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=3&Format=JSON,2467935419b3bffb1e0ca01a07f1edfb58322afba0d0ba77697b6b3830bc110c,2026-11-08T20:46:22+00:00,459
-plfs/monthly/ind03,https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=3&Format=JSON,a3ffe4d740f6226ad9caa4f3b0efd46c10e5f6bdd921a9448a10be3197c8fdc9,2026-11-08T20:46:28+00:00,459
+plfs/monthly/ind01,https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=3&Format=JSON,a2ee0a1bb088365387793bf3e28da3c13682e5833719f2df1a589e5f74b7f84c,2026-11-22T01:40:15+00:00,486
+plfs/monthly/ind02,https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=3&Format=JSON,593e1ff4e0ec5be7e2cfb2269bf6438194e059a5df0d3ec53967fddf587cc83f,2026-11-22T01:40:22+00:00,486
+plfs/monthly/ind03,https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=3&Format=JSON,9c365af3360fa5ed67a0c2a43b7a47527a7876931036bcbcc4dd7f90de640a23,2026-11-22T01:40:28+00:00,486
 plfs/quarterly/ind01,https://api.mospi.gov.in/api/plfs/getData?indicator_code=1&frequency_code=2&Format=JSON,c33d8c00c04640c37d5f1dfefd996c07fc83231802b178eb263132acab38b486,2026-11-15T01:07:11+00:00,9315
 plfs/quarterly/ind02,https://api.mospi.gov.in/api/plfs/getData?indicator_code=2&frequency_code=2&Format=JSON,7d2a8d937c649045fbe8426516b33ffcb1a51204cbd542630f1f292c1ca5976e,2026-11-15T01:09:03+00:00,9315
 plfs/quarterly/ind03,https://api.mospi.gov.in/api/plfs/getData?indicator_code=3&frequency_code=2&Format=JSON,e282bb8154d6050bb6af1912f996ffba732e48a561913b882038fc95a77aa74f,2026-11-15T01:10:46+00:00,9315
